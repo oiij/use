@@ -4,7 +4,7 @@ export default defineConfig({
   entry: ['./src/index.ts'],
   clean: true,
   format: ['cjs', 'esm'],
-  external: ['vue'],
+  external: ['vue', '@vueuse/core', 'lodash-es'],
   dts: true,
-  minify: true,
+  minify: false,
 })
