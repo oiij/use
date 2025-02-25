@@ -1,5 +1,5 @@
 import type { EventBusKey } from '@vueuse/core'
 
-export function useEventBusKey<T>(key: string): EventBusKey<T> {
+export function useEventBusKey<T>(key = 'key'): EventBusKey<T> {
   return Symbol(key)
 }
