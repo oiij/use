@@ -17,8 +17,11 @@ interface MessageType {
   type: string
   data: any
 }
-export function useWebSockets<T extends MessageType>(url: string | URL, options?: Options) {
-  const { protocols, manual = false } = options ?? {}
+export function useWebSocket<T extends MessageType>(url: string | URL, options?: Options) {
+  const _options = {
+    manual: false,
+    ...options,
+  } as Options
   const handlerMap = new Map<string, (data: any) => void>()
   const socket = shallowRef<WebSocket> ()
   const status = ref<State>('PENDING')
@@ -29,24 +32,35 @@ export function useWebSockets<T extends MessageType>(url: string | URL, options?
       status.value = ReadyState[socket.value.readyState]
     }
   }
-  function connect() {
-    socket.value = new WebSocket(url, protocols)
+  function connect(protocols?: string | string[]) {
+    if (socket.value) {
+      destroy()
+    }
+    if (protocols) {
+      _options.protocols = protocols
+    }
+    socket.value = new WebSocket(url, _options.protocols)
     socket.value.addEventListener('open', onOpen)
     socket.value.addEventListener('message', onMessage)
     socket.value.addEventListener('close', onClose)
     socket.value.addEventListener('error', onError)
   }
-  if (!manual) {
+  function close() {
+    if (socket.value) {
+      socket.value.close()
+    }
+  }
+
+  function reconnect() {
+    close()
+    connect()
+  }
+  if (!_options.manual) {
     connect()
   }
   function send(data: any) {
     if (socket.value) {
       socket.value.send(data)
-    }
-  }
-  function close() {
-    if (socket.value) {
-      socket.value.close()
     }
   }
   let onOpenFn: ((ev: Event) => void) | null = null
@@ -114,8 +128,9 @@ export function useWebSockets<T extends MessageType>(url: string | URL, options?
     status,
     data,
     connect,
-    send,
+    reconnect,
     close,
+    send,
     destroy,
     onOpen(fn: (ev: Event) => void) {
       onOpenFn = fn
