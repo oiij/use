@@ -115,10 +115,6 @@ export function useWebSocket<T extends MessageType>(url: string | URL, options?:
     socket.value?.removeEventListener('close', onClose)
     socket.value?.removeEventListener('error', onError)
     socket.value = undefined
-    onOpenFn = null
-    onMessageFn = null
-    onCloseFn = null
-    onErrorFn = null
   }
   onUnmounted(() => {
     destroy()
