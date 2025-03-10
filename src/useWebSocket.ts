@@ -14,15 +14,15 @@ interface Options {
   manual?: boolean
 }
 interface MessageType {
+  [key: string]: any
   type: string
-  data: any
 }
 export function useWebSocket<T extends MessageType>(url: string | URL, options?: Options) {
   const _options = {
     manual: false,
     ...options,
   } as Options
-  const handlerMap = new Map<string, (data: any) => void>()
+  const handlerMap = new Map<string, (data: T) => void>()
   const socket = shallowRef<WebSocket> ()
   const status = ref<State>('PENDING')
   const error = ref<Event>()
@@ -73,16 +73,18 @@ export function useWebSocket<T extends MessageType>(url: string | URL, options?:
   let onMessageFn: ((ev: MessageEvent) => void) | null = null
   function onMessage(ev: MessageEvent) {
     setStatus()
+    data.value = ev.data
+
     if (onMessageFn) {
       onMessageFn(ev)
     }
+
     try {
       const dataJson = JSON.parse(ev.data) as T
-      data.value = ev.data
       if (dataJson && dataJson.type) {
         const handler = handlerMap.get(dataJson.type)
         if (handler) {
-          handler(dataJson.data)
+          handler(dataJson)
         }
       }
     }
@@ -105,7 +107,7 @@ export function useWebSocket<T extends MessageType>(url: string | URL, options?:
       onErrorFn(ev)
     }
   }
-  function registerHandler(type: string, handler: (data: any) => void) {
+  function registerHandler(type: T['type'], handler: (data: T) => void) {
     handlerMap.set(type, handler)
   }
   function destroy() {
