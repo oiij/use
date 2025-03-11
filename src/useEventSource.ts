@@ -1,54 +1,51 @@
 import { onUnmounted, ref, shallowRef } from 'vue'
 
-type State = 'CONNECTING' | 'OPEN' | 'CLOSING' | 'CLOSED' | 'PENDING'
+type State = 'CONNECTING' | 'OPEN' | 'CLOSED'
 const ReadyState: {
   [key: number]: State
 } = {
   0: 'CONNECTING',
   1: 'OPEN',
-  2: 'CLOSING',
-  3: 'CLOSED',
+  2: 'CLOSED',
 }
-interface Options {
-  protocols?: string | string[]
+type Options = EventSourceInit & {
   manual?: boolean
 }
 type MessageRaw = string | ArrayBuffer | Blob
+
 interface MessageType {
   [key: string]: any
   type: string
 }
-export function useWebSocket<T extends MessageType, D extends MessageRaw>(url: string | URL, options?: Options) {
+export function useEventSource<T extends MessageType, D extends MessageRaw>(url: string | URL, options?: Options) {
   const _options = { manual: false, ...options } as Options
   const handlerMap = new Map<string, (data: T) => void>()
-  const socket = shallowRef<WebSocket> ()
-  const status = ref<State>('PENDING')
+  const source = shallowRef<EventSource> ()
+  const status = ref<State>('CLOSED')
   const error = ref<Event>()
   const data = ref<D>()
   const controller = new AbortController()
+
   function setStatus() {
-    if (socket.value) {
-      status.value = ReadyState[socket.value.readyState]
+    if (source.value) {
+      status.value = ReadyState[source.value.readyState]
     }
   }
-
-  function connect(protocols?: string | string[]) {
-    if (socket.value) {
+  function connect() {
+    if (source.value) {
       destroy()
     }
-    if (protocols) {
-      _options.protocols = protocols
-    }
-    socket.value = new WebSocket(url, _options.protocols)
-    socket.value.addEventListener('open', onOpen, { signal: controller.signal })
-    socket.value.addEventListener('message', onMessage, { signal: controller.signal })
-    socket.value.addEventListener('close', onClose, { signal: controller.signal })
-    socket.value.addEventListener('error', onError, { signal: controller.signal })
-  }
 
+    source.value = new EventSource(url, options)
+    source.value.addEventListener('open', onOpen, { signal: controller.signal })
+    source.value.addEventListener('message', onMessage, { signal: controller.signal })
+    source.value.addEventListener('close', onClose, { signal: controller.signal })
+    source.value.addEventListener('error', onError, { signal: controller.signal })
+  }
   function close() {
-    if (socket.value) {
-      socket.value.close()
+    if (source.value) {
+      source.value.close()
+      setStatus()
     }
   }
 
@@ -56,15 +53,8 @@ export function useWebSocket<T extends MessageType, D extends MessageRaw>(url: s
     close()
     connect()
   }
-
   if (!_options.manual) {
     connect()
-  }
-
-  function send(data: any) {
-    if (socket.value) {
-      socket.value.send(data)
-    }
   }
 
   let onOpenFn: ((ev: Event) => void) | null = null
@@ -99,8 +89,8 @@ export function useWebSocket<T extends MessageType, D extends MessageRaw>(url: s
     }
   }
 
-  let onCloseFn: ((ev: CloseEvent) => void) | null = null
-  function onClose(ev: CloseEvent) {
+  let onCloseFn: ((ev: MessageEvent<D>) => void) | null = null
+  function onClose(ev: MessageEvent<D>) {
     setStatus()
     if (onCloseFn && typeof onCloseFn === 'function') {
       onCloseFn(ev)
@@ -111,7 +101,7 @@ export function useWebSocket<T extends MessageType, D extends MessageRaw>(url: s
   function onError(ev: Event) {
     setStatus()
     error.value = ev
-    if (onErrorFn && typeof onCloseFn === 'function') {
+    if (onErrorFn && typeof onErrorFn === 'function') {
       onErrorFn(ev)
     }
   }
@@ -120,16 +110,16 @@ export function useWebSocket<T extends MessageType, D extends MessageRaw>(url: s
     handlerMap.set(type, handler)
   }
 
-  function registerEvent(type: string, handler: (ev: Event) => void) {
-    if (socket.value) {
-      socket.value.addEventListener(type, handler, { signal: controller.signal })
+  function registerEvent(type: string, handler: (ev: MessageEvent<D>) => void) {
+    if (source.value) {
+      source.value.addEventListener(type, handler, { signal: controller.signal })
     }
   }
 
   function destroy() {
     close()
     controller.abort()
-    socket.value = undefined
+    source.value = undefined
   }
 
   onUnmounted(() => {
@@ -137,13 +127,12 @@ export function useWebSocket<T extends MessageType, D extends MessageRaw>(url: s
   })
 
   return {
-    socket,
+    source,
     status,
     data,
     connect,
     reconnect,
     close,
-    send,
     destroy,
     onOpen(fn: (ev: Event) => void) {
       onOpenFn = fn
@@ -151,7 +140,7 @@ export function useWebSocket<T extends MessageType, D extends MessageRaw>(url: s
     onMessage(fn: (ev: MessageEvent<D>) => void) {
       onMessageFn = fn
     },
-    onClose(fn: (ev: CloseEvent) => void) {
+    onClose(fn: (ev: MessageEvent<D>) => void) {
       onCloseFn = fn
     },
     onError(fn: (ev: Event) => void) {
