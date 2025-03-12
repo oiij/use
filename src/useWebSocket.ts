@@ -18,14 +18,14 @@ interface MessageType {
   [key: string]: any
   type: string
 }
-export function useWebSocket<T extends MessageType, D extends MessageRaw>(url: string | URL, options?: Options) {
+export function useWebSocket<T extends MessageType, D extends MessageRaw = string>(url: string | URL, options?: Options) {
   const _options = { manual: false, ...options } as Options
   const handlerMap = new Map<string, (data: T) => void>()
   const socket = shallowRef<WebSocket> ()
   const status = ref<State>('PENDING')
   const error = ref<Event>()
   const data = ref<D>()
-  const controller = new AbortController()
+  const controller = shallowRef(new AbortController())
   function setStatus() {
     if (socket.value) {
       status.value = ReadyState[socket.value.readyState]
@@ -40,10 +40,11 @@ export function useWebSocket<T extends MessageType, D extends MessageRaw>(url: s
       _options.protocols = protocols
     }
     socket.value = new WebSocket(url, _options.protocols)
-    socket.value.addEventListener('open', onOpen, { signal: controller.signal })
-    socket.value.addEventListener('message', onMessage, { signal: controller.signal })
-    socket.value.addEventListener('close', onClose, { signal: controller.signal })
-    socket.value.addEventListener('error', onError, { signal: controller.signal })
+    controller.value = new AbortController()
+    socket.value.addEventListener('open', onOpen, { signal: controller.value.signal })
+    socket.value.addEventListener('message', onMessage, { signal: controller.value.signal })
+    socket.value.addEventListener('close', onClose, { signal: controller.value.signal })
+    socket.value.addEventListener('error', onError, { signal: controller.value.signal })
   }
 
   function close() {
@@ -122,13 +123,13 @@ export function useWebSocket<T extends MessageType, D extends MessageRaw>(url: s
 
   function registerEvent(type: string, handler: (ev: Event) => void) {
     if (socket.value) {
-      socket.value.addEventListener(type, handler, { signal: controller.signal })
+      socket.value.addEventListener(type, handler, { signal: controller.value.signal })
     }
   }
 
   function destroy() {
     close()
-    controller.abort()
+    controller.value.abort()
     socket.value = undefined
   }
 

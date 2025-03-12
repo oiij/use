@@ -24,7 +24,7 @@ export function useEventSource<T extends MessageType, D extends MessageRaw>(url:
   const status = ref<State>('CLOSED')
   const error = ref<Event>()
   const data = ref<D>()
-  const controller = new AbortController()
+  const controller = shallowRef(new AbortController())
 
   function setStatus() {
     if (source.value) {
@@ -37,10 +37,11 @@ export function useEventSource<T extends MessageType, D extends MessageRaw>(url:
     }
 
     source.value = new EventSource(url, options)
-    source.value.addEventListener('open', onOpen, { signal: controller.signal })
-    source.value.addEventListener('message', onMessage, { signal: controller.signal })
-    source.value.addEventListener('close', onClose, { signal: controller.signal })
-    source.value.addEventListener('error', onError, { signal: controller.signal })
+    controller.value = new AbortController()
+    source.value.addEventListener('open', onOpen, { signal: controller.value.signal })
+    source.value.addEventListener('message', onMessage, { signal: controller.value.signal })
+    source.value.addEventListener('close', onClose, { signal: controller.value.signal })
+    source.value.addEventListener('error', onError, { signal: controller.value.signal })
   }
   function close() {
     if (source.value) {
@@ -112,13 +113,13 @@ export function useEventSource<T extends MessageType, D extends MessageRaw>(url:
 
   function registerEvent(type: string, handler: (ev: MessageEvent<D>) => void) {
     if (source.value) {
-      source.value.addEventListener(type, handler, { signal: controller.signal })
+      source.value.addEventListener(type, handler, { signal: controller.value.signal })
     }
   }
 
   function destroy() {
     close()
-    controller.abort()
+    controller.value.abort()
     source.value = undefined
   }
 
