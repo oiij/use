@@ -1,3 +1,5 @@
+export * from './useAudio'
+export * from './useAudioContext'
 export * from './useAutoRatio'
 export * from './useBoolean'
 export * from './useContextMenu'
