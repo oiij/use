@@ -20,6 +20,11 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
+    },
+    "./class": {
+      "types": "./dist/class.d.ts",
+      "import": "./dist/class.js",
+      "require": "./dist/class.cjs"
     }
   },
   "main": "./dist/index.js",

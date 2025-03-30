@@ -12,14 +12,16 @@ const ReadyState: {
 interface Options {
   protocols?: string | string[]
   manual?: boolean
+  parseMessage?: boolean
 }
 type MessageRaw = string | ArrayBuffer | Blob
 interface MessageType {
   [key: string]: any
   type: string
 }
-export function useWebSocket<T extends MessageType, D extends MessageRaw = string>(url: string | URL, options?: Options) {
-  const _options = { manual: false, ...options } as Options
+export function useWebSocket<T extends MessageType, D extends MessageRaw = string>(url?: string | URL, options?: Options) {
+  const _url = ref<string | URL | undefined>(url)
+  const _options: Options = { manual: false, parseMessage: true, ...options }
   const handlerMap = new Map<string, (data: T) => void>()
   const socket = shallowRef<WebSocket> ()
   const status = ref<State>('PENDING')
@@ -32,14 +34,21 @@ export function useWebSocket<T extends MessageType, D extends MessageRaw = strin
     }
   }
 
-  function connect(protocols?: string | string[]) {
+  function connect(url?: string | URL, protocols?: string | string[]) {
     if (socket.value) {
       destroy()
+    }
+    if (url) {
+      _url.value = url
     }
     if (protocols) {
       _options.protocols = protocols
     }
-    socket.value = new WebSocket(url, _options.protocols)
+
+    if (!_url.value) {
+      throw new Error('WebSocket url is not defined')
+    }
+    socket.value = new WebSocket(_url.value, _options.protocols)
     controller.value = new AbortController()
     socket.value.addEventListener('open', onOpen, { signal: controller.value.signal })
     socket.value.addEventListener('message', onMessage, { signal: controller.value.signal })
@@ -48,9 +57,10 @@ export function useWebSocket<T extends MessageType, D extends MessageRaw = strin
   }
 
   function close() {
-    if (socket.value) {
-      socket.value.close()
+    if (!socket.value) {
+      throw new Error('WebSocket is not connected')
     }
+    socket.value.close()
   }
 
   function reconnect() {
@@ -63,15 +73,16 @@ export function useWebSocket<T extends MessageType, D extends MessageRaw = strin
   }
 
   function send(data: any) {
-    if (socket.value) {
-      socket.value.send(data)
+    if (!socket.value) {
+      throw new Error('WebSocket is not connected')
     }
+    socket.value.send(data)
   }
 
   let onOpenFn: ((ev: Event) => void) | null = null
   function onOpen(ev: Event) {
     setStatus()
-    if (onOpenFn && typeof onOpenFn === 'function') {
+    if (typeof onOpenFn === 'function') {
       onOpenFn(ev)
     }
   }
@@ -81,10 +92,10 @@ export function useWebSocket<T extends MessageType, D extends MessageRaw = strin
     setStatus()
     data.value = ev.data
 
-    if (onMessageFn && typeof onMessageFn === 'function') {
+    if (typeof onMessageFn === 'function') {
       onMessageFn(ev)
     }
-    if (typeof ev.data === 'string') {
+    if (_options.parseMessage && typeof ev.data === 'string') {
       try {
         const dataJson = JSON.parse(ev.data) as T
         if (dataJson && dataJson.type) {
@@ -103,7 +114,7 @@ export function useWebSocket<T extends MessageType, D extends MessageRaw = strin
   let onCloseFn: ((ev: CloseEvent) => void) | null = null
   function onClose(ev: CloseEvent) {
     setStatus()
-    if (onCloseFn && typeof onCloseFn === 'function') {
+    if (typeof onCloseFn === 'function') {
       onCloseFn(ev)
     }
   }
@@ -112,7 +123,7 @@ export function useWebSocket<T extends MessageType, D extends MessageRaw = strin
   function onError(ev: Event) {
     setStatus()
     error.value = ev
-    if (onErrorFn && typeof onCloseFn === 'function') {
+    if (typeof onErrorFn === 'function') {
       onErrorFn(ev)
     }
   }
@@ -138,6 +149,7 @@ export function useWebSocket<T extends MessageType, D extends MessageRaw = strin
   })
 
   return {
+    url: _url,
     socket,
     status,
     data,

@@ -10,6 +10,7 @@ const ReadyState: {
 }
 type Options = EventSourceInit & {
   manual?: boolean
+  parseMessage?: boolean
 }
 type MessageRaw = string | ArrayBuffer | Blob
 
@@ -17,8 +18,9 @@ interface MessageType {
   [key: string]: any
   type: string
 }
-export function useEventSource<T extends MessageType, D extends MessageRaw>(url: string | URL, options?: Options) {
-  const _options = { manual: false, ...options } as Options
+export function useEventSource<T extends MessageType, D extends MessageRaw>(url?: string | URL, options?: Options) {
+  const _url = ref<string | URL | undefined>(url)
+  const _options = { manual: false, parseMessage: true, ...options } as Options
   const handlerMap = new Map<string, (data: T) => void>()
   const source = shallowRef<EventSource> ()
   const status = ref<State>('CLOSED')
@@ -31,12 +33,20 @@ export function useEventSource<T extends MessageType, D extends MessageRaw>(url:
       status.value = ReadyState[source.value.readyState]
     }
   }
-  function connect() {
+  function connect(url?: string | URL, options?: EventSourceInit) {
     if (source.value) {
       destroy()
     }
-
-    source.value = new EventSource(url, options)
+    if (url) {
+      _url.value = url
+    }
+    if (options) {
+      Object.assign(_options, options)
+    }
+    if (!_url.value) {
+      throw new Error('EventSource url is not defined')
+    }
+    source.value = new EventSource(_url.value, options)
     controller.value = new AbortController()
     source.value.addEventListener('open', onOpen, { signal: controller.value.signal })
     source.value.addEventListener('message', onMessage, { signal: controller.value.signal })
@@ -44,10 +54,11 @@ export function useEventSource<T extends MessageType, D extends MessageRaw>(url:
     source.value.addEventListener('error', onError, { signal: controller.value.signal })
   }
   function close() {
-    if (source.value) {
-      source.value.close()
-      setStatus()
+    if (!source.value) {
+      throw new Error('EventSource is not connected')
     }
+    source.value.close()
+    setStatus()
   }
 
   function reconnect() {
@@ -74,7 +85,7 @@ export function useEventSource<T extends MessageType, D extends MessageRaw>(url:
     if (onMessageFn && typeof onMessageFn === 'function') {
       onMessageFn(ev)
     }
-    if (typeof ev.data === 'string') {
+    if (_options.parseMessage && typeof ev.data === 'string') {
       try {
         const dataJson = JSON.parse(ev.data) as T
         if (dataJson && dataJson.type) {

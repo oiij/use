@@ -15,8 +15,6 @@ export function useAudioContext(options?: Options) {
   const audioContext = new AudioContext()
   const audioBuffer = shallowRef<AudioBuffer>()
   const bufferSource = shallowRef<AudioBufferSourceNode>()
-  const mediaElementSource = shallowRef<MediaElementAudioSourceNode>()
-  const mediaStreamSource = shallowRef<MediaStreamAudioSourceNode>()
   const gainNode = audioContext.createGain()
   const analyserNode = audioContext.createAnalyser()
   analyserNode.fftSize = 2048
@@ -62,7 +60,6 @@ export function useAudioContext(options?: Options) {
   })
 
   let _onByteTimeDomainDataFn: ((array: Uint8Array) => void) | null = null
-  let _onEndedFn: (() => void) | null = null
 
   function getByteTimeDomainData() {
     analyserNode.getByteTimeDomainData(unit8Array)
@@ -71,10 +68,9 @@ export function useAudioContext(options?: Options) {
     }
     requestAnimationFrame(getByteTimeDomainData)
   }
-  if (analyser) {
-    getByteTimeDomainData()
-  }
 
+  let _onEndedFn: (() => void) | null = null
+  let _onProgressFn: ((progress: number) => void) | null = null
   function updateDuration() {
     const _currentTime = audioContext.currentTime - startFlag.value
     if (_currentTime >= durationRaw.value) {
@@ -87,6 +83,9 @@ export function useAudioContext(options?: Options) {
     }
     currentTimeRaw.value = _currentTime
     progressRaw.value = (_currentTime / durationRaw.value) * 100
+    if (typeof _onProgressFn === 'function') {
+      _onProgressFn(progressRaw.value)
+    }
     requestAnimationFrame(updateDuration)
   }
 
@@ -153,11 +152,9 @@ export function useAudioContext(options?: Options) {
     playing.value = false
     ended.value = true
   }
-  function dispose() {
+  function destroy() {
     stop()
     bufferSource.value = undefined
-    mediaElementSource.value = undefined
-    mediaStreamSource.value = undefined
     audioContext.close()
   }
 
@@ -177,6 +174,9 @@ export function useAudioContext(options?: Options) {
     progressRaw,
     progress,
     setProgress,
+    onProgress: (fn: (progress: number) => void) => {
+      _onProgressFn = fn
+    },
     volume,
     detune,
     playbackRate,
@@ -188,8 +188,11 @@ export function useAudioContext(options?: Options) {
     stop,
     onByteTimeDomainData: (fn: (array: Uint8Array) => void) => {
       _onByteTimeDomainDataFn = fn
+      if (analyser) {
+        getByteTimeDomainData()
+      }
     },
-    dispose,
+    destroy,
     onEnded: (fn: () => void) => {
       _onEndedFn = fn
     },
