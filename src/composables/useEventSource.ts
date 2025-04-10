@@ -1,5 +1,5 @@
 import { onUnmounted, ref, shallowRef } from 'vue'
-import { IEventsMapper } from './constructor/index'
+import { IEventsMapper } from '../constructor/index'
 
 type State = 'CONNECTING' | 'OPEN' | 'CLOSED'
 const ReadyState: {
