@@ -1,4 +1,5 @@
 import { onUnmounted, ref, shallowRef } from 'vue'
+import { IEventsMapper } from '../constructor/index'
 
 type State = 'CONNECTING' | 'OPEN' | 'CLOSING' | 'CLOSED' | 'PENDING'
 const ReadyState: {
@@ -22,7 +23,8 @@ interface MessageType {
 export function useWebSocket<T extends MessageType, D extends MessageRaw = string>(url?: string | URL, options?: Options) {
   const _url = ref<string | URL | undefined>(url)
   const _options: Options = { manual: false, parseMessage: true, ...options }
-  const handlerMap = new Map<string, (data: T) => void>()
+  const handlerMap = new Map<string, ((data: T) => void)[]>()
+  const { emit, on, off } = new IEventsMapper<WebSocketEventMap>()
   const socket = shallowRef<WebSocket> ()
   const status = ref<State>('PENDING')
   const error = ref<Event>()
@@ -79,30 +81,24 @@ export function useWebSocket<T extends MessageType, D extends MessageRaw = strin
     socket.value.send(data)
   }
 
-  let onOpenFn: ((ev: Event) => void) | null = null
   function onOpen(ev: Event) {
     setStatus()
-    if (typeof onOpenFn === 'function') {
-      onOpenFn(ev)
-    }
+    emit('open', ev)
   }
 
-  let onMessageFn: ((ev: MessageEvent<D>) => void) | null = null
   function onMessage(ev: MessageEvent<D>) {
     setStatus()
     data.value = ev.data
 
-    if (typeof onMessageFn === 'function') {
-      onMessageFn(ev)
-    }
+    emit('message', ev)
     if (_options.parseMessage && typeof ev.data === 'string') {
       try {
         const dataJson = JSON.parse(ev.data) as T
         if (dataJson && dataJson.type) {
           const handler = handlerMap.get(dataJson.type)
-          if (handler) {
-            handler(dataJson)
-          }
+          handler?.forEach((f) => {
+            f(dataJson)
+          })
         }
       }
       catch (error) {
@@ -111,27 +107,29 @@ export function useWebSocket<T extends MessageType, D extends MessageRaw = strin
     }
   }
 
-  let onCloseFn: ((ev: CloseEvent) => void) | null = null
   function onClose(ev: CloseEvent) {
     setStatus()
-    if (typeof onCloseFn === 'function') {
-      onCloseFn(ev)
-    }
+    emit('close', ev)
   }
 
-  let onErrorFn: ((ev: Event) => void) | null = null
   function onError(ev: Event) {
     setStatus()
     error.value = ev
-    if (typeof onErrorFn === 'function') {
-      onErrorFn(ev)
-    }
+    emit('error', ev)
   }
 
   function registerHandler(type: T['type'], handler: (data: T) => void) {
-    handlerMap.set(type, handler)
+    if (handlerMap.has(type)) {
+      handlerMap.get(type)?.push(handler)
+      return
+    }
+    handlerMap.set(type, [handler])
   }
-
+  function cancelHandler(type: T['type'], handler: (data: T) => void) {
+    if (handlerMap.has(type)) {
+      handlerMap.set(type, handlerMap.get(type)?.filter(f => f !== handler) || [])
+    }
+  }
   function registerEvent(type: string, handler: (ev: Event) => void) {
     if (socket.value) {
       socket.value.addEventListener(type, handler, { signal: controller.value.signal })
@@ -158,19 +156,10 @@ export function useWebSocket<T extends MessageType, D extends MessageRaw = strin
     close,
     send,
     destroy,
-    onOpen(fn: (ev: Event) => void) {
-      onOpenFn = fn
-    },
-    onMessage(fn: (ev: MessageEvent<D>) => void) {
-      onMessageFn = fn
-    },
-    onClose(fn: (ev: CloseEvent) => void) {
-      onCloseFn = fn
-    },
-    onError(fn: (ev: Event) => void) {
-      onErrorFn = fn
-    },
+    on,
+    off,
     registerHandler,
+    cancelHandler,
     registerEvent,
   }
 }

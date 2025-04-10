@@ -1,4 +1,5 @@
 import { onUnmounted, ref, shallowRef } from 'vue'
+import { IEventsMapper } from './constructor/index'
 
 type State = 'CONNECTING' | 'OPEN' | 'CLOSED'
 const ReadyState: {
@@ -21,7 +22,8 @@ interface MessageType {
 export function useEventSource<T extends MessageType, D extends MessageRaw>(url?: string | URL, options?: Options) {
   const _url = ref<string | URL | undefined>(url)
   const _options = { manual: false, parseMessage: true, ...options } as Options
-  const handlerMap = new Map<string, (data: T) => void>()
+  const handlerMap = new Map<string, ((data: T) => void)[]>()
+  const { emit, on, off } = new IEventsMapper<EventSourceEventMap>()
   const source = shallowRef<EventSource> ()
   const status = ref<State>('CLOSED')
   const error = ref<Event>()
@@ -50,7 +52,6 @@ export function useEventSource<T extends MessageType, D extends MessageRaw>(url?
     controller.value = new AbortController()
     source.value.addEventListener('open', onOpen, { signal: controller.value.signal })
     source.value.addEventListener('message', onMessage, { signal: controller.value.signal })
-    source.value.addEventListener('close', onClose, { signal: controller.value.signal })
     source.value.addEventListener('error', onError, { signal: controller.value.signal })
   }
   function close() {
@@ -69,30 +70,24 @@ export function useEventSource<T extends MessageType, D extends MessageRaw>(url?
     connect()
   }
 
-  let onOpenFn: ((ev: Event) => void) | null = null
   function onOpen(ev: Event) {
     setStatus()
-    if (onOpenFn && typeof onOpenFn === 'function') {
-      onOpenFn(ev)
-    }
+    emit('open', ev)
   }
 
-  let onMessageFn: ((ev: MessageEvent<D>) => void) | null = null
   function onMessage(ev: MessageEvent<D>) {
     setStatus()
     data.value = ev.data
 
-    if (onMessageFn && typeof onMessageFn === 'function') {
-      onMessageFn(ev)
-    }
+    emit('message', ev)
     if (_options.parseMessage && typeof ev.data === 'string') {
       try {
         const dataJson = JSON.parse(ev.data) as T
         if (dataJson && dataJson.type) {
           const handler = handlerMap.get(dataJson.type)
-          if (handler) {
-            handler(dataJson)
-          }
+          handler?.forEach((f) => {
+            f(dataJson)
+          })
         }
       }
       catch (error) {
@@ -101,27 +96,24 @@ export function useEventSource<T extends MessageType, D extends MessageRaw>(url?
     }
   }
 
-  let onCloseFn: ((ev: MessageEvent<D>) => void) | null = null
-  function onClose(ev: MessageEvent<D>) {
-    setStatus()
-    if (onCloseFn && typeof onCloseFn === 'function') {
-      onCloseFn(ev)
-    }
-  }
-
-  let onErrorFn: ((ev: Event) => void) | null = null
   function onError(ev: Event) {
     setStatus()
     error.value = ev
-    if (onErrorFn && typeof onErrorFn === 'function') {
-      onErrorFn(ev)
-    }
+    emit('error', ev)
   }
 
   function registerHandler(type: T['type'], handler: (data: T) => void) {
-    handlerMap.set(type, handler)
+    if (handlerMap.has(type)) {
+      handlerMap.get(type)?.push(handler)
+      return
+    }
+    handlerMap.set(type, [handler])
   }
-
+  function cancelHandler(type: T['type'], handler: (data: T) => void) {
+    if (handlerMap.has(type)) {
+      handlerMap.set(type, handlerMap.get(type)?.filter(f => f !== handler) || [])
+    }
+  }
   function registerEvent(type: string, handler: (ev: MessageEvent<D>) => void) {
     if (source.value) {
       source.value.addEventListener(type, handler, { signal: controller.value.signal })
@@ -146,19 +138,10 @@ export function useEventSource<T extends MessageType, D extends MessageRaw>(url?
     reconnect,
     close,
     destroy,
-    onOpen(fn: (ev: Event) => void) {
-      onOpenFn = fn
-    },
-    onMessage(fn: (ev: MessageEvent<D>) => void) {
-      onMessageFn = fn
-    },
-    onClose(fn: (ev: MessageEvent<D>) => void) {
-      onCloseFn = fn
-    },
-    onError(fn: (ev: Event) => void) {
-      onErrorFn = fn
-    },
+    on,
+    off,
     registerHandler,
+    cancelHandler,
     registerEvent,
   }
 }

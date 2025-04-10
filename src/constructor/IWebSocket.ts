@@ -1,3 +1,5 @@
+import { IEventsMapper } from './index'
+
 type State = 'CONNECTING' | 'OPEN' | 'CLOSING' | 'CLOSED' | 'PENDING'
 const ReadyState: {
   [key: number]: State
@@ -31,7 +33,8 @@ export class IWebSocket<T extends MessageType, D extends MessageRaw = string> {
     parseMessage: true,
   }
 
-  #handlerMap = new Map<string, (data: T) => void>()
+  #handlerMap = new Map<string, ((data: T) => void)[]>()
+  #eventsMapper = new IEventsMapper<WebSocketEventMap>()
   socket: WebSocket | null = null
   status: State = 'PENDING'
 
@@ -47,34 +50,24 @@ export class IWebSocket<T extends MessageType, D extends MessageRaw = string> {
     }
   }
 
-  #onOpenFn: ((ev: Event) => void) | null = null
   #onOpen(ev: Event) {
     this.#setStatus()
-    if (this.#onOpenFn && typeof this.#onOpenFn === 'function') {
-      this.#onOpenFn(ev)
-    }
+    this.#emit('open', ev)
   }
 
-  onOpen(fn: (ev: Event) => void) {
-    this.#onOpenFn = fn
-  }
-
-  #onMessageFn: ((ev: MessageEvent<D>) => void) | null = null
   #onMessage(ev: MessageEvent<D>) {
     this.#setStatus()
     this.data = ev.data
 
-    if (this.#onMessageFn && typeof this.#onMessageFn === 'function') {
-      this.#onMessageFn(ev)
-    }
+    this.#emit('message', ev)
     if (this.#options.parseMessage && typeof ev.data === 'string') {
       try {
         const dataJson = JSON.parse(ev.data) as T
         if (dataJson && dataJson.type) {
           const handler = this.#handlerMap.get(dataJson.type)
-          if (handler) {
-            handler(dataJson)
-          }
+          handler?.forEach((f) => {
+            f(dataJson)
+          })
         }
       }
       catch (error) {
@@ -83,37 +76,35 @@ export class IWebSocket<T extends MessageType, D extends MessageRaw = string> {
     }
   }
 
-  onMessage(fn: (ev: MessageEvent<D>) => void) {
-    this.#onMessageFn = fn
-  }
-
-  #onCloseFn: ((ev: CloseEvent) => void) | null = null
   #onClose(ev: CloseEvent) {
     this.#setStatus()
-    if (this.#onCloseFn && typeof this.#onCloseFn === 'function') {
-      this.#onCloseFn(ev)
-    }
+    this.#emit('close', ev)
   }
 
-  onClose(fn: (ev: CloseEvent) => void) {
-    this.#onCloseFn = fn
-  }
-
-  #onErrorFn: ((ev: Event) => void) | null = null
   #onError(ev: Event) {
     this.#setStatus()
     this.error = ev
-    if (this.#onErrorFn && typeof this.#onCloseFn === 'function') {
-      this.#onErrorFn(ev)
-    }
+    this.#emit('error', ev)
   }
 
-  onError(fn: (ev: Event) => void) {
-    this.#onErrorFn = fn
-  }
+  on = this.#eventsMapper.on
+
+  off = this.#eventsMapper.off
+
+  #emit = this.#eventsMapper.emit
 
   registerHandler(type: T['type'], handler: (data: T) => void) {
-    this.#handlerMap.set(type, handler)
+    if (this.#handlerMap.has(type)) {
+      this.#handlerMap.get(type)?.push(handler)
+      return
+    }
+    this.#handlerMap.set(type, [handler])
+  }
+
+  cancelHandler(type: T['type'], handler: (data: T) => void) {
+    if (this.#handlerMap.has(type)) {
+      this.#handlerMap.set(type, this.#handlerMap.get(type)?.filter(f => f !== handler) || [])
+    }
   }
 
   registerEvent(type: string, handler: (ev: Event) => void) {
