@@ -1,1 +1,1 @@
-export * from './extra/useEChart'
+export * from './extra/useECharts'
