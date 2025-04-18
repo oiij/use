@@ -1,4 +1,3 @@
-import { isFunction } from '@oiij/utils/is'
 import { onMounted, onUnmounted, ref } from 'vue'
 
 export function useScanCode() {
@@ -29,7 +28,7 @@ export function useScanCode() {
       pending.value = true
       if (tempStr.length > 0) {
         code.value = tempStr
-        if (onScanFun && isFunction(onScanFun))
+        if (typeof onScanFun === 'function')
           onScanFun(tempStr)
       }
     }

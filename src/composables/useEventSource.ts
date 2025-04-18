@@ -1,5 +1,6 @@
+import type { EventType } from 'mitt'
+import mitt from 'mitt'
 import { onUnmounted, ref, shallowRef } from 'vue'
-import { IEventsMapper } from '../constructor/index'
 
 type State = 'CONNECTING' | 'OPEN' | 'CLOSED'
 const ReadyState: {
@@ -19,11 +20,12 @@ interface MessageType {
   [key: string]: any
   type: string
 }
+type IEventType = EventSourceEventMap & Record<EventType, unknown>
 export function useEventSource<T extends MessageType, D extends MessageRaw>(url?: string | URL, options?: Options) {
   const _url = ref<string | URL | undefined>(url)
   const _options = { manual: false, parseMessage: true, ...options } as Options
   const handlerMap = new Map<string, ((data: T) => void)[]>()
-  const { emit, on, off } = new IEventsMapper<EventSourceEventMap>()
+  const { emit, on, off } = mitt<IEventType>()
   const source = shallowRef<EventSource> ()
   const status = ref<State>('CLOSED')
   const error = ref<Event>()

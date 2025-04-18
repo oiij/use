@@ -1,5 +1,6 @@
+import type { EventType } from 'mitt'
+import mitt from 'mitt'
 import { onUnmounted, ref, shallowRef } from 'vue'
-import { IEventsMapper } from '../constructor/index'
 
 type State = 'CONNECTING' | 'OPEN' | 'CLOSING' | 'CLOSED' | 'PENDING'
 const ReadyState: {
@@ -20,11 +21,13 @@ interface MessageType {
   [key: string]: any
   type: string
 }
+type IEventType = WebSocketEventMap & Record<EventType, unknown>
+
 export function useWebSocket<T extends MessageType, D extends MessageRaw = string>(url?: string | URL, options?: Options) {
   const _url = ref<string | URL | undefined>(url)
   const _options: Options = { manual: false, parseMessage: true, ...options }
   const handlerMap = new Map<string, ((data: T) => void)[]>()
-  const { emit, on, off } = new IEventsMapper<WebSocketEventMap>()
+  const { emit, on, off } = mitt<IEventType>()
   const socket = shallowRef<WebSocket> ()
   const status = ref<State>('PENDING')
   const error = ref<Event>()

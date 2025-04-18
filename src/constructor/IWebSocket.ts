@@ -1,4 +1,5 @@
-import { IEventsMapper } from './index'
+import type { EventType } from 'mitt'
+import mitt from 'mitt'
 
 type State = 'CONNECTING' | 'OPEN' | 'CLOSING' | 'CLOSED' | 'PENDING'
 const ReadyState: {
@@ -19,6 +20,8 @@ interface MessageType {
   [key: string]: any
   type: string
 }
+type IEventType = WebSocketEventMap & Record<EventType, unknown>
+
 export class IWebSocket<T extends MessageType, D extends MessageRaw = string> {
   constructor(url?: string, options?: Options) {
     this.url = url
@@ -34,7 +37,7 @@ export class IWebSocket<T extends MessageType, D extends MessageRaw = string> {
   }
 
   #handlerMap = new Map<string, ((data: T) => void)[]>()
-  #eventsMapper = new IEventsMapper<WebSocketEventMap>()
+  #emitter = mitt<IEventType>()
   socket: WebSocket | null = null
   status: State = 'PENDING'
 
@@ -87,11 +90,11 @@ export class IWebSocket<T extends MessageType, D extends MessageRaw = string> {
     this.#emit('error', ev)
   }
 
-  on = this.#eventsMapper.on
+  on = this.#emitter.on
 
-  off = this.#eventsMapper.off
+  off = this.#emitter.off
 
-  #emit = this.#eventsMapper.emit
+  #emit = this.#emitter.emit
 
   registerHandler(type: T['type'], handler: (data: T) => void) {
     if (this.#handlerMap.has(type)) {

@@ -1,4 +1,3 @@
-import { add, multiply, random, subtract } from 'lodash-es'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 
 export interface ImageVerifyOptions {
@@ -86,7 +85,7 @@ export function useImageVerify(options?: ImageVerifyOptions) {
       const tempArith = arith === 0 ? Math.floor(Math.random() * 3) : arith
       switch (tempArith) {
         case 1:
-          imgCode = add(num1, num2).toString()
+          imgCode = (num1 + num2).toString()
           codeShow = `${num1} + ${num2} = ?`
           break
         case 2:
@@ -95,11 +94,11 @@ export function useImageVerify(options?: ImageVerifyOptions) {
             num1 = num2
             num2 = tempNum
           }
-          imgCode = subtract(num1, num2).toString()
+          imgCode = (num1 - num2).toString()
           codeShow = `${num1} - ${num2} = ?`
           break
         default:
-          imgCode = multiply(num1, num2).toString()
+          imgCode = (num1 * num2).toString()
           codeShow = `${num1} × ${num2} = ?`
           break
       }
@@ -107,11 +106,11 @@ export function useImageVerify(options?: ImageVerifyOptions) {
         // 随机生成字体颜色
         ctx.fillStyle = randomColor(50, 160)
         // 随机生成字体大小(0.5 - 0.75)高的范围
-        ctx.font = `${random((height * 2) / 4, (height * 3) / 4)}px SimHei`
+        ctx.font = `${randomNum((height * 2) / 4, (height * 3) / 4)}px SimHei`
         // 字体对齐位置
         ctx.textBaseline = 'top'
         const x = i * ((width - 10) / codeShow.length)
-        const y = random(5, height / 4)
+        const y = randomNum(5, height / 4)
         ctx.fillText(codeShow[i], x + 5, y)
       }
     }

@@ -1,4 +1,5 @@
-import { IEventsMapper } from './index'
+import type { EventType } from 'mitt'
+import mitt from 'mitt'
 
 type State = 'CONNECTING' | 'OPEN' | 'CLOSED'
 const ReadyState: {
@@ -18,6 +19,7 @@ interface MessageType {
   [key: string]: any
   type: string
 }
+type IEventType = EventSourceEventMap & Record<EventType, unknown>
 export class IEventSource<T extends MessageType, D extends MessageRaw = string> {
   constructor(url?: string, options?: Options) {
     this.url = url
@@ -33,7 +35,7 @@ export class IEventSource<T extends MessageType, D extends MessageRaw = string> 
   }
 
   #handlerMap = new Map<string, ((data: T) => void)[]>()
-  #eventsMapper = new IEventsMapper<EventSourceEventMap>()
+  #emitter = mitt<IEventType>()
 
   source: EventSource | null = null
   status: State = 'CLOSED'
@@ -82,11 +84,11 @@ export class IEventSource<T extends MessageType, D extends MessageRaw = string> 
     this.#emit('error', ev)
   }
 
-  on = this.#eventsMapper.on
+  on = this.#emitter.on
 
-  off = this.#eventsMapper.off
+  off = this.#emitter.off
 
-  #emit = this.#eventsMapper.emit
+  #emit = this.#emitter.emit
 
   registerHandler(type: T['type'], handler: (data: T) => void) {
     if (this.#handlerMap.has(type)) {
