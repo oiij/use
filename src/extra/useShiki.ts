@@ -3,7 +3,19 @@ import type { ComputedRef, Ref } from 'vue'
 import { codeToHtml } from 'shiki'
 import { isReactive, isRef, onMounted, ref, toValue, watch, watchEffect } from 'vue'
 
-export function useShiki(defaultValue?: string | Ref<string>, darkMode?: ComputedRef<boolean>, options?: CodeToHastOptions<BundledLanguage, BundledTheme>) {
+export type {
+  BundledLanguage,
+  BundledTheme,
+  CodeToHastOptions,
+}
+export interface UseShikiReturns {
+  value: Ref<string | undefined>
+  html: Ref<string>
+  domRef: Ref<HTMLElement | undefined>
+  format: (value: string, options?: CodeToHastOptions<BundledLanguage, BundledTheme>) => { promise: () => Promise<string>, cancel: () => void }
+
+}
+export function useShiki(defaultValue?: string | Ref<string>, darkMode?: ComputedRef<boolean>, options?: CodeToHastOptions<BundledLanguage, BundledTheme>): UseShikiReturns {
   const _options = {
     lang: 'javascript',
     theme: `vitesse-${darkMode?.value ? 'dark' : 'light'}`,

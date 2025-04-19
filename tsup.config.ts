@@ -12,4 +12,7 @@ export default defineConfig({
   external: [...Object.keys(peerDependencies)],
   dts: true,
   minify: false,
+  async onSuccess() {
+    console.log('success')
+  },
 })

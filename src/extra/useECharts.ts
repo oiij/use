@@ -12,7 +12,7 @@ import type {
   TooltipComponentOption,
 } from 'echarts/components'
 import type { ComposeOption, ECharts, EChartsInitOpts } from 'echarts/core'
-import type { ComputedRef, Ref } from 'vue'
+import type { ComputedRef, Ref, ShallowRef } from 'vue'
 import { useElementSize } from '@vueuse/core'
 import { BarChart, LineChart, PieChart } from 'echarts/charts'
 import {
@@ -29,7 +29,7 @@ import { LabelLayout, UniversalTransition } from 'echarts/features'
 import { CanvasRenderer } from 'echarts/renderers'
 import { isReactive, isRef, onUnmounted, ref, shallowRef, toValue, watch, watchEffect } from 'vue'
 
-type EChartsOption = ComposeOption<
+export type EChartsOption = ComposeOption<
   | BarSeriesOption
   | LineSeriesOption
   | PieSeriesOption
@@ -55,10 +55,13 @@ use([
   UniversalTransition,
   CanvasRenderer,
 ])
-export {
-  EChartsOption,
+export interface EChartsReturns {
+  domRef: Ref<HTMLElement | undefined>
+  eChart: ShallowRef<ECharts | undefined>
+  options: Ref<EChartsOption | undefined>
+  onRender: (cb: (eChart: ECharts) => void) => void
 }
-export function useECharts(options?: Ref<EChartsOption> | EChartsOption, darkMode?: ComputedRef<boolean>, initOptions?: EChartsInitOpts) {
+export function useECharts(options?: Ref<EChartsOption> | EChartsOption, darkMode?: ComputedRef<boolean>, initOptions?: EChartsInitOpts): EChartsReturns {
   const domRef = ref<HTMLElement>()
   const eChart = shallowRef<ECharts>()
   const optionsRef = ref<EChartsOption | undefined>(isRef(options) ? toValue(options) : isReactive(options) ? toValue(options) : options)
@@ -134,7 +137,7 @@ export function useECharts(options?: Ref<EChartsOption> | EChartsOption, darkMod
   return {
     domRef,
     eChart,
-    options: optionsRef,
+    options: optionsRef as Ref<EChartsOption | undefined>,
     onRender: (cb: (eChart: ECharts) => void) => {
       onRender = cb
     },

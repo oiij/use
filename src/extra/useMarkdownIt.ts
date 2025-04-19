@@ -3,7 +3,15 @@ import type { Ref } from 'vue'
 import markdownIt from 'markdown-it'
 import { isReactive, isRef, onMounted, ref, toValue, watch, watchEffect } from 'vue'
 
-export function useMarkdownIt(defaultValue?: Ref<string> | string, options?: Options) {
+export type { Options }
+export interface MarkdownItReturns {
+  value: Ref<string | undefined>
+  html: Ref<string>
+  domRef: Ref<HTMLElement | undefined>
+  md: markdownIt
+  render: (value: string) => void
+}
+export function useMarkdownIt(defaultValue?: Ref<string> | string, options?: Options): MarkdownItReturns {
   const value = ref(isRef(defaultValue) ? toValue(defaultValue.value) : isReactive(defaultValue) ? toValue(defaultValue) : defaultValue)
   if (isRef(defaultValue)) {
     watchEffect(() => {

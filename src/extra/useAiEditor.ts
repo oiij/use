@@ -1,11 +1,19 @@
 import type { AiEditorOptions } from 'aieditor'
-import type { ComputedRef, Ref } from 'vue'
+import type { ComputedRef, Ref, ShallowRef } from 'vue'
 import { AiEditor } from 'aieditor'
 import { isReactive, isRef, onMounted, onUnmounted, ref, shallowRef, toValue, watch, watchEffect } from 'vue'
 import 'aieditor/dist/style.css'
 
-export type { AiEditorOptions } from 'aieditor'
-export function useAiEditor(defaultValue?: Ref<string> | string, darkMode?: ComputedRef<boolean>, language?: ComputedRef<'zh' | 'en'>, options?: Omit<AiEditorOptions, 'element'>) {
+export type {
+  AiEditorOptions,
+}
+export interface AiEditorReturns {
+  value: Ref<string | undefined>
+  domRef: Ref<HTMLElement | undefined>
+  aiEditor: ShallowRef<AiEditor | null | undefined>
+  readonly: Ref<boolean>
+}
+export function useAiEditor(defaultValue?: Ref<string> | string, darkMode?: ComputedRef<boolean>, language?: ComputedRef<'zh' | 'en'>, options?: Omit<AiEditorOptions, 'element'>): AiEditorReturns {
   const value = ref(isRef(defaultValue) ? toValue(defaultValue.value) : isReactive(defaultValue) ? toValue(defaultValue) : defaultValue)
   if (isRef(defaultValue)) {
     watchEffect(() => {

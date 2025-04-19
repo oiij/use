@@ -1,14 +1,20 @@
 import type { IInitOption, ISpec } from '@visactor/vchart'
-import type { ComputedRef, Ref } from 'vue'
+import type { ComputedRef, Ref, ShallowRef } from 'vue'
 import { VChart } from '@visactor/vchart'
 import { useElementSize } from '@vueuse/core'
 import { isReactive, isRef, onUnmounted, ref, shallowRef, toValue, watch, watchEffect } from 'vue'
 
-export {
+export type {
   ISpec,
 }
 VChart.useRegisters([])
-export function useVCharts(options: Ref<ISpec> | ISpec, darkMode?: ComputedRef<boolean>, initOptions?: IInitOption) {
+export interface VChartsReturns {
+  domRef: Ref<HTMLElement | undefined>
+  vChart: ShallowRef<VChart | undefined>
+  options: Ref<ISpec | undefined>
+  onRender: (cb: (eChart: VChart) => void) => void
+}
+export function useVCharts(options: Ref<ISpec> | ISpec, darkMode?: ComputedRef<boolean>, initOptions?: IInitOption): VChartsReturns {
   const domRef = ref<HTMLElement>()
   const vChart = shallowRef<VChart>()
   const optionsRef = ref<ISpec | undefined>(isRef(options) ? toValue(options) : isReactive(options) ? toValue(options) : options)
@@ -84,6 +90,7 @@ export function useVCharts(options: Ref<ISpec> | ISpec, darkMode?: ComputedRef<b
   return {
     domRef,
     vChart,
+    options: optionsRef as Ref<ISpec | undefined>,
     onRender: (cb: (eChart: VChart) => void) => {
       onRender = cb
     },

@@ -1,4 +1,4 @@
-import type { ComputedRef } from 'vue'
+import type { ComputedRef, Ref, ShallowRef } from 'vue'
 import data from '@emoji-mart/data'
 import { Picker } from 'emoji-mart'
 import { onMounted, onUnmounted, ref, shallowRef, watch } from 'vue'
@@ -45,7 +45,12 @@ export interface EmojiPickerOptions {
   theme?: 'auto' | 'light' | 'dark'
   getSpritesheetURL?: string
 }
-export function useEmojiPicker(darkMode?: ComputedRef<boolean>, language?: ComputedRef<'zh' | 'en'>, options?: EmojiPickerOptions) {
+export interface EmojiPickerReturns {
+  domRef: Ref<HTMLElement | undefined>
+  emojiPicker: ShallowRef<Picker | undefined>
+  onRender: (fn: (editor: Picker) => void) => void
+}
+export function useEmojiPicker(darkMode?: ComputedRef<boolean>, language?: ComputedRef<'zh' | 'en'>, options?: EmojiPickerOptions): EmojiPickerReturns {
   const _options: EmojiPickerOptions = {
     data,
     emojiButtonRadius: '6px',
