@@ -3,16 +3,17 @@ import { resolve } from 'node:path'
 import { defineConfig } from 'tsup'
 import { peerDependencies } from './package.json'
 
-const paths = readdirSync(resolve(__dirname, 'src')).filter(f => f.endsWith('.ts')).map(m => `./src/${m}`)
+const paths = readdirSync(resolve(__dirname, 'src/addons')).filter(f => f.endsWith('.ts')).map(m => `src/addons/${m}`)
 
 export default defineConfig({
-  entry: paths,
+  entry: [
+    'src/index.ts',
+    'src/class.ts',
+    ...paths,
+  ],
   clean: true,
   format: ['cjs', 'esm'],
   external: [...Object.keys(peerDependencies)],
   dts: true,
   minify: false,
-  async onSuccess() {
-    console.log('success')
-  },
 })
