@@ -1,0 +1,93 @@
+{
+  "name": "ts-starter",
+  "type": "module",
+  "version": "0.0.1",
+  "description": "A starter template for TypeScript projects",
+  "author": "oiij",
+  "license": "MIT",
+  "homepage": "https://github.com/oiij/ts-starter",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:oiij/ts-starter.git"
+  },
+  "bugs": "https://github.com/oiij/ts-starter/issues",
+  "keywords": [
+    "ts-starter"
+  ],
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "LICENSE",
+    "README.md",
+    "dist",
+    "package.json"
+  ],
+  "scripts": {
+    "dev": "tsdown --watch",
+    "dev:vite": "vite build --watch",
+    "build": "tsc --noEmit && tsdown",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "prepublishOnly": "pnpm build",
+    "release": "bumpp && npm publish",
+    "awe": "pnpx are-we-esm",
+    "nmi": "pnpx node-modules-inspector",
+    "start": "esno src/index.ts",
+    "test": "vitest",
+    "update:deps": "taze -w && pnpm i",
+    "type:check": "tsc --noEmit",
+    "cz": "czg",
+    "commit": "git pull && git add -A && pnpm cz && git push",
+    "link": "pnpm link --global",
+    "preinstall": "npx only-allow pnpm",
+    "postinstall": "npx simple-git-hooks"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^4.13.0",
+    "@oiij/tsconfig": "^0.0.1",
+    "@types/node": "^22.15.17",
+    "@vitejs/plugin-vue": "^5.2.4",
+    "@vitest/ui": "^3.1.3",
+    "bumpp": "^10.1.0",
+    "commitlint": "^19.8.1",
+    "cz-git": "^1.11.1",
+    "czg": "^1.11.1",
+    "eslint": "^9.26.0",
+    "eslint-plugin-format": "^1.0.1",
+    "esno": "^4.8.0",
+    "lint-staged": "^15.5.2",
+    "simple-git-hooks": "^2.13.0",
+    "taze": "^19.1.0",
+    "tsdown": "^0.11.2",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5",
+    "vite-plugin-dts": "^4.5.3",
+    "vitepress": "^1.6.3",
+    "vitepress-demo-plugin": "^1.4.1",
+    "vitest": "^3.1.3",
+    "vue-tsc": "^2.2.10"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "pnpm lint-staged && pnpm type:check"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "pnpm lint:fix"
+    ]
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
