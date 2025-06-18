@@ -3,24 +3,24 @@
 layout: home
 
 hero:
-  name: "TS Starter"
-  tagline: TS Starter is a starter project for TypeScript projects.
+  name: "OIIJ USE"
+  tagline: Some Composables And Utils Functions for VUE.
   image:
     src: /logo.svg
-    alt: TS Starter
+    alt: OIIJ/USE
   actions:
     - theme: brand
-      text: Get Started
-      link: /started
+      text: Examples
+      link: /examples/core/composables/use-auto-ratio
     - theme: alt
       text: View on GitHub
-      link: https://github.com/oiij/ts-starter
+      link: https://github.com/oiij/use
 
 features:
-  - title: Feature A
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
-  - title: Feature B
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
-  - title: Feature C
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - title: Core
+    details: Som Composable Functions for Vue 3
+  - title: NaiveUI
+    details: Som Composable Functions And Components for Vue 3
+  - title: Addons
+    details: Som Composable Functions for Vue 3
 ---

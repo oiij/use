@@ -1,0 +1,59 @@
+{
+  "name": "@oiij/js-pdf",
+  "type": "module",
+  "version": "0.0.2",
+  "description": "A simple PDF library for JavaScript",
+  "author": "oiij",
+  "license": "MIT",
+  "homepage": "https://github.com/oiij/use",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:oiij/use.git"
+  },
+  "bugs": "https://github.com/oiij/use/issues",
+  "keywords": [
+    "@oiij/use",
+    "js-pdf"
+  ],
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "LICENSE",
+    "README.md",
+    "dist",
+    "package.json"
+  ],
+  "scripts": {
+    "dev": "tsdown --watch",
+    "build": "tsc --noEmit && tsdown",
+    "bumpp": "bumpp --no-push",
+    "prepublishOnly": "pnpm build"
+  },
+  "peerDependencies": {
+    "file-saver": "^2.0.5",
+    "jspdf": "^3.0.1",
+    "jszip": "^3.10.1",
+    "nanoid": "^5.1.5",
+    "pdfjs-dist": "^5.1.91"
+  },
+  "devDependencies": {
+    "@types/file-saver": "^2.0.7",
+    "file-saver": "^2.0.5",
+    "jspdf": "^3.0.1",
+    "jszip": "^3.10.1",
+    "nanoid": "^5.1.5",
+    "pdfjs-dist": "^5.3.31"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

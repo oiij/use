@@ -1,0 +1,58 @@
+{
+  "name": "@oiij/tiptap",
+  "type": "module",
+  "version": "0.0.2",
+  "description": "A Vue Composable for Tiptap",
+  "author": "oiij",
+  "license": "MIT",
+  "homepage": "https://github.com/oiij/use",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:oiij/use.git"
+  },
+  "bugs": "https://github.com/oiij/use/issues",
+  "keywords": [
+    "@oiij/use",
+    "tiptap"
+  ],
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "LICENSE",
+    "README.md",
+    "dist",
+    "package.json"
+  ],
+  "scripts": {
+    "dev": "tsdown --watch",
+    "build": "tsc --noEmit && tsdown",
+    "bumpp": "bumpp --no-push",
+    "prepublishOnly": "pnpm build"
+  },
+  "peerDependencies": {
+    "@tiptap/core": "^2.11.7",
+    "@tiptap/pm": "^2.11.7",
+    "@tiptap/starter-kit": "^2.11.7",
+    "@vueuse/core": "^13.1.0",
+    "vue": "^3.5.13"
+  },
+  "devDependencies": {
+    "@tiptap/core": "^2.14.0",
+    "@tiptap/pm": "^2.14.0",
+    "@tiptap/starter-kit": "^2.14.0",
+    "@vueuse/core": "^13.3.0",
+    "vue": "^3.5.16"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

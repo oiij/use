@@ -3,12 +3,19 @@
   "extends": "@oiij/tsconfig/tsconfig.json",
   "compilerOptions": {
     "baseUrl": ".",
+    "moduleResolution": "bundler",
     "paths": {
       "~/*": [
-        "src/*"
+        "packages/*"
       ]
-    }
+    },
+    "types": [
+      "vite/client"
+    ]
   },
-  "include": ["src", "docs"],
+  "include": [
+    "packages/**/*.ts",
+    "docs"
+  ],
   "exclude": ["node_modules", "dist", "test"]
 }

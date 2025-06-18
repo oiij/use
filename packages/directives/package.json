@@ -1,0 +1,52 @@
+{
+  "name": "@oiij/directives",
+  "type": "module",
+  "version": "0.0.5",
+  "description": "",
+  "author": "oiij",
+  "license": "MIT",
+  "homepage": "https://github.com/oiij/use",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:oiij/use.git"
+  },
+  "bugs": "https://github.com/oiij/use/issues",
+  "keywords": [
+    "@oiij/use",
+    "directives"
+  ],
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "LICENSE",
+    "README.md",
+    "dist",
+    "package.json"
+  ],
+  "scripts": {
+    "dev": "tsdown --watch",
+    "build": "tsc --noEmit && tsdown",
+    "bumpp": "bumpp --no-push",
+    "prepublishOnly": "pnpm build"
+  },
+  "peerDependencies": {
+    "@oiij/utils": "workspace:*",
+    "vue": "^3.5.13"
+  },
+  "devDependencies": {
+    "@oiij/utils": "workspace:*",
+    "vue": "^3.5.16"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

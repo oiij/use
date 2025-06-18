@@ -4,6 +4,7 @@ import DefaultTheme from 'vitepress/theme'
 import { h } from 'vue'
 import Layout from './Layout.vue'
 import './style.css'
+import './rainbow.css'
 
 export default {
   extends: DefaultTheme,
