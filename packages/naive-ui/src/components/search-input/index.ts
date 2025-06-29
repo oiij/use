@@ -8,4 +8,5 @@ export interface SearchInputProps {
   searchButton?: boolean
   inputProps?: InputProps
   buttonProps?: ButtonProps
+  loading?: boolean
 }

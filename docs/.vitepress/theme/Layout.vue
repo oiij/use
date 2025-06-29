@@ -32,4 +32,8 @@ provide('toggle-appearance', async ({ clientX: x, clientY: y }: MouseEvent) => {
 .VPSwitchAppearance .check {
   transform: none !important;
 }
+
+.vitepress-demo-plugin__container>.vitepress-demo-plugin-preview {
+  box-sizing: border-box;
+}
 </style>

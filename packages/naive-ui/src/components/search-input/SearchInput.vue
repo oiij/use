@@ -2,15 +2,17 @@
 import type { SearchInputProps } from './index'
 import { useDebounceFn, useTimeoutFn } from '@vueuse/core'
 import { NButton, NInput, NInputGroup } from 'naive-ui'
-import { ref, watch } from 'vue'
+import { ref, useTemplateRef, watch, watchEffect } from 'vue'
+import EosIconsThreeDotsLoading from '../icons/EosIconsThreeDotsLoading.vue'
 import RiSearch2Line from '../icons/RiSearch2Line.vue'
 
-const { value, type, autoTrigger = true, searchButton = true, inputProps, buttonProps } = defineProps<SearchInputProps>()
+const { value = '', type = 'default', autoTrigger = true, searchButton = true, inputProps, buttonProps, loading } = defineProps<SearchInputProps>()
 const emit = defineEmits<{
   (e: 'update:value', v: typeof value): void
 }>()
+const inputRef = useTemplateRef('inputRef')
 const _value = ref(value)
-const { isPending, start } = useTimeoutFn(() => {}, 500)
+const { isPending, start } = useTimeoutFn(() => {}, typeof autoTrigger === 'number' ? autoTrigger : 500)
 watch(() => value, (v) => {
   _value.value = v
 })
@@ -29,21 +31,33 @@ function handleKeyDown(e: KeyboardEvent) {
   if (e.key === 'Enter')
     handleClick()
 }
+watchEffect(() => {
+  if (!loading && _value.value) {
+    inputRef.value?.focus()
+  }
+})
 </script>
 
 <template>
   <NInputGroup>
-    <NInput v-model:value="_value" :loading="isPending" placeholder="搜索" v-bind="inputProps" @keydown="handleKeyDown">
+    <NInput ref="inputRef" v-model:value="_value" :disabled="loading" clearable placeholder="搜索" v-bind="inputProps" @keydown="handleKeyDown">
       <template #prefix>
-        <slot name="icon">
-          <RiSearch2Line />
+        <slot name="prefix">
+          <slot name="prefix-icon">
+            <RiSearch2Line />
+          </slot>
         </slot>
+      </template>
+      <template #suffix>
+        <EosIconsThreeDotsLoading v-if="isPending" />
       </template>
     </NInput>
     <slot name="button">
-      <NButton v-if="searchButton" :type="type" v-bind="buttonProps" @click="handleClick">
+      <NButton v-if="searchButton" :type="type" :loading="loading" v-bind="buttonProps" @click="handleClick">
         <template #icon>
-          <RiSearch2Line />
+          <slot name="button-icon">
+            <RiSearch2Line />
+          </slot>
         </template>
       </NButton>
     </slot>
