@@ -87,7 +87,7 @@
     "vitepress": "^1.6.3",
     "vitepress-demo-plugin": "^1.4.5",
     "vitest": "^3.2.4",
-    "vue-tsc": "^2.2.10"
+    "vue-tsc": "^3.0.1"
   },
   "simple-git-hooks": {
     "pre-commit": "pnpm lint-staged && pnpm type:check"
