@@ -1,10 +1,10 @@
 <!-- eslint-disable no-console -->
 <script setup lang='ts'>
+import type { ContextMenuSelectType, DataTablePlusFilterOptions } from '@oiij/naive-ui/components'
 import type { DataTableColumns } from 'naive-ui'
-import type { ContextMenuSelectType, DataTablePlusFilterOptions } from '~/naive-ui/src/components'
+import { NDataTablePlus } from '@oiij/naive-ui/components'
 import { NButton, NFlex } from 'naive-ui'
 import { h, useTemplateRef } from 'vue'
-import { NDataTablePlus } from '~/naive-ui/src/components'
 
 interface Params {
   id?: number

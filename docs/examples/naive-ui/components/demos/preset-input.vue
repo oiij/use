@@ -1,7 +1,7 @@
 <script setup lang='ts'>
+import { NPresetInput } from '@oiij/naive-ui/components'
 import { NFlex } from 'naive-ui'
 import { ref } from 'vue'
-import { NPresetInput } from '~/naive-ui/src/components'
 
 const value = ref('')
 </script>

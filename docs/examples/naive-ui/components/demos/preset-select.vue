@@ -1,9 +1,9 @@
 <script setup lang='ts'>
+import type { OptionFormat } from '@oiij/naive-ui/components'
 import type { SelectOption } from 'naive-ui'
-import type { OptionFormat } from '~/naive-ui/src/components'
+import { NPresetSelect } from '@oiij/naive-ui/components'
 import { NFlex } from 'naive-ui'
 import { ref } from 'vue'
-import { NPresetSelect } from '~/naive-ui/src/components'
 
 interface Params {
   id?: number

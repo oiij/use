@@ -15,7 +15,7 @@
 | manual         | boolean                    | -       | 是否手动触发请求               |
 | multiple       | boolean                    | -       | 是否多选                       |
 | disabled       | boolean                    | -       | 是否禁用                       |
-| optionFormat   | OptionFormat<R>            | -       | 选项格式化函数                 |
+| optionFormat   | OptionFormat               | -       | 选项格式化函数                 |
 | fields         | Object                     | -       | 内置参数的字段                 |
 | pagination     | PaginationProps or Boolean | -       | 数据表格的分页配置             |
 | selectProps    | SelectProps                | -       | 选择器的配置                   |

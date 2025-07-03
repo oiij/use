@@ -1,6 +1,8 @@
 import Prism from 'prismjs'
 
-Prism.highlightAll()
+if (typeof document !== 'undefined') {
+  Prism.highlightAll()
+}
 export function highlight(code: string, lang: string) {
   try {
     const grammar = Prism.languages[lang]

@@ -1,6 +1,6 @@
 <script setup lang='ts'>
+import { NRemoteRequest } from '@oiij/naive-ui/components'
 import { NButton } from 'naive-ui'
-import { NRemoteRequest } from '~/naive-ui/src/components'
 
 interface Params {
   id?: number

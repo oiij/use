@@ -2,7 +2,7 @@
 
 ## Demo
 
-<demo vue="./demos/type-writer.base.vue" title="TypeWriterBase" />
+<!-- <demo vue="./demos/type-writer.base.vue" title="TypeWriterBase" /> -->
 
 ## Props
 

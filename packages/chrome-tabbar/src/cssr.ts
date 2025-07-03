@@ -16,6 +16,9 @@ export function tabsCssr() {
       backgroundColor: 'var(--background-color)',
       color: 'var(--background-color-dark)',
     }, [
+      c('div', {
+        boxSizing: 'border-box',
+      }),
       c('.group-move, .group-enter-active, .group-leave-active', {
         transition,
       }),
@@ -129,7 +132,7 @@ export function tabsCssr() {
 
       }),
       cE('icon', {
-
+        lineHeight: 1,
       }, [
         c('svg', {
           width: '1.2em',

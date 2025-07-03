@@ -21,7 +21,7 @@ export function useViewTransition(options?: ViewTransitionOptions) {
   const isAppearanceTransition = typeof document !== 'undefined' && !!document.startViewTransition && !window.matchMedia('(prefers-reduced-motion: reduce)').matches
   const { duration = 300, easing = 'linear', effect = true, reverseSelector = '.dark' } = options ?? {}
 
-  if (!document.querySelector('style[vts-id="view-transition-style"]')) {
+  if (typeof document !== 'undefined' && !document.querySelector('style[vts-id="view-transition-style"]')) {
     const style = document.createElement('style')
     style.setAttribute('vts-id', 'view-transition-style')
     style.appendChild(document.createTextNode(styleText.replaceAll('._', reverseSelector)))

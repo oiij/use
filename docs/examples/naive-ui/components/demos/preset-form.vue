@@ -1,9 +1,9 @@
 <!-- eslint-disable no-console -->
 <script setup lang='ts'>
-import type { NaiveFormRules, PresetFormOptions } from '~/naive-ui/src/components'
+import type { NaiveFormRules, PresetFormOptions } from '@oiij/naive-ui/components'
+import { NPresetForm } from '@oiij/naive-ui/components'
 import { NButton, NFlex } from 'naive-ui'
 import { h, ref } from 'vue'
-import { NPresetForm } from '~/naive-ui/src/components'
 
 interface Values {
   id?: string
