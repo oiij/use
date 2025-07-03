@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ConfigProvidersProps } from './index'
+import type { ConfigProvidersProps } from '.'
 import { NConfigProvider, NDialogProvider, NGlobalStyle, NLoadingBarProvider, NMessageProvider, NModalProvider, NNotificationProvider, useDialog, useLoadingBar, useMessage, useModal, useNotification } from 'naive-ui'
 import { defineComponent, onMounted } from 'vue'
 

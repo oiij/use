@@ -1,10 +1,10 @@
 <!-- eslint-disable no-console -->
 <script setup lang='ts'>
-import type { ContextMenuSelectType, DataTableFilterOptions } from '@oiij/naive-ui/components'
 import type { DataTableColumns } from 'naive-ui'
-import { NDataTablePlus } from '@oiij/naive-ui/components'
+import type { ContextMenuSelectType, DataTablePlusFilterOptions } from '~/naive-ui/src/components'
 import { NButton, NFlex } from 'naive-ui'
-import { useTemplateRef } from 'vue'
+import { h, useTemplateRef } from 'vue'
+import { NDataTablePlus } from '~/naive-ui/src/components'
 
 interface Params {
   id?: number
@@ -45,11 +45,25 @@ function api(params?: Params) {
     }, 1000)
   })
 }
-const filterOptions: DataTableFilterOptions<Params, Res> = [
+const filterOptions: DataTablePlusFilterOptions<Params, Res, Row> = [
   {
     key: 'search',
-    title: '搜索',
+    label: '搜索',
     type: 'search',
+  },
+  {
+    key: 'id',
+    type: 'input',
+    label: true,
+  },
+  {
+    render: (refs, actions) => {
+      return h(NButton, {
+        onClick: () => {
+          console.log(refs.data, actions)
+        },
+      }, { default: () => 'Button' })
+    },
   },
 ]
 function onLoaded(data: any) {

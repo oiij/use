@@ -1,5 +1,5 @@
 <script setup lang='ts'>
-import type { TabsItemProps } from './index'
+import type { TabsItemProps } from '.'
 import { computed, h } from 'vue'
 import { tabsItemCssName } from './cssr'
 import LineMdLoadingTwotoneLoop from './icons/LineMdLoadingTwotoneLoop.vue'

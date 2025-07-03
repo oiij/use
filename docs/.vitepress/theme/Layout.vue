@@ -1,7 +1,9 @@
 <!-- .vitepress/theme/Layout.vue -->
 
 <script setup lang="ts">
+import { NConfigProviders } from '@oiij/naive-ui/components'
 import { useViewTransition } from '@oiij/use'
+import { darkTheme } from 'naive-ui'
 import { useData } from 'vitepress'
 import DefaultTheme from 'vitepress/theme'
 import { provide } from 'vue'
@@ -21,7 +23,9 @@ provide('toggle-appearance', async ({ clientX: x, clientY: y }: MouseEvent) => {
 </script>
 
 <template>
-  <DefaultTheme.Layout />
+  <NConfigProviders :config-provider-props="{ theme: isDark ? darkTheme : undefined }">
+    <DefaultTheme.Layout />
+  </NConfigProviders>
 </template>
 
 <style>

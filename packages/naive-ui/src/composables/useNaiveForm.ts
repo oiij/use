@@ -1,5 +1,7 @@
 import type { FormInst, FormItemRule, FormRules } from 'naive-ui'
-import { reactive, ref, toRef } from 'vue'
+import type { Ref } from 'vue'
+import { createEventHook } from '@vueuse/core'
+import { reactive, ref, toRaw, toRef, toValue } from 'vue'
 
 interface ClearRules {
   string?: string | null
@@ -36,16 +38,14 @@ function clearObjectValues<T extends JSONValue>(obj: T, rules?: ClearRules): T {
   // 其他类型（如 null、undefined、Symbol）保持不变
   return obj
 }
-type FormType = Record<string, unknown>
-export type NaiveFormRules<T extends FormType> = Partial<Record<keyof T, FormRules | FormItemRule | FormItemRule[]>> | undefined
-export interface NaiveFormOptions<T extends FormType> {
+export type NaiveFormRules<T extends Record<string, any>> = Partial<Record<keyof T, FormRules | FormItemRule | FormItemRule[]>>
+export interface NaiveFormOptions<T extends Record<string, any>> {
   rules?: NaiveFormRules<T>
   clearRules?: ClearRules
 }
-export function useNaiveForm<T extends FormType>(value: T, options?: NaiveFormOptions<T>) {
+export function useNaiveForm<T extends Record<string, any>>(value?: T, options?: NaiveFormOptions<T>) {
   const { rules, clearRules } = options ?? {}
-
-  const formValue = reactive(structuredClone(value))
+  const formValue = reactive(value ? structuredClone(toRaw(value)) : {} as T)
   const formRules = rules
 
   const formRef = ref<FormInst>()
@@ -54,8 +54,9 @@ export function useNaiveForm<T extends FormType>(value: T, options?: NaiveFormOp
     model: formValue,
     rules: formRules,
   }
+  const onValidatedEvent = createEventHook<[T]>()
   function validate() {
-    return formRef.value?.validate()
+    return formRef.value?.validate().then(() => onValidatedEvent.trigger(toRaw(toValue(formValue))))
   }
   function resetValidation() {
     formRef.value?.restoreValidation()
@@ -74,14 +75,15 @@ export function useNaiveForm<T extends FormType>(value: T, options?: NaiveFormOp
 
   return {
     formRef,
-    formValue: toRef(formValue),
-    rules: formRules,
+    formValue: toRef(formValue) as Ref<T>,
+    formRules,
     formProps,
     validate,
     resetValidation,
     resetForm,
     reset,
     clear,
+    onValidated: onValidatedEvent.on,
   }
 }
-export type NaiveFormReturns = ReturnType<typeof useNaiveForm>
+export type NaiveFormReturns<T extends Record<string, any>> = ReturnType<typeof useNaiveForm<T>>

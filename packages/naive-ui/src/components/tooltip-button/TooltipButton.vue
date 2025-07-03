@@ -1,5 +1,5 @@
 <script setup lang='ts'>
-import type { TooltipButtonProps } from './index'
+import type { TooltipButtonProps } from '.'
 import { NButton, NTooltip } from 'naive-ui'
 
 const { value, tooltipProps, buttonProps } = defineProps<TooltipButtonProps>()

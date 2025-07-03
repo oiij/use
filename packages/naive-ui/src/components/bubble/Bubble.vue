@@ -1,8 +1,8 @@
 <script setup lang='ts'>
-import type { BubbleProps } from './index'
+import type { BubbleProps } from '.'
 import { useStyle } from '@oiij/css-render'
 import { NAvatar, NEl, NFlex, NSpin } from 'naive-ui'
-import { NTypeWriter } from '../index'
+import { NTypeWriter } from '..'
 import { bubbleCssr, cName } from './bubble.cssr'
 
 const { content, contentClass, contentStyle, avatar, loading, typing, markdown, placement } = defineProps<BubbleProps>()

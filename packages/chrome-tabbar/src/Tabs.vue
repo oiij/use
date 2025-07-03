@@ -1,5 +1,5 @@
 <script setup lang='ts'>
-import type { TabsProps } from './index'
+import type { TabsProps } from '.'
 import { useStyle } from '@oiij/css-render'
 import { useScrollView } from '@oiij/use'
 import { colord } from 'colord'

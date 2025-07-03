@@ -2,8 +2,8 @@
 <script setup lang='ts'>
 import { useThreeJs } from '@oiij/three-js'
 import { RendererOptions, useOutlinePass, usePostprocessing, useSelectiveBloomPass, useSmaaEffectPass } from '@oiij/three-js/plugins'
-import { useAxesHelper, useGridHelper } from '@oiij/three-js/utils'
-import { useAmbientLight, useDirectionalLight } from '@oiij/three-js/utils'
+import { useAmbientLight, useAxesHelper, useDirectionalLight, useGridHelper } from '@oiij/three-js/utils'
+
 import { NCheckbox, NFlex } from 'naive-ui'
 import { BoxGeometry, Mesh, MeshPhongMaterial, SphereGeometry, TetrahedronGeometry } from 'three'
 import { ref } from 'vue'

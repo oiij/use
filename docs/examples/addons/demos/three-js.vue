@@ -2,9 +2,8 @@
 <script setup lang='ts'>
 import { useThreeJs } from '@oiij/three-js'
 import { usePane } from '@oiij/three-js/plugins'
-import { useAxesHelper, useGridHelper } from '@oiij/three-js/utils'
-import { useLoader } from '@oiij/three-js/utils'
-import { useAmbientLight, useDirectionalLight } from '@oiij/three-js/utils'
+import { useAmbientLight, useAxesHelper, useDirectionalLight, useGridHelper, useLoader } from '@oiij/three-js/utils'
+
 import { NCheckbox, NFlex } from 'naive-ui'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 

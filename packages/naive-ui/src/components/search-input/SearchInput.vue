@@ -1,5 +1,5 @@
 <script setup lang='ts'>
-import type { SearchInputProps } from './index'
+import type { SearchInputProps } from '.'
 import { useDebounceFn, useTimeoutFn } from '@vueuse/core'
 import { NButton, NInput, NInputGroup } from 'naive-ui'
 import { ref, useTemplateRef, watch, watchEffect } from 'vue'
@@ -40,7 +40,7 @@ watchEffect(() => {
 
 <template>
   <NInputGroup>
-    <NInput ref="inputRef" v-model:value="_value" :disabled="loading" clearable placeholder="搜索" v-bind="inputProps" @keydown="handleKeyDown">
+    <NInput ref="inputRef" v-model:value="_value" :disabled="loading" clearable v-bind="inputProps" @keydown="handleKeyDown">
       <template #prefix>
         <slot name="prefix">
           <slot name="prefix-icon">

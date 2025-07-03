@@ -1,0 +1,252 @@
+<script setup lang='ts'
+generic="
+  P extends  Record<string, any>,
+  D extends  Record<string, any>,
+  R extends Record<string, any>
+  "
+>
+import type { PaginationProps, SelectGroupOption, SelectOption, SelectProps } from 'naive-ui'
+import type { UseRequestOptions, UseRequestPlugin } from 'vue-hooks-plus/es/useRequest/types'
+import type { OptionFormat, PresetSelectExposeActions, PresetSelectExposeRefs, PresetSelectFields, PresetSelectPagination, PresetSelectUpdateValue, PresetSelectValue } from '.'
+import { NFlex, NPagination, NSelect } from 'naive-ui'
+import { computed, reactive, ref, toRaw, toValue, useTemplateRef } from 'vue'
+import useRequest from 'vue-hooks-plus/es/useRequest'
+
+const {
+  api,
+  value,
+  fallbackLabel,
+  defaultParams: propsParams,
+  manual = true,
+  multiple = false,
+  disabled,
+  optionFormat,
+  fields,
+  selectProps,
+  pagination,
+  requestOptions,
+  requestPlugins,
+} = defineProps<{
+  api: (params: P) => Promise<D>
+  value?: PresetSelectValue
+  fallbackLabel?: string
+  defaultParams?: P
+  manual?: boolean
+  multiple?: boolean
+  disabled?: boolean
+  optionFormat?: OptionFormat<R>
+  fields?: PresetSelectFields
+  selectProps?: SelectProps
+  pagination?: Omit<PaginationProps, 'page' | 'pageSize'> | boolean
+  requestOptions?: UseRequestOptions<D, P[]>
+  requestPlugins?: UseRequestPlugin<D, P[]>[]
+}>()
+const emit = defineEmits<{
+  (e: 'before', params: P[]): void
+  (e: 'success', data: D, params: P[]): void
+  (e: 'error', err: Error, params: P[]): void
+  (e: 'finally', params: P[], data?: D, err?: Error): void
+  (e: 'update:value', ...val: Parameters<PresetSelectUpdateValue<R>>): void
+  (e: 'update:page', page: number): void
+  (e: 'update:pageSize', pageSize: number): void
+}>()
+const selectRef = useTemplateRef('selectRef')
+const _fields = { page: 'page', pageSize: 'pageSize', search: 'search', list: 'list', count: 'count', rowKey: 'id', label: 'label', value: 'value', children: 'children', ...fields }
+const paginationProps = reactive<PaginationProps>({
+  showSizePicker: true,
+  pageSizes: [10, 20, 30],
+  pageSlot: 5,
+  prefix: (info) => {
+    return `共${info.itemCount}条数据`
+  },
+  ...(pagination && typeof pagination === 'boolean' ? {} : pagination),
+})
+const paginationRef = ref<PresetSelectPagination>({
+  page: 1,
+  pageSize: 10,
+  itemCount: 0,
+})
+const { data, error, loading, params, run, runAsync, refresh, refreshAsync, cancel, mutate } = useRequest<D, P[]>(api, {
+  defaultParams: [
+    {
+      [_fields.page]: 1,
+      [_fields.pageSize]: 10,
+      [_fields.search]: '',
+      ...propsParams as P,
+    },
+  ],
+  manual,
+  ...requestOptions,
+  onBefore: (params) => {
+    requestOptions?.onBefore?.(params)
+    emit('before', params)
+  },
+  onSuccess: (data, params) => {
+    requestOptions?.onSuccess?.(data, params)
+    emit('success', data, params)
+    onSuccessEffect(data, params)
+  },
+  onError: (err, params) => {
+    requestOptions?.onError?.(err, params)
+    emit('error', err, params)
+  },
+  onFinally: (params, data, err) => {
+    requestOptions?.onFinally?.(params, data, err)
+    emit('finally', params, data, err)
+  },
+
+}, requestPlugins)
+const rawList = computed(() => {
+  if (!data.value)
+    return []
+  if (!Array.isArray(data.value[_fields.list])) {
+    console.warn(`DataTablePlus: data[${_fields.list}] must be an array`)
+    return []
+  }
+  const list = data.value[_fields.list] as R[]
+  return list
+})
+const optionsReactive = computed<(SelectOption | SelectGroupOption)[] | undefined>(() => {
+  return typeof optionFormat === 'function'
+    ? rawList.value.map(m => optionFormat(m))
+    : rawList.value.map((m) => {
+        return {
+          [_fields.label]: m[_fields.label],
+          [_fields.value]: m[_fields.value],
+          [_fields.children]: m[_fields.children],
+          key: m[_fields.rowKey],
+        }
+      })
+})
+
+function onSuccessEffect(data: D, params: P[]) {
+  paginationRef.value.page = params[0] && _fields.page in params[0] ? Number(params[0][_fields.page]) : 1
+  paginationRef.value.pageSize = params[0] && _fields.pageSize in params[0] ? Number(params[0][_fields.pageSize]) : 10
+  paginationRef.value.itemCount = _fields.count in data ? Number(data[_fields.count]) : 0
+}
+function _run(_params?: Partial<P>) {
+  return run({
+    ...params.value[0],
+    ..._params,
+  })
+}
+
+const vOnSelect = {
+  onUpdateValue: (val: string | number | (string | number)[] | null, option: SelectOption | SelectOption[] | null) => {
+    const rawSelectValue = Array.isArray(val) ? rawList.value.filter(f => val.includes(f[_fields.rowKey])) : rawList.value.find(f => f[_fields.rowKey] === val)
+    emit('update:value', val, option, rawSelectValue ? toRaw(toValue(rawSelectValue)) : null)
+  },
+  onSearch: (val: string) => {
+    if (loading.value)
+      return
+
+    _run({
+      [_fields.search]: val,
+    } as P)
+  },
+  onUpdateShow: (show: boolean) => {
+    if (show) {
+      if (!data.value) {
+        if (manual) {
+          run()
+        }
+      }
+    }
+  },
+}
+const vOnPagination = {
+  onUpdatePage: (page: number) => {
+    emit('update:page', page)
+    if (loading.value)
+      return
+    _run({
+      [_fields.page]: page,
+    } as P)
+  },
+  onUpdatePageSize: (pageSize: number) => {
+    emit('update:pageSize', pageSize)
+    if (loading.value)
+      return
+    _run({
+      [_fields.pageSize]: pageSize,
+    } as P)
+  },
+}
+function fallbackOption(val: string | number): SelectOption {
+  return {
+    [_fields.label]: fallbackLabel ?? `${val}`,
+    [_fields.value]: val,
+  }
+}
+
+const exposeRefs: PresetSelectExposeRefs<P, D, R> = {
+  loading,
+  data,
+  error,
+  params,
+  pagination: paginationRef,
+  rawList,
+  selectRef,
+}
+const exposeActions: PresetSelectExposeActions<P, D> = {
+  run,
+  runAsync,
+  refresh,
+  refreshAsync,
+  cancel,
+  mutate,
+  setParam: (_params: Partial<P>) => {
+    Object.assign(params.value[0], _params)
+  },
+  runParam: (_params: Partial<P>) => {
+    return run(Object.assign(params.value[0], _params))
+  },
+  runParamAsync: async (_params: Partial<P>) => {
+    return runAsync(Object.assign(params.value[0], _params))
+  },
+}
+defineExpose({
+  refs: exposeRefs,
+  actions: exposeActions,
+})
+</script>
+
+<template>
+  <NSelect
+    ref="selectRef"
+    remote
+    filterable
+    :multiple="multiple"
+    :disabled="disabled"
+    :options="optionsReactive"
+    :label-field="_fields.label"
+    :value-field="_fields.value"
+    :children-field="_fields.children"
+    :value="value"
+    :fallback-option="fallbackOption"
+    :loading="loading"
+    v-bind="selectProps"
+    @update:show="vOnSelect.onUpdateShow"
+    @update:value="vOnSelect.onUpdateValue"
+    @search="vOnSelect.onSearch"
+  >
+    <template #action>
+      <slot name="action">
+        <NFlex justify="end">
+          <NPagination
+            v-if="pagination"
+            simple
+            :disabled="loading"
+            v-bind="{ ...paginationProps, ...paginationRef }"
+            @update:page="vOnPagination.onUpdatePage"
+            @update:page-size="vOnPagination.onUpdatePageSize"
+          />
+        </NFlex>
+      </slot>
+    </template>
+  </NSelect>
+</template>
+
+<style scoped>
+
+</style>

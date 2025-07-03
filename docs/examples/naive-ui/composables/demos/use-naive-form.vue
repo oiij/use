@@ -13,39 +13,7 @@ const { validate, formValue, formProps, resetValidation, resetForm, reset, clear
   boolean: false,
   argObjs: [],
 }, {
-  rules: {
-    foo: {
-      bar: {
-        required: true,
-        message: '请输入foo',
-        trigger: ['blur', 'change'],
-      },
-    },
-    bar: {
-      type: 'number',
-      required: true,
-      message: '请输入bar',
-      trigger: ['blur', 'change'],
-    },
-    args: {
-      type: 'array',
-      required: true,
-      message: '请输入',
-      trigger: ['blur', 'change'],
-    },
-    boolean: {
-      type: 'boolean',
-      required: true,
-      message: '请输入',
-      trigger: ['blur', 'change'],
-    },
-    argObjs: {
-      type: 'array',
-      required: true,
-      message: '请输入',
-      trigger: ['blur', 'change'],
-    },
-  },
+
   clearRules: {
     string: null,
     number: null,

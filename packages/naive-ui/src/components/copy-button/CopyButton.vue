@@ -1,5 +1,5 @@
 <script setup lang='ts'>
-import type { CopyButtonProps } from './index'
+import type { CopyButtonProps } from '.'
 import { useClipboard } from '@vueuse/core'
 import { NButton, NTooltip } from 'naive-ui'
 import { watch } from 'vue'

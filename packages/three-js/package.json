@@ -1,7 +1,7 @@
 {
   "name": "@oiij/three-js",
   "type": "module",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A Vue Composable for Three.js",
   "author": "oiij",
   "license": "MIT",
@@ -65,13 +65,13 @@
     "@tweakpane/plugin-essentials": "^0.2.1",
     "@tweenjs/tween.js": "^25.0.0",
     "@types/three": "^0.177.0",
-    "@vueuse/core": "^13.3.0",
+    "@vueuse/core": "^13.4.0",
     "cannon-es": "^0.20.0",
     "mitt": "^3.0.1",
     "postprocessing": "^6.37.4",
     "three": "^0.177.0",
     "tweakpane": "^4.0.5",
-    "vue": "^3.5.16"
+    "vue": "^3.5.17"
   },
   "publishConfig": {
     "access": "public"

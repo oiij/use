@@ -1,10 +1,10 @@
 import type { Group, LoadingManager, MeshStandardMaterialParameters, Object3DEventMap, Texture } from 'three'
-import { MeshStandardMaterial, TextureLoader } from 'three'
-import { CubeTextureLoader } from 'three'
+import { CubeTextureLoader, MeshStandardMaterial, TextureLoader } from 'three'
+
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import { OBJLoader } from 'three/addons/loaders/OBJLoader.js'
-import { isMesh } from './index'
+import { isMesh } from '.'
 
 interface LoaderOptions {
   manager?: LoadingManager

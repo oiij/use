@@ -1,7 +1,7 @@
 {
   "name": "@oiij/css-render",
   "type": "module",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A Vue Composable for CssRender",
   "author": "oiij",
   "license": "MIT",
@@ -48,7 +48,7 @@
     "@css-render/plugin-bem": "^0.15.14",
     "@css-render/vue3-ssr": "^0.15.14",
     "css-render": "^0.15.14",
-    "vue": "^3.5.16"
+    "vue": "^3.5.17"
   },
   "publishConfig": {
     "access": "public"
