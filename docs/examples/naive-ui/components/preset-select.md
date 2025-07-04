@@ -4,7 +4,7 @@
 
 <demo vue="./demos/preset-select.vue" title="PresetSelect" />
 
-##Types
+## Types
 
 ```ts
 export type OptionFormat<R extends Record<string, any>> = (row: R) => SelectOption | SelectGroupOption

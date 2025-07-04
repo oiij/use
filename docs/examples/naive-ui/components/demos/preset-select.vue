@@ -2,7 +2,7 @@
 import type { OptionFormat } from '@oiij/naive-ui/components'
 import type { SelectOption } from 'naive-ui'
 import { NPresetSelect } from '@oiij/naive-ui/components'
-import { NFlex } from 'naive-ui'
+import { NButton, NFlex } from 'naive-ui'
 import { ref } from 'vue'
 
 interface Params {
@@ -44,6 +44,10 @@ function api(params?: Params) {
   })
 }
 const value = ref(50)
+const params = {
+  page: 1,
+  pageSize: 20,
+}
 const optionFormat: OptionFormat<Row> = (row) => {
   return {
     name: row.name,
@@ -54,11 +58,29 @@ function onUpdateValue(val: string | number | (number | string)[] | null, option
   // eslint-disable-next-line no-console
   console.log(val, option, raw)
 }
+function onSuccess(res: Res, params: Params[]) {
+  // eslint-disable-next-line no-console
+  console.log(res, params)
+}
 </script>
 
 <template>
   <NFlex vertical>
-    <NPresetSelect v-model:value="value" :api="api" :option-format="optionFormat" :fields="{ label: 'name', value: 'id' }" fallback-label="伍Ⅹ" @update:value="onUpdateValue" />
+    <NPresetSelect
+      v-model:value="value"
+      :api="api"
+      :default-params="params"
+      pagination
+      :option-format="optionFormat"
+      :fields="{ label: 'name', value: 'id' }"
+      fallback-label="伍Ⅹ"
+      @update:value="onUpdateValue"
+      @success="onSuccess"
+    >
+      <template #extra>
+        <NButton>新增</NButton>
+      </template>
+    </NPresetSelect>
     <pre>{{ value }}</pre>
   </NFlex>
 </template>

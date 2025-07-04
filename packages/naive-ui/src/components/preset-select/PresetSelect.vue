@@ -27,7 +27,7 @@ const {
   requestOptions,
   requestPlugins,
 } = defineProps<{
-  api: (params: P) => Promise<D>
+  api: (...args: P[]) => Promise<D>
   value?: PresetSelectValue
   fallbackLabel?: string
   defaultParams?: P
@@ -66,14 +66,16 @@ const paginationRef = ref<PresetSelectPagination>({
   pageSize: 10,
   itemCount: 0,
 })
+const _defaultParams = {
+  [_fields.page]: paginationRef.value.page,
+  [_fields.pageSize]: paginationRef.value.pageSize,
+  [_fields.search]: '',
+  ...propsParams,
+} as P
+
 const { data, error, loading, params, run, runAsync, refresh, refreshAsync, cancel, mutate } = useRequest<D, P[]>(api, {
   defaultParams: [
-    {
-      [_fields.page]: 1,
-      [_fields.pageSize]: 10,
-      [_fields.search]: '',
-      ...propsParams as P,
-    },
+    _defaultParams,
   ],
   manual,
   ...requestOptions,
@@ -148,7 +150,7 @@ const vOnSelect = {
     if (show) {
       if (!data.value) {
         if (manual) {
-          run()
+          run(_defaultParams)
         }
       }
     }
@@ -232,15 +234,19 @@ defineExpose({
   >
     <template #action>
       <slot name="action">
-        <NFlex justify="end">
-          <NPagination
-            v-if="pagination"
-            simple
-            :disabled="loading"
-            v-bind="{ ...paginationProps, ...paginationRef }"
-            @update:page="vOnPagination.onUpdatePage"
-            @update:page-size="vOnPagination.onUpdatePageSize"
-          />
+        <NFlex>
+          <slot name="extra" />
+          <slot name="pagination">
+            <NPagination
+              v-if="pagination"
+              :style="{ marginLeft: 'auto' }"
+              simple
+              :disabled="loading"
+              v-bind="{ ...paginationProps, ...paginationRef }"
+              @update:page="vOnPagination.onUpdatePage"
+              @update:page-size="vOnPagination.onUpdatePageSize"
+            />
+          </slot>
         </NFlex>
       </slot>
     </template>

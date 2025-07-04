@@ -138,7 +138,17 @@ function onContextMenuSelect(data: ContextMenuSelectType<any>) {
         Refresh
       </NButton>
     </NFlex>
-    <NDataTablePlus ref="tableRef" :style="{ width: '100%', height: '500px' }" :api="api" :filter-options="filterOptions" :columns="columns" :context-menu-options="contextMenuOptions" @context-menu-select="onContextMenuSelect" @loaded="onLoaded" />
+    <NDataTablePlus
+      ref="tableRef"
+      pagination
+      :style="{ width: '100%', height: '500px' }"
+      :api="api"
+      :filter-options="filterOptions"
+      :columns="columns"
+      :context-menu-options="contextMenuOptions"
+      @context-menu-select="onContextMenuSelect"
+      @loaded="onLoaded"
+    />
   </NFlex>
 </template>
 

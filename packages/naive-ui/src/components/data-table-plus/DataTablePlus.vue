@@ -10,7 +10,7 @@ import type { OnUpdateFilters } from 'naive-ui/es/data-table/src/interface'
 import type { CSSProperties } from 'vue'
 import type { UseRequestOptions, UseRequestPlugin } from 'vue-hooks-plus/es/useRequest/types'
 import type { ContextMenuSelectType, DataTablePlusClickRowType, DataTablePlusExposeActions, DataTablePlusExposeRefs, DataTablePlusFields, DataTablePlusFilterOptions, DataTablePlusPagination, OnUpdateCheckedRowKeysParams, OnUpdateExpandedRowKeysParams } from '.'
-import { NButton, NCollapseTransition, NDataTable, NDivider, NDropdown, NFlex, NGi, NGrid } from 'naive-ui'
+import { NButton, NCollapseTransition, NDataTable, NDivider, NDropdown, NFlex, NGi, NGrid, NPagination } from 'naive-ui'
 import { computed, nextTick, reactive, ref, toValue, useTemplateRef } from 'vue'
 import useRequest from 'vue-hooks-plus/es/useRequest'
 import { NPresetInput } from '..'
@@ -80,13 +80,15 @@ const paginationRef = ref<DataTablePlusPagination>({
   pageSize: 10,
   itemCount: 0,
 })
+const _defaultParams = {
+  [_fields.page]: paginationRef.value.page,
+  [_fields.pageSize]: paginationRef.value.pageSize,
+  ...propsParams as P,
+} as P
+
 const { loading, data, error, params, run, runAsync, refresh, refreshAsync, cancel, mutate } = useRequest<D, P[]>(api, {
   defaultParams: [
-    {
-      [_fields.page]: paginationRef.value.page,
-      [_fields.pageSize]: paginationRef.value.pageSize,
-      ...propsParams as P,
-    },
+    _defaultParams,
   ],
   manual,
   ...requestOptions,
@@ -365,11 +367,8 @@ defineExpose({
       :loading="loading"
       :columns="columnsReactive"
       :data="rawList"
-      :pagination="pagination ? { ...paginationProps, ...paginationRef } : undefined"
       :row-props="rowProps"
       v-bind="dataTableProps"
-      @update:page="vOn.onUpdatePage"
-      @update:page-size="vOn.onUpdatePageSize"
       @update:filters="vOn.onUpdateFilters"
       @update:sorter="vOn.onUpdateSorter"
       @load="vOn.onLoad"
@@ -377,6 +376,21 @@ defineExpose({
       @update:checked-row-keys="vOn.onUpdateCheckedRowKeys"
       @update:expanded-row-keys="vOn.onUpdateExpandedRowKeys"
     />
+    <slot name="actions">
+      <NFlex>
+        <slot name="extra" />
+        <slot name="pagination">
+          <NPagination
+            v-if="pagination"
+            :style="{ marginLeft: 'auto' }"
+            :disabled="loading"
+            v-bind="{ ...paginationProps, ...paginationRef }"
+            @update:page="vOn.onUpdatePage"
+            @update:page-size="vOn.onUpdatePageSize"
+          />
+        </slot>
+      </NFlex>
+    </slot>
     <NDropdown
       v-if="contextMenuOptions"
       placement="bottom-start"
