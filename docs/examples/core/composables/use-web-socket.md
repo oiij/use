@@ -13,38 +13,45 @@ type AutoRetry = boolean | {
   delay?: number
   onFailed?: () => void
 }
-interface Options {
+interface UseWebsocketOptions {
   protocols?: string | string[]
   manual?: boolean
   autoRetry?: AutoRetry
   parseMessage?: boolean
+  handlerKey?: string
 }
-type MessageRaw = string | ArrayBuffer | Blob
-interface MessageType {
+type MessageRaw = any
+interface HandlerType {
   [key: string]: any
-  type: string
 }
-declare function useWebSocket<T extends MessageType, D extends MessageRaw>(url?: string | URL | Ref<string | URL>, options?: Options): {
-  socket: vue59.ShallowRef<WebSocket | undefined, WebSocket | undefined>
+type ReturnHandlerType<U> = { [K in keyof U]: {
+  [key: string]: unknown
+  type: K
+  payload: U[K]
+} }[keyof U]
+declare function useWebSocket<T extends HandlerType = HandlerType, D extends MessageRaw = MessageRaw>(url?: string | URL | Ref<string | URL>, options?: UseWebsocketOptions): {
+  socket: ShallowRef<WebSocket | null>
   url: Ref<string | URL | undefined, string | URL | undefined>
   status: Ref<State, State>
-  data: Ref<D | undefined, D | undefined>
+  data: Ref<D | null, D | null>
   dataRecord: Ref<D[], D[]>
-  messageEvent: Ref<MessageEvent<D> | undefined, MessageEvent<D> | undefined>
+  messageEvent: Ref<MessageEvent<D> | null, MessageEvent<D> | null>
   messageEventRecord: Ref<MessageEvent<D>[], MessageEvent<D>[]>
-  error: Ref<Event | undefined, Event | undefined>
-  controller: vue59.ShallowRef<AbortController, AbortController>
+  error: Ref<Event | null, Event | null>
+  controller: ShallowRef<AbortController>
   connect: (url?: string | URL, protocols?: string | string[]) => void
   reconnect: () => void
   close: () => void
-  send: (data: any) => void
+  sendRaw: <D_1 extends string>(data: D_1) => void
+  send: <D_1 extends object>(data: D_1) => void
   destroy: () => void
-  registerHandler: (type: T['type'], handler: (data: T) => void) => () => void
-  cancelHandler: (type: T['type'], handler: (data: T) => void) => void
+  registerHandler: <K extends keyof T>(type: K, handler: (data: T[K]) => void) => () => void
+  cancelHandler: <K extends keyof T>(type: K, handler: (data: T[K]) => void) => void
   registerEvent: (type: string, handler: (ev: Event) => void) => void
-  onOpen: _vueuse_core61.EventHookOn<Event>
-  onMessage: _vueuse_core61.EventHookOn<MessageEvent<any>>
-  onClose: _vueuse_core61.EventHookOn<CloseEvent>
-  onError: _vueuse_core61.EventHookOn<Event>
+  onOpen: _vueuse_core66.EventHookOn<Event>
+  onMessage: _vueuse_core66.EventHookOn<MessageEvent<any>>
+  onClose: _vueuse_core66.EventHookOn<CloseEvent>
+  onError: _vueuse_core66.EventHookOn<Event>
 }
+type UseWebSocketReturns = ReturnType<typeof useWebSocket>
 ```

@@ -4,10 +4,21 @@ import { useWebSocket } from '@oiij/use'
 import { NButton, NCard, NFlex, NInput, NInputGroup, NScrollbar } from 'naive-ui'
 import { ref } from 'vue'
 
+type HandlerEvent<T extends string = 'connect' | 'message'> = Record<T, {
+  type: T
+  data: string
+}>
 const url = ref('https://ws-test.liijs.xyz/ws')
 const inputValue = ref('')
-const { connect, close, sendRaw, dataRecord, status } = useWebSocket(url, {
+const { connect, close, sendRaw, dataRecord, status, registerHandler } = useWebSocket<HandlerEvent>(url, {
   manual: true,
+  parseMessage: true,
+})
+registerHandler('connect', (data) => {
+  console.log(data)
+})
+registerHandler('message', (data) => {
+  console.log(data)
 })
 </script>
 

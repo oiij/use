@@ -171,14 +171,14 @@ export function useWebSocket<T extends HandlerType = HandlerType, D extends Mess
     }
   }
 
-  function registerHandler<K extends keyof T>(type: K, handler: (data: { type: K, payload: T[K] }) => void) {
+  function registerHandler<K extends keyof T>(type: K, handler: (data: T[K]) => void) {
     if (!handlerMap.has(type)) {
       handlerMap.set(type, [])
     }
     handlerMap.get(type)?.push(handler)
     return () => cancelHandler(type, handler)
   }
-  function cancelHandler<K extends keyof T>(type: K, handler: (data: { type: K, payload: T[K] }) => void) {
+  function cancelHandler<K extends keyof T>(type: K, handler: (data: T[K]) => void) {
     if (handlerMap.has(type)) {
       handlerMap.set(type, handlerMap.get(type)?.filter(f => f !== handler) || [])
     }

@@ -52,7 +52,6 @@ export type OnUpdateCheckedRowKeysParams<R extends Record<string, any>> = (keys:
   action: 'check' | 'uncheck' | 'checkAll' | 'uncheckAll'
 }) => void
 export type OnUpdateExpandedRowKeysParams<R extends Record<string, any>> = (keys: R[]) => void
-
 ```
 
 ## Props

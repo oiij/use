@@ -9,21 +9,31 @@ export type Status = 'pending' | 'ready' | 'connected' | 'closed'
 
 export interface HandleEvent {
   'register': {
-    key: string
+    payload: {
+      key: string
+    }
   }
   'offer': {
-    key: string
-    desc: RTCSessionDescriptionInit
+    payload: {
+      key: string
+      desc: RTCSessionDescriptionInit
+    }
   }
   'answer': {
-    key: string
-    desc: RTCSessionDescriptionInit
+    payload: {
+      key: string
+      desc: RTCSessionDescriptionInit
+    }
   }
   'answer-ok': {
-    key: string
+    payload: {
+      key: string
+    }
   }
   'ice-candidate': {
-    candidate: RTCIceCandidate
+    payload: {
+      candidate: RTCIceCandidate
+    }
   }
 }
 export function useWebRTC(url: string | URL, options?: WebRTCOptions) {
