@@ -60,7 +60,7 @@ const emit = defineEmits<{
   (e: 'update:page', page: number): void
   (e: 'update:pageSize', pageSize: number): void
 }>()
-const selectRef = useTemplateRef('selectRef')
+const selectRef = useTemplateRef('select-ref')
 const _fields = { page: 'page', pageSize: 'pageSize', search: 'search', list: 'list', count: 'count', rowKey: 'id', label: 'label', value: 'value', children: 'children', ...fields }
 const paginationProps = reactive<PaginationProps>({
   showSizePicker: true,
@@ -145,6 +145,7 @@ function _run(_params?: Partial<P>) {
 const searchValue = ref('')
 const debounceSearch = useDebounceFn(() => {
   _run({
+    [_fields.page]: 1,
     [_fields.search]: searchValue.value,
   } as P)
 }, typeof debounce === 'number' ? debounce : 500)
@@ -176,6 +177,7 @@ const vOnSelect = {
     debounce
       ? debounceSearch()
       : _run({
+          [_fields.page]: 1,
           [_fields.search]: searchValue.value,
         } as P)
   },
@@ -248,7 +250,7 @@ defineExpose({
 
 <template>
   <NSelect
-    ref="selectRef"
+    ref="select-ref"
     remote
     filterable
     :multiple="multiple"
@@ -290,6 +292,12 @@ defineExpose({
           </slot>
         </NFlex>
       </slot>
+    </template>
+    <template #empty>
+      <slot name="empty" />
+    </template>
+    <template #arrow>
+      <slot name="arrow" />
     </template>
   </NSelect>
 </template>

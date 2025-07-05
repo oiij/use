@@ -64,7 +64,7 @@ const emit = defineEmits<{
   (e: 'update:pageSize', pageSize: number): void
 }>()
 const columnsReactive = reactive<DataTableColumns<R>>(columns ?? [])
-const dataTableRef = useTemplateRef<DataTableInst>('dataTableRef')
+const dataTableRef = useTemplateRef<DataTableInst>('data-table-ref')
 const _fields = { page: 'page', pageSize: 'pageSize', filter: 'filter', sorter: 'sorter', list: 'list', count: 'count', rowKey: 'id', ...fields }
 const paginationProps = reactive<PaginationProps>({
   showSizePicker: true,
@@ -192,6 +192,7 @@ const vOn = {
   onUpdateFilters: (filters: DataTableFilterState, initiatorColumn: DataTableBaseColumn) => {
     emit('update:filters', filters, initiatorColumn)
     _run({
+      [_fields.page]: 1,
       [_fields.filter]: filters,
     } as P)
   },
@@ -207,6 +208,7 @@ const vOn = {
       _sorter[options.columnKey] = options.order
     }
     _run({
+      [_fields.page]: 1,
       [_fields.sorter]: _sorter,
     } as P)
   },
@@ -356,7 +358,7 @@ defineExpose({
       </NFlex>
     </slot>
     <NDataTable
-      ref="dataTableRef"
+      ref="data-table-ref"
       remote
       flex-height
       :single-line="false"
@@ -375,7 +377,14 @@ defineExpose({
       @scroll="vOn.onScroll"
       @update:checked-row-keys="vOn.onUpdateCheckedRowKeys"
       @update:expanded-row-keys="vOn.onUpdateExpandedRowKeys"
-    />
+    >
+      <template #empty>
+        <slot name="empty" />
+      </template>
+      <template #loading>
+        <slot name="loading" />
+      </template>
+    </NDataTable>
     <slot name="actions">
       <NFlex>
         <slot name="extra" />
