@@ -1,7 +1,7 @@
 <script setup lang='ts'
 generic="
-  P extends  Record<string, any>,
-  D extends  Record<string, any>,
+  P extends  Record<string, any> = Record<string, any>,
+  D extends  Record<string, any> = Record<string, any>,
   "
 >
 import type { UseRequestOptions, UseRequestPlugin } from 'vue-hooks-plus/es/useRequest/types'

@@ -66,7 +66,7 @@ const filterOptions: DataTablePlusFilterOptions<Params, Res, Row> = [
     },
   },
 ]
-function onLoaded(data: any) {
+function onLoaded(data: Res) {
   console.log(data)
 }
 const columns: DataTableColumns<Row> = [
@@ -126,7 +126,7 @@ const contextMenuOptions = [
     label: '删除',
   },
 ]
-function onContextMenuSelect(data: ContextMenuSelectType<any>) {
+function onContextMenuSelect(data: ContextMenuSelectType<Row>) {
   console.log(data)
 }
 </script>
@@ -138,6 +138,7 @@ function onContextMenuSelect(data: ContextMenuSelectType<any>) {
         Refresh
       </NButton>
     </NFlex>
+    <!-- @vue-generic {Params,Res,Row} -->
     <NDataTablePlus
       ref="tableRef"
       pagination
@@ -147,7 +148,7 @@ function onContextMenuSelect(data: ContextMenuSelectType<any>) {
       :columns="columns"
       :context-menu-options="contextMenuOptions"
       @context-menu-select="onContextMenuSelect"
-      @loaded="onLoaded"
+      @success="onLoaded"
     />
   </NFlex>
 </template>

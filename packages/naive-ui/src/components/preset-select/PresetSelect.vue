@@ -1,13 +1,15 @@
 <script setup lang='ts'
 generic="
-  P extends  Record<string, any>,
-  D extends  Record<string, any>,
-  R extends Record<string, any>
+  V extends  PresetSelectValue = null,
+  P extends  Record<string, any> = Record<string, any>,
+  D extends  Record<string, any> = Record<string, any>,
+  R extends Record<string, any> = Record<string, any>,
   "
 >
 import type { PaginationProps, SelectGroupOption, SelectOption, SelectProps } from 'naive-ui'
 import type { UseRequestOptions, UseRequestPlugin } from 'vue-hooks-plus/es/useRequest/types'
-import type { OptionFormat, PresetSelectExposeActions, PresetSelectExposeRefs, PresetSelectFields, PresetSelectPagination, PresetSelectUpdateValue, PresetSelectValue } from '.'
+import type { OptionFormat, PresetSelectExposeActions, PresetSelectExposeRefs, PresetSelectFields, PresetSelectPagination, PresetSelectValue } from '.'
+import { useDebounceFn } from '@vueuse/core'
 import { NFlex, NPagination, NSelect } from 'naive-ui'
 import { computed, reactive, ref, toRaw, toValue, useTemplateRef } from 'vue'
 import useRequest from 'vue-hooks-plus/es/useRequest'
@@ -20,6 +22,7 @@ const {
   manual = true,
   multiple = false,
   disabled,
+  debounce = true,
   optionFormat,
   fields,
   selectProps,
@@ -28,12 +31,13 @@ const {
   requestPlugins,
 } = defineProps<{
   api: (...args: P[]) => Promise<D>
-  value?: PresetSelectValue
+  value?: V
   fallbackLabel?: string
   defaultParams?: P
   manual?: boolean
   multiple?: boolean
   disabled?: boolean
+  debounce?: boolean | number
   optionFormat?: OptionFormat<R>
   fields?: PresetSelectFields
   selectProps?: SelectProps
@@ -46,7 +50,13 @@ const emit = defineEmits<{
   (e: 'success', data: D, params: P[]): void
   (e: 'error', err: Error, params: P[]): void
   (e: 'finally', params: P[], data?: D, err?: Error): void
-  (e: 'update:value', ...val: Parameters<PresetSelectUpdateValue<R>>): void
+  (e: 'blur', ev: FocusEvent): void
+  (e: 'clear',): void
+  (e: 'create', label: string): SelectOption
+  (e: 'focus', ev: FocusEvent): void
+  (e: 'scroll', ev: Event): void
+  (e: 'search', value: string): void
+  (e: 'update:value', val: V | null, option: SelectOption | SelectOption[] | null, raw: R | R[] | null): void
   (e: 'update:page', page: number): void
   (e: 'update:pageSize', pageSize: number): void
 }>()
@@ -108,9 +118,9 @@ const rawList = computed(() => {
   const list = data.value[_fields.list] as R[]
   return list
 })
-const optionsReactive = computed<(SelectOption | SelectGroupOption)[] | undefined>(() => {
+const optionsReactive = computed<(SelectOption | SelectGroupOption)[]>(() => {
   return typeof optionFormat === 'function'
-    ? rawList.value.map(m => optionFormat(m))
+    ? rawList.value.map(m => optionFormat(m)).filter(f => !!f) as (SelectOption | SelectGroupOption)[]
     : rawList.value.map((m) => {
         return {
           [_fields.label]: m[_fields.label],
@@ -132,19 +142,42 @@ function _run(_params?: Partial<P>) {
     ..._params,
   })
 }
-
+const searchValue = ref('')
+const debounceSearch = useDebounceFn(() => {
+  _run({
+    [_fields.search]: searchValue.value,
+  } as P)
+}, typeof debounce === 'number' ? debounce : 500)
 const vOnSelect = {
-  onUpdateValue: (val: string | number | (string | number)[] | null, option: SelectOption | SelectOption[] | null) => {
+  onBlur: (ev: FocusEvent) => {
+    emit('blur', ev)
+  },
+  onClear: () => {
+    emit('clear')
+  },
+  onCreate: (label: string) => {
+    return emit('create', label)
+  },
+  onFocus: (ev: FocusEvent) => {
+    emit('focus', ev)
+  },
+  onScroll: (ev: Event) => {
+    emit('scroll', ev)
+  },
+
+  onUpdateValue: (val: V, option: SelectOption | SelectOption[] | null) => {
     const rawSelectValue = Array.isArray(val) ? rawList.value.filter(f => val.includes(f[_fields.rowKey])) : rawList.value.find(f => f[_fields.rowKey] === val)
     emit('update:value', val, option, rawSelectValue ? toRaw(toValue(rawSelectValue)) : null)
   },
   onSearch: (val: string) => {
+    searchValue.value = val
     if (loading.value)
       return
-
-    _run({
-      [_fields.search]: val,
-    } as P)
+    debounce
+      ? debounceSearch()
+      : _run({
+          [_fields.search]: searchValue.value,
+        } as P)
   },
   onUpdateShow: (show: boolean) => {
     if (show) {
@@ -228,10 +261,18 @@ defineExpose({
     :fallback-option="fallbackOption"
     :loading="loading"
     v-bind="selectProps"
+    @blur="vOnSelect.onBlur"
+    @clear="vOnSelect.onClear"
+    @create="vOnSelect.onCreate"
+    @focus="vOnSelect.onFocus"
+    @scroll="vOnSelect.onScroll"
+    @search="vOnSelect.onSearch"
     @update:show="vOnSelect.onUpdateShow"
     @update:value="vOnSelect.onUpdateValue"
-    @search="vOnSelect.onSearch"
   >
+    <template #header>
+      <slot name="header" />
+    </template>
     <template #action>
       <slot name="action">
         <NFlex>
@@ -239,7 +280,7 @@ defineExpose({
           <slot name="pagination">
             <NPagination
               v-if="pagination"
-              :style="{ marginLeft: 'auto' }"
+              style="margin-left: auto;"
               simple
               :disabled="loading"
               v-bind="{ ...paginationProps, ...paginationRef }"

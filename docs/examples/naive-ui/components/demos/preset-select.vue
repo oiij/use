@@ -49,10 +49,12 @@ const params = {
   pageSize: 20,
 }
 const optionFormat: OptionFormat<Row> = (row) => {
-  return {
-    name: row.name,
-    id: row.id,
-  }
+  return row.id === 3
+    ? null
+    : {
+        name: row.name,
+        id: row.id,
+      }
 }
 function onUpdateValue(val: string | number | (number | string)[] | null, option: SelectOption | SelectOption[] | null, raw: Row | Row[] | null) {
   // eslint-disable-next-line no-console
@@ -66,6 +68,7 @@ function onSuccess(res: Res, params: Params[]) {
 
 <template>
   <NFlex vertical>
+    <!-- @vue-generic {number,Params,Res,Row} -->
     <NPresetSelect
       v-model:value="value"
       :api="api"

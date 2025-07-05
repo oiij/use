@@ -36,6 +36,7 @@ const rules: NaiveFormRules<Values> = {
 
 <template>
   <NFlex vertical>
+    <!-- @vue-generic {Values} -->
     <NPresetForm :values="values" :options="options" :rules="rules" />
     <pre>值：{{ values }}</pre>
   </NFlex>

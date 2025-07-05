@@ -1,8 +1,8 @@
 <script setup lang='ts'
 generic="
-  P extends  Record<string, any>,
-  D extends  Record<string, any>,
-  R extends Record<string, any>
+  P extends  Record<string, any> = Record<string, any>,
+  D extends  Record<string, any> = Record<string, any>,
+  R extends Record<string, any> = Record<string, any>
   "
 >
 import type { DataTableBaseColumn, DataTableColumns, DataTableFilterState, DataTableInst, DataTableProps, DataTableSortState, DropdownOption, GridProps, PaginationProps } from 'naive-ui'

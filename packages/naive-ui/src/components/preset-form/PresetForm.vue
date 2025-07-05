@@ -1,6 +1,6 @@
 <script setup lang='ts'
 generic="
-  V extends Record<string, any>
+  V extends Record<string, any> = Record<string, any>,
   "
 >
 import type { FormProps, GridProps } from 'naive-ui'
