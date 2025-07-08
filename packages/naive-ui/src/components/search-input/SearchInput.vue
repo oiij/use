@@ -10,7 +10,7 @@ const { value = '', type = 'default', autoTrigger = true, searchButton = true, i
 const emit = defineEmits<{
   (e: 'update:value', v: typeof value): void
 }>()
-const inputRef = useTemplateRef('inputRef')
+const inputRef = useTemplateRef('input-ref')
 const _value = ref(value)
 const { isPending, start } = useTimeoutFn(() => {}, typeof autoTrigger === 'number' ? autoTrigger : 500)
 watch(() => value, (v) => {
@@ -40,7 +40,7 @@ watchEffect(() => {
 
 <template>
   <NInputGroup>
-    <NInput ref="inputRef" v-model:value="_value" :disabled="loading" clearable v-bind="inputProps" @keydown="handleKeyDown">
+    <NInput ref="input-ref" v-model:value="_value" :disabled="loading" clearable v-bind="inputProps" @keydown="handleKeyDown">
       <template #prefix>
         <slot name="prefix">
           <slot name="prefix-icon">
