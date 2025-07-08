@@ -1,9 +1,10 @@
 <script setup lang='ts' generic="V extends any">
 import type { VNode } from 'vue'
 import type { PresetInputOptions } from '.'
-import { NButton, NDatePicker, NFormItem, NInput, NSelect, NSwitch, NTimePicker } from 'naive-ui'
+import { NButton, NDatePicker, NInput, NSelect, NSwitch, NTimePicker } from 'naive-ui'
 import { h } from 'vue'
 import { NSearchInput } from '..'
+import { renderLabel as _renderLabel } from './_utils'
 
 const { value, path, options } = defineProps<{
   value?: V
@@ -15,21 +16,8 @@ const emit = defineEmits<{
 }>()
 function packageComponent() {
   const { label, type, props } = options ?? {}
-  const labelProps = typeof label === 'string'
-    ? {
-        label,
-      }
-    : typeof label === 'boolean' ? {} : label
   function renderLabel(children: VNode) {
-    return label
-      ? h(NFormItem, {
-          labelPlacement: 'left',
-          path,
-          ...labelProps,
-        }, {
-          default: () => children,
-        })
-      : children
+    return _renderLabel(children, label, path)
   }
   switch (type) {
     case 'date-picker':

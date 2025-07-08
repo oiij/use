@@ -1,14 +1,16 @@
 <script setup lang='ts'
-generic="
-  V extends Record<string, any> = Record<string, any>,
+  generic="
+    V extends Record<string, any> = Record<string, any>,
   "
 >
 import type { FormProps, GridProps } from 'naive-ui'
 import type { PresetFormOptions } from '.'
 import type { NaiveFormRules } from '../../composables'
 import { NForm, NGi, NGrid } from 'naive-ui'
+import { ref } from 'vue'
 import { NPresetInput } from '..'
 import { useNaiveForm } from '../../composables'
+import { renderLabel } from '../preset-input/_utils'
 
 const { options, values, rules, formProps: defaultProps, gridProps } = defineProps<{
   options?: PresetFormOptions<V>
@@ -26,6 +28,8 @@ const { formProps, formValue, formRules, formRef, validate, resetValidation, res
 onValidated((value) => {
   emit('validated', value)
 })
+const filterCollapsed = ref(false)
+
 const exposeRefs = {
   formRef,
   formValue,
@@ -60,12 +64,12 @@ function onPresetInputUpdate(val: any, key?: keyof V) {
     <slot :refs="exposeRefs" :actions="exposeActions">
       <NGrid v-bind="gridProps">
         <NGi
-          v-for="({ key, gridItemProps, render, ...opt }, _index) in options"
+          v-for="({ key, gridItemProps, render, ...opt }, _index) in options?.filter(f => !f.collapsed)"
           :key="_index"
           :span="12"
           v-bind="gridItemProps"
         >
-          <component :is="render(exposeRefs, exposeActions)" v-if="render" />
+          <component :is="renderLabel(render(exposeRefs, exposeActions), opt.label, (key as string))" v-if="render" />
           <NPresetInput
             v-else
             :options="opt"
@@ -75,6 +79,30 @@ function onPresetInputUpdate(val: any, key?: keyof V) {
           />
         </NGi>
       </NGrid>
+      <NDivider v-if="options?.filter(f => f.collapsed) && options?.filter(f => f.collapsed)?.length > 0" style="margin:0;">
+        <NButton size="tiny" @click="filterCollapsed = !filterCollapsed">
+          {{ filterCollapsed ? '折叠' : '展开' }}
+        </NButton>
+      </NDivider>
+      <NCollapseTransition :show="filterCollapsed">
+        <NGrid v-bind="gridProps">
+          <NGi
+            v-for="({ key, gridItemProps, render, ...opt }, _index) in options?.filter(f => f.collapsed)"
+            :key="_index"
+            :span="12"
+            v-bind="gridItemProps"
+          >
+            <component :is="renderLabel(render(exposeRefs, exposeActions), opt.label, (key as string))" v-if="render" />
+            <NPresetInput
+              v-else
+              :options="opt"
+              :path="(key as string)"
+              :value="key ? formValue[key] : undefined"
+              @update:value="(val) => onPresetInputUpdate(val, key)"
+            />
+          </NGi>
+        </NGrid>
+      </NCollapseTransition>
     </slot>
     <slot name="footer" />
   </NForm>

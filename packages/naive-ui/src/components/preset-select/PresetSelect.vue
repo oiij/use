@@ -1,9 +1,9 @@
 <script setup lang='ts'
-generic="
-  V extends  PresetSelectValue = null,
-  P extends  Record<string, any> = Record<string, any>,
-  D extends  Record<string, any> = Record<string, any>,
-  R extends Record<string, any> = Record<string, any>,
+  generic="
+    V extends  PresetSelectValue = null,
+    P extends  Record<string, any> = Record<string, any>,
+    D extends  Record<string, any> = Record<string, any>,
+    R extends Record<string, any> = Record<string, any>,
   "
 >
 import type { PaginationProps, SelectGroupOption, SelectOption, SelectProps } from 'naive-ui'

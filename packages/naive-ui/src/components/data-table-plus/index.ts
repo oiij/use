@@ -24,7 +24,6 @@ export interface DataTablePlusPagination {
 export type DataTablePlusExposeRefsBase<P extends Record<string, any>, D extends Record<string, any>, R extends Record<string, any>> = Pick<useRequestResult<D, P[], false, false>, 'loading' | 'data' | 'error' | 'params'> & {
   pagination: Readonly<Ref<DataTablePlusPagination, DataTablePlusPagination>>
   rawList: ComputedRef<R[]>
-
 }
 export type DataTablePlusExposeRefs<P extends Record<string, any>, D extends Record<string, any>, R extends Record<string, any>> = DataTablePlusExposeRefsBase<P, D, R> & {
   dataTableRef: Readonly<ShallowRef<DataTableInst | null>>

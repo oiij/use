@@ -13,6 +13,7 @@ export type PresetFormExposeActions<V extends Record<string, any>> = Pick<NaiveF
 }
 export type PresetFormOptions<V extends Record<string, any>> = (PresetInputOptions & {
   key?: keyof V
+  collapsed?: boolean
   gridItemProps?: GridItemProps
   render?: (refs: PresetFormExposeRefs<V>, actions: PresetFormExposeActions<V>) => VNode
 })[]

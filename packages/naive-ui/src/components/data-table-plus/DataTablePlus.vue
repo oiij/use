@@ -1,19 +1,20 @@
 <script setup lang='ts'
-generic="
-  P extends  Record<string, any> = Record<string, any>,
-  D extends  Record<string, any> = Record<string, any>,
-  R extends Record<string, any> = Record<string, any>
+  generic="
+    P extends  Record<string, any> = Record<string, any>,
+    D extends  Record<string, any> = Record<string, any>,
+    R extends Record<string, any> = Record<string, any>
   "
 >
-import type { DataTableBaseColumn, DataTableColumns, DataTableFilterState, DataTableInst, DataTableProps, DataTableSortState, DropdownOption, FormItemProps, GridProps, PaginationProps } from 'naive-ui'
+import type { DataTableBaseColumn, DataTableColumns, DataTableFilterState, DataTableInst, DataTableProps, DataTableSortState, DropdownOption, GridProps, PaginationProps } from 'naive-ui'
 import type { OnUpdateFilters } from 'naive-ui/es/data-table/src/interface'
-import type { CSSProperties, VNode } from 'vue'
+import type { CSSProperties } from 'vue'
 import type { UseRequestOptions, UseRequestPlugin } from 'vue-hooks-plus/es/useRequest/types'
 import type { ContextMenuSelectType, DataTablePlusClickRowType, DataTablePlusExposeActions, DataTablePlusExposeRefs, DataTablePlusFields, DataTablePlusFilterOptions, DataTablePlusPagination, OnUpdateCheckedRowKeysParams, OnUpdateExpandedRowKeysParams } from '.'
-import { NButton, NCollapseTransition, NDataTable, NDivider, NDropdown, NFlex, NFormItem, NGi, NGrid, NPagination } from 'naive-ui'
-import { computed, h, nextTick, reactive, ref, toValue, useTemplateRef } from 'vue'
+import { NButton, NCollapseTransition, NDataTable, NDivider, NDropdown, NFlex, NGi, NGrid, NPagination } from 'naive-ui'
+import { computed, nextTick, reactive, ref, toValue, useTemplateRef } from 'vue'
 import useRequest from 'vue-hooks-plus/es/useRequest'
 import { NPresetInput } from '..'
+import { renderLabel } from '../preset-input/_utils'
 
 const {
   api,
@@ -273,23 +274,7 @@ function filterItemUpdate(val: any, key?: keyof P) {
     } as P)
   }
 }
-function renderLabel(children: VNode, label?: string | boolean |(FormItemProps & {
-  style?: CSSProperties
-  class?: string
-}), path?: string) {
-  const labelProps = typeof label === 'string'
-    ? {
-        label,
-      }
-    : typeof label === 'boolean' ? {} : label
-  return label
-    ? h(NFormItem, {
-        labelPlacement: 'left',
-        path,
-        ...labelProps,
-      }, [children])
-    : children
-}
+
 const exposeRefs: DataTablePlusExposeRefs<P, D, R> = {
   loading,
   data,
@@ -334,19 +319,19 @@ defineExpose({
             v-bind="gridItemProps"
           >
             <component
-              :is="renderLabel(render(exposeRefs, exposeActions), options.label, key as string|undefined)"
+              :is="renderLabel(render(exposeRefs, exposeActions), options.label, key as string)"
               v-if="render"
             />
             <NPresetInput
               v-else
               :options="options"
               :value="key ? params[0][key] : undefined"
-              :path="(key as string|undefined)"
+              :path="(key as string)"
               @update:value="(val) => filterItemUpdate(val, key) "
             />
           </NGi>
         </NGrid>
-        <NDivider v-if="filterOptions?.filter(f => f.collapsed) && filterOptions?.filter(f => f.collapsed)?.length > 0">
+        <NDivider v-if="filterOptions?.filter(f => f.collapsed) && filterOptions?.filter(f => f.collapsed)?.length > 0" style="margin:0;">
           <NButton size="tiny" @click="filterCollapsed = !filterCollapsed">
             {{ filterCollapsed ? '折叠' : '展开' }}
           </NButton>
@@ -360,14 +345,14 @@ defineExpose({
               v-bind="gridItemProps"
             >
               <component
-                :is="renderLabel(render(exposeRefs, exposeActions), options.label, key as string|undefined)"
+                :is="renderLabel(render(exposeRefs, exposeActions), options.label, key as string)"
                 v-if="render"
               />
               <NPresetInput
                 v-else
                 :options="options"
                 :value="key ? params[0][key] : undefined"
-                :path="(key as string|undefined)"
+                :path="(key as string)"
                 @update:value="(val) => filterItemUpdate(val, key) "
               />
             </NGi>
