@@ -1,29 +1,28 @@
 import { saveAs } from 'file-saver'
 import { utils, write } from 'xlsx'
 
-type Data = Record<string, unknown>
-interface Head<T extends Data> { key: keyof T, title: string, transform?: Transform<T> }
-interface TransformParam<T extends Data> {
-  rawValue: T[Head<T>['key']]
+export interface SheetColumns<T extends Record<string, any>> { key: keyof T, title: string, transform?: SheetTransform<T> }
+export interface SheetTransformParam<T extends Record<string, any>> {
+  rawValue: T[SheetColumns<T>['key']]
   rawRow: T
   rawRowIndex: number
-  head: Head<T>
+  columns: SheetColumns<T>
   headIndex: number
 }
-type Transform<T extends Data> = (params: TransformParam<T>) => T[Head<T>['key']]
-export function transform<T extends Data>(data: T[], head: Head<T>[]) {
-  const result: unknown[][] = []
-  result.push(head.map(m => m.title))
+type SheetTransform<T extends Record<string, any>> = (params: SheetTransformParam<T>) => T[SheetColumns<T>['key']]
+export function transform<T extends Record<string, any>>(data: T[], columns: SheetColumns<T>[]) {
+  const result: any[][] = []
+  result.push(columns.map(m => m.title))
   data.forEach((d, i) => {
-    const item: unknown[] = []
-    head.forEach((h, hi) => {
+    const item: any[] = []
+    columns.forEach((h, hi) => {
       const value = d[h.key]
       if (typeof h.transform === 'function') {
         const result = h.transform({
           rawValue: value,
           rawRow: d,
           rawRowIndex: i,
-          head: h,
+          columns: h,
           headIndex: hi,
         })
         return item.push(result)
@@ -35,7 +34,7 @@ export function transform<T extends Data>(data: T[], head: Head<T>[]) {
   })
   return result
 }
-export function json2XLS(data: unknown[]) {
+export function json2XLS(data: any[]) {
   const type = 'application/vnd.ms-excel'
   const ws = utils.json_to_sheet(data, {
     skipHeader: true,
@@ -45,7 +44,7 @@ export function json2XLS(data: unknown[]) {
   const buffer = write(wb, { bookType: 'xls', type: 'array' })
   return new Blob([buffer], { type })
 }
-export function json2XLSX(data: unknown[]) {
+export function json2XLSX(data: any[]) {
   const type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
   const ws = utils.json_to_sheet(data, {
     skipHeader: true,
@@ -55,7 +54,7 @@ export function json2XLSX(data: unknown[]) {
   const buffer = write(wb, { bookType: 'xlsx', type: 'array' })
   return new Blob([buffer], { type })
 }
-export function json2CSV(data: unknown[]) {
+export function json2CSV(data: any[]) {
   const type = 'text/plain;charset=UTF-8'
   const ws = utils.json_to_sheet(data, {
     skipHeader: true,
@@ -63,7 +62,7 @@ export function json2CSV(data: unknown[]) {
   const buffer = utils.sheet_to_csv(ws)
   return new Blob([buffer], { type })
 }
-export function exportSheet(data: unknown[], fileName: string, type: 'xls' | 'xlsx' | 'csv' = 'xls') {
+export function exportSheet(data: any[], fileName: string, type: 'xls' | 'xlsx' | 'csv' = 'xls') {
   switch (type) {
     case 'xls':
       return saveAs(json2XLS(data), `${fileName}.${type}`)
@@ -76,6 +75,6 @@ export function exportSheet(data: unknown[], fileName: string, type: 'xls' | 'xl
       break
   }
 }
-export function json2Sheet<T extends Data>(data: T[], head: Head<T>[], fileName: string, type: 'xls' | 'xlsx' | 'csv' = 'xls') {
-  return exportSheet(transform(data, head), fileName, type)
+export function json2Sheet<T extends Record<string, any>>(data: T[], columns: SheetColumns<T>[], fileName: string, type: 'xls' | 'xlsx' | 'csv' = 'xls') {
+  return exportSheet(transform(data, columns), fileName, type)
 }
