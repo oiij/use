@@ -6,7 +6,7 @@
   "
 >
 import type { DataTableBaseColumn, DataTableColumns, DataTableFilterState, DataTableInst, DataTableSortState, DropdownOption, PaginationProps } from 'naive-ui'
-import type { OnUpdateFilters } from 'naive-ui/es/data-table/src/interface'
+import type { FilterState, TableBaseColumn } from 'naive-ui/es/data-table/src/interface'
 import type { ContextMenuSelectType, DataTablePlusClickRowType, DataTablePlusExposeActions, DataTablePlusExposeRefs, DataTablePlusPagination, DataTablePlusProps, OnUpdateCheckedRowKeysParams, OnUpdateExpandedRowKeysParams } from '.'
 import { NButton, NCollapseTransition, NDataTable, NDivider, NDropdown, NFlex, NGi, NGrid, NPagination } from 'naive-ui'
 import { computed, nextTick, reactive, ref, toValue, useTemplateRef } from 'vue'
@@ -40,9 +40,9 @@ const emit = defineEmits<{
   (e: 'contextMenuSelect', data: ContextMenuSelectType<R>): void
   (e: 'load', row: R): Promise<void>
   (e: 'scroll', ev: Event): void
-  (e: 'update:checkedRowKeys', ...args: Parameters<OnUpdateCheckedRowKeysParams<R>>): void
-  (e: 'update:expandedRowKeys', ...args: Parameters<OnUpdateExpandedRowKeysParams<R>>): void
-  (e: 'update:filters', ...args: Parameters<OnUpdateFilters>): void
+  (e: 'update:checkedRowKeys', keys: keyof R[], rows: R[], meta: { row: R | undefined, action: 'check' | 'uncheck' | 'checkAll' | 'uncheckAll' }): void
+  (e: 'update:expandedRowKeys', keys: R[]): void
+  (e: 'update:filters', filterState: FilterState, sourceColumn: TableBaseColumn): void
   (e: 'update:sorter', options: DataTableSortState | DataTableSortState[] | null): void
   (e: 'update:page', page: number): void
   (e: 'update:pageSize', pageSize: number): void
