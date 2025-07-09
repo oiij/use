@@ -3,22 +3,14 @@
     V extends Record<string, any> = Record<string, any>,
   "
 >
-import type { FormProps, GridProps } from 'naive-ui'
-import type { PresetFormOptions } from '.'
-import type { NaiveFormRules } from '../../composables'
+import type { PresetFormProps } from '.'
 import { NForm, NGi, NGrid } from 'naive-ui'
 import { ref } from 'vue'
 import { NPresetInput } from '..'
 import { useNaiveForm } from '../../composables'
 import { renderLabel } from '../preset-input/_utils'
 
-const { options, values, rules, formProps: defaultProps, gridProps } = defineProps<{
-  options?: PresetFormOptions<V>
-  values?: V
-  rules: NaiveFormRules<V>
-  formProps?: FormProps
-  gridProps?: GridProps
-}>()
+const { options, values, rules, formProps: defaultProps, gridProps } = defineProps<PresetFormProps<V>>()
 const emit = defineEmits<{
   (e: 'validated', val: V): void
 }>()

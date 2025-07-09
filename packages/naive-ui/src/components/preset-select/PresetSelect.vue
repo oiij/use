@@ -6,9 +6,8 @@
     R extends Record<string, any> = Record<string, any>,
   "
 >
-import type { PaginationProps, SelectGroupOption, SelectOption, SelectProps } from 'naive-ui'
-import type { UseRequestOptions, UseRequestPlugin } from 'vue-hooks-plus/es/useRequest/types'
-import type { OptionFormat, PresetSelectExposeActions, PresetSelectExposeRefs, PresetSelectFields, PresetSelectPagination, PresetSelectValue } from '.'
+import type { PaginationProps, SelectGroupOption, SelectOption } from 'naive-ui'
+import type { PresetSelectExposeActions, PresetSelectExposeRefs, PresetSelectPagination, PresetSelectProps, PresetSelectValue } from '.'
 import { useDebounceFn } from '@vueuse/core'
 import { NFlex, NPagination, NSelect } from 'naive-ui'
 import { computed, reactive, ref, toRaw, toValue, useTemplateRef } from 'vue'
@@ -29,22 +28,8 @@ const {
   pagination,
   requestOptions,
   requestPlugins,
-} = defineProps<{
-  api: (...args: P[]) => Promise<D>
-  value?: V
-  fallbackLabel?: string
-  defaultParams?: P
-  manual?: boolean
-  multiple?: boolean
-  disabled?: boolean
-  debounce?: boolean | number
-  optionFormat?: OptionFormat<R>
-  fields?: PresetSelectFields
-  selectProps?: SelectProps
-  pagination?: Omit<PaginationProps, 'page' | 'pageSize'> | boolean
-  requestOptions?: UseRequestOptions<D, P[]>
-  requestPlugins?: UseRequestPlugin<D, P[]>[]
-}>()
+} = defineProps<PresetSelectProps<V, P, D, R>>()
+
 const emit = defineEmits<{
   (e: 'before', params: P[]): void
   (e: 'success', data: D, params: P[]): void

@@ -1,4 +1,4 @@
-import { cssr, fadeInTransition, namespace, plugin } from '../_utils'
+import { cssr, namespace, plugin } from '../_utils'
 
 const { c, cB, cE, cM } = { ...cssr, ...plugin }
 
@@ -19,7 +19,6 @@ export function bubbleCssr() {
         borderRadius: 'var(--border-radius)',
         minHeight: '44px',
       }),
-      fadeInTransition(),
     ]),
   ])
 }

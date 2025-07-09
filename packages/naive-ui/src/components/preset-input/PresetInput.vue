@@ -1,16 +1,12 @@
-<script setup lang='ts' generic="V extends any">
+<script setup lang='ts' generic="V extends string = string">
 import type { VNode } from 'vue'
-import type { PresetInputOptions } from '.'
+import type { PresetInputProps } from '.'
 import { NButton, NDatePicker, NInput, NSelect, NSwitch, NTimePicker } from 'naive-ui'
 import { h } from 'vue'
 import { NSearchInput } from '..'
 import { renderLabel as _renderLabel } from './_utils'
 
-const { value, path, options } = defineProps<{
-  value?: V
-  path?: string
-  options?: PresetInputOptions
-}>()
+const { value, path, options } = defineProps<PresetInputProps<V>>()
 const emit = defineEmits<{
   (e: 'update:value', val?: V): void
 }>()

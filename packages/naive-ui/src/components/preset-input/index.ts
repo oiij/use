@@ -26,3 +26,8 @@ export type PresetInputOptions = {
     }
   }
 }[keyof PresetInputType]
+export interface PresetInputProps<V extends string = string> {
+  value?: V
+  path?: string
+  options?: PresetInputOptions
+}

@@ -4,8 +4,7 @@
     D extends  Record<string, any> = Record<string, any>,
   "
 >
-import type { UseRequestOptions, UseRequestPlugin } from 'vue-hooks-plus/es/useRequest/types'
-import type { RemoteRequestFields } from '.'
+import type { RemoteRequestProps } from '.'
 import useRequest from 'vue-hooks-plus/es/useRequest'
 
 const {
@@ -15,14 +14,7 @@ const {
   fields,
   requestOptions,
   requestPlugins,
-} = defineProps<{
-  api: (params: P) => Promise<D>
-  defaultParams?: P
-  manual?: boolean
-  fields?: RemoteRequestFields
-  requestOptions?: UseRequestOptions<D, P[]>
-  requestPlugins?: UseRequestPlugin<D, P[]>[]
-}>()
+} = defineProps<RemoteRequestProps<P, D>>()
 const emit = defineEmits<{
   (e: 'before', params: P[]): void
   (e: 'success', data: D, params: P[]): void

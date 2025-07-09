@@ -7,6 +7,12 @@ const dark = ref(false)
 function onClick() {
   window.$message.success('点击了按钮')
 }
+function handleGlobalLoading() {
+  window.$loading.start()
+  setTimeout(() => {
+    window.$loading.finish()
+  }, 2000)
+}
 </script>
 
 <template>
@@ -25,7 +31,10 @@ function onClick() {
         </div>
         <div>
           <NButton @click="onClick">
-            点击
+            Message
+          </NButton>
+          <NButton @click="handleGlobalLoading">
+            GlobalLoading
           </NButton>
         </div>
       </NFlex>

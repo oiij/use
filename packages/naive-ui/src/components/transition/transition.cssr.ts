@@ -1,8 +1,8 @@
 import type { CNode } from '@oiij/css-render'
-import { cssr } from './cssr-bem'
+import { cssr, namespace, plugin } from '../_utils/cssr-bem'
 
 const { c } = cssr
-
+const { cB } = plugin
 interface FadeInTransitionOptions {
   name?: string
   enterDuration?: string
@@ -10,26 +10,32 @@ interface FadeInTransitionOptions {
   enterCubicBezier?: string
   leaveCubicBezier?: string
 }
-
-export function fadeInTransition({
-  name = 'fade-in',
-  enterDuration = '0.2s',
-  leaveDuration = '0.2s',
+export { namespace }
+export const cName = `${namespace}-transition`
+export function fadeTransition({
+  name = 'fade',
+  enterDuration = '.3s',
+  leaveDuration = '.3s',
   enterCubicBezier = 'cubic-bezier(.4, 0, .2, 1)',
   leaveCubicBezier = 'cubic-bezier(.4, 0, .2, 1)',
 }: FadeInTransitionOptions = {}): CNode[] {
   return [
-    c(`&.${name}-transition-enter-active`, {
+    cB(`${name}-enter-active`, {
       transition: `all ${enterDuration} ${enterCubicBezier}!important`,
     }),
-    c(`&.${name}-transition-leave-active`, {
+    cB(`${name}-leave-active`, {
       transition: `all ${leaveDuration} ${leaveCubicBezier}!important`,
     }),
-    c(`&.${name}-transition-enter-from, &.${name}-transition-leave-to`, {
+    cB(`${name}-enter-from`, {
       opacity: 0,
     }),
-    c(`&.${name}-transition-leave-from, &.${name}-transition-enter-to`, {
-      opacity: 1,
+    cB(`${name}-leave-to`, {
+      opacity: 0,
     }),
   ]
+}
+export function transitionCssr() {
+  return c([
+    fadeTransition(),
+  ])
 }

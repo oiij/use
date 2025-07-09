@@ -1,7 +1,8 @@
-import type { DataTableInst, DropdownOption, GridItemProps } from 'naive-ui'
-import type { ComputedRef, Ref, ShallowRef, VNode } from 'vue'
+import type { DataTableColumns, DataTableInst, DataTableProps, DropdownOption, GridItemProps, GridProps, PaginationProps } from 'naive-ui'
+import type { ComputedRef, CSSProperties, Ref, ShallowRef, VNode } from 'vue'
 import type { useRequestResult } from 'vue-hooks-plus/es/useRequest/types'
 import type { PresetInputOptions } from '../preset-input'
+import type { RemoteRequestProps } from '../remote-request'
 
 export { default as NDataTablePlus } from './DataTablePlus.vue'
 
@@ -55,3 +56,15 @@ export type OnUpdateCheckedRowKeysParams<R extends Record<string, any>> = (
   }
 ) => void
 export type OnUpdateExpandedRowKeysParams<R extends Record<string, any>> = (keys: R[]) => void
+
+export type DataTablePlusProps<P extends Record<string, any> = Record<string, any>, D extends Record<string, any> = Record<string, any>, R extends Record<string, any> = Record<string, any>> = RemoteRequestProps<P, D> & {
+  columns?: DataTableColumns<R>
+  filterOptions?: DataTablePlusFilterOptions<P, D, R>
+  filterGridProps?: GridProps
+  contextMenuOptions?: DropdownOption[]
+  fields?: DataTablePlusFields
+  pagination?: Omit<PaginationProps, 'page' | 'pageSize'> | boolean
+  dataTableProps?: DataTableProps
+  customStyle?: CSSProperties
+  customClass?: string
+}

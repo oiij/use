@@ -3,6 +3,7 @@ import type { BubbleProps } from '.'
 import { useStyle } from '@oiij/css-render'
 import { NAvatar, NEl, NFlex, NSpin } from 'naive-ui'
 import { NTypeWriter } from '..'
+import { NTransition } from '../'
 import { bubbleCssr, cName } from './bubble.cssr'
 
 const { content, contentClass, contentStyle, avatar, loading, typing, markdown, placement } = defineProps<BubbleProps>()
@@ -21,7 +22,7 @@ useStyle('n-bubble', bubbleCssr())
     </slot>
     <NFlex vertical>
       <slot name="header" />
-      <Transition mode="out-in" name="fade">
+      <NTransition>
         <slot v-if="loading" name="loading">
           <NSpin style="height: 44px;" />
         </slot>
@@ -30,7 +31,7 @@ useStyle('n-bubble', bubbleCssr())
             <NTypeWriter :typing="typing" :markdown="markdown" :value="content" @stop="emit('typingComplete')" />
           </div>
         </slot>
-      </Transition>
+      </NTransition>
       <slot name="footer" />
     </NFlex>
   </NEl>

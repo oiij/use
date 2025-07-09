@@ -5,11 +5,9 @@
     R extends Record<string, any> = Record<string, any>
   "
 >
-import type { DataTableBaseColumn, DataTableColumns, DataTableFilterState, DataTableInst, DataTableProps, DataTableSortState, DropdownOption, GridProps, PaginationProps } from 'naive-ui'
+import type { DataTableBaseColumn, DataTableColumns, DataTableFilterState, DataTableInst, DataTableSortState, DropdownOption, PaginationProps } from 'naive-ui'
 import type { OnUpdateFilters } from 'naive-ui/es/data-table/src/interface'
-import type { CSSProperties } from 'vue'
-import type { UseRequestOptions, UseRequestPlugin } from 'vue-hooks-plus/es/useRequest/types'
-import type { ContextMenuSelectType, DataTablePlusClickRowType, DataTablePlusExposeActions, DataTablePlusExposeRefs, DataTablePlusFields, DataTablePlusFilterOptions, DataTablePlusPagination, OnUpdateCheckedRowKeysParams, OnUpdateExpandedRowKeysParams } from '.'
+import type { ContextMenuSelectType, DataTablePlusClickRowType, DataTablePlusExposeActions, DataTablePlusExposeRefs, DataTablePlusPagination, DataTablePlusProps, OnUpdateCheckedRowKeysParams, OnUpdateExpandedRowKeysParams } from '.'
 import { NButton, NCollapseTransition, NDataTable, NDivider, NDropdown, NFlex, NGi, NGrid, NPagination } from 'naive-ui'
 import { computed, nextTick, reactive, ref, toValue, useTemplateRef } from 'vue'
 import useRequest from 'vue-hooks-plus/es/useRequest'
@@ -31,22 +29,7 @@ const {
   requestPlugins,
   customStyle,
   customClass,
-} = defineProps<{
-  api: (params: P) => Promise<D>
-  defaultParams?: P
-  manual?: boolean
-  columns?: DataTableColumns<R>
-  filterOptions?: DataTablePlusFilterOptions<P, D, R>
-  filterGridProps?: GridProps
-  contextMenuOptions?: DropdownOption[]
-  fields?: DataTablePlusFields
-  pagination?: Omit<PaginationProps, 'page' | 'pageSize'> | boolean
-  dataTableProps?: DataTableProps
-  requestOptions?: UseRequestOptions<D, P[]>
-  requestPlugins?: UseRequestPlugin<D, P[]>[]
-  customStyle?: CSSProperties
-  customClass?: string
-}>()
+} = defineProps<DataTablePlusProps<P, D, R>>()
 const emit = defineEmits<{
   (e: 'before', params: P[]): void
   (e: 'success', data: D, params: P[]): void

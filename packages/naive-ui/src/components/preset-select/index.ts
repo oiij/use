@@ -1,6 +1,7 @@
-import type { SelectGroupOption, SelectInst, SelectOption } from 'naive-ui'
+import type { PaginationProps, SelectGroupOption, SelectInst, SelectOption, SelectProps } from 'naive-ui'
 import type { ShallowRef } from 'vue'
 import type { DataTablePlusExposeActions, DataTablePlusExposeRefsBase } from '../data-table-plus'
+import type { RemoteRequestProps } from '../remote-request'
 
 export { default as NPresetSelect } from './PresetSelect.vue'
 export type OptionFormat<R extends Record<string, any>> = (row: R) => SelectOption | SelectGroupOption | false | undefined | null
@@ -16,3 +17,15 @@ export type PresetSelectExposeRefs<P extends Record<string, any>, D extends Reco
   selectRef: Readonly<ShallowRef<SelectInst | null>>
 }
 export type PresetSelectExposeActions<P extends Record<string, any>, D extends Record<string, any>> = DataTablePlusExposeActions<P, D>
+
+export type PresetSelectProps<V extends PresetSelectValue = null, P extends Record<string, any> = Record<string, any>, D extends Record<string, any> = Record<string, any>, R extends Record<string, any> = Record<string, any>> = RemoteRequestProps<P, D> & {
+  value?: V
+  fallbackLabel?: string
+  multiple?: boolean
+  disabled?: boolean
+  debounce?: boolean | number
+  optionFormat?: OptionFormat<R>
+  fields?: PresetSelectFields
+  selectProps?: SelectProps
+  pagination?: Omit<PaginationProps, 'page' | 'pageSize'> | boolean
+}
