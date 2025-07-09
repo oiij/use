@@ -47,15 +47,6 @@ export interface ContextMenuSelectType<R extends Record<string, any>> {
   row?: R
 }
 export type DataTablePlusFields = Partial<Record<'page' | 'pageSize' | 'filter' | 'sorter' | 'list' | 'count' | 'rowKey', string>>
-export type OnUpdateCheckedRowKeysParams<R extends Record<string, any>> = (
-  keys: keyof R[],
-  rows: R[],
-  meta: {
-    row: R | undefined
-    action: 'check' | 'uncheck' | 'checkAll' | 'uncheckAll'
-  }
-) => void
-export type OnUpdateExpandedRowKeysParams<R extends Record<string, any>> = (keys: R[]) => void
 
 export type DataTablePlusProps<P extends Record<string, any> = Record<string, any>, D extends Record<string, any> = Record<string, any>, R extends Record<string, any> = Record<string, any>> = RemoteRequestProps<P, D> & {
   columns?: DataTableColumns<R>
