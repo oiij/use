@@ -1,4 +1,4 @@
-import type { DataTableColumns, DataTableInst, DataTableProps, DropdownOption, GridItemProps, GridProps, PaginationProps } from 'naive-ui'
+import type { DataTableColumns, DataTableInst, DataTableProps, DropdownOption, FlexProps, GridItemProps, GridProps, PaginationProps } from 'naive-ui'
 import type { ComputedRef, CSSProperties, Ref, ShallowRef, VNode } from 'vue'
 import type { useRequestResult } from 'vue-hooks-plus/es/useRequest/types'
 import type { PresetInputOptions } from '../preset-input'
@@ -52,6 +52,8 @@ export type DataTablePlusProps<P extends Record<string, any> = Record<string, an
   columns?: DataTableColumns<R>
   filterOptions?: DataTablePlusFilterOptions<P, D, R>
   filterGridProps?: GridProps
+  filterFlexProps?: FlexProps
+  filterLayout?: 'grid' | 'flex' | ['grid' | 'flex']
   contextMenuOptions?: DropdownOption[]
   fields?: DataTablePlusFields
   pagination?: Omit<PaginationProps, 'page' | 'pageSize'> | boolean

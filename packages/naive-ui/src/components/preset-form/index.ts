@@ -1,4 +1,4 @@
-import type { FormProps, GridItemProps, GridProps } from 'naive-ui'
+import type { FlexProps, FormProps, GridItemProps, GridProps } from 'naive-ui'
 import type { VNode } from 'vue'
 import type { NaiveFormReturns, NaiveFormRules } from '../../composables'
 
@@ -24,4 +24,6 @@ export interface PresetFormProps<V extends Record<string, any> = Record<string, 
   rules: NaiveFormRules<V>
   formProps?: FormProps
   gridProps?: GridProps
+  flexProps?: FlexProps
+  layout?: 'grid' | 'flex' | ['grid' | 'flex']
 }

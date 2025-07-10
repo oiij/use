@@ -21,6 +21,8 @@ const {
   columns,
   filterOptions,
   filterGridProps,
+  filterFlexProps,
+  filterLayout = 'grid',
   contextMenuOptions,
   fields,
   pagination,
@@ -47,6 +49,15 @@ const emit = defineEmits<{
   (e: 'update:page', page: number): void
   (e: 'update:pageSize', pageSize: number): void
 }>()
+const _filterLayout = computed(() => {
+  const _layout = typeof filterLayout === 'string' ? [filterLayout, filterLayout] : filterLayout
+  return {
+    grid: _layout[0] === 'grid',
+    flex: _layout[0] === 'flex',
+    collapsedGrid: _layout[1] === 'grid',
+    collapsedFlex: _layout[1] === 'flex',
+  }
+})
 const columnsReactive = reactive<DataTableColumns<R>>(columns ?? [])
 const dataTableRef = useTemplateRef<DataTableInst>('data-table-ref')
 const _fields = { page: 'page', pageSize: 'pageSize', filter: 'filter', sorter: 'sorter', list: 'list', count: 'count', rowKey: 'id', ...fields }
@@ -300,7 +311,7 @@ defineExpose({
   <NFlex vertical>
     <slot name="filter" :refs="exposeRefs" :actions="exposeActions">
       <NFlex vertical>
-        <NGrid v-bind="filterGridProps">
+        <NGrid v-if="_filterLayout.grid" v-bind="filterGridProps">
           <NGi
             v-for="({ key, gridItemProps, render, ...options }, _index) in filterOptions?.filter(f => !f.collapsed)"
             :key="_index"
@@ -320,13 +331,31 @@ defineExpose({
             />
           </NGi>
         </NGrid>
+        <NFlex v-if="_filterLayout.flex" v-bind="filterFlexProps">
+          <template
+            v-for="({ key, render, ...options }, _index) in filterOptions?.filter(f => !f.collapsed)"
+            :key="_index"
+          >
+            <component
+              :is="renderLabel(render(exposeRefs, exposeActions), options.label, key as string)"
+              v-if="render"
+            />
+            <NPresetInput
+              v-else
+              :options="options"
+              :value="key ? params[0][key] : undefined"
+              :path="(key as string)"
+              @update:value="(val) => filterItemUpdate(val, key) "
+            />
+          </template>
+        </NFlex>
         <NDivider v-if="filterOptions?.filter(f => f.collapsed) && filterOptions?.filter(f => f.collapsed)?.length > 0" style="margin:5px 0;">
           <NButton size="tiny" @click="filterCollapsed = !filterCollapsed">
             {{ filterCollapsed ? '折叠' : '展开' }}
           </NButton>
         </NDivider>
         <NCollapseTransition :show="filterCollapsed">
-          <NGrid v-bind="filterGridProps">
+          <NGrid v-if="_filterLayout.collapsedGrid" v-bind="filterGridProps">
             <NGi
               v-for="({ key, gridItemProps, render, ...options }, _index) in filterOptions?.filter(f => f.collapsed)"
               :key="_index"
@@ -346,6 +375,24 @@ defineExpose({
               />
             </NGi>
           </NGrid>
+          <NFlex v-if="_filterLayout.collapsedFlex" v-bind="filterFlexProps">
+            <template
+              v-for="({ key, render, ...options }, _index) in filterOptions?.filter(f => f.collapsed)"
+              :key="_index"
+            >
+              <component
+                :is="renderLabel(render(exposeRefs, exposeActions), options.label, key as string)"
+                v-if="render"
+              />
+              <NPresetInput
+                v-else
+                :options="options"
+                :value="key ? params[0][key] : undefined"
+                :path="(key as string)"
+                @update:value="(val) => filterItemUpdate(val, key) "
+              />
+            </template>
+          </NFlex>
         </NCollapseTransition>
       </NFlex>
     </slot>
