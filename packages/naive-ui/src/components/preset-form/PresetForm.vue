@@ -71,7 +71,7 @@ function onPresetInputUpdate(val: any, key?: keyof V) {
           />
         </NGi>
       </NGrid>
-      <NDivider v-if="options?.filter(f => f.collapsed) && options?.filter(f => f.collapsed)?.length > 0" style="margin:0;">
+      <NDivider v-if="options?.filter(f => f.collapsed) && options?.filter(f => f.collapsed)?.length > 0" style="margin:5px 0;">
         <NButton size="tiny" @click="filterCollapsed = !filterCollapsed">
           {{ filterCollapsed ? '折叠' : '展开' }}
         </NButton>

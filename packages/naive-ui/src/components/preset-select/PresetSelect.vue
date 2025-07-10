@@ -217,13 +217,13 @@ const exposeActions: PresetSelectExposeActions<P, D> = {
   refreshAsync,
   cancel,
   mutate,
-  setParam: (_params: Partial<P>) => {
+  setParams: (_params: Partial<P>) => {
     Object.assign(params.value[0], _params)
   },
-  runParam: (_params: Partial<P>) => {
+  runParams: (_params: Partial<P>) => {
     return run(Object.assign(params.value[0], _params))
   },
-  runParamAsync: async (_params: Partial<P>) => {
+  runParamsAsync: async (_params: Partial<P>) => {
     return runAsync(Object.assign(params.value[0], _params))
   },
 }

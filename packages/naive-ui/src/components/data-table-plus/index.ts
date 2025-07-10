@@ -13,9 +13,9 @@ export interface DataTablePlusExposeActions<P extends Record<string, any>, D ext
   refreshAsync: () => Promise<D>
   cancel: () => void
   mutate: (data?: D | ((oldData?: D | undefined) => D | undefined) | undefined) => void
-  setParam: (params: Partial<P>) => void
-  runParam: (params: Partial<P>) => void
-  runParamAsync: (params: Partial<P>) => Promise<D>
+  setParams: (params: Partial<P>) => void
+  runParams: (params: Partial<P>) => void
+  runParamsAsync: (params: Partial<P>) => Promise<D>
 }
 export interface DataTablePlusPagination {
   page: number

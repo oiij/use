@@ -280,13 +280,13 @@ const exposeActions: DataTablePlusExposeActions<P, D> = {
   refreshAsync,
   cancel,
   mutate,
-  setParam: (_params: Partial<P>) => {
+  setParams: (_params: Partial<P>) => {
     Object.assign(params.value[0], _params)
   },
-  runParam: (_params: Partial<P>) => {
+  runParams: (_params: Partial<P>) => {
     return run(Object.assign(params.value[0], _params))
   },
-  runParamAsync: async (_params: Partial<P>) => {
+  runParamsAsync: async (_params: Partial<P>) => {
     return runAsync(Object.assign(params.value[0], _params))
   },
 }
@@ -320,7 +320,7 @@ defineExpose({
             />
           </NGi>
         </NGrid>
-        <NDivider v-if="filterOptions?.filter(f => f.collapsed) && filterOptions?.filter(f => f.collapsed)?.length > 0" style="margin:0;">
+        <NDivider v-if="filterOptions?.filter(f => f.collapsed) && filterOptions?.filter(f => f.collapsed)?.length > 0" style="margin:5px 0;">
           <NButton size="tiny" @click="filterCollapsed = !filterCollapsed">
             {{ filterCollapsed ? '折叠' : '展开' }}
           </NButton>
@@ -383,7 +383,7 @@ defineExpose({
         <slot name="pagination">
           <NPagination
             v-if="pagination"
-            :style="{ marginLeft: 'auto' }"
+            style="margin-left:auto;"
             :disabled="loading"
             v-bind="{ ...paginationProps, ...paginationRef }"
             @update:page="vOn.onUpdatePage"
