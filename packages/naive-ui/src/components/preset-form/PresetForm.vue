@@ -44,7 +44,7 @@ const exposeActions = {
   reset,
   clear,
   onValidated,
-  setValue: (value: Partial<V>) => {
+  setValues: (value: Partial<V>) => {
     Object.assign(formValue.value, value)
   },
 }
@@ -54,7 +54,7 @@ defineExpose({
 })
 function onPresetInputUpdate(val: any, key?: keyof V) {
   if (key) {
-    exposeActions.setValue({ [key]: val } as V)
+    exposeActions.setValues({ [key]: val } as V)
   }
 }
 </script>
