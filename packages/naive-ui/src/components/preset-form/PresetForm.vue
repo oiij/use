@@ -61,7 +61,7 @@ function onPresetInputUpdate(val: any, key?: keyof V) {
 
 <template>
   <NForm v-bind="{ ...(formProps as any), ...defaultProps }">
-    <slot name="header" />
+    <slot name="header" :refs="exposeRefs" :actions="exposeActions" />
     <slot :refs="exposeRefs" :actions="exposeActions">
       <NGrid v-if="_layout.grid" v-bind="gridProps">
         <NGi
@@ -135,7 +135,7 @@ function onPresetInputUpdate(val: any, key?: keyof V) {
         </NFlex>
       </NCollapseTransition>
     </slot>
-    <slot name="footer" />
+    <slot name="footer" :refs="exposeRefs" :actions="exposeActions" />
   </NForm>
 </template>
 

@@ -418,16 +418,16 @@ defineExpose({
       @update:expanded-row-keys="vOn.onUpdateExpandedRowKeys"
     >
       <template #empty>
-        <slot name="empty" />
+        <slot name="empty" :refs="exposeRefs" :actions="exposeActions" />
       </template>
       <template #loading>
-        <slot name="loading" />
+        <slot name="loading" :refs="exposeRefs" :actions="exposeActions" />
       </template>
     </NDataTable>
-    <slot name="actions">
+    <slot name="actions" :refs="exposeRefs" :actions="exposeActions">
       <NFlex>
-        <slot name="extra" />
-        <slot name="pagination">
+        <slot name="extra" :refs="exposeRefs" :actions="exposeActions" />
+        <slot name="pagination" :refs="exposeRefs" :actions="exposeActions">
           <NPagination
             v-if="pagination"
             style="margin-left:auto;"

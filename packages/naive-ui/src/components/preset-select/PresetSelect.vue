@@ -258,13 +258,13 @@ defineExpose({
     @update:value="vOnSelect.onUpdateValue"
   >
     <template #header>
-      <slot name="header" />
+      <slot name="header" :refs="exposeRefs" :actions="exposeActions" />
     </template>
     <template #action>
-      <slot name="action">
+      <slot name="action" :refs="exposeRefs" :actions="exposeActions">
         <NFlex>
-          <slot name="extra" />
-          <slot name="pagination">
+          <slot name="extra" :refs="exposeRefs" :actions="exposeActions" />
+          <slot name="pagination" :refs="exposeRefs" :actions="exposeActions">
             <NPagination
               v-if="pagination"
               style="margin-left: auto;"
