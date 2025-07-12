@@ -9,6 +9,7 @@ import { computed, ref } from 'vue'
 import { NPresetInput } from '..'
 import { useNaiveForm } from '../../composables'
 import { renderLabel } from '../preset-input/_utils'
+import { options2Rules } from './_utils'
 
 const { options, values, rules, formProps: defaultProps, gridProps, flexProps, layout = 'grid' } = defineProps<PresetFormProps<V>>()
 const emit = defineEmits<{
@@ -23,8 +24,9 @@ const _layout = computed(() => {
     collapsedFlex: _layout[1] === 'flex',
   }
 })
+
 const { formProps, formValue, formRules, formRef, validate, resetValidation, resetForm, reset, clear, onValidated } = useNaiveForm(values, {
-  rules,
+  rules: rules ?? options2Rules(options),
 })
 onValidated((value) => {
   emit('validated', value)
