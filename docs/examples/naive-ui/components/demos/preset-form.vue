@@ -3,11 +3,13 @@
 import type { NaiveFormRules, PresetFormOptions } from '@oiij/naive-ui/components'
 import { NPresetForm } from '@oiij/naive-ui/components'
 import { NButton, NFlex } from 'naive-ui'
-import { h, ref } from 'vue'
+import { ref, useTemplateRef } from 'vue'
 
 interface Values {
   id?: string
+  num?: number
 }
+const presetForm = useTemplateRef('preset-form')
 const values = ref<Values>({
   id: '1',
 })
@@ -18,27 +20,30 @@ const options: PresetFormOptions<Values> = [
     key: 'id',
   },
   {
-    render: (refs, actions) => {
-      return h(NButton, { onClick: () => {
-        actions.validate()?.then(() => {
-          console.log(values)
-        })
-      } }, {
-        default: () => '验证',
-      })
+    type: 'input-number',
+    label: 'Num',
+    key: 'num',
+    rules: {
+      required: true,
     },
   },
 ]
 const rules: NaiveFormRules<Values> = {
   id: { required: true },
 }
+function handleValidate() {
+  presetForm.value?.actions.validate()
+}
 </script>
 
 <template>
   <NFlex vertical>
     <!-- @vue-generic {Values} -->
-    <NPresetForm :values="values" :options="options" :rules="rules" />
+    <NPresetForm ref="preset-form" :values="values" :options="options" :rules="rules" :form-props="{ labelPlacement: 'top' }" />
     <pre>值：{{ values }}</pre>
+    <NButton @click="handleValidate">
+      验证
+    </NButton>
   </NFlex>
 </template>
 

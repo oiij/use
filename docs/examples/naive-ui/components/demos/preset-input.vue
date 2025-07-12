@@ -8,7 +8,7 @@ const value = ref('')
 
 <template>
   <NFlex vertical>
-    <NPresetInput v-model:value="value" :options="{ type: 'input', label: '输入框' }" />
+    <NPresetInput v-model:value="value" :options="{ type: 'input' }" />
     <pre>值：{{ value }}</pre>
     <NPresetInput :options="{ type: 'button' }" />
     <NPresetInput :options="{ type: 'color-picker' }" />

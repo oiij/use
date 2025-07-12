@@ -9,7 +9,7 @@ import type { DataTableBaseColumn, DataTableColumns, DataTableFilterState, DataT
 import type { FilterState, InternalRowData, RowKey, TableBaseColumn } from 'naive-ui/es/data-table/src/interface'
 import type { ContextMenuSelectType, DataTablePlusClickRowType, DataTablePlusExposeActions, DataTablePlusExposeRefs, DataTablePlusPagination, DataTablePlusProps } from '.'
 import { NButton, NCollapseTransition, NDataTable, NDivider, NDropdown, NFlex, NGi, NGrid, NPagination } from 'naive-ui'
-import { computed, nextTick, reactive, ref, toValue, useTemplateRef } from 'vue'
+import { computed, h, nextTick, reactive, ref, toValue, useTemplateRef } from 'vue'
 import useRequest from 'vue-hooks-plus/es/useRequest'
 import { NPresetInput } from '..'
 import { renderLabel } from '../preset-input/_utils'
@@ -313,39 +313,47 @@ defineExpose({
       <NFlex vertical>
         <NGrid v-if="_filterLayout.grid" v-bind="filterGridProps">
           <NGi
-            v-for="({ key, gridItemProps, render, ...options }, _index) in filterOptions?.filter(f => !f.collapsed)"
+            v-for="({ key, gridItemProps, render, label, ...options }, _index) in filterOptions?.filter(f => !f.collapsed)"
             :key="_index"
             :span="12"
             v-bind="gridItemProps"
           >
             <component
-              :is="renderLabel(render(exposeRefs, exposeActions), options.label, key as string)"
+              :is="renderLabel(render(exposeRefs, exposeActions), label, { path: key as string, labelPlacement: 'left' })"
               v-if="render"
             />
-            <NPresetInput
+            <component
+              :is="renderLabel(
+                h(NPresetInput, {
+                  'options': options,
+                  'value': key ? params[0][key] : undefined,
+                  'onUpdate:value': (val) => filterItemUpdate(val, key),
+                }),
+                label,
+                { path: key as string, labelPlacement: 'left' })"
               v-else
-              :options="options"
-              :value="key ? params[0][key] : undefined"
-              :path="(key as string)"
-              @update:value="(val) => filterItemUpdate(val, key) "
             />
           </NGi>
         </NGrid>
         <NFlex v-if="_filterLayout.flex" v-bind="filterFlexProps">
           <template
-            v-for="({ key, render, ...options }, _index) in filterOptions?.filter(f => !f.collapsed)"
+            v-for="({ key, render, label, ...options }, _index) in filterOptions?.filter(f => !f.collapsed)"
             :key="_index"
           >
             <component
-              :is="renderLabel(render(exposeRefs, exposeActions), options.label, key as string)"
+              :is="renderLabel(render(exposeRefs, exposeActions), label, { path: key as string, labelPlacement: 'left' })"
               v-if="render"
             />
-            <NPresetInput
+            <component
+              :is="renderLabel(
+                h(NPresetInput, {
+                  'options': options,
+                  'value': key ? params[0][key] : undefined,
+                  'onUpdate:value': (val) => filterItemUpdate(val, key),
+                }),
+                label,
+                { path: key as string, labelPlacement: 'left' })"
               v-else
-              :options="options"
-              :value="key ? params[0][key] : undefined"
-              :path="(key as string)"
-              @update:value="(val) => filterItemUpdate(val, key) "
             />
           </template>
         </NFlex>
@@ -357,39 +365,47 @@ defineExpose({
         <NCollapseTransition :show="filterCollapsed">
           <NGrid v-if="_filterLayout.collapsedGrid" v-bind="filterGridProps">
             <NGi
-              v-for="({ key, gridItemProps, render, ...options }, _index) in filterOptions?.filter(f => f.collapsed)"
+              v-for="({ key, gridItemProps, render, label, ...options }, _index) in filterOptions?.filter(f => f.collapsed)"
               :key="_index"
               :span="12"
               v-bind="gridItemProps"
             >
               <component
-                :is="renderLabel(render(exposeRefs, exposeActions), options.label, key as string)"
+                :is="renderLabel(render(exposeRefs, exposeActions), label, { path: key as string, labelPlacement: 'left' })"
                 v-if="render"
               />
-              <NPresetInput
+              <component
+                :is="renderLabel(
+                  h(NPresetInput, {
+                    'options': options,
+                    'value': key ? params[0][key] : undefined,
+                    'onUpdate:value': (val) => filterItemUpdate(val, key),
+                  }),
+                  label,
+                  { path: key as string, labelPlacement: 'left' })"
                 v-else
-                :options="options"
-                :value="key ? params[0][key] : undefined"
-                :path="(key as string)"
-                @update:value="(val) => filterItemUpdate(val, key) "
               />
             </NGi>
           </NGrid>
           <NFlex v-if="_filterLayout.collapsedFlex" v-bind="filterFlexProps">
             <template
-              v-for="({ key, render, ...options }, _index) in filterOptions?.filter(f => f.collapsed)"
+              v-for="({ key, render, label, ...options }, _index) in filterOptions?.filter(f => f.collapsed)"
               :key="_index"
             >
               <component
-                :is="renderLabel(render(exposeRefs, exposeActions), options.label, key as string)"
+                :is="renderLabel(render(exposeRefs, exposeActions), label, { path: key as string, labelPlacement: 'left' })"
                 v-if="render"
               />
-              <NPresetInput
+              <component
+                :is="renderLabel(
+                  h(NPresetInput, {
+                    'options': options,
+                    'value': key ? params[0][key] : undefined,
+                    'onUpdate:value': (val) => filterItemUpdate(val, key),
+                  }),
+                  label,
+                  { path: key as string, labelPlacement: 'left' })"
                 v-else
-                :options="options"
-                :value="key ? params[0][key] : undefined"
-                :path="(key as string)"
-                @update:value="(val) => filterItemUpdate(val, key) "
               />
             </template>
           </NFlex>
@@ -430,7 +446,7 @@ defineExpose({
         <slot name="pagination" :refs="exposeRefs" :actions="exposeActions">
           <NPagination
             v-if="pagination"
-            style="margin-left:auto;"
+            style="margin-left: auto;"
             :disabled="loading"
             v-bind="{ ...paginationProps, ...paginationRef }"
             @update:page="vOn.onUpdatePage"

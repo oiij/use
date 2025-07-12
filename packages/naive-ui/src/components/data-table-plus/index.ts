@@ -1,4 +1,4 @@
-import type { DataTableColumns, DataTableInst, DataTableProps, DropdownOption, FlexProps, GridItemProps, GridProps, PaginationProps } from 'naive-ui'
+import type { DataTableColumns, DataTableInst, DataTableProps, DropdownOption, FlexProps, FormItemProps, GridItemProps, GridProps, PaginationProps } from 'naive-ui'
 import type { ComputedRef, CSSProperties, Ref, ShallowRef, VNode } from 'vue'
 import type { useRequestResult } from 'vue-hooks-plus/es/useRequest/types'
 import type { PresetInputOptions } from '../preset-input'
@@ -31,6 +31,10 @@ export type DataTablePlusExposeRefs<P extends Record<string, any>, D extends Rec
 }
 export type DataTablePlusFilterOptions<P extends Record<string, any>, D extends Record<string, any>, R extends Record<string, any>> = (PresetInputOptions & {
   key?: keyof P
+  label?: string | boolean |(FormItemProps & {
+    style?: CSSProperties
+    class?: string
+  })
   collapsed?: boolean
   gridItemProps?: GridItemProps
   render?: (refs: DataTablePlusExposeRefs<P, D, R>, actions: DataTablePlusExposeActions<P, D>) => VNode

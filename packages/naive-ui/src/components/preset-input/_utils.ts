@@ -6,12 +6,11 @@ import { h } from 'vue'
 export function renderLabel(children: VNode, label?: string | boolean |(FormItemProps & {
   style?: CSSProperties
   class?: string
-}), path?: string) {
+}), defaultProps?: FormItemProps) {
   const labelProps = typeof label === 'string' ? { label } : typeof label === 'boolean' ? {} : label
   return label
     ? h(NFormItem, {
-        labelPlacement: 'left',
-        path,
+        ...defaultProps,
         ...labelProps,
       }, {
         default: () => children,

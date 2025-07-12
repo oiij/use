@@ -1,6 +1,6 @@
-import type { FlexProps, FormItemRule, FormProps, FormRules, GridItemProps, GridProps } from 'naive-ui'
-import type { VNode } from 'vue'
-import type { NaiveFormReturns, NaiveFormRules } from '../../composables'
+import type { FlexProps, FormItemProps, FormItemRule, FormProps, FormRules, GridItemProps, GridProps } from 'naive-ui'
+import type { CSSProperties, VNode } from 'vue'
+import type { NaiveFormClearRules, NaiveFormReturns, NaiveFormRules } from '../../composables'
 
 import type { PresetInputOptions } from '../preset-input'
 
@@ -14,6 +14,10 @@ export type PresetFormExposeActions<V extends Record<string, any>> = Pick<NaiveF
 }
 export type PresetFormOptions<V extends Record<string, any>> = (PresetInputOptions & {
   key?: keyof V
+  label?: string | boolean |(FormItemProps & {
+    style?: CSSProperties
+    class?: string
+  })
   rules?: FormRules | FormItemRule | FormItemRule[]
   collapsed?: boolean
   gridItemProps?: GridItemProps
@@ -23,6 +27,7 @@ export interface PresetFormProps<V extends Record<string, any> = Record<string, 
   options?: PresetFormOptions<V>
   values?: V
   rules?: NaiveFormRules<V>
+  clearRules?: NaiveFormClearRules
   formProps?: FormProps
   gridProps?: GridProps
   flexProps?: FlexProps

@@ -3,14 +3,14 @@ import type { Ref } from 'vue'
 import { createEventHook } from '@vueuse/core'
 import { reactive, ref, toRaw, toRef, toValue } from 'vue'
 
-interface ClearRules {
+export interface NaiveFormClearRules {
   string?: string | null
   number?: number | null
   boolean?: boolean | null
 }
 
 type JSONValue = string | number | boolean | null | { [x: string]: JSONValue } | JSONValue[]
-function clearObjectValues<T extends JSONValue>(obj: T, rules?: ClearRules): T {
+function clearObjectValues<T extends JSONValue>(obj: T, rules?: NaiveFormClearRules): T {
   const { string: _string = '', number: _number = null, boolean: _boolean = false } = rules ?? {}
   // 处理数组类型
   if (Array.isArray(obj)) {
@@ -41,7 +41,7 @@ function clearObjectValues<T extends JSONValue>(obj: T, rules?: ClearRules): T {
 export type NaiveFormRules<T extends Record<string, any>> = Partial<Record<keyof T, FormRules | FormItemRule | FormItemRule[]>>
 export interface NaiveFormOptions<T extends Record<string, any>> {
   rules?: NaiveFormRules<T>
-  clearRules?: ClearRules
+  clearRules?: NaiveFormClearRules
 }
 export function useNaiveForm<T extends Record<string, any>>(value?: T, options?: NaiveFormOptions<T>) {
   const { rules, clearRules } = options ?? {}

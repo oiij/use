@@ -4,14 +4,14 @@
   "
 >
 import type { PresetFormProps } from '.'
-import { NForm, NGi, NGrid } from 'naive-ui'
-import { computed, ref } from 'vue'
+import { NButton, NCollapseTransition, NDivider, NFlex, NForm, NGi, NGrid } from 'naive-ui'
+import { computed, h, ref } from 'vue'
 import { NPresetInput } from '..'
 import { useNaiveForm } from '../../composables'
 import { renderLabel } from '../preset-input/_utils'
 import { options2Rules } from './_utils'
 
-const { options, values, rules, formProps: defaultProps, gridProps, flexProps, layout = 'grid' } = defineProps<PresetFormProps<V>>()
+const { options, values, rules, clearRules, formProps: defaultProps, gridProps, flexProps, layout = 'grid' } = defineProps<PresetFormProps<V>>()
 const emit = defineEmits<{
   (e: 'validated', val: V): void
 }>()
@@ -24,9 +24,10 @@ const _layout = computed(() => {
     collapsedFlex: _layout[1] === 'flex',
   }
 })
-
+const _rules = rules ? { ...rules, ...options2Rules(options) } : undefined
 const { formProps, formValue, formRules, formRef, validate, resetValidation, resetForm, reset, clear, onValidated } = useNaiveForm(values, {
-  rules: rules ?? options2Rules(options),
+  rules: _rules,
+  clearRules,
 })
 onValidated((value) => {
   emit('validated', value)
@@ -62,38 +63,46 @@ function onPresetInputUpdate(val: any, key?: keyof V) {
 </script>
 
 <template>
-  <NForm v-bind="{ ...(formProps as any), ...defaultProps }">
+  <NForm ref="formRef" :model="formValue" :rules="(formRules as any)" v-bind="defaultProps">
     <slot name="header" :refs="exposeRefs" :actions="exposeActions" />
     <slot :refs="exposeRefs" :actions="exposeActions">
       <NGrid v-if="_layout.grid" v-bind="gridProps">
         <NGi
-          v-for="({ key, gridItemProps, render, ...opt }, _index) in options?.filter(f => !f.collapsed)"
+          v-for="({ key, gridItemProps, render, label, ...opt }, _index) in options?.filter(f => !f.collapsed)"
           :key="_index"
           :span="12"
           v-bind="gridItemProps"
         >
-          <component :is="renderLabel(render(exposeRefs, exposeActions), opt.label, (key as string))" v-if="render" />
-          <NPresetInput
+          <component :is="renderLabel(render(exposeRefs, exposeActions), label, { path: key as string })" v-if="render" />
+          <component
+            :is="renderLabel(
+              h(NPresetInput, {
+                'options': opt,
+                'value': key ? formValue[key] : undefined,
+                'onUpdate:value': (val) => onPresetInputUpdate(val, key),
+              }),
+              label,
+              { path: key as string })"
             v-else
-            :options="opt"
-            :path="(key as string)"
-            :value="key ? formValue[key] : undefined"
-            @update:value="(val) => onPresetInputUpdate(val, key)"
           />
         </NGi>
       </NGrid>
       <NFlex v-if="_layout.flex" v-bind="flexProps">
         <template
-          v-for="({ key, render, ...opt }, _index) in options?.filter(f => !f.collapsed)"
+          v-for="({ key, render, label, ...opt }, _index) in options?.filter(f => !f.collapsed)"
           :key="_index"
         >
-          <component :is="renderLabel(render(exposeRefs, exposeActions), opt.label, (key as string))" v-if="render" />
-          <NPresetInput
+          <component :is="renderLabel(render(exposeRefs, exposeActions), label, { path: key as string })" v-if="render" />
+          <component
+            :is="renderLabel(
+              h(NPresetInput, {
+                'options': opt,
+                'value': key ? formValue[key] : undefined,
+                'onUpdate:value': (val) => onPresetInputUpdate(val, key),
+              }),
+              label,
+              { path: key as string })"
             v-else
-            :options="opt"
-            :path="(key as string)"
-            :value="key ? formValue[key] : undefined"
-            @update:value="(val) => onPresetInputUpdate(val, key)"
           />
         </template>
       </NFlex>
@@ -105,33 +114,41 @@ function onPresetInputUpdate(val: any, key?: keyof V) {
       <NCollapseTransition :show="filterCollapsed">
         <NGrid v-if="_layout.collapsedGrid" v-bind="gridProps">
           <NGi
-            v-for="({ key, gridItemProps, render, ...opt }, _index) in options?.filter(f => f.collapsed)"
+            v-for="({ key, gridItemProps, render, label, ...opt }, _index) in options?.filter(f => f.collapsed)"
             :key="_index"
             :span="12"
             v-bind="gridItemProps"
           >
-            <component :is="renderLabel(render(exposeRefs, exposeActions), opt.label, (key as string))" v-if="render" />
-            <NPresetInput
+            <component :is="renderLabel(render(exposeRefs, exposeActions), label, { path: key as string })" v-if="render" />
+            <component
+              :is="renderLabel(
+                h(NPresetInput, {
+                  'options': opt,
+                  'value': key ? formValue[key] : undefined,
+                  'onUpdate:value': (val) => onPresetInputUpdate(val, key),
+                }),
+                label,
+                { path: key as string })"
               v-else
-              :options="opt"
-              :path="(key as string)"
-              :value="key ? formValue[key] : undefined"
-              @update:value="(val) => onPresetInputUpdate(val, key)"
             />
           </NGi>
         </NGrid>
         <NFlex v-if="_layout.collapsedFlex" v-bind="flexProps">
           <template
-            v-for="({ key, render, ...opt }, _index) in options?.filter(f => f.collapsed)"
+            v-for="({ key, render, label, ...opt }, _index) in options?.filter(f => f.collapsed)"
             :key="_index"
           >
-            <component :is="renderLabel(render(exposeRefs, exposeActions), opt.label, (key as string))" v-if="render" />
-            <NPresetInput
+            <component :is="renderLabel(render(exposeRefs, exposeActions), label, { path: key as string })" v-if="render" />
+            <component
+              :is="renderLabel(
+                h(NPresetInput, {
+                  'options': opt,
+                  'value': key ? formValue[key] : undefined,
+                  'onUpdate:value': (val) => onPresetInputUpdate(val, key),
+                }),
+                label,
+                { path: key as string })"
               v-else
-              :options="opt"
-              :path="(key as string)"
-              :value="key ? formValue[key] : undefined"
-              @update:value="(val) => onPresetInputUpdate(val, key)"
             />
           </template>
         </NFlex>
