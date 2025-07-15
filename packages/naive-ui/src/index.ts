@@ -1,1 +1,1 @@
-export * from './composables/index'
+export * from './composables'

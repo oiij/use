@@ -1,5 +1,5 @@
 <script setup lang='ts'>
-import type { TypeWriterProps } from '.'
+import type { TypeWriterProps } from './index'
 import { useStyle } from '@oiij/css-render'
 import { useMarkdownIt } from '@oiij/markdown-it'
 import { useTypeWriter } from '@oiij/use'

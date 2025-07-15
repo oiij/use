@@ -1,8 +1,8 @@
 import type { DataTableColumns, DataTableInst, DataTableProps, DropdownOption, FlexProps, FormItemProps, GridItemProps, GridProps, PaginationProps } from 'naive-ui'
 import type { ComputedRef, CSSProperties, Ref, ShallowRef, VNode } from 'vue'
 import type { useRequestResult } from 'vue-hooks-plus/es/useRequest/types'
-import type { PresetInputOptions } from '../preset-input'
-import type { RemoteRequestProps } from '../remote-request'
+import type { PresetInputOptions } from '../preset-input/index'
+import type { RemoteRequestProps } from '../remote-request/index'
 
 export { default as NDataTablePlus } from './DataTablePlus.vue'
 

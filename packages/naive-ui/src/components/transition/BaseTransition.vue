@@ -1,5 +1,5 @@
 <script setup lang='ts'>
-import type { TransitionProps } from '.'
+import type { TransitionProps } from './index'
 import { useStyle } from '@oiij/css-render'
 import { cName, namespace, transitionCssr } from './transition.cssr'
 

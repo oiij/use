@@ -1,3 +1,4 @@
+import type { ValidateError } from 'async-validator'
 import type { FormInst, FormItemRule, FormRules } from 'naive-ui'
 import type { Ref } from 'vue'
 import { createEventHook } from '@vueuse/core'
@@ -43,7 +44,8 @@ export interface NaiveFormOptions<T extends Record<string, any>> {
   rules?: NaiveFormRules<T>
   clearRules?: NaiveFormClearRules
 }
-export function useNaiveForm<T extends Record<string, any>>(value?: T, options?: NaiveFormOptions<T>) {
+
+export function useNaiveForm<T extends Record<string, any> = Record<string, any>>(value?: T, options?: NaiveFormOptions<T>) {
   const { rules, clearRules } = options ?? {}
   const formValue = reactive(value ? structuredClone(toRaw(value)) : {} as T)
   const formRules = rules
@@ -56,7 +58,15 @@ export function useNaiveForm<T extends Record<string, any>>(value?: T, options?:
   }
   const onValidatedEvent = createEventHook<[T]>()
   function validate() {
-    return formRef.value?.validate().then(() => onValidatedEvent.trigger(toRaw(toValue(formValue))))
+    return new Promise<{ warnings?: ValidateError[][] }>((resolve, reject) => {
+      if (!formRef.value) {
+        return reject(new Error('formRef:undefined'))
+      }
+      formRef.value.validate().then((res) => {
+        onValidatedEvent.trigger(toRaw(toValue(formValue)))
+        return resolve(res)
+      }).catch(reject)
+    })
   }
   function resetValidation() {
     formRef.value?.restoreValidation()
@@ -86,4 +96,4 @@ export function useNaiveForm<T extends Record<string, any>>(value?: T, options?:
     onValidated: onValidatedEvent.on,
   }
 }
-export type NaiveFormReturns<T extends Record<string, any>> = ReturnType<typeof useNaiveForm<T>>
+export type NaiveFormReturns<T extends Record<string, any> = Record<string, any>> = ReturnType<typeof useNaiveForm<T>>

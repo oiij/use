@@ -1,9 +1,9 @@
 <script setup lang='ts'>
-import type { FullLoadingProps } from '.'
+import type { FullLoadingProps } from './index'
 import { useStyle } from '@oiij/css-render'
 import { NEl, NSpin } from 'naive-ui'
 import { ref, watchEffect } from 'vue'
-import { NTransition } from '../'
+import { NTransition } from '../transition/index'
 import { cName, fullLoadingCssr } from './full-loading.cssr'
 
 const { show, appendTo = 'body', mask = true, blur = true, disableScroll = true, scrollSelector = 'body', spinProps } = defineProps<FullLoadingProps>()

@@ -1,5 +1,5 @@
 import type { ConfigProviderProps, DialogProviderInst, DialogProviderProps, LoadingBarProviderInst, LoadingBarProviderProps, MessageProviderInst, MessageProviderProps, ModalProviderInst, ModalProviderProps, NotificationProviderInst, NotificationProviderProps } from 'naive-ui'
-import type { FullLoadingProps } from '../full-loading'
+import type { FullLoadingProps } from '../full-loading/index'
 
 export { default as NConfigProviders } from './ConfigProviders.vue'
 export interface ConfigProvidersProps {

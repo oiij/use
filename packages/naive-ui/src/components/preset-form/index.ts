@@ -1,18 +1,16 @@
 import type { FlexProps, FormItemProps, FormItemRule, FormProps, FormRules, GridItemProps, GridProps } from 'naive-ui'
 import type { CSSProperties, VNode } from 'vue'
-import type { NaiveFormClearRules, NaiveFormReturns, NaiveFormRules } from '../../composables'
+import type { NaiveFormClearRules, NaiveFormReturns, NaiveFormRules } from '../../composables/useNaiveForm'
 
 import type { PresetInputOptions } from '../preset-input'
 
-export type { NaiveFormRules } from '../../composables'
+export type { NaiveFormRules } from '../../'
 export { default as NPresetForm } from './PresetForm.vue'
-export type PresetFormExposeRefs<V extends Record<string, any>> = Pick<NaiveFormReturns<V>, 'formValue' | 'formRef' | 'formRules' | 'formProps'> & {
-
-}
-export type PresetFormExposeActions<V extends Record<string, any>> = Pick<NaiveFormReturns<V>, 'validate' | 'resetValidation' | 'resetForm' | 'reset' | 'clear' | 'onValidated'> & {
+export type PresetFormExposeRefs<V extends Record<string, any> = Record<string, any>> = Pick<NaiveFormReturns<V>, 'formValue' | 'formRef' | 'formRules'>
+export type PresetFormExposeActions<V extends Record<string, any> = Record<string, any>> = Pick<NaiveFormReturns<V>, 'validate' | 'resetValidation' | 'resetForm' | 'reset' | 'clear' | 'onValidated'> & {
   setValues: (value: Partial<V>) => void
 }
-export type PresetFormOptions<V extends Record<string, any>> = (PresetInputOptions & {
+export type PresetFormOptions<V extends Record<string, any> = Record<string, any>> = (PresetInputOptions & {
   key?: keyof V
   label?: string | boolean |(FormItemProps & {
     style?: CSSProperties

@@ -2,8 +2,8 @@
 <script setup lang='ts'>
 import type { NaiveFormRules, PresetFormOptions } from '@oiij/naive-ui/components'
 import { NPresetForm } from '@oiij/naive-ui/components'
-import { NButton, NFlex } from 'naive-ui'
-import { ref, useTemplateRef } from 'vue'
+import { NButton, NDivider, NFlex } from 'naive-ui'
+import { h, ref, useTemplateRef } from 'vue'
 
 interface Values {
   id?: string
@@ -25,6 +25,14 @@ const options: PresetFormOptions<Values> = [
     key: 'num',
     rules: {
       required: true,
+    },
+  },
+  {
+    gridItemProps: {
+      span: 24,
+    },
+    render: () => {
+      return h(NDivider)
     },
   },
 ]

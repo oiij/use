@@ -1,9 +1,9 @@
 <script setup lang='ts' generic="V">
 import type { Component } from 'vue'
-import type { PresetInputProps, PresetInputType } from '.'
-import { NButton, NCheckbox, NCheckboxGroup, NColorPicker, NDatePicker, NDynamicTags, NInput, NInputNumber, NRadio, NRadioGroup, NRate, NSelect, NSlider, NSwitch, NTimePicker } from 'naive-ui'
+import type { PresetInputProps, PresetInputType } from './index'
+import { NButton, NCheckbox, NCheckboxGroup, NColorPicker, NDatePicker, NDivider, NDynamicTags, NInput, NInputNumber, NRadio, NRadioGroup, NRate, NSelect, NSlider, NSwitch, NTimePicker } from 'naive-ui'
 import { h } from 'vue'
-import { NSearchInput } from '..'
+import { NSearchInput } from '../search-input/index'
 
 const { value, options } = defineProps<PresetInputProps<V>>()
 const emit = defineEmits<{
@@ -13,6 +13,7 @@ const components: Record<keyof PresetInputType, Component> = {
   'button': NButton,
   'color-picker': NColorPicker,
   'checkbox': NCheckboxGroup,
+  'divider ': NDivider,
   'date-picker': NDatePicker,
   'dynamic-tags': NDynamicTags,
   'input': NInput,
@@ -38,6 +39,12 @@ function packageComponent() {
       ..._props,
     }, {
       default: () => options?.map(m => h(NCheckbox, { ...m })),
+    })
+  }
+  if (type === 'divider ') {
+    const { ..._props } = props ?? {}
+    return h(components[type], {
+      ..._props,
     })
   }
   if (type === 'radio') {

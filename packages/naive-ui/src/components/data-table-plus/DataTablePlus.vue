@@ -7,12 +7,12 @@
 >
 import type { DataTableBaseColumn, DataTableColumns, DataTableFilterState, DataTableInst, DataTableSortState, DropdownOption, PaginationProps } from 'naive-ui'
 import type { FilterState, InternalRowData, RowKey, TableBaseColumn } from 'naive-ui/es/data-table/src/interface'
-import type { ContextMenuSelectType, DataTablePlusClickRowType, DataTablePlusExposeActions, DataTablePlusExposeRefs, DataTablePlusPagination, DataTablePlusProps } from '.'
+import type { ContextMenuSelectType, DataTablePlusClickRowType, DataTablePlusExposeActions, DataTablePlusExposeRefs, DataTablePlusPagination, DataTablePlusProps } from './index'
 import { NButton, NCollapseTransition, NDataTable, NDivider, NDropdown, NFlex, NGi, NGrid, NPagination } from 'naive-ui'
 import { computed, h, nextTick, reactive, ref, toValue, useTemplateRef } from 'vue'
 import useRequest from 'vue-hooks-plus/es/useRequest'
-import { NPresetInput } from '..'
 import { renderLabel } from '../preset-input/_utils'
+import { NPresetInput } from '../preset-input/index'
 
 const {
   api,

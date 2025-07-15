@@ -3,12 +3,12 @@
     V extends Record<string, any> = Record<string, any>,
   "
 >
-import type { PresetFormProps } from '.'
+import type { PresetFormProps } from './index'
 import { NButton, NCollapseTransition, NDivider, NFlex, NForm, NGi, NGrid } from 'naive-ui'
 import { computed, h, ref } from 'vue'
-import { NPresetInput } from '..'
-import { useNaiveForm } from '../../composables'
+import { useNaiveForm } from '../../composables/useNaiveForm'
 import { renderLabel } from '../preset-input/_utils'
+import { NPresetInput } from '../preset-input/index'
 import { options2Rules } from './_utils'
 
 const { options, values, rules, clearRules, formProps: defaultProps, gridProps, flexProps, layout = 'grid' } = defineProps<PresetFormProps<V>>()
@@ -25,7 +25,7 @@ const _layout = computed(() => {
   }
 })
 const _rules = rules ? { ...rules, ...options2Rules(options) } : undefined
-const { formProps, formValue, formRules, formRef, validate, resetValidation, resetForm, reset, clear, onValidated } = useNaiveForm(values, {
+const { formValue, formRules, formRef, validate, resetValidation, resetForm, reset, clear, onValidated } = useNaiveForm(values, {
   rules: _rules,
   clearRules,
 })
@@ -38,7 +38,6 @@ const exposeRefs = {
   formRef,
   formValue,
   formRules,
-  formProps,
 }
 const exposeActions = {
   validate,

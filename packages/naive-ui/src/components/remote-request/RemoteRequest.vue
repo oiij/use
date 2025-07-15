@@ -4,7 +4,7 @@
     D extends  Record<string, any> = Record<string, any>,
   "
 >
-import type { RemoteRequestProps } from '.'
+import type { RemoteRequestProps } from './index'
 import useRequest from 'vue-hooks-plus/es/useRequest'
 
 const {

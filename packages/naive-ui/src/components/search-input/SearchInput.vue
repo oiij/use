@@ -1,5 +1,5 @@
 <script setup lang='ts'>
-import type { SearchInputProps } from '.'
+import type { SearchInputProps } from './index'
 import { useDebounceFn, useTimeoutFn } from '@vueuse/core'
 import { NButton, NInput, NInputGroup } from 'naive-ui'
 import { ref, useTemplateRef, watch, watchEffect } from 'vue'

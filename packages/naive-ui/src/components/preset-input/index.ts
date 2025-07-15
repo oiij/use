@@ -1,6 +1,6 @@
-import type { ButtonProps, CheckboxGroupProps, CheckboxProps, ColorPickerProps, DatePickerProps, DynamicTagsProps, InputNumberProps, InputProps, RadioGroupProps, RadioProps, RateProps, SelectProps, SliderProps, SwitchProps, TimePickerProps } from 'naive-ui'
+import type { ButtonProps, CheckboxGroupProps, CheckboxProps, ColorPickerProps, DatePickerProps, DividerProps, DynamicTagsProps, InputNumberProps, InputProps, RadioGroupProps, RadioProps, RateProps, SelectProps, SliderProps, SwitchProps, TimePickerProps } from 'naive-ui'
 import type { CSSProperties } from 'vue'
-import type { SearchInputProps } from '..'
+import type { SearchInputProps } from '../search-input/index'
 
 export { default as NPresetInput } from './PresetInput.vue'
 
@@ -8,6 +8,7 @@ export interface PresetInputType {
   'button': ButtonProps
   'color-picker': ColorPickerProps
   'checkbox': CheckboxGroupProps & { options?: CheckboxProps[] }
+  'divider ': DividerProps
   'date-picker': DatePickerProps
   'dynamic-tags': DynamicTagsProps
   'input': InputProps
