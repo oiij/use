@@ -1,13 +1,14 @@
 <script setup lang='ts'
   generic="
-    P extends  Record<string, any> = Record<string, any>,
-    D extends  Record<string, any> = Record<string, any>,
-    R extends Record<string, any> = Record<string, any>
+    P extends RObject,
+    D extends RObject,
+    R extends RObject
   "
 >
 import type { DataTableBaseColumn, DataTableColumns, DataTableFilterState, DataTableInst, DataTableSortState, DropdownOption, PaginationProps } from 'naive-ui'
-import type { FilterState, InternalRowData, RowKey, TableBaseColumn } from 'naive-ui/es/data-table/src/interface'
-import type { ContextMenuSelectType, DataTablePlusClickRowType, DataTablePlusExposeActions, DataTablePlusExposeRefs, DataTablePlusPagination, DataTablePlusProps } from './index'
+import type { InternalRowData, RowKey } from 'naive-ui/es/data-table/src/interface'
+import type { RObject } from '../remote-request/index'
+import type { DataTablePlusEmits, DataTablePlusExposeActions, DataTablePlusExposeRefs, DataTablePlusPagination, DataTablePlusProps } from './index'
 import { NButton, NCollapseTransition, NDataTable, NDivider, NDropdown, NFlex, NGi, NGrid, NPagination } from 'naive-ui'
 import { computed, h, nextTick, reactive, ref, toValue, useTemplateRef } from 'vue'
 import useRequest from 'vue-hooks-plus/es/useRequest'
@@ -32,23 +33,7 @@ const {
   customStyle,
   customClass,
 } = defineProps<DataTablePlusProps<P, D, R>>()
-const emit = defineEmits<{
-  (e: 'before', params: P[]): void
-  (e: 'success', data: D, params: P[]): void
-  (e: 'error', err: Error, params: P[]): void
-  (e: 'finally', params: P[], data?: D, err?: Error): void
-  (e: 'clickRow', data: DataTablePlusClickRowType<R>): void
-  (e: 'contextMenuRow', data: DataTablePlusClickRowType<R>): void
-  (e: 'contextMenuSelect', data: ContextMenuSelectType<R>): void
-  (e: 'load', row: R): Promise<void>
-  (e: 'scroll', ev: Event): void
-  (e: 'update:checkedRowKeys', keys: (string | number)[], rows: R[], meta: { row: R | undefined, action: 'check' | 'uncheck' | 'checkAll' | 'uncheckAll' }): void
-  (e: 'update:expandedRowKeys', keys: (string | number)[]): void
-  (e: 'update:filters', filterState: FilterState, sourceColumn: TableBaseColumn): void
-  (e: 'update:sorter', options: DataTableSortState | DataTableSortState[] | null): void
-  (e: 'update:page', page: number): void
-  (e: 'update:pageSize', pageSize: number): void
-}>()
+const emit = defineEmits<DataTablePlusEmits<P, D, R>>()
 const _filterLayout = computed(() => {
   const _layout = typeof filterLayout === 'string' ? [filterLayout, filterLayout] : filterLayout
   return {

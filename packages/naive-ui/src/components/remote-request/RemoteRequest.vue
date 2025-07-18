@@ -1,10 +1,10 @@
 <script setup lang='ts'
   generic="
-    P extends  Record<string, any> = Record<string, any>,
-    D extends  Record<string, any> = Record<string, any>,
+    P extends RObject,
+    D extends RObject,
   "
 >
-import type { RemoteRequestProps } from './index'
+import type { RemoteRequestEmits, RemoteRequestProps, RObject } from './index'
 import useRequest from 'vue-hooks-plus/es/useRequest'
 
 const {
@@ -15,12 +15,7 @@ const {
   requestOptions,
   requestPlugins,
 } = defineProps<RemoteRequestProps<P, D>>()
-const emit = defineEmits<{
-  (e: 'before', params: P[]): void
-  (e: 'success', data: D, params: P[]): void
-  (e: 'error', err: Error, params: P[]): void
-  (e: 'finally', params: P[], data?: D, err?: Error): void
-}>()
+const emit = defineEmits<RemoteRequestEmits<P, D>>()
 const _fields = { page: 'page', pageSize: 'pageSize', search: 'search', list: 'list', count: 'count', rowKey: 'id', ...fields }
 
 const { loading, data, error, params, run, runAsync, refresh, refreshAsync, cancel, mutate } = useRequest<D, P[]>(api, {

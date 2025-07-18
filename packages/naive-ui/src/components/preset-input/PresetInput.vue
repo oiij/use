@@ -28,7 +28,14 @@ const components: Record<keyof PresetInputType, Component> = {
 }
 function packageComponent() {
   const { type, props } = options ?? {}
-
+  if (type === 'button') {
+    const { label, ..._props } = props ?? {}
+    return h(components[type], {
+      ..._props,
+    }, {
+      default: () => label,
+    })
+  }
   if (type === 'checkbox') {
     const { options, ..._props } = props ?? {}
     return h(components[type], {

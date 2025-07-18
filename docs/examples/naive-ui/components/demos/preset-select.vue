@@ -56,7 +56,7 @@ const optionFormat: OptionFormat<Row> = (row) => {
         id: row.id,
       }
 }
-function onUpdateValue(val: string | number | (number | string)[] | null, option: SelectOption | SelectOption[] | null, raw: Row | Row[] | null) {
+function onUpdateValue(val: Row['id'] | null, option: SelectOption | null, raw: Row | null) {
   // eslint-disable-next-line no-console
   console.log(val, option, raw)
 }

@@ -1,24 +1,25 @@
 import type { PaginationProps, SelectGroupOption, SelectInst, SelectOption, SelectProps } from 'naive-ui'
 import type { ShallowRef } from 'vue'
 import type { DataTablePlusExposeActions, DataTablePlusExposeRefsBase } from '../data-table-plus'
-import type { RemoteRequestProps } from '../remote-request'
+import type { RemoteRequestEmits, RemoteRequestProps, RObject } from '../remote-request'
 
 export { default as NPresetSelect } from './PresetSelect.vue'
-export type OptionFormat<R extends Record<string, any>> = (row: R) => SelectOption | SelectGroupOption | false | undefined | null
-export type PresetSelectValue = string | number | (string | number)[] | null
-export type PresetSelectUpdateValue<V extends PresetSelectValue, R extends Record<string, any>> = (val: V, option: SelectOption | SelectOption[] | null, raw: R | R[] | null) => void
+
+export type ArrayAwareType<V, T> = V extends null ? null : (V extends any[] ? T[] : T) | null
+export type OptionFormat<R extends RObject> = (row: R) => SelectOption | SelectGroupOption | false | undefined | null
+export type PresetSelectValue = string | number | (string | number)[]
 export type PresetSelectFields = Partial<Record<'page' | 'pageSize' | 'search' | 'list' | 'count' | 'rowKey' | 'label' | 'value' | 'children', string>>
 export interface PresetSelectPagination {
   page: number
   pageSize: number
   itemCount: number
 }
-export type PresetSelectExposeRefs<P extends Record<string, any>, D extends Record<string, any>, R extends Record<string, any>> = DataTablePlusExposeRefsBase<P, D, R> & {
+export type PresetSelectExposeRefs<P extends RObject, D extends RObject, R extends RObject> = DataTablePlusExposeRefsBase<P, D, R> & {
   selectRef: Readonly<ShallowRef<SelectInst | null>>
 }
-export type PresetSelectExposeActions<P extends Record<string, any>, D extends Record<string, any>> = DataTablePlusExposeActions<P, D>
+export type PresetSelectExposeActions<P extends RObject, D extends RObject> = DataTablePlusExposeActions<P, D>
 
-export type PresetSelectProps<V extends PresetSelectValue = null, P extends Record<string, any> = Record<string, any>, D extends Record<string, any> = Record<string, any>, R extends Record<string, any> = Record<string, any>> = RemoteRequestProps<P, D> & {
+export type PresetSelectProps<V extends PresetSelectValue, P extends RObject, D extends RObject, R extends RObject> = RemoteRequestProps<P, D> & {
   value?: V
   fallbackLabel?: string
   multiple?: boolean
@@ -28,4 +29,15 @@ export type PresetSelectProps<V extends PresetSelectValue = null, P extends Reco
   fields?: PresetSelectFields
   selectProps?: SelectProps
   pagination?: Omit<PaginationProps, 'page' | 'pageSize'> | boolean
+}
+export type PresetSelectEmits<V extends PresetSelectValue, P extends RObject, D extends RObject, R extends RObject> = RemoteRequestEmits<P, D> & {
+  (e: 'blur', ev: FocusEvent): void
+  (e: 'clear',): void
+  (e: 'create', label: string): SelectOption
+  (e: 'focus', ev: FocusEvent): void
+  (e: 'scroll', ev: Event): void
+  (e: 'search', value: string): void
+  (e: 'update:value', val: V | null, option: ArrayAwareType<V, SelectOption>, raw: ArrayAwareType<V, R>): void
+  (e: 'update:page', page: number): void
+  (e: 'update:pageSize', pageSize: number): void
 }

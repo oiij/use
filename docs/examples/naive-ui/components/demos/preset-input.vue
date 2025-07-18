@@ -10,7 +10,7 @@ const value = ref('')
   <NFlex vertical>
     <NPresetInput v-model:value="value" :options="{ type: 'input' }" />
     <pre>值：{{ value }}</pre>
-    <NPresetInput :options="{ type: 'button' }" />
+    <NPresetInput :options="{ type: 'button', props: { label: '按钮' } }" />
     <NPresetInput :options="{ type: 'color-picker' }" />
     <NPresetInput :options="{ type: 'checkbox', props: { options: [{ label: '1', value: 1 }, { label: '2', value: 2 }] } }" />
     <NPresetInput :options="{ type: 'date-picker' }" />

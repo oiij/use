@@ -1,8 +1,9 @@
 <script setup lang='ts'
   generic="
-    V extends Record<string, any> = Record<string, any>,
+    V extends RObject,
   "
 >
+import type { RObject } from '../remote-request/index'
 import type { PresetFormProps } from './index'
 import { NButton, NCollapseTransition, NDivider, NFlex, NForm, NGi, NGrid } from 'naive-ui'
 import { computed, h, ref } from 'vue'

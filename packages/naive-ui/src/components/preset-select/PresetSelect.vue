@@ -1,13 +1,14 @@
 <script setup lang='ts'
   generic="
-    V extends  PresetSelectValue = null,
-    P extends  Record<string, any> = Record<string, any>,
-    D extends  Record<string, any> = Record<string, any>,
-    R extends Record<string, any> = Record<string, any>,
+    V extends PresetSelectValue,
+    P extends RObject,
+    D extends RObject,
+    R extends RObject,
   "
 >
 import type { PaginationProps, SelectGroupOption, SelectOption } from 'naive-ui'
-import type { PresetSelectExposeActions, PresetSelectExposeRefs, PresetSelectPagination, PresetSelectProps, PresetSelectValue } from './index'
+import type { RObject } from '../remote-request/index'
+import type { ArrayAwareType, PresetSelectEmits, PresetSelectExposeActions, PresetSelectExposeRefs, PresetSelectPagination, PresetSelectProps, PresetSelectValue } from './index'
 import { useDebounceFn } from '@vueuse/core'
 import { NFlex, NPagination, NSelect } from 'naive-ui'
 import { computed, reactive, ref, toRaw, toValue, useTemplateRef } from 'vue'
@@ -30,21 +31,7 @@ const {
   requestPlugins,
 } = defineProps<PresetSelectProps<V, P, D, R>>()
 
-const emit = defineEmits<{
-  (e: 'before', params: P[]): void
-  (e: 'success', data: D, params: P[]): void
-  (e: 'error', err: Error, params: P[]): void
-  (e: 'finally', params: P[], data?: D, err?: Error): void
-  (e: 'blur', ev: FocusEvent): void
-  (e: 'clear',): void
-  (e: 'create', label: string): SelectOption
-  (e: 'focus', ev: FocusEvent): void
-  (e: 'scroll', ev: Event): void
-  (e: 'search', value: string): void
-  (e: 'update:value', val: V | null, option: SelectOption | SelectOption[] | null, raw: R | R[] | null): void
-  (e: 'update:page', page: number): void
-  (e: 'update:pageSize', pageSize: number): void
-}>()
+const emit = defineEmits<PresetSelectEmits<V, P, D, R>>()
 const selectRef = useTemplateRef('select-ref')
 const _fields = { page: 'page', pageSize: 'pageSize', search: 'search', list: 'list', count: 'count', rowKey: 'id', label: 'label', value: 'value', children: 'children', ...fields }
 const paginationProps = reactive<PaginationProps>({
@@ -151,9 +138,9 @@ const vOnSelect = {
     emit('scroll', ev)
   },
 
-  onUpdateValue: (val: V, option: SelectOption | SelectOption[] | null) => {
-    const rawSelectValue = Array.isArray(val) ? rawList.value.filter(f => val.includes(f[_fields.rowKey])) : rawList.value.find(f => f[_fields.rowKey] === val)
-    emit('update:value', val, option, rawSelectValue ? toRaw(toValue(rawSelectValue)) : null)
+  onUpdateValue: (val: V | null, option: SelectOption | SelectOption[] | null) => {
+    const rawSelectValue = Array.isArray(val) ? rawList.value.filter(f => val.includes(f[_fields.rowKey])) : rawList.value.find(f => f[_fields.rowKey] === val) ?? null
+    emit('update:value', val, option as ArrayAwareType<V, SelectOption>, toRaw(toValue(rawSelectValue)) as ArrayAwareType<V, R>)
   },
   onSearch: (val: string) => {
     searchValue.value = val
