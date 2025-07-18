@@ -7,7 +7,7 @@ export { default as NPresetSelect } from './PresetSelect.vue'
 
 export type ArrayAwareType<V, T> = V extends null ? null : (V extends any[] ? T[] : T) | null
 export type OptionFormat<R extends RObject> = (row: R) => SelectOption | SelectGroupOption | false | undefined | null
-export type PresetSelectValue = string | number | (string | number)[]
+export type PresetSelectValue = string | number | (string | number)[] | null
 export type PresetSelectFields = Partial<Record<'page' | 'pageSize' | 'search' | 'list' | 'count' | 'rowKey' | 'label' | 'value' | 'children', string>>
 export interface PresetSelectPagination {
   page: number
