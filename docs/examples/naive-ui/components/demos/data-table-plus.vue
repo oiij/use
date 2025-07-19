@@ -71,6 +71,10 @@ function onLoaded(data: Res) {
 }
 const columns: DataTableColumns<Row> = [
   {
+    type: 'selection',
+    multiple: true,
+  },
+  {
     key: 'id',
     title: 'ID',
     sorter: true,
@@ -135,6 +139,9 @@ function onClickRow(data: any) {
 function onContextMenuRow(data: any) {
   console.log(data)
 }
+function onUpdateCheckedRowKeys(key: any, rows: any, meta: any) {
+  console.log(key, rows, meta)
+}
 </script>
 
 <template>
@@ -157,6 +164,7 @@ function onContextMenuRow(data: any) {
       @click-row="onClickRow"
       @context-menu-row="onContextMenuRow"
       @success="onLoaded"
+      @update:checked-row-keys="onUpdateCheckedRowKeys"
     />
   </NFlex>
 </template>

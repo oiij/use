@@ -202,7 +202,7 @@ const vOn = {
     row: InternalRowData | undefined
     action: 'check' | 'uncheck' | 'checkAll' | 'uncheckAll'
   }) => {
-    emit('update:checkedRowKeys', keys, rows as R[], meta as {
+    emit('update:checkedRowKeys', keys, rows.map(toRaw) as R[], { row: toRaw(meta.row), action: meta.action } as {
       row: R | undefined
       action: 'check' | 'uncheck' | 'checkAll' | 'uncheckAll'
     })
