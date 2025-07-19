@@ -10,7 +10,7 @@ import type { InternalRowData, RowKey } from 'naive-ui/es/data-table/src/interfa
 import type { RObject } from '../remote-request/index'
 import type { DataTablePlusEmits, DataTablePlusExposeActions, DataTablePlusExposeRefs, DataTablePlusPagination, DataTablePlusProps } from './index'
 import { NButton, NCollapseTransition, NDataTable, NDivider, NDropdown, NFlex, NGi, NGrid, NPagination } from 'naive-ui'
-import { computed, h, nextTick, reactive, ref, toValue, useTemplateRef } from 'vue'
+import { computed, h, nextTick, reactive, ref, toRaw, toValue, useTemplateRef } from 'vue'
 import useRequest from 'vue-hooks-plus/es/useRequest'
 import { renderLabel } from '../preset-input/_utils'
 import { NPresetInput } from '../preset-input/index'
@@ -223,17 +223,17 @@ function onSelect(key: string | number, option: DropdownOption) {
   emit('contextMenuSelect', {
     key,
     option,
-    row: toValue(templateRow),
+    row: toRaw(toValue(templateRow)),
   })
 }
 
 function rowProps(row: R, index: number) {
   return {
     onClick: (event: MouseEvent) => {
-      emit('clickRow', { row, index, event })
+      emit('clickRow', { row: toRaw(row), index, event })
     },
     onContextmenu: (event: MouseEvent) => {
-      emit('contextMenuRow', { row, index, event })
+      emit('contextMenuRow', { row: toRaw(row), index, event })
       if (contextMenuOptions) {
         event.preventDefault()
         showDropdownFlag.value = false

@@ -42,12 +42,22 @@ const rules: NaiveFormRules<Values> = {
 function handleValidate() {
   presetForm.value?.actions.validate()
 }
+function onValidated(values: any) {
+  console.log(values)
+}
 </script>
 
 <template>
   <NFlex vertical>
     <!-- @vue-generic {Values} -->
-    <NPresetForm ref="preset-form" :values="values" :options="options" :rules="rules" :form-props="{ labelPlacement: 'top' }" />
+    <NPresetForm
+      ref="preset-form"
+      :values="values"
+      :options="options"
+      :rules="rules"
+      :form-props="{ labelPlacement: 'top' }"
+      @validated="onValidated"
+    />
     <pre>值：{{ values }}</pre>
     <NButton @click="handleValidate">
       验证

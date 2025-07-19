@@ -129,6 +129,12 @@ const contextMenuOptions = [
 function onContextMenuSelect(data: ContextMenuSelectType<Row>) {
   console.log(data)
 }
+function onClickRow(data: any) {
+  console.log(data)
+}
+function onContextMenuRow(data: any) {
+  console.log(data)
+}
 </script>
 
 <template>
@@ -148,6 +154,8 @@ function onContextMenuSelect(data: ContextMenuSelectType<Row>) {
       :columns="columns"
       :context-menu-options="contextMenuOptions"
       @context-menu-select="onContextMenuSelect"
+      @click-row="onClickRow"
+      @context-menu-row="onContextMenuRow"
       @success="onLoaded"
     />
   </NFlex>
