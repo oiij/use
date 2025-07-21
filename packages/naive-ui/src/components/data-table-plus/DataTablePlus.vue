@@ -209,11 +209,8 @@ const vOn = {
     row: InternalRowData | undefined
     action: 'check' | 'uncheck' | 'checkAll' | 'uncheckAll'
   }) => {
-    const rows = _dataCache.filter(f => keys.includes(f[_fields.rowKey]))
-    emit('update:checkedRowKeys', keys, rows as R[], { row: toRaw(meta.row), action: meta.action } as {
-      row: R | undefined
-      action: 'check' | 'uncheck' | 'checkAll' | 'uncheckAll'
-    })
+    const rows = keys.map(m => _dataCache.find(f => f[_fields.rowKey] === m))
+    emit('update:checkedRowKeys', keys, rows, { row: toRaw(meta.row) as R | undefined, action: meta.action })
   },
   onUpdateExpandedRowKeys: (keys: (string | number)[]) => {
     emit('update:expandedRowKeys', keys)

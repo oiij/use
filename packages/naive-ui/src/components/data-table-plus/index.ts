@@ -72,7 +72,7 @@ export type DataTablePlusEmits<P extends RObject, D extends RObject, R extends R
   (e: 'contextMenuSelect', data: ContextMenuSelectType<R>): void
   (e: 'load', row: R): Promise<void>
   (e: 'scroll', ev: Event): void
-  (e: 'update:checkedRowKeys', keys: (string | number)[], rows: R[], meta: { row: R | undefined, action: 'check' | 'uncheck' | 'checkAll' | 'uncheckAll' }): void
+  (e: 'update:checkedRowKeys', keys: (string | number)[], rows: (R | undefined)[], meta: { row: R | undefined, action: 'check' | 'uncheck' | 'checkAll' | 'uncheckAll' }): void
   (e: 'update:expandedRowKeys', keys: (string | number)[]): void
   (e: 'update:filters', filterState: FilterState, sourceColumn: TableBaseColumn): void
   (e: 'update:sorter', options: DataTableSortState | DataTableSortState[] | null): void
