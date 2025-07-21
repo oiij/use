@@ -91,6 +91,7 @@ const { loading, data, error, params, run, runAsync, refresh, refreshAsync, canc
   },
 
 }, requestPlugins)
+const _dataCache: R[] = []
 const rawList = computed(() => {
   if (!data.value)
     return []
@@ -106,6 +107,12 @@ const scrollX = computed(() => {
   }, 0)
 })
 function onSuccessEffect(data: D, params: P[]) {
+  data[_fields.list]?.forEach((f: any) => {
+    if (!_dataCache.some(s => s[_fields.rowKey] === f[_fields.rowKey])) {
+      _dataCache.push(f)
+    }
+  })
+
   paginationRef.value.page = _fields.page in params[0] ? Number(params[0][_fields.page]) : 1
   paginationRef.value.pageSize = _fields.pageSize in params[0] ? Number(params[0][_fields.pageSize]) : 10
   paginationRef.value.itemCount = _fields.count in data ? Number(data[_fields.count]) : 0
@@ -198,11 +205,12 @@ const vOn = {
   onScroll: (e: Event) => {
     emit('scroll', e)
   },
-  onUpdateCheckedRowKeys: (keys: RowKey[], rows: InternalRowData[], meta: {
+  onUpdateCheckedRowKeys: (keys: RowKey[], _rows: InternalRowData[], meta: {
     row: InternalRowData | undefined
     action: 'check' | 'uncheck' | 'checkAll' | 'uncheckAll'
   }) => {
-    emit('update:checkedRowKeys', keys, rows.map(toRaw) as R[], { row: toRaw(meta.row), action: meta.action } as {
+    const rows = _dataCache.filter(f => keys.includes(f[_fields.rowKey]))
+    emit('update:checkedRowKeys', keys, rows as R[], { row: toRaw(meta.row), action: meta.action } as {
       row: R | undefined
       action: 'check' | 'uncheck' | 'checkAll' | 'uncheckAll'
     })
