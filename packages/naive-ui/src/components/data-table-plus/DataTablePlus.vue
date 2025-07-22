@@ -14,10 +14,12 @@ import { computed, h, nextTick, reactive, ref, toRaw, toValue, useTemplateRef } 
 import useRequest from 'vue-hooks-plus/es/useRequest'
 import { renderLabel } from '../preset-input/_utils'
 import { NPresetInput } from '../preset-input/index'
+import { NSearchInput } from '../search-input/index'
 
 const {
   api,
   defaultParams: propsParams,
+  title,
   manual,
   columns,
   filterOptions,
@@ -26,6 +28,7 @@ const {
   filterLayout = 'grid',
   contextMenuOptions,
   fields,
+  search,
   pagination,
   dataTableProps,
   requestOptions,
@@ -45,7 +48,10 @@ const _filterLayout = computed(() => {
 })
 const columnsReactive = reactive<DataTableColumns<R>>(columns ?? [])
 const dataTableRef = useTemplateRef<DataTableInst>('data-table-ref')
-const _fields = { page: 'page', pageSize: 'pageSize', filter: 'filter', sorter: 'sorter', list: 'list', count: 'count', rowKey: 'id', ...fields }
+const _fields = { page: 'page', pageSize: 'pageSize', filter: 'filter', sorter: 'sorter', list: 'list', count: 'count', rowKey: 'id', search: 'search', ...fields }
+const searchProps = {
+  ...(search && typeof search === 'boolean' ? {} : search),
+}
 const paginationProps = reactive<PaginationProps>({
   showSizePicker: true,
   pageSizes: [10, 20, 30],
@@ -257,7 +263,7 @@ function rowProps(row: R, index: number) {
 
 const filterCollapsed = ref(false)
 
-function filterItemUpdate(val: any, key?: keyof P) {
+function onValueUpdate(val: any, key?: keyof P) {
   if (key) {
     _run({
       [key]: val,
@@ -299,9 +305,27 @@ defineExpose({
 
 <template>
   <NFlex vertical>
+    <slot name="header" :refs="exposeRefs" :actions="exposeActions">
+      <NFlex>
+        <slot name="title">
+          <div style="height:100%;display:flex;align-items:center;">
+            <span v-if="title" style="font-size:16px;">{{ title }}</span>
+          </div>
+        </slot>
+        <NSearchInput
+          v-if="search"
+          style="margin-left: auto;width:260px"
+          :value="params[0][_fields.search]"
+          :loading="loading"
+          v-bind="searchProps"
+          @update:value="(val) => onValueUpdate(val, _fields.search)"
+        />
+        <slot name="header-extra" :refs="exposeRefs" :actions="exposeActions" />
+      </NFlex>
+    </slot>
     <slot name="filter" :refs="exposeRefs" :actions="exposeActions">
       <NFlex vertical>
-        <NGrid v-if="_filterLayout.grid" v-bind="filterGridProps">
+        <NGrid v-if="_filterLayout.grid && (filterOptions?.filter(f => !f.collapsed).length ?? 0 > 0)" v-bind="filterGridProps">
           <NGi
             v-for="({ key, gridItemProps, render, label, ...options }, _index) in filterOptions?.filter(f => !f.collapsed)"
             :key="_index"
@@ -317,7 +341,7 @@ defineExpose({
                 h(NPresetInput, {
                   'options': options,
                   'value': key ? params[0][key] : undefined,
-                  'onUpdate:value': (val) => filterItemUpdate(val, key),
+                  'onUpdate:value': (val) => onValueUpdate(val, key),
                 }),
                 label,
                 { path: key as string, labelPlacement: 'left' })"
@@ -325,7 +349,7 @@ defineExpose({
             />
           </NGi>
         </NGrid>
-        <NFlex v-if="_filterLayout.flex" v-bind="filterFlexProps">
+        <NFlex v-if="_filterLayout.flex && (filterOptions?.filter(f => !f.collapsed).length ?? 0 > 0)" v-bind="filterFlexProps">
           <template
             v-for="({ key, render, label, ...options }, _index) in filterOptions?.filter(f => !f.collapsed)"
             :key="_index"
@@ -339,7 +363,7 @@ defineExpose({
                 h(NPresetInput, {
                   'options': options,
                   'value': key ? params[0][key] : undefined,
-                  'onUpdate:value': (val) => filterItemUpdate(val, key),
+                  'onUpdate:value': (val) => onValueUpdate(val, key),
                 }),
                 label,
                 { path: key as string, labelPlacement: 'left' })"
@@ -353,7 +377,7 @@ defineExpose({
           </NButton>
         </NDivider>
         <NCollapseTransition :show="filterCollapsed">
-          <NGrid v-if="_filterLayout.collapsedGrid" v-bind="filterGridProps">
+          <NGrid v-if="_filterLayout.collapsedGrid && (filterOptions?.filter(f => f.collapsed)?.length ?? 0 > 0)" v-bind="filterGridProps">
             <NGi
               v-for="({ key, gridItemProps, render, label, ...options }, _index) in filterOptions?.filter(f => f.collapsed)"
               :key="_index"
@@ -369,7 +393,7 @@ defineExpose({
                   h(NPresetInput, {
                     'options': options,
                     'value': key ? params[0][key] : undefined,
-                    'onUpdate:value': (val) => filterItemUpdate(val, key),
+                    'onUpdate:value': (val) => onValueUpdate(val, key),
                   }),
                   label,
                   { path: key as string, labelPlacement: 'left' })"
@@ -377,7 +401,7 @@ defineExpose({
               />
             </NGi>
           </NGrid>
-          <NFlex v-if="_filterLayout.collapsedFlex" v-bind="filterFlexProps">
+          <NFlex v-if="_filterLayout.collapsedFlex && (filterOptions?.filter(f => f.collapsed)?.length ?? 0 > 0)" v-bind="filterFlexProps">
             <template
               v-for="({ key, render, label, ...options }, _index) in filterOptions?.filter(f => f.collapsed)"
               :key="_index"
@@ -391,7 +415,7 @@ defineExpose({
                   h(NPresetInput, {
                     'options': options,
                     'value': key ? params[0][key] : undefined,
-                    'onUpdate:value': (val) => filterItemUpdate(val, key),
+                    'onUpdate:value': (val) => onValueUpdate(val, key),
                   }),
                   label,
                   { path: key as string, labelPlacement: 'left' })"
@@ -430,19 +454,17 @@ defineExpose({
         <slot name="loading" :refs="exposeRefs" :actions="exposeActions" />
       </template>
     </NDataTable>
-    <slot name="actions" :refs="exposeRefs" :actions="exposeActions">
+    <slot name="footer" :refs="exposeRefs" :actions="exposeActions">
       <NFlex>
-        <slot name="extra" :refs="exposeRefs" :actions="exposeActions" />
-        <slot name="pagination" :refs="exposeRefs" :actions="exposeActions">
-          <NPagination
-            v-if="pagination"
-            style="margin-left: auto;"
-            :disabled="loading"
-            v-bind="{ ...paginationProps, ...paginationRef }"
-            @update:page="vOn.onUpdatePage"
-            @update:page-size="vOn.onUpdatePageSize"
-          />
-        </slot>
+        <slot name="footer-extra" :refs="exposeRefs" :actions="exposeActions" />
+        <NPagination
+          v-if="pagination"
+          style="margin-left: auto;"
+          :disabled="loading"
+          v-bind="{ ...paginationProps, ...paginationRef }"
+          @update:page="vOn.onUpdatePage"
+          @update:page-size="vOn.onUpdatePageSize"
+        />
       </NFlex>
     </slot>
     <NDropdown

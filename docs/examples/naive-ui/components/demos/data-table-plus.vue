@@ -50,13 +50,16 @@ const filterOptions: DataTablePlusFilterOptions<Params, Res, Row> = [
     key: 'search',
     label: '搜索',
     type: 'search',
+    collapsed: true,
   },
   {
     key: 'id',
     type: 'input',
     label: true,
+    collapsed: true,
   },
   {
+    collapsed: true,
     render: (refs, actions) => {
       return h(NButton, {
         onClick: () => {
@@ -146,15 +149,12 @@ function onUpdateCheckedRowKeys(key: any, rows: any, meta: any) {
 
 <template>
   <NFlex vertical>
-    <NFlex>
-      <NButton @click="tableRef?.actions.refresh()">
-        Refresh
-      </NButton>
-    </NFlex>
     <!-- @vue-generic {Params,Res,Row} -->
     <NDataTablePlus
       ref="tableRef"
       pagination
+      search
+      title="数据表格"
       :style="{ width: '100%', height: '500px' }"
       :api="api"
       :filter-options="filterOptions"
@@ -165,7 +165,13 @@ function onUpdateCheckedRowKeys(key: any, rows: any, meta: any) {
       @context-menu-row="onContextMenuRow"
       @success="onLoaded"
       @update:checked-row-keys="onUpdateCheckedRowKeys"
-    />
+    >
+      <template #header-extra>
+        <NButton @click="tableRef?.actions.refresh()">
+          Refresh
+        </NButton>
+      </template>
+    </NDataTablePlus>
   </NFlex>
 </template>
 

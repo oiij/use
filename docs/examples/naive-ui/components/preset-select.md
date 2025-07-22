@@ -7,19 +7,41 @@
 ## Types
 
 ```ts
-export type OptionFormat<R extends Record<string, any>> = (row: R) => SelectOption | SelectGroupOption
+export type ArrayAwareType<V, T> = V extends null ? null : (V extends any[] ? T[] : T) | null
+export type OptionFormat<R extends RObject> = (row: R) => SelectOption | SelectGroupOption | false | undefined | null
 export type PresetSelectValue = string | number | (string | number)[] | null
-export type PresetSelectUpdateValue<R extends Record<string, any>> = (val: string | number | (string | number)[] | null, option: SelectOption | SelectOption[] | null, raw: R | R[] | null) => void
 export type PresetSelectFields = Partial<Record<'page' | 'pageSize' | 'search' | 'list' | 'count' | 'rowKey' | 'label' | 'value' | 'children', string>>
 export interface PresetSelectPagination {
   page: number
   pageSize: number
   itemCount: number
 }
-export type PresetSelectExposeRefs<P extends Record<string, any>, D extends Record<string, any>, R extends Record<string, any>> = DataTablePlusExposeRefsBase<P, D, R> & {
+export type PresetSelectExposeRefs<P extends RObject, D extends RObject, R extends RObject> = DataTablePlusExposeRefsBase<P, D, R> & {
   selectRef: Readonly<ShallowRef<SelectInst | null>>
 }
-export type PresetSelectExposeActions<P extends Record<string, any>, D extends Record<string, any>> = DataTablePlusExposeActions<P, D>
+export type PresetSelectExposeActions<P extends RObject, D extends RObject> = DataTablePlusExposeActions<P, D>
+export type PresetSelectProps<V extends PresetSelectValue, P extends RObject, D extends RObject, R extends RObject> = RemoteRequestProps<P, D> & {
+  value?: V
+  fallbackLabel?: string
+  multiple?: boolean
+  disabled?: boolean
+  debounce?: boolean | number
+  optionFormat?: OptionFormat<R>
+  fields?: PresetSelectFields
+  selectProps?: SelectProps
+  pagination?: Omit<PaginationProps, 'page' | 'pageSize'> | boolean
+}
+export type PresetSelectEmits<V extends PresetSelectValue, P extends RObject, D extends RObject, R extends RObject> = RemoteRequestEmits<P, D> & {
+  (e: 'blur', ev: FocusEvent): void
+  (e: 'clear'): void
+  (e: 'create', label: string): SelectOption
+  (e: 'focus', ev: FocusEvent): void
+  (e: 'scroll', ev: Event): void
+  (e: 'search', value: string): void
+  (e: 'update:value', val: V | null, option: ArrayAwareType<V, SelectOption>, raw: ArrayAwareType<V, R>): void
+  (e: 'update:page', page: number): void
+  (e: 'update:pageSize', pageSize: number): void
+}
 ```
 
 ## Props
@@ -28,11 +50,12 @@ export type PresetSelectExposeActions<P extends Record<string, any>, D extends R
 | -------------- | -------------------------- | ------- | ------------------------------ |
 | api            | (params:Object)=>Promise   | -       | 异步接口返回的数据的方法       |
 | value          | PresetSelectValue          | -       | 选择器的值                     |
-| fallbackLabel  | string                     | -       | 无数据时的占位符               |
+| fallbackLabel  | String                     | -       | 无数据时的占位符               |
 | defaultParams  | Object                     | -       | 默认的参数                     |
-| manual         | boolean                    | -       | 是否手动触发请求               |
-| multiple       | boolean                    | -       | 是否多选                       |
-| disabled       | boolean                    | -       | 是否禁用                       |
+| manual         | Boolean                    | -       | 是否手动触发请求               |
+| multiple       | Boolean                    | -       | 是否多选                       |
+| disabled       | Boolean                    | -       | 是否禁用                       |
+| debounce       | Boolean or Number          | -       | 防抖时间                       |
 | optionFormat   | OptionFormat               | -       | 选项格式化函数                 |
 | fields         | Object                     | -       | 内置参数的字段                 |
 | pagination     | PaginationProps or Boolean | -       | 数据表格的分页配置             |

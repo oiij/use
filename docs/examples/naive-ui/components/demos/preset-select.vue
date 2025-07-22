@@ -80,7 +80,7 @@ function onSuccess(res: Res, params: Params[]) {
       @update:value="onUpdateValue"
       @success="onSuccess"
     >
-      <template #extra>
+      <template #footer-extra>
         <NButton>新增</NButton>
       </template>
     </NPresetSelect>

@@ -8,7 +8,7 @@ const value = ref('')
 
 <template>
   <NFlex>
-    <NSearchInput v-model:value="value" type="info" />
+    <NSearchInput v-model:value="value" />
     <pre>搜索结果：{{ value }}</pre>
   </NFlex>
 </template>

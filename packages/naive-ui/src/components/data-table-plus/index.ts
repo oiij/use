@@ -4,6 +4,7 @@ import type { ComputedRef, CSSProperties, Ref, ShallowRef, VNode } from 'vue'
 import type { useRequestResult } from 'vue-hooks-plus/es/useRequest/types'
 import type { PresetInputOptions } from '../preset-input/index'
 import type { RemoteRequestEmits, RemoteRequestProps, RObject } from '../remote-request/index'
+import type { SearchInputProps } from '../search-input/index'
 
 export { default as NDataTablePlus } from './DataTablePlus.vue'
 
@@ -51,9 +52,10 @@ export interface ContextMenuSelectType<R extends RObject> {
   option: DropdownOption
   row?: R
 }
-export type DataTablePlusFields = Partial<Record<'page' | 'pageSize' | 'filter' | 'sorter' | 'list' | 'count' | 'rowKey', string>>
+export type DataTablePlusFields = Partial<Record<'page' | 'pageSize' | 'filter' | 'sorter' | 'list' | 'count' | 'rowKey' | 'search', string>>
 
 export type DataTablePlusProps<P extends RObject, D extends RObject, R extends RObject> = RemoteRequestProps<P, D> & {
+  title?: string
   columns?: DataTableColumns<R>
   filterOptions?: DataTablePlusFilterOptions<P, D, R>
   filterGridProps?: GridProps
@@ -61,6 +63,7 @@ export type DataTablePlusProps<P extends RObject, D extends RObject, R extends R
   filterLayout?: 'grid' | 'flex' | ['grid' | 'flex']
   contextMenuOptions?: DropdownOption[]
   fields?: DataTablePlusFields
+  search?: SearchInputProps | boolean
   pagination?: Omit<PaginationProps, 'page' | 'pageSize'> | boolean
   dataTableProps?: DataTableProps
   customStyle?: CSSProperties

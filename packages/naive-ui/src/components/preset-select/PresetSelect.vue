@@ -248,20 +248,18 @@ defineExpose({
       <slot name="header" :refs="exposeRefs" :actions="exposeActions" />
     </template>
     <template #action>
-      <slot name="action" :refs="exposeRefs" :actions="exposeActions">
+      <slot name="footer" :refs="exposeRefs" :actions="exposeActions">
         <NFlex>
-          <slot name="extra" :refs="exposeRefs" :actions="exposeActions" />
-          <slot name="pagination" :refs="exposeRefs" :actions="exposeActions">
-            <NPagination
-              v-if="pagination"
-              style="margin-left: auto;"
-              simple
-              :disabled="loading"
-              v-bind="{ ...paginationProps, ...paginationRef }"
-              @update:page="vOnPagination.onUpdatePage"
-              @update:page-size="vOnPagination.onUpdatePageSize"
-            />
-          </slot>
+          <slot name="footer-extra" :refs="exposeRefs" :actions="exposeActions" />
+          <NPagination
+            v-if="pagination"
+            style="margin-left: auto;"
+            simple
+            :disabled="loading"
+            v-bind="{ ...paginationProps, ...paginationRef }"
+            @update:page="vOnPagination.onUpdatePage"
+            @update:page-size="vOnPagination.onUpdatePageSize"
+          />
         </NFlex>
       </slot>
     </template>
