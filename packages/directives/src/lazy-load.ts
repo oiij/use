@@ -8,8 +8,8 @@ type TargetElement = HTMLImageElement & {
 function setValue(target: TargetElement, binding: DirectiveBinding<BindingValue>) {
   target._lazy_load_src = binding.value
 }
-export const lazyLoad: Directive = {
-  mounted(target: TargetElement, binding: DirectiveBinding<BindingValue>) {
+export const lazyLoad: Directive<TargetElement, BindingValue> = {
+  mounted(target, binding) {
     if (!(typeof binding.value === 'string')) {
       return console.warn('LazyLoad: value is not a string')
     }
@@ -23,7 +23,7 @@ export const lazyLoad: Directive = {
     }, { threshold: 1 })
     target._lazy_load_observer.observe(target)
   },
-  updated(target: TargetElement, binding: DirectiveBinding<BindingValue>) {
+  updated(target, binding) {
     if (!(typeof binding.value === 'string')) {
       return console.warn('LazyLoad: value is not a string')
     }
@@ -32,7 +32,7 @@ export const lazyLoad: Directive = {
     }
     setValue(target, binding)
   },
-  unmounted(target: TargetElement) {
+  unmounted(target) {
     target._lazy_load_observer.unobserve(target)
     target._lazy_load_observer.disconnect()
   },

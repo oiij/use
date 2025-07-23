@@ -1,4 +1,4 @@
-import type { App } from 'vue'
+import type { App, Directive } from 'vue'
 import { arrayBufferSrc } from './array-buffer-src'
 import { clickOutside } from './click-outside'
 import { copy } from './copy'
@@ -9,7 +9,7 @@ import { longPress } from './long-press'
 import { throttle } from './throttle'
 import { watermark } from './watermark'
 
-export const directives = {
+const directives = {
   arrayBufferSrc,
   clickOutside,
   copy,
@@ -19,13 +19,38 @@ export const directives = {
   longPress,
   throttle,
   watermark,
-}
+} as Record<'arrayBufferSrc' | 'clickOutside' | 'copy' | 'debounce' | 'intoView' | 'lazyLoad' | 'longPress' | 'throttle' | 'watermark', Directive>
 
-export const useDirective = {
+const setupDirective = {
   install(app: App) {
     Object.entries(directives).forEach(([key, directive]) => {
       app.directive(key, directive)
     })
   },
 }
-export default directives
+declare module 'vue' {
+  export interface ComponentCustomProperties {
+    vArrayBufferSrc: typeof arrayBufferSrc
+    vClickOutside: typeof clickOutside
+    vCopy: typeof copy
+    vDebounce: typeof debounce
+    vIntoView: typeof intoView
+    vLazyLoad: typeof lazyLoad
+    vLongPress: typeof longPress
+    vThrottle: typeof throttle
+    vWatermark: typeof watermark
+  }
+}
+export {
+  arrayBufferSrc,
+  clickOutside,
+  copy,
+  debounce,
+  directives,
+  intoView,
+  lazyLoad,
+  longPress,
+  setupDirective,
+  throttle,
+  watermark,
+}

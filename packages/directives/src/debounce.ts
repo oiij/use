@@ -11,8 +11,8 @@ function setValue(target: TargetElement, binding: DirectiveBinding<BindingValue>
   target._debounce_callBack = binding.value
 }
 
-export const debounce: Directive = {
-  beforeMount(target: TargetElement, binding: DirectiveBinding<BindingValue, 'immediate'>) {
+export const debounce: Directive<TargetElement, BindingValue, 'immediate'> = {
+  mounted(target, binding) {
     if (!(typeof binding.value === 'function')) {
       return console.warn('Debounce: value is not a function')
     }
@@ -48,7 +48,7 @@ export const debounce: Directive = {
       signal: target._debounce_controller.signal,
     })
   },
-  updated(target: TargetElement, binding: DirectiveBinding<BindingValue>) {
+  updated(target, binding) {
     if (!(typeof binding.value === 'function')) {
       return console.warn('longPress: value is not a function')
     }

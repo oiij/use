@@ -46,7 +46,7 @@ function onClickOutside() {
         </NButton>
       </NCard>
       <NCard title="长按">
-        <NButton v-long-press:[1000]="onLongPress">
+        <NButton v-long-press:1000="onLongPress">
           长按触发事件
         </NButton>
       </NCard>
@@ -65,12 +65,12 @@ function onClickOutside() {
     </NFlex>
     <NFlex :wrap="false">
       <NCard title="进入视图">
-        <NButton v-into-view="onIntoView" v-click-outside="onClickOutside">
+        <NButton v-into-view="onIntoView">
           进入视图
         </NButton>
       </NCard>
       <NCard title="点击元素外部">
-        <NButton v-into-view="onIntoView" v-click-outside="onClickOutside">
+        <NButton v-click-outside="onClickOutside">
           点击元素外部
         </NButton>
       </NCard>

@@ -11,8 +11,8 @@ function setValue(target: TargetElement, binding: DirectiveBinding<BindingValue>
   target._long_press_callBack = binding.value
 }
 
-export const longPress: Directive = {
-  beforeMount(target: TargetElement, binding: DirectiveBinding<BindingValue>) {
+export const longPress: Directive<TargetElement, BindingValue> = {
+  beforeMount(target, binding) {
     if (!(typeof binding.value === 'function')) {
       return console.warn('longPress: value is not a function')
     }

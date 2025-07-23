@@ -1,4 +1,4 @@
-import type { Directive, DirectiveBinding } from 'vue'
+import type { Directive } from 'vue'
 
 type BindingValue = {
   value: string
@@ -13,16 +13,16 @@ type TargetElement = HTMLElement & {
 }
 function setValue(target: TargetElement, value: BindingValue) {
   if (typeof value === 'object') {
-    target._copy_value = value.value.toString()
+    target._copy_value = value.value
     target._copy_success = value.success
     target._copy_error = value.error
   }
-  else {
-    target._copy_value = value.toString()
+  if (typeof value === 'string') {
+    target._copy_value = value
   }
 }
-export const copy: Directive = {
-  beforeMount(target: TargetElement, binding: DirectiveBinding<BindingValue>) {
+export const copy: Directive<TargetElement, BindingValue> = {
+  mounted(target, binding) {
     setValue(target, binding.value)
     target._copy_controller = new AbortController()
     target.addEventListener('click', () => {
@@ -44,7 +44,7 @@ export const copy: Directive = {
       signal: target._copy_controller.signal,
     })
   },
-  updated(target: TargetElement, binding: DirectiveBinding<BindingValue>) {
+  updated(target, binding) {
     setValue(target, binding.value)
   },
   unmounted(target: TargetElement) {

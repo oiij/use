@@ -5,11 +5,11 @@ pnpm add @oiij/directives
 ```
 
 ```ts
-import { directive } from '@oiij/directives'
+import { setupDirective } from '@oiij/directives'
 import { createApp } from 'vue'
 import App from './App.vue'
 
-createApp(App).use(directive)
+createApp(App).use(setupDirective)
 ```
 
 # 示例

@@ -1,8 +1,8 @@
-import type { Directive, DirectiveBinding } from 'vue'
+import type { Directive } from 'vue'
 
 type TargetElement = HTMLElement & {
 }
-interface WatermarkOptions {
+export interface WatermarkOptions {
   text?: string
   textColor?: string
   font?: string
@@ -29,12 +29,12 @@ function generateWatermark(options?: WatermarkOptions) {
   ctx.fillText(text, 0, 0)
   return canvas.toDataURL('image/png')
 }
-export const watermark: Directive = {
-  mounted(target: TargetElement, binding: DirectiveBinding<BindingValue>) {
+export const watermark: Directive<TargetElement, BindingValue> = {
+  mounted(target, binding) {
     const options = (typeof binding.value === 'object') ? binding.value : { text: binding.value }
     target.style.backgroundImage = `url(${generateWatermark(options)})`
   },
-  updated(target: TargetElement, binding: DirectiveBinding<BindingValue>) {
+  updated(target, binding) {
     const options = (typeof binding.value === 'object') ? binding.value : { text: binding.value }
     target.style.backgroundImage = `url(${generateWatermark(options)})`
   },

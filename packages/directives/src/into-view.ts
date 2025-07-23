@@ -8,8 +8,8 @@ type TargetElement = HTMLElement & {
 function setValue(target: TargetElement, binding: DirectiveBinding<BindingValue>) {
   target._into_view_callBack = binding.value
 }
-export const intoView: Directive = {
-  mounted(target: TargetElement, binding: DirectiveBinding<BindingValue>) {
+export const intoView: Directive<TargetElement, BindingValue, 'once'> = {
+  mounted(target, binding) {
     if (!(typeof binding.value === 'function')) {
       return console.warn('IntoView: value is not a function')
     }
@@ -28,10 +28,10 @@ export const intoView: Directive = {
     }, { threshold: 1 })
     target._into_view_observer.observe(target)
   },
-  updated(target: TargetElement, binding: DirectiveBinding<BindingValue>) {
+  updated(target, binding) {
     setValue(target, binding)
   },
-  unmounted(target: TargetElement) {
+  unmounted(target) {
     target._into_view_observer.unobserve(target)
     target._into_view_observer.disconnect()
   },

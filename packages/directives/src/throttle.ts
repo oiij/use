@@ -11,8 +11,8 @@ function setValue(target: TargetElement, binding: DirectiveBinding<BindingValue>
   target._throttle_callBack = binding.value
 }
 
-export const throttle: Directive = {
-  beforeMount(target: TargetElement, binding: DirectiveBinding<BindingValue, 'immediate'>) {
+export const throttle: Directive<TargetElement, BindingValue, 'immediate'> = {
+  mounted(target, binding) {
     if (!(typeof binding.value === 'function')) {
       return console.warn('Throttle: value is not a function')
     }
@@ -44,13 +44,13 @@ export const throttle: Directive = {
       signal: target._throttle_controller.signal,
     })
   },
-  updated(target: TargetElement, binding: DirectiveBinding<BindingValue>) {
+  updated(target, binding) {
     if (!(typeof binding.value === 'function')) {
       return console.warn('longPress: value is not a function')
     }
     setValue(target, binding)
   },
-  unmounted(target: TargetElement) {
+  unmounted(target) {
     target._throttle_controller?.abort()
   },
 }
