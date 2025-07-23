@@ -37,7 +37,7 @@ export type PresetSelectEmits<V extends PresetSelectValue, P extends RObject, D 
   (e: 'focus', ev: FocusEvent): void
   (e: 'scroll', ev: Event): void
   (e: 'search', value: string): void
-  (e: 'update:value', val: V | null, option: ArrayAwareType<V, SelectOption>, raw: ArrayAwareType<V, R>): void
+  (e: 'update:value', val: V | null, option: SelectOption | SelectOption[] | null, raw: R | R[] | null): void
   (e: 'update:page', page: number): void
   (e: 'update:pageSize', pageSize: number): void
 }

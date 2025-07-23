@@ -140,7 +140,7 @@ const vOnSelect = {
 
   onUpdateValue: (val: V | null, option: SelectOption | SelectOption[] | null) => {
     const rawSelectValue = Array.isArray(val) ? rawList.value.filter(f => val.includes(f[_fields.rowKey])) : rawList.value.find(f => f[_fields.rowKey] === val) ?? null
-    emit('update:value', val, option as ArrayAwareType<V, SelectOption>, toRaw(toValue(rawSelectValue)) as ArrayAwareType<V, R>)
+    emit('update:value', val, option, toRaw(toValue(rawSelectValue)))
   },
   onSearch: (val: string) => {
     searchValue.value = val
