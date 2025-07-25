@@ -8,7 +8,7 @@
 >
 import type { PaginationProps, SelectGroupOption, SelectOption } from 'naive-ui'
 import type { RObject } from '../remote-request/index'
-import type { ArrayAwareType, PresetSelectEmits, PresetSelectExposeActions, PresetSelectExposeRefs, PresetSelectPagination, PresetSelectProps, PresetSelectValue } from './index'
+import type { PresetSelectEmits, PresetSelectExposeActions, PresetSelectExposeRefs, PresetSelectPagination, PresetSelectProps, PresetSelectValue } from './index'
 import { useDebounceFn } from '@vueuse/core'
 import { NFlex, NPagination, NSelect } from 'naive-ui'
 import { computed, reactive, ref, toRaw, toValue, useTemplateRef } from 'vue'
@@ -22,6 +22,7 @@ const {
   manual = true,
   multiple = false,
   disabled,
+  clearable,
   debounce = true,
   optionFormat,
   fields,
@@ -227,6 +228,7 @@ defineExpose({
     filterable
     :multiple="multiple"
     :disabled="disabled"
+    :clearable="clearable"
     :options="optionsReactive"
     :label-field="_fields.label"
     :value-field="_fields.value"

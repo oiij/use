@@ -1,6 +1,6 @@
 <!-- eslint-disable no-console -->
 <script setup lang='ts'>
-import type { ContextMenuSelectType, DataTablePlusFilterOptions } from '@oiij/naive-ui/components'
+import type { DataTablePlusFilterOptions } from '@oiij/naive-ui/components'
 import type { DataTableColumns } from 'naive-ui'
 import { NDataTablePlus } from '@oiij/naive-ui/components'
 import { NButton, NFlex } from 'naive-ui'
@@ -127,15 +127,7 @@ const columns: DataTableColumns<Row> = [
     },
   },
 ]
-const contextMenuOptions = [
-  {
-    key: '1',
-    label: '删除',
-  },
-]
-function onContextMenuSelect(data: ContextMenuSelectType<Row>) {
-  console.log(data)
-}
+
 function onClickRow(data: any) {
   console.log(data)
 }
@@ -159,8 +151,6 @@ function onUpdateCheckedRowKeys(key: any, rows: any, meta: any) {
       :api="api"
       :filter-options="filterOptions"
       :columns="columns"
-      :context-menu-options="contextMenuOptions"
-      @context-menu-select="onContextMenuSelect"
       @click-row="onClickRow"
       @context-menu-row="onContextMenuRow"
       @success="onLoaded"

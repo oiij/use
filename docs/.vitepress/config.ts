@@ -75,6 +75,7 @@ export default defineConfig({
               { text: 'FullLoading', link: '/examples/naive-ui/components/full-loading' },
               { text: 'PresetForm', link: '/examples/naive-ui/components/preset-form' },
               { text: 'PresetInput', link: '/examples/naive-ui/components/preset-input' },
+              { text: 'PresetPicker', link: '/examples/naive-ui/components/preset-picker' },
               { text: 'PresetSelect', link: '/examples/naive-ui/components/preset-select' },
               { text: 'RemoteRequest', link: '/examples/naive-ui/components/remote-request' },
               { text: 'SearchInput', link: '/examples/naive-ui/components/search-input' },

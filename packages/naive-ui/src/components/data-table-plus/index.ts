@@ -42,17 +42,7 @@ export type DataTablePlusFilterOptions<P extends RObject, D extends RObject, R e
   render?: (refs: DataTablePlusExposeRefs<P, D, R>, actions: DataTablePlusExposeActions<P, D>) => VNode
 })[]
 
-export interface DataTablePlusClickRowType<R extends RObject> {
-  row: R
-  index: number
-  event: MouseEvent
-}
-export interface ContextMenuSelectType<R extends RObject> {
-  key: string | number
-  option: DropdownOption
-  row?: R
-}
-export type DataTablePlusFields = Partial<Record<'page' | 'pageSize' | 'filter' | 'sorter' | 'list' | 'count' | 'rowKey' | 'search', string>>
+export type DataTablePlusFields = Partial<Record<'page' | 'pageSize' | 'filter' | 'sorter' | 'list' | 'count' | 'rowKey' | 'search' | 'children', string>>
 
 export type DataTablePlusProps<P extends RObject, D extends RObject, R extends RObject> = RemoteRequestProps<P, D> & {
   title?: string
@@ -70,9 +60,8 @@ export type DataTablePlusProps<P extends RObject, D extends RObject, R extends R
   customClass?: string
 }
 export type DataTablePlusEmits<P extends RObject, D extends RObject, R extends RObject> = RemoteRequestEmits<P, D> & {
-  (e: 'clickRow', data: DataTablePlusClickRowType<R>): void
-  (e: 'contextMenuRow', data: DataTablePlusClickRowType<R>): void
-  (e: 'contextMenuSelect', data: ContextMenuSelectType<R>): void
+  (e: 'clickRow', row: R, index: number, event: MouseEvent): void
+  (e: 'contextMenuRow', row: R, index: number, event: MouseEvent): void
   (e: 'load', row: R): Promise<void>
   (e: 'scroll', ev: Event): void
   (e: 'update:checkedRowKeys', keys: (string | number)[], rows: (R | undefined)[], meta: { row: R | undefined, action: 'check' | 'uncheck' | 'checkAll' | 'uncheckAll' }): void

@@ -2,9 +2,9 @@ import type { FlexProps, FormItemProps, FormItemRule, FormProps, FormRules, Grid
 import type { CSSProperties, VNode } from 'vue'
 import type { NaiveFormClearRules, NaiveFormReturns, NaiveFormRules } from '../../composables/useNaiveForm'
 
-import type { PresetInputOptions } from '../preset-input'
+import type { PresetInputOptions } from '../preset-input/index'
 
-export type { NaiveFormRules } from '../../'
+export type { NaiveFormRules } from '../../composables/useNaiveForm'
 export { default as NPresetForm } from './PresetForm.vue'
 export type PresetFormExposeRefs<V extends Record<string, any> = Record<string, any>> = Pick<NaiveFormReturns<V>, 'formValue' | 'formRef' | 'formRules'>
 export type PresetFormExposeActions<V extends Record<string, any> = Record<string, any>> = Pick<NaiveFormReturns<V>, 'validate' | 'resetValidation' | 'resetForm' | 'reset' | 'clear' | 'onValidated'> & {

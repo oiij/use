@@ -5,12 +5,12 @@
     R extends RObject
   "
 >
-import type { DataTableBaseColumn, DataTableColumns, DataTableFilterState, DataTableInst, DataTableSortState, DropdownOption, PaginationProps } from 'naive-ui'
+import type { DataTableBaseColumn, DataTableColumns, DataTableFilterState, DataTableInst, DataTableSortState, PaginationProps } from 'naive-ui'
 import type { InternalRowData, RowKey } from 'naive-ui/es/data-table/src/interface'
 import type { RObject } from '../remote-request/index'
 import type { DataTablePlusEmits, DataTablePlusExposeActions, DataTablePlusExposeRefs, DataTablePlusPagination, DataTablePlusProps } from './index'
-import { NButton, NCollapseTransition, NDataTable, NDivider, NDropdown, NFlex, NGi, NGrid, NPagination } from 'naive-ui'
-import { computed, h, nextTick, reactive, ref, toRaw, toValue, useTemplateRef } from 'vue'
+import { NButton, NCollapseTransition, NDataTable, NDivider, NFlex, NGi, NGrid, NPagination } from 'naive-ui'
+import { computed, h, reactive, ref, toRaw, useTemplateRef } from 'vue'
 import useRequest from 'vue-hooks-plus/es/useRequest'
 import { renderLabel } from '../preset-input/_utils'
 import { NPresetInput } from '../preset-input/index'
@@ -26,7 +26,6 @@ const {
   filterGridProps,
   filterFlexProps,
   filterLayout = 'grid',
-  contextMenuOptions,
   fields,
   search,
   pagination,
@@ -48,7 +47,7 @@ const _filterLayout = computed(() => {
 })
 const columnsReactive = reactive<DataTableColumns<R>>(columns ?? [])
 const dataTableRef = useTemplateRef<DataTableInst>('data-table-ref')
-const _fields = { page: 'page', pageSize: 'pageSize', filter: 'filter', sorter: 'sorter', list: 'list', count: 'count', rowKey: 'id', search: 'search', ...fields }
+const _fields = { page: 'page', pageSize: 'pageSize', filter: 'filter', sorter: 'sorter', list: 'list', count: 'count', rowKey: 'id', search: 'search', children: 'children', ...fields }
 const searchProps = {
   ...(search && typeof search === 'boolean' ? {} : search),
 }
@@ -223,40 +222,13 @@ const vOn = {
   },
 }
 
-const showDropdownFlag = ref(false)
-const templateRow = ref<R>()
-const dropdownPosition = ref({
-  x: 0,
-  y: 0,
-})
-function onSelect(key: string | number, option: DropdownOption) {
-  showDropdownFlag.value = false
-  emit('contextMenuSelect', {
-    key,
-    option,
-    row: toRaw(toValue(templateRow)),
-  })
-}
-
 function rowProps(row: R, index: number) {
   return {
     onClick: (event: MouseEvent) => {
-      emit('clickRow', { row: toRaw(row), index, event })
+      emit('clickRow', toRaw(row), index, event)
     },
     onContextmenu: (event: MouseEvent) => {
-      emit('contextMenuRow', { row: toRaw(row), index, event })
-      if (contextMenuOptions) {
-        event.preventDefault()
-        showDropdownFlag.value = false
-        templateRow.value = row
-        nextTick(() => {
-          showDropdownFlag.value = true
-          dropdownPosition.value = {
-            x: event.x,
-            y: event.y,
-          }
-        })
-      }
+      emit('contextMenuRow', toRaw(row), index, event)
     },
   }
 }
@@ -435,6 +407,7 @@ defineExpose({
       :style="{ flex: 1, ...customStyle }"
       :class="customClass"
       :row-key="row => row[_fields.rowKey]"
+      :children-key="_fields.children"
       :loading="loading"
       :columns="columnsReactive"
       :data="rawList"
@@ -467,17 +440,6 @@ defineExpose({
         />
       </NFlex>
     </slot>
-    <NDropdown
-      v-if="contextMenuOptions"
-      placement="bottom-start"
-      trigger="manual"
-      :x="dropdownPosition.x"
-      :y="dropdownPosition.y"
-      :show="showDropdownFlag"
-      :options="contextMenuOptions"
-      @clickoutside="showDropdownFlag = false"
-      @select="onSelect"
-    />
   </NFlex>
 </template>
 
