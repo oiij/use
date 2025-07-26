@@ -299,9 +299,9 @@ defineExpose({
       <NFlex vertical>
         <NGrid v-if="_filterLayout.grid && (filterOptions?.filter(f => !f.collapsed).length ?? 0 > 0)" v-bind="filterGridProps">
           <NGi
-            v-for="({ key, gridItemProps, render, label, ...options }, _index) in filterOptions?.filter(f => !f.collapsed)"
+            v-for="({ key, gridSpan, gridItemProps, render, label, ...options }, _index) in filterOptions?.filter(f => !f.collapsed)"
             :key="_index"
-            :span="12"
+            :span="gridSpan"
             v-bind="gridItemProps"
           >
             <component
@@ -351,9 +351,9 @@ defineExpose({
         <NCollapseTransition :show="filterCollapsed">
           <NGrid v-if="_filterLayout.collapsedGrid && (filterOptions?.filter(f => f.collapsed)?.length ?? 0 > 0)" v-bind="filterGridProps">
             <NGi
-              v-for="({ key, gridItemProps, render, label, ...options }, _index) in filterOptions?.filter(f => f.collapsed)"
+              v-for="({ key, gridSpan, gridItemProps, render, label, ...options }, _index) in filterOptions?.filter(f => f.collapsed)"
               :key="_index"
-              :span="12"
+              :span="gridSpan"
               v-bind="gridItemProps"
             >
               <component

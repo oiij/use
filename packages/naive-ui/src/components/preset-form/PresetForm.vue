@@ -68,9 +68,9 @@ function onPresetInputUpdate(val: any, key?: keyof V) {
     <slot :refs="exposeRefs" :actions="exposeActions">
       <NGrid v-if="_layout.grid" v-bind="gridProps">
         <NGi
-          v-for="({ key, gridItemProps, render, label, ...opt }, _index) in options?.filter(f => !f.collapsed)"
+          v-for="({ key, gridSpan, gridItemProps, render, label, ...opt }, _index) in options?.filter(f => !f.collapsed)"
           :key="_index"
-          :span="12"
+          :span="gridSpan"
           v-bind="gridItemProps"
         >
           <component :is="renderLabel(render(exposeRefs, exposeActions), label, { path: key as string })" v-if="render" />
@@ -114,9 +114,9 @@ function onPresetInputUpdate(val: any, key?: keyof V) {
       <NCollapseTransition :show="filterCollapsed">
         <NGrid v-if="_layout.collapsedGrid" v-bind="gridProps">
           <NGi
-            v-for="({ key, gridItemProps, render, label, ...opt }, _index) in options?.filter(f => f.collapsed)"
+            v-for="({ key, gridSpan, gridItemProps, render, label, ...opt }, _index) in options?.filter(f => f.collapsed)"
             :key="_index"
-            :span="12"
+            :span="gridSpan"
             v-bind="gridItemProps"
           >
             <component :is="renderLabel(render(exposeRefs, exposeActions), label, { path: key as string })" v-if="render" />

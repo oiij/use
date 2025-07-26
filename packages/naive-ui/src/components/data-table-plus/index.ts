@@ -38,6 +38,7 @@ export type DataTablePlusFilterOptions<P extends RObject, D extends RObject, R e
     class?: string
   })
   collapsed?: boolean
+  gridSpan?: string | number
   gridItemProps?: GridItemProps
   render?: (refs: DataTablePlusExposeRefs<P, D, R>, actions: DataTablePlusExposeActions<P, D>) => VNode
 })[]
