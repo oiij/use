@@ -17,6 +17,7 @@ export type PresetFormOptions<V extends Record<string, any> = Record<string, any
     class?: string
   })
   rules?: FormRules | FormItemRule | FormItemRule[]
+  required?: boolean
   collapsed?: boolean
   gridItemProps?: GridItemProps
   render?: (refs: PresetFormExposeRefs<V>, actions: PresetFormExposeActions<V>) => VNode
