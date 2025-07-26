@@ -7,70 +7,84 @@
 ## Types
 
 ```ts
-export type ArrayAwareType<V, T> = V extends null ? null : (V extends any[] ? T[] : T) | null
-export type OptionFormat<R extends RObject> = (row: R) => SelectOption | SelectGroupOption | false | undefined | null
-export type PresetSelectValue = string | number | (string | number)[] | null
-export type PresetSelectFields = Partial<Record<'page' | 'pageSize' | 'search' | 'list' | 'count' | 'rowKey' | 'label' | 'value' | 'children', string>>
-export interface PresetSelectPagination {
-  page: number
-  pageSize: number
-  itemCount: number
+export type PresetPickerValue = string | number | (string | number)[] | null
+export interface PresetPickerExposeRefs<R extends RObject> {
+  showModalFlag: Ref<boolean, boolean>
+  checkedRowKeys: Ref<(string | number)[], (string | number)[]>
+  checkedRows: Ref<R[], R[]>
+  columns: DataTableColumns<any>
 }
-export type PresetSelectExposeRefs<P extends RObject, D extends RObject, R extends RObject> = DataTablePlusExposeRefsBase<P, D, R> & {
-  selectRef: Readonly<ShallowRef<SelectInst | null>>
+export interface PresetPickerExposeActions<R extends RObject> {
+  showModal: () => void
+  onUpdateCheckedRowKeys: (keys: (string | number)[], rows: (R | undefined)[], meta: {
+    row: R | undefined
+    action: 'check' | 'uncheck' | 'checkAll' | 'uncheckAll'
+  }, currentData: R[]) => void
+  onClickRow: (row: R) => void
+  onNegativeClick: () => void
+  onPositiveClick: () => void
+  clearValue: () => void
 }
-export type PresetSelectExposeActions<P extends RObject, D extends RObject> = DataTablePlusExposeActions<P, D>
-export type PresetSelectProps<V extends PresetSelectValue, P extends RObject, D extends RObject, R extends RObject> = RemoteRequestProps<P, D> & {
+export type PresetPickerProps<V extends PresetPickerValue, R extends RObject> = & {
   value?: V
   fallbackLabel?: string
   multiple?: boolean
   disabled?: boolean
-  debounce?: boolean | number
-  optionFormat?: OptionFormat<R>
-  fields?: PresetSelectFields
-  selectProps?: SelectProps
-  pagination?: Omit<PaginationProps, 'page' | 'pageSize'> | boolean
+  clearable?: boolean
+  placeholder?: string
+  type?: ButtonProps['type']
+  columns?: DataTableColumns<R>
+  selectionOptions?: TableSelectionColumn
+  fields?: {
+    rowKey?: string
+  }
+  buttonProps?: ButtonProps
+  clearButtonProps?: ButtonProps
+  badgeProps?: BadgeProps
+  modalProps?: ModalProps
 }
-export type PresetSelectEmits<V extends PresetSelectValue, P extends RObject, D extends RObject, R extends RObject> = RemoteRequestEmits<P, D> & {
-  (e: 'blur', ev: FocusEvent): void
-  (e: 'clear'): void
-  (e: 'create', label: string): SelectOption
-  (e: 'focus', ev: FocusEvent): void
-  (e: 'scroll', ev: Event): void
-  (e: 'search', value: string): void
-  (e: 'update:value', val: V | null, option: ArrayAwareType<V, SelectOption>, raw: ArrayAwareType<V, R>): void
-  (e: 'update:page', page: number): void
-  (e: 'update:pageSize', pageSize: number): void
+export type PresetPickerEmits<V extends PresetPickerValue, R extends RObject> = & {
+  (e: 'update:value', val: V | null, raw: R | R[] | null): void
+  (e: 'afterEnter'): void
+  (e: 'afterLeave'): void
+  (e: 'esc'): void
+  (e: 'maskClick'): void
+  (e: 'update:show', value: boolean): void
+  (e: 'close'): void
+  (e: 'negativeClick'): void
+  (e: 'positiveClick'): void
 }
 ```
 
 ## Props
 
-| Name           | Type                       | Default | Description                    |
-| -------------- | -------------------------- | ------- | ------------------------------ |
-| api            | (params:Object)=>Promise   | -       | 异步接口返回的数据的方法       |
-| value          | PresetSelectValue          | -       | 选择器的值                     |
-| fallbackLabel  | String                     | -       | 无数据时的占位符               |
-| defaultParams  | Object                     | -       | 默认的参数                     |
-| manual         | Boolean                    | -       | 是否手动触发请求               |
-| multiple       | Boolean                    | -       | 是否多选                       |
-| disabled       | Boolean                    | -       | 是否禁用                       |
-| debounce       | Boolean or Number          | -       | 防抖时间                       |
-| optionFormat   | OptionFormat               | -       | 选项格式化函数                 |
-| fields         | Object                     | -       | 内置参数的字段                 |
-| pagination     | PaginationProps or Boolean | -       | 数据表格的分页配置             |
-| selectProps    | SelectProps                | -       | 选择器的配置                   |
-| requestOptions | UseRequestOptions          | -       | VueHooks UseRequest 的请求配置 |
-| requestPlugins | UseRequestPlugin[]         | -       | VueHooks UseRequest 的插件配置 |
+| Name             | Type                 | Default | Description            |
+| ---------------- | -------------------- | ------- | ---------------------- |
+| value            | PresetPickerValue    | -       | 选择器的值             |
+| fallbackLabel    | string               | -       | 选择器的值为空时的提示 |
+| multiple         | boolean              | -       | 是否多选               |
+| disabled         | boolean              | -       | 是否禁用               |
+| clearable        | boolean              | -       | 是否可清空             |
+| placeholder      | string               | -       | 输入框占位符           |
+| type             | ButtonProps['type']  | -       | 按钮类型               |
+| columns          | DataTableColumns     | -       | 数据列                 |
+| selectionOptions | TableSelectionColumn | -       | 选择列配置             |
+| fields           | '{rowKey?:string}'   | -       | 数据列配置             |
+| buttonProps      | ButtonProps          | -       | 按钮配置               |
+| clearButtonProps | ButtonProps          | -       | 清空按钮配置           |
+| badgeProps       | BadgeProps           | -       | 徽章配置               |
+| modalProps       | ModalProps           | -       | 弹窗配置               |
 
 ## Emits
 
-| Name            | Type                                         | Description        |
-| --------------- | -------------------------------------------- | ------------------ |
-| before          | (params: D[]) => void                        | 数据加载前         |
-| success         | (data: D, params: P[]) => void               | 数据加载完成       |
-| error           | (error: Error, params: P[]) => void          | 数据加载失败       |
-| finally         | params: (P[], data?: D, err?: Error) => void | 数据加载完成或失败 |
-| update:value    | (val: PresetSelectValue) => void             | 值更新时           |
-| update:page     | (page: number) => void                       | 页码更新时         |
-| update:pageSize | (pageSize: number) => void                   | 每页数量更新时     |
+| Name          | Type                             | Description        |
+| ------------- | -------------------------------- | ------------------ |
+| update:value  | (val: PresetPickerValue) => void | 值更新时           |
+| afterEnter    | () => void                       | 弹窗进入动画结束时 |
+| afterLeave    | () => void                       | 弹窗离开动画结束时 |
+| esc           | () => void                       | 按下 esc 键时      |
+| maskClick     | () => void                       | 点击遮罩层时       |
+| update:show   | (val: boolean) => void           | 弹窗显示状态更新时 |
+| close         | () => void                       | 弹窗关闭时         |
+| negativeClick | () => void                       | 取消按钮点击时     |
+| positiveClick | () => void                       | 确定按钮点击时     |

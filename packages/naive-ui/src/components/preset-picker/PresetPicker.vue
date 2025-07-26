@@ -1,44 +1,36 @@
 <script setup lang='ts'
   generic="
     V extends PresetPickerValue,
-    P extends RObject,
-    D extends RObject,
     R extends RObject,
   "
 >
-import type { DataTableColumns, DataTableSortState } from 'naive-ui'
-import type { FilterState, TableBaseColumn } from 'naive-ui/es/data-table/src/interface'
+import type { DataTableColumns } from 'naive-ui'
 import type { Ref } from 'vue'
 import type { RObject } from '../remote-request/index'
 import type { PresetPickerEmits, PresetPickerProps, PresetPickerValue } from './index'
 import { NBadge, NButton, NButtonGroup, NModal } from 'naive-ui'
-import { computed, ref, toRaw, toValue, useTemplateRef } from 'vue'
-import { NDataTablePlus } from '../data-table-plus/index'
+import { computed, ref, toRaw, toValue } from 'vue'
 import MageMultiplyCircleFill from '../icons/MageMultiplyCircleFill.vue'
 
 const {
   value,
   fallbackLabel,
   multiple,
-  disabled,
   clearable,
   placeholder = '请选择',
   type,
+  columns,
   selectionOptions,
   fields,
-  columns,
   buttonProps,
+  clearButtonProps,
   badgeProps,
   modalProps,
-  dataTableProps,
-  ...dataTablePlusProps
-} = defineProps<PresetPickerProps<V, P, D, R>>()
+} = defineProps<PresetPickerProps<V, R>>()
 
-const emit = defineEmits<PresetPickerEmits<V, P, D, R>>()
+const emit = defineEmits<PresetPickerEmits<V, R>>()
 
-const _fields = { page: 'page', pageSize: 'pageSize', filter: 'filter', sorter: 'sorter', list: 'list', count: 'count', rowKey: 'id', search: 'search', children: 'children', ...fields }
-
-const dataTablePlusRef = useTemplateRef('data-table-plus')
+const _fields = { rowKey: 'id', ...fields }
 
 const checkedRowKeys = ref<(string | number)[]>([])
 const checkedRows: Ref<R[]> = ref([])
@@ -52,13 +44,15 @@ const _columns: DataTableColumns<any> = [
   },
   ...columns ?? [],
 ]
-const showModal = ref(false)
-function handleShowModal() {
+const showModalFlag = ref(false)
+function showModal() {
   checkedRowKeys.value = structuredClone(Array.isArray(value) ? toRaw(value) : value ? [value] : []) as (string | number)[]
-  showModal.value = true
+  showModalFlag.value = true
 }
-function onClickRow(row: R, index: number, event: MouseEvent) {
-  emit('clickRow', row, index, event)
+function onClickRow(row: R, _index: number, _event: MouseEvent, _currentData: R[], rowKey?: string) {
+  if (rowKey) {
+    _fields.rowKey = rowKey
+  }
   if (multiple) {
     if (checkedRowKeys.value.includes(row?.[_fields.rowKey])) {
       checkedRowKeys.value = checkedRowKeys.value.filter(f => f !== row?.[_fields.rowKey])
@@ -74,8 +68,16 @@ function onClickRow(row: R, index: number, event: MouseEvent) {
     checkedRows.value = [row]
   }
 }
-function onUpdateCheckedRowKeys(keys: (string | number)[], rows: (R | undefined)[], meta: { row: R | undefined, action: 'check' | 'uncheck' | 'checkAll' | 'uncheckAll' }) {
-  emit('update:checkedRowKeys', keys, rows, meta)
+function onUpdateCheckedRowKeys(
+  keys: (string | number)[],
+  rows: (R | undefined)[],
+  meta: { row: R | undefined, action: 'check' | 'uncheck' | 'checkAll' | 'uncheckAll' },
+  currentData: R[],
+  rowKey?: string,
+) {
+  if (rowKey) {
+    _fields.rowKey = rowKey
+  }
   if (meta.action === 'checkAll') {
     const allKeys = keys.filter(f => !checkedRowKeys.value.includes(f))
     checkedRowKeys.value.push(...allKeys)
@@ -84,7 +86,6 @@ function onUpdateCheckedRowKeys(keys: (string | number)[], rows: (R | undefined)
     return
   }
   if (meta.action === 'uncheckAll') {
-    const currentData = dataTablePlusRef.value?.refs.rawList.value
     const excludedKeys = checkedRowKeys.value.filter(f => !currentData?.some(s => s?.[_fields.rowKey] === f))
     checkedRowKeys.value = excludedKeys
     const excludedRows = checkedRows.value.filter(f => !currentData?.some(s => s?.[_fields.rowKey] === f?.[_fields.rowKey]))
@@ -92,9 +93,11 @@ function onUpdateCheckedRowKeys(keys: (string | number)[], rows: (R | undefined)
   }
 }
 function onNegativeClick() {
-  showModal.value = false
+  emit('negativeClick')
+  showModalFlag.value = false
 }
 function onPositiveClick() {
+  emit('positiveClick')
   if (multiple) {
     const keys = toRaw(toValue(checkedRowKeys))
     const rows = keys.map(m => toRaw(toValue(checkedRows.value.find(f => f?.[_fields.rowKey] === m))))
@@ -105,9 +108,9 @@ function onPositiveClick() {
     const row = toRaw(toValue(checkedRows.value.find(f => f?.[_fields.rowKey] === key)))
     emit('update:value', key as V | null, row as R | null)
   }
-  showModal.value = false
+  showModalFlag.value = false
 }
-function handleClear() {
+function clearValue() {
   emit('update:value', null, null)
 }
 const _label = computed(() => {
@@ -121,57 +124,77 @@ const showClearButton = computed(() => {
   return clearable && (Array.isArray(value) ? value.length > 0 : !!value)
 })
 const checkedCount = computed(() => Array.isArray(value) ? value.length : undefined)
+const exposeRefs = {
+  showModalFlag,
+  checkedRowKeys,
+  checkedRows,
+  columns: _columns,
+}
+const exposeActions = {
+  showModal,
+  onUpdateCheckedRowKeys,
+  onClickRow,
+  onNegativeClick,
+  onPositiveClick,
+  clearValue,
+}
+defineExpose({
+  refs: exposeRefs,
+  actions: exposeActions,
+})
 </script>
 
 <template>
   <NBadge :value="checkedCount" v-bind="badgeProps">
     <NButtonGroup>
-      <NButton :type="type" v-bind="buttonProps" @click="handleShowModal">
-        <span>{{ _label }}</span>
-
-        <NModal
-          v-model:show="showModal"
-          style="width:auto;"
-          preset="dialog"
-          :title="placeholder"
-          positive-text="确认"
-          negative-text="取消"
-          v-bind="modalProps"
-          @positive-click="onPositiveClick"
-          @negative-click="onNegativeClick"
-        >
-          <NDataTablePlus
-            ref="data-table-plus"
-            style="width:900px;height:600px;"
-            :fields="_fields"
-            :columns="_columns"
-            :data-table-props="{
-              checkedRowKeys,
-              ...dataTableProps,
-            }"
-            v-bind="dataTablePlusProps"
-            @click-row="onClickRow"
-            @update:checked-row-keys="onUpdateCheckedRowKeys"
-            @before="(params: P[]) => emit('before', params) "
-            @success="(data: D, params: P[]) => emit('success', data, params)"
-            @error="(err: Error, params: P[]) => emit('error', err, params)"
-            @finally="(params: P[], data?: D, err?: Error) => emit('finally', params, data, err)"
-            @context-menu-row="(row: R, index: number, event: MouseEvent) => emit('contextMenuRow', row, index, event)"
-            @load="(row: R) => emit('load', row)"
-            @scroll="(ev: Event) => emit('scroll', ev)"
-            @update:expanded-row-keys="(keys: (string | number)[]) => emit('update:expandedRowKeys', keys)"
-            @update:filters="(filterState: FilterState, sourceColumn: TableBaseColumn) => emit('update:filters', filterState, sourceColumn)"
-            @update:sorter="(options: DataTableSortState | DataTableSortState[] | null) => emit('update:sorter', options)"
-            @update:page="(page: number) => emit('update:page', page)"
-            @update:page-size="(pageSize: number) => emit('update:pageSize', pageSize)"
-          />
-        </NModal>
-      </NButton>
-      <NButton v-if="showClearButton" circle :type="type" @click.stop="handleClear">
+      <NButton :type="type" v-bind="buttonProps" @click="showModal">
         <template #icon>
-          <MageMultiplyCircleFill />
+          <slot name="button-icon" />
         </template>
+        <slot name="button-icon">
+          <span>{{ _label }}</span>
+        </slot>
       </NButton>
+      <slot name="clear-button">
+        <NButton v-if="showClearButton" circle :type="type" v-bind="clearButtonProps" @click.stop="clearValue">
+          <template #icon>
+            <slot name="clear-icon">
+              <MageMultiplyCircleFill />
+            </slot>
+          </template>
+        </NButton>
+      </slot>
+      <NModal
+        v-model:show="showModalFlag"
+        style="width:auto;"
+        preset="dialog"
+        :title="placeholder"
+        positive-text="确认"
+        negative-text="取消"
+        v-bind="modalProps"
+        @positive-click="onPositiveClick"
+        @negative-click="onNegativeClick"
+        @close="emit('close')"
+        @after-enter="emit('afterEnter')"
+        @after-leave="emit('afterLeave')"
+        @esc="emit('esc')"
+        @mask-click="emit('maskClick')"
+        @update:show="(val) => emit('update:show', val)"
+      >
+        <slot :refs="exposeRefs" :actions="exposeActions" />
+        <template #action>
+          <slot name="modal-action" />
+        </template>
+        <template #header>
+          <slot name="modal-header" />
+        </template>
+        <template #icon>
+          <slot name="modal-icon" />
+        </template>
+        <template #close>
+          <slot name="modal-close" />
+        </template>
+      </NModal>
     </NButtonGroup>
   </NBadge>
 </template>

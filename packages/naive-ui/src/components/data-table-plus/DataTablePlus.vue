@@ -215,20 +215,20 @@ const vOn = {
     action: 'check' | 'uncheck' | 'checkAll' | 'uncheckAll'
   }) => {
     const rows = keys.map(m => _dataCache.find(f => f[_fields.rowKey] === m))
-    emit('update:checkedRowKeys', keys, rows, { row: toRaw(meta.row) as R | undefined, action: meta.action })
+    emit('update:checkedRowKeys', keys, rows, { row: toRaw(meta.row) as R | undefined, action: meta.action }, toRaw(rawList.value))
   },
   onUpdateExpandedRowKeys: (keys: (string | number)[]) => {
-    emit('update:expandedRowKeys', keys)
+    emit('update:expandedRowKeys', keys, toRaw(rawList.value))
   },
 }
 
 function rowProps(row: R, index: number) {
   return {
     onClick: (event: MouseEvent) => {
-      emit('clickRow', toRaw(row), index, event)
+      emit('clickRow', toRaw(row), index, event, toRaw(rawList.value))
     },
     onContextmenu: (event: MouseEvent) => {
-      emit('contextMenuRow', toRaw(row), index, event)
+      emit('contextMenuRow', toRaw(row), index, event, toRaw(rawList.value))
     },
   }
 }

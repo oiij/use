@@ -1,19 +1,31 @@
-import type { BadgeProps, ButtonProps, ModalProps, SelectInst } from 'naive-ui'
+import type { BadgeProps, ButtonProps, DataTableColumns, ModalProps } from 'naive-ui'
 import type { TableSelectionColumn } from 'naive-ui/es/data-table/src/interface'
-import type { ShallowRef } from 'vue'
-import type { DataTablePlusEmits, DataTablePlusExposeActions, DataTablePlusExposeRefsBase, DataTablePlusProps } from '../data-table-plus/index'
+import type { Ref } from 'vue'
 import type { RObject } from '../remote-request/index'
 
 export { default as NPresetPicker } from './PresetPicker.vue'
 
 export type PresetPickerValue = string | number | (string | number)[] | null
 
-export type PresetPickerExposeRefs<P extends RObject, D extends RObject, R extends RObject> = DataTablePlusExposeRefsBase<P, D, R> & {
-  selectRef: Readonly<ShallowRef<SelectInst | null>>
+export type PresetPickerExposeRefs<R extends RObject> = & {
+  showModalFlag: Ref<boolean, boolean>
+  checkedRowKeys: Ref<(string | number)[], (string | number)[]>
+  checkedRows: Ref<R[], R[]>
+  columns: DataTableColumns<any>
 }
-export type PresetPickerExposeActions<P extends RObject, D extends RObject> = DataTablePlusExposeActions<P, D>
+export type PresetPickerExposeActions<R extends RObject> = & {
+  showModal: () => void
+  onUpdateCheckedRowKeys: (keys: (string | number)[], rows: (R | undefined)[], meta: {
+    row: R | undefined
+    action: 'check' | 'uncheck' | 'checkAll' | 'uncheckAll'
+  }, currentData: R[]) => void
+  onClickRow: (row: R) => void
+  onNegativeClick: () => void
+  onPositiveClick: () => void
+  clearValue: () => void
+}
 
-export type PresetPickerProps<V extends PresetPickerValue, P extends RObject, D extends RObject, R extends RObject> = DataTablePlusProps<P, D, R> & {
+export type PresetPickerProps<V extends PresetPickerValue, R extends RObject> = & {
   value?: V
   fallbackLabel?: string
   multiple?: boolean
@@ -21,11 +33,23 @@ export type PresetPickerProps<V extends PresetPickerValue, P extends RObject, D 
   clearable?: boolean
   placeholder?: string
   type?: ButtonProps['type']
+  columns?: DataTableColumns<R>
   selectionOptions?: TableSelectionColumn
+  fields?: { rowKey?: string }
   buttonProps?: ButtonProps
+  clearButtonProps?: ButtonProps
   badgeProps?: BadgeProps
   modalProps?: ModalProps
 }
-export type PresetPickerEmits<V extends PresetPickerValue, P extends RObject, D extends RObject, R extends RObject> = DataTablePlusEmits<P, D, R> & {
+export type PresetPickerEmits<V extends PresetPickerValue, R extends RObject> = & {
   (e: 'update:value', val: V | null, raw: R | R[] | null): void
+  (e: 'afterEnter'): void
+  (e: 'afterLeave'): void
+  (e: 'esc'): void
+  (e: 'maskClick'): void
+  (e: 'update:show', value: boolean): void
+  (e: 'close'): void
+  (e: 'negativeClick'): void
+  (e: 'positiveClick'): void
+
 }

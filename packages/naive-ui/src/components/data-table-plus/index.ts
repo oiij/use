@@ -60,12 +60,17 @@ export type DataTablePlusProps<P extends RObject, D extends RObject, R extends R
   customClass?: string
 }
 export type DataTablePlusEmits<P extends RObject, D extends RObject, R extends RObject> = RemoteRequestEmits<P, D> & {
-  (e: 'clickRow', row: R, index: number, event: MouseEvent): void
-  (e: 'contextMenuRow', row: R, index: number, event: MouseEvent): void
+  (e: 'clickRow', row: R, index: number, event: MouseEvent, currentData: R[]): void
+  (e: 'contextMenuRow', row: R, index: number, event: MouseEvent, currentData: R[]): void
   (e: 'load', row: R): Promise<void>
   (e: 'scroll', ev: Event): void
-  (e: 'update:checkedRowKeys', keys: (string | number)[], rows: (R | undefined)[], meta: { row: R | undefined, action: 'check' | 'uncheck' | 'checkAll' | 'uncheckAll' }): void
-  (e: 'update:expandedRowKeys', keys: (string | number)[]): void
+  (e: 'update:checkedRowKeys',
+    keys: (string | number)[],
+    rows: (R | undefined)[],
+    meta: { row: R | undefined, action: 'check' | 'uncheck' | 'checkAll' | 'uncheckAll' },
+    currentData: R[]
+  ): void
+  (e: 'update:expandedRowKeys', keys: (string | number)[], currentData: R[]): void
   (e: 'update:filters', filterState: FilterState, sourceColumn: TableBaseColumn): void
   (e: 'update:sorter', options: DataTableSortState | DataTableSortState[] | null): void
   (e: 'update:page', page: number): void

@@ -1,8 +1,10 @@
+<!-- eslint-disable no-console -->
 <script setup lang='ts'>
+import type { DataTablePlusFilterOptions } from '@oiij/naive-ui/components'
 import type { DataTableColumns } from 'naive-ui'
-import { NPresetPicker } from '@oiij/naive-ui/components'
-import { NFlex } from 'naive-ui'
-import { ref } from 'vue'
+import { NDataTablePlus, NPresetPicker } from '@oiij/naive-ui/components'
+import { NButton, NFlex } from 'naive-ui'
+import { h, ref } from 'vue'
 
 interface Params {
   id?: number
@@ -47,7 +49,33 @@ const params = {
   page: 1,
   pageSize: 20,
 }
-
+const filterOptions: DataTablePlusFilterOptions<Params, Res, Row> = [
+  {
+    key: 'search',
+    label: '搜索',
+    type: 'search',
+    collapsed: true,
+  },
+  {
+    key: 'id',
+    type: 'input',
+    label: true,
+    collapsed: true,
+  },
+  {
+    collapsed: true,
+    render: (refs, actions) => {
+      return h(NButton, {
+        onClick: () => {
+          console.log(refs.data, actions)
+        },
+      }, { default: () => 'Button' })
+    },
+  },
+]
+function onLoaded(data: Res) {
+  console.log(data)
+}
 const columns: DataTableColumns<Row> = [
   {
     key: 'id',
@@ -112,7 +140,7 @@ function onSuccess(res: Res, params: Params[]) {
 <template>
   <NFlex vertical>
     <div>
-      <!-- @vue-generic {number,Params,Res,Row} -->
+      <!-- @vue-generic {number,Row} -->
 
       <NPresetPicker
         v-model:value="value"
@@ -121,17 +149,38 @@ function onSuccess(res: Res, params: Params[]) {
         pagination
         search
         :columns="columns"
-        :fields="{ }"
         fallback-label="伍Ⅹ"
         type="primary"
         clearable
         :multiple="true"
         :button-props="{
-
+          secondary: true,
+        }"
+        :clear-button-props="{
+          tertiary: true,
         }"
         @update:value="onUpdateValue"
         @success="onSuccess"
-      />
+      >
+        <template #default="{ refs, actions }">
+          <!-- @vue-generic {Params,Res,Row} -->
+          <NDataTablePlus
+            pagination
+            search
+            title="数据表格"
+            :style="{ width: '900px', height: '600px' }"
+            :api="api"
+            :filter-options="filterOptions"
+            :columns="refs.columns"
+            :data-table-props="{
+              checkedRowKeys: refs.checkedRowKeys.value,
+            }"
+            @click-row="actions.onClickRow"
+            @success="onLoaded"
+            @update:checked-row-keys="actions.onUpdateCheckedRowKeys"
+          />
+        </template>
+      </NPresetPicker>
     </div>
     <pre>{{ value }}</pre>
   </NFlex>
