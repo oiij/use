@@ -3,7 +3,7 @@ import type { CSSProperties, VNode } from 'vue'
 import { NFormItem } from 'naive-ui'
 import { h } from 'vue'
 
-export function renderLabel(children: VNode, label?: string | boolean |(FormItemProps & {
+export function renderLabel(children: VNode | null, label?: string | boolean |(FormItemProps & {
   style?: CSSProperties
   class?: string
 }), defaultProps?: FormItemProps) {

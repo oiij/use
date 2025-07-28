@@ -1,8 +1,9 @@
 <script setup lang='ts'>
 import { useNaiveForm } from '@oiij/naive-ui'
 import { NButton, NCard, NDynamicInput, NDynamicTags, NFlex, NForm, NFormItem, NInput, NInputNumber, NSwitch } from 'naive-ui'
+import { ref } from 'vue'
 
-const { validate, formValue, formProps, resetValidation, resetForm, reset, clear } = useNaiveForm({
+const _formValue = ref({
   foo: {
     bar: 'bar',
   },
@@ -11,9 +12,23 @@ const { validate, formValue, formProps, resetValidation, resetForm, reset, clear
     'a',
   ],
   boolean: false,
-  argObjs: [],
-}, {
-
+  argObjs: [{
+    key: '1',
+    value: '一',
+  }],
+})
+const { validate, formValue, formProps, resetValidation, resetForm, reset, clear } = useNaiveForm(_formValue.value, {
+  rules: {
+    foo: {
+      bar: {
+        required: true,
+      },
+    },
+    bar: {
+      required: true,
+      type: 'number',
+    },
+  },
   clearRules: {
     string: null,
     number: null,
@@ -29,7 +44,7 @@ const { validate, formValue, formProps, resetValidation, resetForm, reset, clear
         <NInput v-model:value="formValue.foo.bar" placeholder="输入foo" />
       </NFormItem>
       <NFormItem label="bar" path="bar">
-        <NInputNumber v-model:value="formValue.bar" placeholder="输入bar" />
+        <NInputNumber v-model:value="_formValue.bar" placeholder="输入bar" />
       </NFormItem>
       <NFormItem label="args" path="args">
         <NDynamicTags v-model:value="formValue.args" />
@@ -58,6 +73,7 @@ const { validate, formValue, formProps, resetValidation, resetForm, reset, clear
         </NButton>
       </NFlex>
       <pre>{{ JSON.stringify(formValue, null, 2) }}   </pre>
+      <pre>{{ JSON.stringify(_formValue, null, 2) }}   </pre>
     </NForm>
   </NCard>
 </template>

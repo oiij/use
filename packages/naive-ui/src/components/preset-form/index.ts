@@ -21,7 +21,7 @@ export type PresetFormOptions<V extends Record<string, any> = Record<string, any
   collapsed?: boolean
   gridSpan?: string | number
   gridItemProps?: GridItemProps
-  render?: (refs: PresetFormExposeRefs<V>, actions: PresetFormExposeActions<V>) => VNode
+  render?: (refs: PresetFormExposeRefs<V>, actions: PresetFormExposeActions<V>) => VNode | null
 })[]
 export interface PresetFormProps<V extends Record<string, any> = Record<string, any>> {
   options?: PresetFormOptions<V>

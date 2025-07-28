@@ -3,6 +3,7 @@
     V extends RObject,
   "
 >
+import type { NaiveFormRules } from '../../composables/useNaiveForm'
 import type { RObject } from '../remote-request/index'
 import type { PresetFormProps } from './index'
 import { NButton, NCollapseTransition, NDivider, NFlex, NForm, NGi, NGrid } from 'naive-ui'
@@ -25,9 +26,11 @@ const _layout = computed(() => {
     collapsedFlex: _layout[1] === 'flex',
   }
 })
-const _rules = rules ? { ...rules, ...options2Rules(options) } : undefined
 const { formValue, formRules, formRef, validate, resetValidation, resetForm, reset, clear, onValidated } = useNaiveForm(values, {
-  rules: _rules,
+  rules: {
+    ...rules,
+    ...options2Rules(options),
+  } as NaiveFormRules<V>,
   clearRules,
 })
 onValidated((value) => {

@@ -40,7 +40,7 @@ export type DataTablePlusFilterOptions<P extends RObject, D extends RObject, R e
   collapsed?: boolean
   gridSpan?: string | number
   gridItemProps?: GridItemProps
-  render?: (refs: DataTablePlusExposeRefs<P, D, R>, actions: DataTablePlusExposeActions<P, D>) => VNode
+  render?: (refs: DataTablePlusExposeRefs<P, D, R>, actions: DataTablePlusExposeActions<P, D>) => VNode | null
 })[]
 
 export type DataTablePlusFields = Partial<Record<'page' | 'pageSize' | 'filter' | 'sorter' | 'list' | 'count' | 'rowKey' | 'search' | 'children', string>>
