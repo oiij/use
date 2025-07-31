@@ -8,7 +8,7 @@ import type { DataTableColumns } from 'naive-ui'
 import type { TableColumn } from 'naive-ui/lib/data-table/src/interface'
 import type { Ref } from 'vue'
 import type { RObject } from '../remote-request/index'
-import type { PresetPickerEmits, PresetPickerProps, PresetPickerValue } from './index'
+import type { PresetPickerEmits, PresetPickerExposeActions, PresetPickerExposeRefs, PresetPickerProps, PresetPickerValue } from './index'
 import { NBadge, NButton, NButtonGroup, NModal, NTooltip } from 'naive-ui'
 import { computed, reactive, ref, toRaw, toValue, watch } from 'vue'
 import MageMultiplyCircleFill from '../icons/MageMultiplyCircleFill.vue'
@@ -54,10 +54,7 @@ function showModal() {
   checkedRowKeys.value = structuredClone(Array.isArray(value) ? toRaw(value) : value ? [value] : []) as (string | number)[]
   showModalFlag.value = true
 }
-function onClickRow(row: R, _index: number, _event: MouseEvent, _currentData: R[], value?: string) {
-  if (value) {
-    _fields.value = value
-  }
+function clickRowEffect(row: R) {
   if (multiple) {
     if (checkedRowKeys.value.includes(row?.[_fields.value])) {
       checkedRowKeys.value = checkedRowKeys.value.filter(f => f !== row?.[_fields.value])
@@ -73,16 +70,12 @@ function onClickRow(row: R, _index: number, _event: MouseEvent, _currentData: R[
     checkedRows.value = [row]
   }
 }
-function onUpdateCheckedRowKeys(
+function updateCheckedRowKeysEffect(
   keys: (string | number)[],
   rows: (R | undefined)[],
   meta: { row: R | undefined, action: 'check' | 'uncheck' | 'checkAll' | 'uncheckAll' },
   currentData: R[],
-  value?: string,
 ) {
-  if (value) {
-    _fields.value = value
-  }
   if (meta.action === 'checkAll') {
     const allKeys = keys.filter(f => !checkedRowKeys.value.includes(f))
     checkedRowKeys.value.push(...allKeys)
@@ -120,14 +113,16 @@ function clearValue() {
 }
 const _label = computed(() => {
   if (Array.isArray(value) && value.length > 0) {
-    return value.map((m) => {
-      const item = checkedRows.value.find(f => f?.[_fields.value] === m)
-      return item ? item[_fields.label] : typeof fallbackLabel === 'function' ? fallbackLabel(m) : fallbackLabel ?? m
-    }).join(',')
+    return typeof fallbackLabel === 'string'
+      ? fallbackLabel
+      : value.map((m) => {
+          const item = checkedRows.value.find(f => f?.[_fields.value] === m)
+          return item && item?.[_fields.label] ? item[_fields.label] : typeof fallbackLabel === 'function' ? fallbackLabel(m) : m
+        }).join(',')
   }
   if (value && !Array.isArray(value)) {
     const item = checkedRows.value.find(f => f?.[_fields.value] === value)
-    return item ? item[_fields.label] : typeof fallbackLabel === 'function' ? fallbackLabel(value) : (fallbackLabel ?? value)
+    return item && item?.[_fields.label] ? item[_fields.label] : typeof fallbackLabel === 'function' ? fallbackLabel(value) : (fallbackLabel ?? value)
   }
   return placeholder
 })
@@ -135,18 +130,16 @@ const showClearButton = computed(() => {
   return clearable && (Array.isArray(value) ? value.length > 0 : !!value)
 })
 const checkedCount = computed(() => Array.isArray(value) ? value.length : undefined)
-const exposeRefs = {
+const exposeRefs: PresetPickerExposeRefs<R> = {
   showModalFlag,
   checkedRowKeys,
   checkedRows,
   columns: _columns,
 }
-const exposeActions = {
+const exposeActions: PresetPickerExposeActions<R> = {
   showModal,
-  onUpdateCheckedRowKeys,
-  onClickRow,
-  onNegativeClick,
-  onPositiveClick,
+  updateCheckedRowKeysEffect,
+  clickRowEffect,
   clearValue,
 }
 defineExpose({
@@ -156,7 +149,7 @@ defineExpose({
 </script>
 
 <template>
-  <NTooltip :trigger="Array.isArray(value) ? 'hover' : 'manual'">
+  <NTooltip :show="Array.isArray(value) ? undefined : false" :trigger="Array.isArray(value) ? 'hover' : 'manual'">
     <template #trigger>
       <NBadge :value="checkedCount" v-bind="badgeProps">
         <NButtonGroup>
@@ -167,6 +160,37 @@ defineExpose({
             <slot name="button">
               <span>{{ Array.isArray(value) ? '已选择' : _label }}</span>
             </slot>
+            <NModal
+              v-model:show="showModalFlag"
+              style="width:auto;"
+              preset="dialog"
+              :title="placeholder"
+              positive-text="确认"
+              negative-text="取消"
+              v-bind="modalProps"
+              @positive-click="onPositiveClick"
+              @negative-click="onNegativeClick"
+              @close="emit('close')"
+              @after-enter="emit('afterEnter')"
+              @after-leave="emit('afterLeave')"
+              @esc="emit('esc')"
+              @mask-click="emit('maskClick')"
+              @update:show="(val) => emit('update:show', val)"
+            >
+              <slot :refs="exposeRefs" :actions="exposeActions" />
+              <template #action>
+                <slot name="modal-action" />
+              </template>
+              <template #header>
+                <slot name="modal-header" />
+              </template>
+              <template #icon>
+                <slot name="modal-icon" />
+              </template>
+              <template #close>
+                <slot name="modal-close" />
+              </template>
+            </NModal>
           </NButton>
           <slot name="clear-button">
             <NButton v-if="showClearButton" circle :type="type" v-bind="clearButtonProps" @click.stop="clearValue">
@@ -177,41 +201,10 @@ defineExpose({
               </template>
             </NButton>
           </slot>
-          <NModal
-            v-model:show="showModalFlag"
-            style="width:auto;"
-            preset="dialog"
-            :title="placeholder"
-            positive-text="确认"
-            negative-text="取消"
-            v-bind="modalProps"
-            @positive-click="onPositiveClick"
-            @negative-click="onNegativeClick"
-            @close="emit('close')"
-            @after-enter="emit('afterEnter')"
-            @after-leave="emit('afterLeave')"
-            @esc="emit('esc')"
-            @mask-click="emit('maskClick')"
-            @update:show="(val) => emit('update:show', val)"
-          >
-            <slot :refs="exposeRefs" :actions="exposeActions" />
-            <template #action>
-              <slot name="modal-action" />
-            </template>
-            <template #header>
-              <slot name="modal-header" />
-            </template>
-            <template #icon>
-              <slot name="modal-icon" />
-            </template>
-            <template #close>
-              <slot name="modal-close" />
-            </template>
-          </NModal>
         </NButtonGroup>
       </NBadge>
     </template>
-    {{ Array.isArray(value) ? _label : '' }}
+    <div>{{ Array.isArray(value) ? _label : '' }}</div>
   </NTooltip>
 </template>
 

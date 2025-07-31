@@ -45,7 +45,7 @@ function api(params?: Params) {
   })
 }
 const value = ref(50)
-const multiple = ref(false)
+const multiple = ref(true)
 const params = {
   page: 1,
   pageSize: 20,
@@ -156,7 +156,7 @@ function onSuccess(res: Res, params: Params[]) {
         pagination
         search
         :columns="columns"
-        fallback-label="伍Ⅹ"
+        :fallback-label="(val:number) => `${val}找不到`"
         type="primary"
         clearable
         :multiple="multiple"
@@ -186,9 +186,9 @@ function onSuccess(res: Res, params: Params[]) {
             :data-table-props="{
               checkedRowKeys: refs.checkedRowKeys.value,
             }"
-            @click-row="actions.onClickRow"
+            @click-row="actions.clickRowEffect"
             @success="onLoaded"
-            @update:checked-row-keys="actions.onUpdateCheckedRowKeys"
+            @update:checked-row-keys="actions.updateCheckedRowKeysEffect"
           />
         </template>
       </NPresetPicker>

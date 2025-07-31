@@ -15,20 +15,14 @@ export type PresetPickerExposeRefs<R extends RObject> = & {
 }
 export type PresetPickerExposeActions<R extends RObject> = & {
   showModal: () => void
-  onUpdateCheckedRowKeys: (keys: (string | number)[], rows: (R | undefined)[], meta: {
-    row: R | undefined
-    action: 'check' | 'uncheck' | 'checkAll' | 'uncheckAll'
-  }, currentData: R[]) => void
-  onClickRow: (row: R) => void
-  onNegativeClick: () => void
-  onPositiveClick: () => void
+  updateCheckedRowKeysEffect: (keys: (string | number)[], rows: (R | undefined)[], meta: { row: R | undefined, action: 'check' | 'uncheck' | 'checkAll' | 'uncheckAll' }, currentData: R[]) => void
+  clickRowEffect: (row: R) => void
   clearValue: () => void
 }
 
 export type PresetPickerProps<V extends PresetPickerValue, R extends RObject> = & {
   value?: V
-  fallbackLabel?: string | ((val: string | number) => { label?: string, value: string })
-  fallbackOption?: (val: string | number) => { label?: string, value: string }
+  fallbackLabel?: string | ((val: string | number) => string)
   multiple?: boolean
   disabled?: boolean
   clearable?: boolean
