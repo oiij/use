@@ -3,7 +3,7 @@
 import type { DataTablePlusFilterOptions } from '@oiij/naive-ui/components'
 import type { DataTableColumns } from 'naive-ui'
 import { NDataTablePlus, NPresetPicker } from '@oiij/naive-ui/components'
-import { NButton, NFlex } from 'naive-ui'
+import { NButton, NFlex, NSwitch } from 'naive-ui'
 import { h, ref } from 'vue'
 
 interface Params {
@@ -45,6 +45,7 @@ function api(params?: Params) {
   })
 }
 const value = ref(50)
+const multiple = ref(false)
 const params = {
   page: 1,
   pageSize: 20,
@@ -139,9 +140,15 @@ function onSuccess(res: Res, params: Params[]) {
 
 <template>
   <NFlex vertical>
+    <NFlex>
+      <NFlex>
+        <span>单选</span>
+        <NSwitch v-model:value="multiple" />
+        <span>多选</span>
+      </NFlex>
+    </NFlex>
     <div>
       <!-- @vue-generic {number,Row} -->
-
       <NPresetPicker
         v-model:value="value"
         :api="api"
@@ -152,12 +159,16 @@ function onSuccess(res: Res, params: Params[]) {
         fallback-label="伍Ⅹ"
         type="primary"
         clearable
-        :multiple="true"
+        :multiple="multiple"
         :button-props="{
           secondary: true,
         }"
         :clear-button-props="{
           tertiary: true,
+        }"
+        :fields="{
+          value: 'id',
+          label: 'name',
         }"
         @update:value="onUpdateValue"
         @success="onSuccess"

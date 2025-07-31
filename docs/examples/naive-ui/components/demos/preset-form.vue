@@ -18,23 +18,28 @@ const options: PresetFormOptions<Values> = [
     type: 'input',
     label: 'ID',
     key: 'id',
+    gridSpan: 12,
   },
   {
     type: 'input-number',
     label: 'Num',
     key: 'num',
-    rules: {
-      required: true,
-    },
+    required: true,
+    gridSpan: 12,
   },
   {
-    gridItemProps: {
-      span: 24,
-    },
+    gridSpan: 24,
+    collapsed: true,
     render: () => {
       return h(NDivider)
     },
   },
+  ...(Array.from({ length: 5 }).map(() => {
+    return {
+      type: 'divider' as any,
+      gridSpan: 24,
+    }
+  })),
 ]
 const rules: NaiveFormRules<Values> = {
   id: { required: true },
@@ -57,11 +62,19 @@ function onValidated(values: any) {
       :rules="rules"
       :form-props="{ labelPlacement: 'top' }"
       @validated="onValidated"
-    />
+    >
+      <template #header>
+        <h1>Header Slot</h1>
+      </template>
+      <template #footer>
+        <NFlex>
+          <NButton @click="handleValidate">
+            验证
+          </NButton>
+        </NFlex>
+      </template>
+    </NPresetForm>
     <pre>值：{{ values }}</pre>
-    <NButton @click="handleValidate">
-      验证
-    </NButton>
   </NFlex>
 </template>
 

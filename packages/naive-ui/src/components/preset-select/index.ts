@@ -21,7 +21,7 @@ export type PresetSelectExposeActions<P extends RObject, D extends RObject> = Da
 
 export type PresetSelectProps<V extends PresetSelectValue, P extends RObject, D extends RObject, R extends RObject> = RemoteRequestProps<P, D> & {
   value?: V
-  fallbackLabel?: string
+  fallbackLabel?: string | ((val: string | number) => SelectOption)
   multiple?: boolean
   disabled?: boolean
   clearable?: boolean

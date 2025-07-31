@@ -13,7 +13,7 @@ const components: Record<keyof PresetInputType, Component> = {
   'button': NButton,
   'color-picker': NColorPicker,
   'checkbox': NCheckboxGroup,
-  'divider ': NDivider,
+  'divider': NDivider,
   'date-picker': NDatePicker,
   'dynamic-tags': NDynamicTags,
   'input': NInput,
@@ -48,7 +48,7 @@ function packageComponent() {
       default: () => options?.map(m => h(NCheckbox, { ...m })),
     })
   }
-  if (type === 'divider ') {
+  if (type === 'divider') {
     const { ..._props } = props ?? {}
     return h(components[type], {
       ..._props,

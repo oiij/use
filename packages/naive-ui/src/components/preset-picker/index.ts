@@ -27,7 +27,8 @@ export type PresetPickerExposeActions<R extends RObject> = & {
 
 export type PresetPickerProps<V extends PresetPickerValue, R extends RObject> = & {
   value?: V
-  fallbackLabel?: string
+  fallbackLabel?: string | ((val: string | number) => { label?: string, value: string })
+  fallbackOption?: (val: string | number) => { label?: string, value: string }
   multiple?: boolean
   disabled?: boolean
   clearable?: boolean
@@ -35,7 +36,7 @@ export type PresetPickerProps<V extends PresetPickerValue, R extends RObject> = 
   type?: ButtonProps['type']
   columns?: DataTableColumns<R>
   selectionOptions?: TableSelectionColumn
-  fields?: { rowKey?: string }
+  fields?: { label?: string, value?: string }
   buttonProps?: ButtonProps
   clearButtonProps?: ButtonProps
   badgeProps?: BadgeProps

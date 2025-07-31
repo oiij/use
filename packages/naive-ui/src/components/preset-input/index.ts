@@ -8,7 +8,7 @@ export interface PresetInputType {
   'button': ButtonProps & { label?: string }
   'color-picker': ColorPickerProps
   'checkbox': CheckboxGroupProps & { options?: CheckboxProps[] }
-  'divider ': DividerProps
+  'divider': DividerProps
   'date-picker': DatePickerProps
   'dynamic-tags': DynamicTagsProps
   'input': InputProps

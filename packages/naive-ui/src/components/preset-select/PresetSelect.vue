@@ -34,7 +34,7 @@ const {
 
 const emit = defineEmits<PresetSelectEmits<V, P, D, R>>()
 const selectRef = useTemplateRef('select-ref')
-const _fields = { page: 'page', pageSize: 'pageSize', search: 'search', list: 'list', count: 'count', rowKey: 'id', label: 'label', value: 'value', children: 'children', ...fields }
+const _fields = { page: 'page', pageSize: 'pageSize', search: 'search', list: 'list', count: 'count', label: 'label', value: 'value', children: 'children', ...fields }
 const paginationProps = reactive<PaginationProps>({
   showSizePicker: true,
   pageSizes: [10, 20, 30],
@@ -99,7 +99,6 @@ const optionsReactive = computed<(SelectOption | SelectGroupOption)[]>(() => {
           [_fields.label]: m[_fields.label],
           [_fields.value]: m[_fields.value],
           [_fields.children]: m[_fields.children],
-          key: m[_fields.rowKey],
         }
       })
 })
@@ -140,7 +139,7 @@ const vOnSelect = {
   },
 
   onUpdateValue: (val: V | null, option: SelectOption | SelectOption[] | null) => {
-    const rawSelectValue = Array.isArray(val) ? rawList.value.filter(f => val.includes(f[_fields.rowKey])) : rawList.value.find(f => f[_fields.rowKey] === val) ?? null
+    const rawSelectValue = Array.isArray(val) ? rawList.value.filter(f => val.includes(f[_fields.value])) : rawList.value.find(f => f[_fields.value] === val) ?? null
     emit('update:value', val, option, toRaw(toValue(rawSelectValue)))
   },
   onSearch: (val: string) => {
@@ -183,10 +182,12 @@ const vOnPagination = {
   },
 }
 function fallbackOption(val: string | number): SelectOption {
-  return {
-    [_fields.label]: fallbackLabel ?? `${val}`,
-    [_fields.value]: val,
-  }
+  return typeof fallbackLabel === 'function'
+    ? fallbackLabel(val)
+    : {
+        [_fields.label]: fallbackLabel ?? `${val}`,
+        [_fields.value]: val,
+      }
 }
 
 const exposeRefs: PresetSelectExposeRefs<P, D, R> = {
