@@ -13,9 +13,6 @@ function setValue(target: TargetElement, binding: DirectiveBinding<BindingValue>
 
 export const throttle: Directive<TargetElement, BindingValue, 'immediate'> = {
   mounted(target, binding) {
-    if (!(typeof binding.value === 'function')) {
-      return console.warn('Throttle: value is not a function')
-    }
     setValue(target, binding)
     target._throttle_controller = new AbortController()
 
@@ -26,7 +23,7 @@ export const throttle: Directive<TargetElement, BindingValue, 'immediate'> = {
     target.addEventListener('click', (ev: MouseEvent | TouchEvent) => {
       if (immediate) {
         if (!timer) {
-          target._throttle_callBack?.(ev)
+          typeof target._throttle_callBack === 'function' && target._throttle_callBack(ev)
           timer = setTimeout(() => {
             timer = null
           }, target._throttle_delay)
@@ -35,7 +32,7 @@ export const throttle: Directive<TargetElement, BindingValue, 'immediate'> = {
       else {
         if (!timer) {
           timer = setTimeout(() => {
-            target._throttle_callBack?.(ev)
+            typeof target._throttle_callBack === 'function' && target._throttle_callBack(ev)
             timer = null
           }, target._throttle_delay)
         }
@@ -45,9 +42,6 @@ export const throttle: Directive<TargetElement, BindingValue, 'immediate'> = {
     })
   },
   updated(target, binding) {
-    if (!(typeof binding.value === 'function')) {
-      return console.warn('longPress: value is not a function')
-    }
     setValue(target, binding)
   },
   unmounted(target) {

@@ -40,6 +40,7 @@ function page2Canvas(page: PDFPageProxy, id: string): Promise<HTMLCanvasElement>
     canvas.style.height = `${height / pixelRatio}px`
     page.render({
       canvasContext: ctx,
+      canvas,
       viewport,
     }).promise.then(() => resolve(canvas)).catch(e => reject(e))
   })

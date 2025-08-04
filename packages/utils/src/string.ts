@@ -4,14 +4,8 @@ export const toString = (v: any) => Object.prototype.toString.call(v)
 export const capitalize = (str: string): string => str.charAt(0).toUpperCase() + str.slice(1)
 /** 首字母小写 */
 export const unCapitalize = ([first, ...rest]: string): string => `${first.toLowerCase()}${rest.join('')}`
-/** 是否相对路径 */
-export const isRelative = (path: string): boolean => !/^(?:[a-z]+:)?[\\/]/i.test(path)
 /** 是否是重复字符串 */
 export const consistsRepeatedSubstring = (str: string): boolean => `${str}${str}`.indexOf(str, 1) !== str.length
-/** 是否绝对网址 */
-export const isAbsoluteUrl = (url: string): boolean => /^[a-z][a-z0-9+.-]*:/.test(url)
-/** 字符串是否是abcba */
-export const isPalindrome = (str: string): boolean => str === str.split('').reverse().join('')
 /** 字符串是否相等 */
 export const areAnagram = (str1: string, str2: string): boolean => str1.toLowerCase().split('').sort().join('') === str2.toLowerCase().split('').sort().join('')
 /** base64转uint8 */
@@ -114,89 +108,3 @@ export const containsUpperCase = (str: string): boolean => str !== str.toLowerCa
 /** 是否包含空格 */
 // eslint-disable-next-line unused-imports/no-unused-vars
 export const containsWhitespace = (str: any) => (str: string) => /\s/.test(str)
-/** 是否包含ASCII码 */
-// eslint-disable-next-line no-control-regex
-export const isAscii = (str: string): boolean => /^[\x00-\x7F]+$/.test(str)
-/** 是否包含字母和数字 */
-export const isAlphanumeric = (str: string): boolean => /^[0-9A-Z]+$/i.test(str)
-/** 是否是16进制数 */
-export const isHexadecimal = (str: string): boolean => /^[A-F0-9]+$/i.test(str)
-/** 是否是mongodb id */
-export const isMongoId = (str: string): boolean => str.length === 24 && /^[A-F0-9]+$/i.test(str)
-/** 是否是小写 */
-export const isLowerCase = (str: string): boolean => str === str.toLowerCase()
-/** 是否包含字母 */
-export const isAlpha = (str: string): boolean => /^[A-Z]+$/i.test(str)
-/** 是否是八进制 */
-export const isOctal = (str: string): boolean => /^(?:0o)?[0-7]+$/i.test(str)
-/** 是否为大写 */
-export const isUpperCase = (str: string): boolean => str === str.toUpperCase()
-export const isBIC = (value: string): boolean => /^[a-z]{6}[a-z0-9]{2}(?:[a-z0-9]{3})?$/i.test(value)
-export default {
-  areAnagram,
-  base64ToUint8,
-  baseUrl,
-  bytes,
-  camelToKebab,
-  capitalize,
-  characterCount,
-  consistsRepeatedSubstring,
-  containsLowerCase,
-  containsUpperCase,
-  containsWhitespace,
-  countOccurrences,
-  countWords,
-  decodeHtmlEntities,
-  escapeString,
-  ext,
-  format,
-  getIndex,
-  hashString,
-  isAbsoluteUrl,
-  isAlpha,
-  isAlphanumeric,
-  isAscii,
-  isBIC,
-  isHexadecimal,
-  isLowerCase,
-  isMongoId,
-  isOctal,
-  isPalindrome,
-  isRelative,
-  isUpperCase,
-  kebabToCamel,
-  letterToEmoji,
-  lowercaseFirst,
-  mask,
-  nl2br,
-  normalizePath,
-  prependNumbers,
-  randomString,
-  removeDuplicateLines,
-  removeEmptyLines,
-  removeSpaces,
-  repeat,
-  replace,
-  replaceSpaces,
-  reverse,
-  reverseLines,
-  slugify,
-  snakeToCamel,
-  sort,
-  sortLines,
-  stripAnsiCodes,
-  stripHtml,
-  swapCase,
-  toCamelCase,
-  toPascalCase,
-  toString,
-  toUnixPath,
-  trim,
-  trimExt,
-  trimSlashes,
-  truncate,
-  uint8ToBase64,
-  unCapitalize,
-  unescapeString,
-  uppercaseWords,
-}

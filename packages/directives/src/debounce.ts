@@ -13,9 +13,6 @@ function setValue(target: TargetElement, binding: DirectiveBinding<BindingValue>
 
 export const debounce: Directive<TargetElement, BindingValue, 'immediate'> = {
   mounted(target, binding) {
-    if (!(typeof binding.value === 'function')) {
-      return console.warn('Debounce: value is not a function')
-    }
     setValue(target, binding)
     target._debounce_controller = new AbortController()
     const immediate = binding.modifiers.immediate ?? false
@@ -24,7 +21,7 @@ export const debounce: Directive<TargetElement, BindingValue, 'immediate'> = {
     target.addEventListener('click', (ev: MouseEvent | TouchEvent) => {
       if (immediate) {
         if (!triggered) {
-          target._debounce_callBack?.(ev)
+          typeof target._debounce_callBack === 'function' && target._debounce_callBack(ev)
           triggered = true
         }
         else {
@@ -41,7 +38,7 @@ export const debounce: Directive<TargetElement, BindingValue, 'immediate'> = {
           clearTimeout(timer)
         }
         timer = setTimeout(() => {
-          target._debounce_callBack?.(ev)
+          typeof target._debounce_callBack === 'function' && target._debounce_callBack(ev)
         }, target._debounce_delay)
       }
     }, {

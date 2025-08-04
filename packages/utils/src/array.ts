@@ -1,7 +1,5 @@
 /** 将对象数组转换为单个对象 */
 export const toObject = <T extends Record<string, any>, K extends keyof T>(arr: T[], key: K): Record<string, T> => arr.reduce((a, b) => ({ ...a, [b[key]]: b }), {})
-/** 比较两个数组，不考虑顺序 */
-export const isEqual = <T, _>(a: T[], b: T[]): boolean => JSON.stringify([...(new Set(a))].sort()) === JSON.stringify([...(new Set(b))].sort())
 /** 计算数组中值的出现次数 */
 export const countOccurrences = <T, _>(arr: T[], val: T): number => arr.reduce((a, v) => (v === val ? a + 1 : a), 0)
 /** 在给定范围内创建数字数组 */
@@ -84,55 +82,3 @@ export const chunk = <T>(arr: T[], size: number): T[][] => arr.reduce((acc, e, i
 export const sortBy = <T extends Record<string, any>, K extends keyof T>(arr: T[], k: K): T[] => arr.concat().sort((a, b) => (a[k] > b[k] ? 1 : a[k] < b[k] ? -1 : 0))
 /** 交换矩阵的行和列 */
 export const transpose = <T>(matrix: T[][]): T[][] => matrix.reduce((prev, next) => next.map((item, i) => (prev[i] || []).concat(next[i])), [] as T[][])
-/** 检查平面数组是否有重复值 */
-export const hasDuplicateValues = <T, _>(arr: T[]): boolean => new Set(arr).size !== arr.length
-/** 是否偶数 */
-export const isEven = (n: number): boolean => n % 2 === 0
-/** 所有项目是否相等 */
-export const areEqual = <T, _>(arr: T[]): boolean => new Set(arr).size === 1
-export default {
-  accumulate,
-  alphabet,
-  areEqual,
-  average,
-  cartesian,
-  chunk,
-  closest,
-  countBy,
-  countOccurrences,
-  empty,
-  findLongest,
-  flat,
-  getConsecutiveArrays,
-  getIntersection,
-  getNthItems,
-  getSubsets,
-  groupBy,
-  hasDuplicateValues,
-  indexOfMax,
-  indexOfMin,
-  indices,
-  intersperse,
-  isEqual,
-  isEven,
-  lastIndex,
-  max,
-  maxBy,
-  merge,
-  min,
-  minBy,
-  partition,
-  range,
-  ranking,
-  removeDuplicate,
-  removeFalsy,
-  repeat,
-  shuffle,
-  sortBy,
-  sum,
-  toNumbers,
-  toObject,
-  transpose,
-  union,
-  unique,
-}

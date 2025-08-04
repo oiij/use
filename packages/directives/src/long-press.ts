@@ -13,9 +13,6 @@ function setValue(target: TargetElement, binding: DirectiveBinding<BindingValue>
 
 export const longPress: Directive<TargetElement, BindingValue> = {
   beforeMount(target, binding) {
-    if (!(typeof binding.value === 'function')) {
-      return console.warn('longPress: value is not a function')
-    }
     setValue(target, binding)
     target._long_press_controller = new AbortController()
 
@@ -26,7 +23,7 @@ export const longPress: Directive<TargetElement, BindingValue> = {
       ev.preventDefault()
       if (timer === null) {
         timer = setTimeout(() => {
-          target._long_press_callBack?.(ev)
+          typeof target._long_press_callBack === 'function' && target._long_press_callBack(ev)
           timer = null
         }, target._long_press_duration)
       }
@@ -54,9 +51,6 @@ export const longPress: Directive<TargetElement, BindingValue> = {
     })
   },
   updated(target: TargetElement, binding: DirectiveBinding<BindingValue>) {
-    if (!(typeof binding.value === 'function')) {
-      return console.warn('longPress: value is not a function')
-    }
     setValue(target, binding)
   },
   unmounted(target: TargetElement) {

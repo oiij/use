@@ -20,16 +20,3 @@ export const removeRandomItem = <T>(arr: T[]): T => arr.splice((Math.random() * 
 export const getRandomItem = <T, _>(arr: T[]): T => arr[(Math.random() * arr.length) | 0]
 /** 获取对象随机属性 */
 export const randomProp = (obj: object): any => Object.keys(obj)[(Math.random() * Object.keys(obj).length) | 0]
-export default {
-  generateString,
-  getRandomItem,
-  randomArrayInRange,
-  randomBoolean,
-  randomColor,
-  randomFloat,
-  randomInteger,
-  randomIp,
-  randomProp,
-  randomSign,
-  removeRandomItem,
-}

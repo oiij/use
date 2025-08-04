@@ -1,7 +1,7 @@
 {
   "name": "@oiij/shiki",
   "type": "module",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "A Vue Composable for Shiki",
   "author": "oiij",
   "license": "MIT",
@@ -39,14 +39,14 @@
     "prepublishOnly": "pnpm build"
   },
   "peerDependencies": {
-    "@vueuse/core": "^13.1.0",
-    "shiki": "^3.2.2",
-    "vue": "^3.5.13"
+    "@vueuse/core": "^13.6.0",
+    "shiki": "^3.9.1",
+    "vue": "^3.5.18"
   },
   "devDependencies": {
-    "@vueuse/core": "^13.4.0",
-    "shiki": "^3.7.0",
-    "vue": "^3.5.17"
+    "@vueuse/core": "^13.6.0",
+    "shiki": "^3.9.1",
+    "vue": "^3.5.18"
   },
   "publishConfig": {
     "access": "public"

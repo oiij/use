@@ -1,15 +1,7 @@
-/** 检查一个元素是否是另一个元素的后代 */
-export const isDescendant = (child: Node, parent: Node): boolean => parent.contains(child)
 /** 检查是否支持触摸事件 */
 export const touchSupported = (): boolean => ('ontouchstart' in window || (window as any).DocumentTouch) && document instanceof (window as any).DocumentTouch
 /** 检查元素是否聚焦 */
 export const hasFocus = (ele: Node): boolean => ele === document.activeElement
-/** 检测Internet Explorer浏览器 */
-export const isIE = !!(document as any).documentMode
-/** 检查用户是否滚动到页面底部 */
-export const isAtBottom = (): boolean => document.documentElement.clientHeight + window.scrollY >= document.documentElement.scrollHeight
-/** 检测macOS浏览器 */
-export const isMacBrowser: boolean = /Mac|iPod|iPhone|iPad/.test(navigator.platform)
 /** 获取元素的所有同级 */
 export const siblings = (ele: Node): Node[] => (ele.parentNode ? [].slice.call(ele.parentNode.children).filter(child => child !== ele) : [])
 /** 获取元素相对于文档的位置 */
@@ -40,26 +32,3 @@ export const toggle = (ele: HTMLElement): boolean => (ele.hidden = !ele.hidden)
 export const stripHtml = (html: string): string => new DOMParser().parseFromString(html, 'text/html').body.textContent || ''
 /** 更换元件 */
 export const replace = (ele: Element, newEle: Element): Element | null => (ele.parentNode ? ele.parentNode.replaceChild(newEle, ele) : null)
-export default {
-  getPosition,
-  getSelectedText,
-  goBack,
-  goTo,
-  goToTop,
-  hasFocus,
-  hide,
-  insertAfter,
-  insertBefore,
-  insertHtmlAfter,
-  insertHtmlBefore,
-  isAtBottom,
-  isDescendant,
-  isIE,
-  isMacBrowser,
-  reload,
-  replace,
-  siblings,
-  stripHtml,
-  toggle,
-  touchSupported,
-}

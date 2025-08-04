@@ -156,7 +156,7 @@ function onSuccess(res: Res, params: Params[]) {
         pagination
         search
         :columns="columns"
-        :fallback-label="(val:number) => `${val}找不到`"
+        :fallback-label="(val) => `${val}找不到`"
         type="primary"
         clearable
         :multiple="multiple"

@@ -1,7 +1,7 @@
 {
   "name": "@oiij/e-charts",
   "type": "module",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "A Vue Composable for ECharts",
   "author": "oiij",
   "license": "MIT",
@@ -39,14 +39,14 @@
     "prepublishOnly": "pnpm build"
   },
   "peerDependencies": {
-    "@vueuse/core": "^13.1.0",
-    "echarts": "^5.6.0",
-    "vue": "^3.5.13"
+    "@vueuse/core": "^13.6.0",
+    "echarts": "^6.0.0",
+    "vue": "^3.5.18"
   },
   "devDependencies": {
-    "@vueuse/core": "^13.4.0",
-    "echarts": "^5.6.0",
-    "vue": "^3.5.17"
+    "@vueuse/core": "^13.6.0",
+    "echarts": "^6.0.0",
+    "vue": "^3.5.18"
   },
   "publishConfig": {
     "access": "public"

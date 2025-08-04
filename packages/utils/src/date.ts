@@ -1,5 +1,3 @@
-/** 检查日期是否有效 */
-export const isDateValid = (val: string): boolean => !Number.isNaN(new Date(val).valueOf())
 /** 时间格式化 */
 export const timeFromDate = (date: Date): string => date.toTimeString().slice(0, 8)
 /** 将AM PM后缀添加到小时 */
@@ -48,47 +46,3 @@ export const getWeekday = (date: Date): string => ['Sunday', 'Monday', 'Tuesday'
 export const sortDescending = (arr: Date[]): Date[] => arr.sort((a, b) => a.getTime() - b.getTime())
 /** 初始化当前日期，但将时间设置为午夜 */
 export const midnightOfToday = (): Date => new Date(new Date().setHours(0, 0, 0, 0))
-/** 是否工作日 */
-export const isWeekday = (date = new Date()): boolean => date.getDay() % 6 !== 0
-/** 检查给定的日期是否在给定的日期范围内 */
-export const isBetween = (date: Date, min: Date, max: Date): boolean => date.getTime() >= min.getTime() && date.getTime() <= max.getTime()
-/** 检查给定的日期是否是今天 */
-export const isToday = (date: Date): boolean => date.toISOString().slice(0, 10) === new Date().toISOString().slice(0, 10)
-/** 检查给定的日期是否是周末 */
-export const isWeekend = (date = new Date()): boolean => date.getDay() % 6 === 0
-/** 检查给定的日期是否是当前年份 */
-export const isCurrentYear = (date: Date): boolean => date.getUTCFullYear() === new Date().getUTCFullYear()
-
-export default {
-  dayOfYear,
-  daysInMonth,
-  diffDays,
-  diffMonth,
-  extract,
-  format,
-  formatSeconds,
-  formatYmd,
-  getFirstDate,
-  getHoursAndMinutes,
-  getLastDate,
-  getMonthName,
-  getQuarter,
-  getTimezone,
-  getWeekday,
-  isBetween,
-  isCurrentYear,
-  isDateValid,
-  isToday,
-  isWeekday,
-  isWeekend,
-  midnightOfToday,
-  numberOfDays,
-  plusOneYear,
-  sortDescending,
-  suffixAmPm,
-  timeFromDate,
-  tomorrow,
-  ts,
-  yesterday,
-
-}

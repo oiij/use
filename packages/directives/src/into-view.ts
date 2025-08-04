@@ -10,15 +10,12 @@ function setValue(target: TargetElement, binding: DirectiveBinding<BindingValue>
 }
 export const intoView: Directive<TargetElement, BindingValue, 'once'> = {
   mounted(target, binding) {
-    if (!(typeof binding.value === 'function')) {
-      return console.warn('IntoView: value is not a function')
-    }
     setValue(target, binding)
     const once = binding.modifiers.once ?? false
     target._into_view_observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          target._into_view_callBack(entry.target)
+          typeof target._into_view_callBack === 'function' && target._into_view_callBack(entry.target)
           if (once) {
             target._into_view_observer.unobserve(target)
             target._into_view_observer.disconnect()

@@ -1,7 +1,7 @@
 {
   "name": "@oiij/directives",
   "type": "module",
-  "version": "0.0.7",
+  "version": "0.0.9",
   "description": "",
   "author": "oiij",
   "license": "MIT",
@@ -40,11 +40,11 @@
   },
   "peerDependencies": {
     "@oiij/utils": "workspace:*",
-    "vue": "^3.5.13"
+    "vue": "^3.5.18"
   },
   "devDependencies": {
     "@oiij/utils": "workspace:*",
-    "vue": "^3.5.17"
+    "vue": "^3.5.18"
   },
   "publishConfig": {
     "access": "public"

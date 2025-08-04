@@ -1,5 +1,3 @@
-/** 是否是偶数 */
-export const isEven = (num: number): boolean => num % 2 === 0
 /** 随机数 */
 export const random = (min: number, max: number): number => Math.floor(Math.random() * (max - min + 1) + min)
 /** 向数字添加序号后缀 */
@@ -42,51 +40,3 @@ export const truncate = (n: number): number => ~~n
 export const wrap = (num: number, min: number, max: number): number => ((((num - min) % (max - min)) + (max - min)) % (max - min)) + min
 /** 十进制转二进制 */
 export const decToBi = (num: number): number => (num === 0 ? 0 : (num % 2) + 10 * decToBi(~~(num / 2)))
-/** 是否是质数 */
-export const isPrime = (n: number): boolean => n > 1 && Array.from({ length: Math.floor(Math.sqrt(n)) - 1 }).fill(0).map((_, i) => i + 2).every(i => n % i !== 0)
-/** 是否是2的幂 */
-export const isPowerOfTwo = (n: number): boolean => (n & (n - 1)) === 0
-/** 数字是否在给定范围内 */
-export const inRange = (num: number, a: number, b: number, threshold = 0): boolean => Math.min(a, b) - threshold <= num && num <= Math.max(a, b) + threshold
-/** 是否是负数 */
-export const isNegative = (n: number): boolean => Math.sign(n) === -1
-/** 是否是奇数 */
-export const isOdd = (n: number): boolean => n % 2 !== 0
-/** 是否是正数 */
-export const isPositive = (n: number): boolean => Math.sign(n) === 1
-/** 是否包含数字 */
-export const isNumeric = (str: string): boolean => !/\D/.test(str)
-/** 是否是number */
-export const isNumber = (value: any): boolean => !Number.isNaN(Number.parseFloat(value)) && Number.isFinite(value)
-export default {
-  addOrdinal,
-  average,
-  clamp,
-  decToBi,
-  digitize,
-  division,
-  factorial,
-  fibo,
-  gcd,
-  inRange,
-  isEven,
-  isNegative,
-  isNumber,
-  isNumeric,
-  isOdd,
-  isPositive,
-  isPowerOfTwo,
-  isPrime,
-  mod,
-  mul,
-  prefixWithZeros,
-  random,
-  remainder,
-  round,
-  subtract,
-  sum,
-  toChars,
-  toFixed,
-  truncate,
-  wrap,
-}

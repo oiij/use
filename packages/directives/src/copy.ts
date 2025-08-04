@@ -28,17 +28,11 @@ export const copy: Directive<TargetElement, BindingValue> = {
     target.addEventListener('click', () => {
       const { _copy_value, _copy_success, _copy_error } = target
       if (!_copy_value)
-        return
+        return console.warn('Copy: value is not found.')
       navigator.clipboard.writeText(_copy_value).then(() => {
-        if (!(typeof _copy_success === 'function')) {
-          return console.warn('Copy: success callback is not a function')
-        }
-        _copy_success(_copy_value)
+        typeof _copy_success === 'function' && _copy_success(_copy_value)
       }).catch((err) => {
-        if (!(typeof _copy_error === 'function')) {
-          return console.warn('Copy: error callback is not a function')
-        }
-        _copy_error(err)
+        typeof _copy_error === 'function' && _copy_error(err)
       })
     }, {
       signal: target._copy_controller.signal,

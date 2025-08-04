@@ -1,12 +1,12 @@
 import type { Directive } from 'vue'
 
-type BindingValue = Uint8Array
+type BindingValue = Uint8Array<ArrayBuffer>
 type ImageMimeType = 'image/jpeg' | 'image/png' | 'image/svg+xml' | 'image/webp'
 type TargetElement = HTMLImageElement & {
 
 }
 function loadSrc(target: TargetElement, data: BindingValue, type: ImageMimeType = 'image/jpeg') {
-  const blob = new Blob([data], { type })
+  const blob = new Blob([data.buffer], { type })
   const url = URL.createObjectURL(blob)
   target.src = url
   target.onload = () => {

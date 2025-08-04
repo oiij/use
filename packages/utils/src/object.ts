@@ -1,5 +1,3 @@
-/** 对象是否相等 */
-export const isEqual = (...objects: object[]): boolean => objects.every(obj => JSON.stringify(obj) === JSON.stringify(objects[0]))
 /** 返回唯一值Key */
 export const getUniqueArrObj = <T extends Array<T>, K extends keyof T> (arrObj: T, keyUnique: K) => [...new Map(arrObj.map(item => [item[keyUnique], item])).values()]
 /** 提取属性值 */
@@ -21,20 +19,3 @@ export const removeNullUndefined = <T extends Record<string, any>>(obj: T) => Ob
 
 // eslint-disable-next-line no-sequences
 export const sort = <T extends Record<string, unknown>>(obj: T) => Object.keys(obj).sort().reduce((p, c) => ((p[c] = obj[c]), p), {} as any)
-/** 是否普通对象 */
-// eslint-disable-next-line no-proto, no-restricted-properties
-export const isPlainObject = (v: any): boolean => !!v && typeof v === 'object' && (v.__proto__ === null || v.__proto__ === Object.prototype)
-export default {
-  getUniqueArrObj,
-  getValue,
-  invert,
-  isEqual,
-  isPlainObject,
-  omit,
-  pick,
-  pluck,
-  removeNullUndefined,
-  renameKeys,
-  sort,
-  toObj,
-}

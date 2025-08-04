@@ -2,7 +2,7 @@
 <script setup lang='ts'>
 import type { NaiveFormRules, PresetFormOptions } from '@oiij/naive-ui/components'
 import { NPresetForm } from '@oiij/naive-ui/components'
-import { NButton, NDivider, NFlex } from 'naive-ui'
+import { NButton, NFlex, NInput, NSwitch } from 'naive-ui'
 import { h, ref, useTemplateRef } from 'vue'
 
 interface Values {
@@ -13,6 +13,8 @@ const presetForm = useTemplateRef('preset-form')
 const values = ref<Values>({
   id: '1',
 })
+const temValue = ref('value')
+const flag = ref(true)
 const options: PresetFormOptions<Values> = [
   {
     type: 'input',
@@ -29,9 +31,8 @@ const options: PresetFormOptions<Values> = [
   },
   {
     gridSpan: 24,
-    collapsed: true,
     render: () => {
-      return h(NDivider)
+      return flag.value ? h(NInput, { 'value': temValue.value, 'onUpdate:value': val => temValue.value = val }) : null
     },
   },
   ...(Array.from({ length: 5 }).map(() => {
@@ -65,6 +66,9 @@ function onValidated(values: any) {
     >
       <template #header>
         <h1>Header Slot</h1>
+        <NFlex>
+          <NSwitch v-model:value="flag" />
+        </NFlex>
       </template>
       <template #footer>
         <NFlex>
