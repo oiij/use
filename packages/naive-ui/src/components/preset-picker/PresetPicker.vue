@@ -17,6 +17,7 @@ const {
   value,
   fallbackLabel,
   multiple,
+  disabled,
   clearable,
   placeholder = '请选择',
   type,
@@ -153,7 +154,7 @@ defineExpose({
     <template #trigger>
       <NBadge :value="checkedCount" v-bind="badgeProps">
         <NButtonGroup>
-          <NButton :type="type" v-bind="buttonProps" @click="showModal">
+          <NButton :type="type" :disabled="disabled" v-bind="buttonProps" @click="showModal">
             <template #icon>
               <slot name="button-icon" />
             </template>

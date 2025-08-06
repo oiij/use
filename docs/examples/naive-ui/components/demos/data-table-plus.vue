@@ -104,6 +104,8 @@ const columns: DataTableColumns<Row> = [
     title: '页码',
     sorter: true,
     filter: true,
+    filterMultiple: true,
+    filterOptionValues: [1, 2],
     filterOptions: [
       {
         label: 'Value1',
@@ -151,6 +153,7 @@ function onUpdateCheckedRowKeys(key: any, rows: any, meta: any) {
       :api="api"
       :filter-options="filterOptions"
       :columns="columns"
+      :columns-filter-options="(filters) => ({ filterPage: filters.page, filters })"
       @click-row="onClickRow"
       @context-menu-row="onContextMenuRow"
       @success="onLoaded"
@@ -162,6 +165,7 @@ function onUpdateCheckedRowKeys(key: any, rows: any, meta: any) {
         </NButton>
       </template>
     </NDataTablePlus>
+    <pre>{{ tableRef?.refs.params }}</pre>
   </NFlex>
 </template>
 

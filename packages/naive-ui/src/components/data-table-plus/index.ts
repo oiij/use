@@ -1,4 +1,4 @@
-import type { DataTableColumns, DataTableInst, DataTableProps, DataTableSortState, DropdownOption, FlexProps, FormItemProps, GridItemProps, GridProps, PaginationProps } from 'naive-ui'
+import type { DataTableColumns, DataTableFilterState, DataTableInst, DataTableProps, DataTableSortState, DropdownOption, FlexProps, FormItemProps, GridItemProps, GridProps, PaginationProps } from 'naive-ui'
 import type { FilterState, TableBaseColumn } from 'naive-ui/es/data-table/src/interface'
 import type { ComputedRef, CSSProperties, Ref, ShallowRef, VNode } from 'vue'
 import type { useRequestResult } from 'vue-hooks-plus/es/useRequest/types'
@@ -29,6 +29,8 @@ export type DataTablePlusExposeRefsBase<P extends RObject, D extends RObject, R 
   rawList: ComputedRef<R[]>
 }
 export type DataTablePlusExposeRefs<P extends RObject, D extends RObject, R extends RObject> = DataTablePlusExposeRefsBase<P, D, R> & {
+  filters: Ref<DataTableFilterState | undefined>
+  sorters: Ref<Record<string, DataTableSortState> | undefined>
   dataTableRef: Readonly<ShallowRef<DataTableInst | null>>
 }
 export type DataTablePlusFilterOptions<P extends RObject, D extends RObject, R extends RObject> = (PresetInputOptions & {
@@ -56,6 +58,8 @@ export type DataTablePlusProps<P extends RObject, D extends RObject, R extends R
   fields?: DataTablePlusFields
   search?: SearchInputProps | boolean
   pagination?: Omit<PaginationProps, 'page' | 'pageSize'> | boolean
+  columnsFilterOptions?: (filters: DataTableFilterState) => Record<string, any>
+  columnsSorterOptions?: (sorters: Record<string, DataTableSortState>) => Record<string, any>
   dataTableProps?: DataTableProps
   customStyle?: CSSProperties
   customClass?: string

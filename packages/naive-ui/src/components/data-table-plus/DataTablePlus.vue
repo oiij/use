@@ -29,6 +29,8 @@ const {
   fields,
   search,
   pagination,
+  columnsFilterOptions,
+  columnsSorterOptions,
   dataTableProps,
   requestOptions,
   requestPlugins,
@@ -65,9 +67,12 @@ const paginationRef = ref<DataTablePlusPagination>({
   pageSize: 10,
   itemCount: 0,
 })
+const filtersRef = ref<DataTableFilterState>()
+const sortersRef = ref<Record<string, DataTableSortState>>()
 const _defaultParams = {
   [_fields.page]: paginationRef.value.page,
   [_fields.pageSize]: paginationRef.value.pageSize,
+  [_fields.search]: null,
   ...propsParams as P,
 } as P
 
@@ -117,26 +122,29 @@ function onSuccessEffect(data: D, params: P[]) {
       _dataCache.push(f)
     }
   })
-
   paginationRef.value.page = _fields.page in params[0] ? Number(params[0][_fields.page]) : 1
   paginationRef.value.pageSize = _fields.pageSize in params[0] ? Number(params[0][_fields.pageSize]) : 10
   paginationRef.value.itemCount = _fields.count in data ? Number(data[_fields.count]) : 0
-  const filterParam = params[0]?.[_fields.filter] as Record<string | number, (string | number)[] | string | number> | undefined
-  const sorterParam = params[0]?.[_fields.sorter] as Record<string | number, 'ascend' | 'descend' | false>
 
   if (columnsReactive) {
     for (const item of columnsReactive) {
       if ('key' in item) {
-        if (filterParam && item.key in filterParam) {
-          const filterValues = filterParam[item.key]
-          if ('filter' in item && item.filter) {
+        if (filtersRef.value && item.key in filtersRef.value) {
+          const filterValues = filtersRef.value[item.key]
+          if (filterValues && 'filter' in item && item.filter) {
             if (item.filterMultiple) {
               if (Array.isArray(filterValues)) {
                 item.filterOptionValues = filterValues
               }
+              else {
+                item.filterOptionValues = [filterValues]
+              }
             }
             else {
-              if (!Array.isArray(filterValues)) {
+              if (Array.isArray(filterValues)) {
+                item.filterOptionValue = filterValues[0]
+              }
+              else {
                 item.filterOptionValue = filterValues
               }
             }
@@ -147,10 +155,10 @@ function onSuccessEffect(data: D, params: P[]) {
             item.sortOrder = false
           }
         }
-        if (sorterParam && item.key in sorterParam) {
-          const sorterValue = sorterParam[item.key]
-          if ('sorter' in item && item.sorter) {
-            item.sortOrder = sorterValue
+        if (sortersRef.value && item.key in sortersRef.value) {
+          const sorterValue = sortersRef.value[item.key]
+          if (sorterValue && 'sorter' in item && item.sorter) {
+            item.sortOrder = sorterValue.order
           }
         }
       }
@@ -183,25 +191,27 @@ const vOn = {
   },
   onUpdateFilters: (filters: DataTableFilterState, initiatorColumn: DataTableBaseColumn) => {
     emit('update:filters', filters, initiatorColumn)
+    filtersRef.value = filters
     _run({
       [_fields.page]: 1,
-      [_fields.filter]: filters,
+      ...columnsFilterOptions ? columnsFilterOptions(filters) : { [_fields.filter]: filters },
     } as P)
   },
   onUpdateSorter: (options: DataTableSortState | DataTableSortState[] | null) => {
     emit('update:sorter', options)
-    const _sorter: Record<string | number, any> = {}
+    const sorter: Record<string, DataTableSortState> = {}
     if (Array.isArray(options)) {
       for (const item of options) {
-        _sorter[item.columnKey] = item.order
+        sorter[item.columnKey] = item
       }
     }
     else if (options) {
-      _sorter[options.columnKey] = options.order
+      sorter[options.columnKey] = options
     }
+    sortersRef.value = sorter
     _run({
       [_fields.page]: 1,
-      [_fields.sorter]: _sorter,
+      ...columnsSorterOptions ? columnsSorterOptions(sorter) : { [_fields.sorter]: sorter },
     } as P)
   },
   onLoad: (row: any) => {
@@ -249,6 +259,8 @@ const exposeRefs: DataTablePlusExposeRefs<P, D, R> = {
   error,
   params,
   pagination: paginationRef,
+  filters: filtersRef,
+  sorters: sortersRef,
   rawList,
   dataTableRef,
 }
