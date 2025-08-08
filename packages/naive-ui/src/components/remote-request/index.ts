@@ -6,7 +6,7 @@ export type RObject = Record<string, any>
 export type RemoteRequestFields = Partial<Record<string, string>>
 export interface RemoteRequestProps<P extends RObject, D extends RObject> {
   api: (...args: P[]) => Promise<D>
-  defaultParams?: P
+  defaultParams?: Partial<P>
   manual?: boolean
   fields?: RemoteRequestFields
   requestOptions?: UseRequestOptions<D, P[]>

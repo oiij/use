@@ -1,25 +1,29 @@
 import { useEventListener } from '@vueuse/core'
 import { computed, onMounted, ref } from 'vue'
 
-type ImageVerifyType = 'operation' | 'character'
 interface OperationConfig {
   figure?: number
   arith?: '+' | '-' | '*'
 }
 interface CharacterConfig {
   length?: number
+  characterPool?: string
 }
-export interface ImageVerifyOptions {
+type ImageVerifyOptionsBase = & {
   width?: number
   height?: number
   refreshOnClick?: boolean
-  type?: ImageVerifyType
-  config?: OperationConfig & CharacterConfig
   disturbLine?: number
   disturbPoint?: number
-
 }
-const CHARACTER_POOL = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+export type ImageVerifyOptions = ImageVerifyOptionsBase & {
+  type?: 'operation'
+  config?: OperationConfig
+} & {
+  type?: 'character'
+  config?: CharacterConfig
+}
+
 function randomNum(min: number, max: number) {
   const num = Math.floor(Math.random() * (max - min) + min)
   return num
@@ -52,7 +56,7 @@ function drawPoint(ctx: CanvasRenderingContext2D, width: number, height: number,
 }
 export function useImageVerify(options?: ImageVerifyOptions) {
   const { width = 120, height = 40, refreshOnClick = true, type = 'character', config, disturbLine = 10, disturbPoint = 40 } = options ?? {}
-  const { length = 4, arith, figure = 10 } = config ?? {}
+  const { length = 4, arith, figure = 10, characterPool = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ' } = config ?? {}
   const domRef = ref<HTMLCanvasElement>()
   const value = ref('')
   const code = ref('')
@@ -73,7 +77,7 @@ export function useImageVerify(options?: ImageVerifyOptions) {
     return _code
   }
 
-  function _draw(type: ImageVerifyOptions['type'] = 'character') {
+  function _draw(type = 'character') {
     let imgCode = ''
 
     const ctx = domRef.value?.getContext('2d')
@@ -84,7 +88,7 @@ export function useImageVerify(options?: ImageVerifyOptions) {
 
     if (type === 'character') {
       for (let i = 0; i < length; i += 1) {
-        const text = CHARACTER_POOL[randomNum(0, CHARACTER_POOL.length)]
+        const text = characterPool[randomNum(0, characterPool.length)]
         imgCode += text
 
         ctx.fillStyle = randomColor(50, 160)

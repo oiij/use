@@ -18,7 +18,7 @@ import { NSearchInput } from '../search-input/index'
 
 const {
   api,
-  defaultParams: propsParams,
+  defaultParams,
   title,
   manual,
   columns,
@@ -47,6 +47,9 @@ const _filterLayout = computed(() => {
     collapsedFlex: _layout[1] === 'flex',
   }
 })
+const _options = computed(() => filterOptions?.filter(f => !f.hidden).filter(f => !f.collapsed))
+const _collapsedOptions = computed(() => filterOptions?.filter(f => !f.hidden).filter(f => f.collapsed))
+
 const columnsReactive = reactive<DataTableColumns<R>>(columns ?? [])
 const dataTableRef = useTemplateRef<DataTableInst>('data-table-ref')
 const _fields = { page: 'page', pageSize: 'pageSize', filter: 'filter', sorter: 'sorter', list: 'list', count: 'count', rowKey: 'id', search: 'search', children: 'children', ...fields }
@@ -73,9 +76,8 @@ const _defaultParams = {
   [_fields.page]: paginationRef.value.page,
   [_fields.pageSize]: paginationRef.value.pageSize,
   [_fields.search]: null,
-  ...propsParams as P,
+  ...defaultParams,
 } as P
-
 const { loading, data, error, params, run, runAsync, refresh, refreshAsync, cancel, mutate } = useRequest<D, P[]>(api, {
   defaultParams: [
     _defaultParams,
@@ -309,7 +311,7 @@ defineExpose({
     </slot>
     <slot name="filter" :refs="exposeRefs" :actions="exposeActions">
       <NFlex vertical>
-        <NGrid v-if="_filterLayout.grid && (filterOptions?.filter(f => !f.collapsed).length ?? 0 > 0)" v-bind="filterGridProps">
+        <NGrid v-if="_filterLayout.grid && _options && _options.length > 0" v-bind="filterGridProps">
           <NGi
             v-for="({ key, gridSpan, gridItemProps, render, label, ...options }, _index) in filterOptions?.filter(f => !f.collapsed)"
             :key="_index"
@@ -333,7 +335,7 @@ defineExpose({
             />
           </NGi>
         </NGrid>
-        <NFlex v-if="_filterLayout.flex && (filterOptions?.filter(f => !f.collapsed).length ?? 0 > 0)" v-bind="filterFlexProps">
+        <NFlex v-if="_filterLayout.flex && _options && _options.length > 0" v-bind="filterFlexProps">
           <template
             v-for="({ key, render, label, ...options }, _index) in filterOptions?.filter(f => !f.collapsed)"
             :key="_index"
@@ -355,13 +357,13 @@ defineExpose({
             />
           </template>
         </NFlex>
-        <NDivider v-if="filterOptions?.filter(f => f.collapsed) && filterOptions?.filter(f => f.collapsed)?.length > 0" style="margin:5px 0;">
+        <NDivider v-if="_collapsedOptions && _collapsedOptions.length > 0" style="margin:5px 0;">
           <NButton size="tiny" @click="filterCollapsed = !filterCollapsed">
             {{ filterCollapsed ? '折叠' : '展开' }}
           </NButton>
         </NDivider>
         <NCollapseTransition :show="filterCollapsed">
-          <NGrid v-if="_filterLayout.collapsedGrid && (filterOptions?.filter(f => f.collapsed)?.length ?? 0 > 0)" v-bind="filterGridProps">
+          <NGrid v-if="_filterLayout.collapsedGrid && _collapsedOptions && _collapsedOptions.length > 0" v-bind="filterGridProps">
             <NGi
               v-for="({ key, gridSpan, gridItemProps, render, label, ...options }, _index) in filterOptions?.filter(f => f.collapsed)"
               :key="_index"
@@ -385,7 +387,7 @@ defineExpose({
               />
             </NGi>
           </NGrid>
-          <NFlex v-if="_filterLayout.collapsedFlex && (filterOptions?.filter(f => f.collapsed)?.length ?? 0 > 0)" v-bind="filterFlexProps">
+          <NFlex v-if="_filterLayout.collapsedFlex && _collapsedOptions && _collapsedOptions.length > 0" v-bind="filterFlexProps">
             <template
               v-for="({ key, render, label, ...options }, _index) in filterOptions?.filter(f => f.collapsed)"
               :key="_index"
