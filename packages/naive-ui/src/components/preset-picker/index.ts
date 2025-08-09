@@ -18,6 +18,8 @@ export type PresetPickerExposeActions<R extends RObject> = & {
   updateCheckedRowKeysEffect: (keys: (string | number)[], rows: (R | undefined)[], meta: { row: R | undefined, action: 'check' | 'uncheck' | 'checkAll' | 'uncheckAll' }, currentData: R[]) => void
   clickRowEffect: (row: R) => void
   clearValue: () => void
+  setCheckedRowKeys: (keys: (string | number)[]) => void
+  setCheckedRows: (rows: R[]) => void
 }
 
 export type PresetPickerProps<V extends PresetPickerValue, R extends RObject> = & {

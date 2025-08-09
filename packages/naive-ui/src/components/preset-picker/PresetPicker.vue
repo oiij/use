@@ -142,6 +142,13 @@ const exposeActions: PresetPickerExposeActions<R> = {
   updateCheckedRowKeysEffect,
   clickRowEffect,
   clearValue,
+  setCheckedRowKeys: (keys: (string | number)[]) => {
+    checkedRowKeys.value = keys
+  },
+  setCheckedRows: (rows: R[]) => {
+    checkedRows.value = rows
+  },
+
 }
 defineExpose({
   refs: exposeRefs,
