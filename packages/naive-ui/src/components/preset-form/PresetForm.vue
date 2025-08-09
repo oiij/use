@@ -26,8 +26,6 @@ const _layout = computed(() => {
     collapsedFlex: _layout[1] === 'flex',
   }
 })
-const _options = computed(() => options?.filter(f => !f.hidden).filter(f => !f.collapsed))
-const _collapsedOptions = computed(() => options?.filter(f => !f.hidden).filter(f => f.collapsed))
 
 const { formValue, formRules, formRef, validate, resetValidation, resetForm, reset, clear, onValidated } = useNaiveForm(values, {
   rules: {
@@ -57,6 +55,9 @@ const exposeActions = {
     Object.assign(formValue.value, value)
   },
 }
+const _options = computed(() => options?.filter(f => typeof f.hidden === 'function' ? !f.hidden(exposeRefs) : !f.hidden).filter(f => !f.collapsed))
+const _collapsedOptions = computed(() => options?.filter(f => typeof f.hidden === 'function' ? !f.hidden(exposeRefs) : !f.hidden).filter(f => f.collapsed))
+
 defineExpose({
   refs: exposeRefs,
   actions: exposeActions,

@@ -3,8 +3,8 @@
 import { useImageVerify } from '@oiij/use'
 import { NButton, NCard, NFlex, NInput, NInputGroup } from 'naive-ui'
 
-const { value, validate, domRef, passed } = useImageVerify()
-const { value: value1, validate: validate1, domRef: domRef1, passed: passed1 } = useImageVerify({ type: 'operation' })
+const { value, validate, domRef, passed } = useImageVerify({ type: 'character' })
+const { value: value1, validate: validate1, domRef: domRef1, passed: passed1 } = useImageVerify({ type: 'operation', config: { arith: '+' } })
 </script>
 
 <template>

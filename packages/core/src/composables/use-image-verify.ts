@@ -16,13 +16,13 @@ type ImageVerifyOptionsBase = & {
   disturbLine?: number
   disturbPoint?: number
 }
-export type ImageVerifyOptions = ImageVerifyOptionsBase & {
-  type?: 'operation'
+export type ImageVerifyOptions = (ImageVerifyOptionsBase & {
+  type: 'operation'
   config?: OperationConfig
-} & {
-  type?: 'character'
+}) | (ImageVerifyOptionsBase & {
+  type: 'character'
   config?: CharacterConfig
-}
+})
 
 function randomNum(min: number, max: number) {
   const num = Math.floor(Math.random() * (max - min) + min)
@@ -54,9 +54,8 @@ function drawPoint(ctx: CanvasRenderingContext2D, width: number, height: number,
     ctx.fill()
   }
 }
-export function useImageVerify(options?: ImageVerifyOptions) {
-  const { width = 120, height = 40, refreshOnClick = true, type = 'character', config, disturbLine = 10, disturbPoint = 40 } = options ?? {}
-  const { length = 4, arith, figure = 10, characterPool = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ' } = config ?? {}
+export function useImageVerify(options: ImageVerifyOptions = { type: 'character' }) {
+  const { width = 120, height = 40, refreshOnClick = true, disturbLine = 10, disturbPoint = 40 } = options ?? {}
   const domRef = ref<HTMLCanvasElement>()
   const value = ref('')
   const code = ref('')
@@ -72,12 +71,12 @@ export function useImageVerify(options?: ImageVerifyOptions) {
   }
 
   function generate() {
-    const _code = _draw(type)
+    const _code = _draw()
     code.value = _code
     return _code
   }
 
-  function _draw(type = 'character') {
+  function _draw() {
     let imgCode = ''
 
     const ctx = domRef.value?.getContext('2d')
@@ -86,7 +85,8 @@ export function useImageVerify(options?: ImageVerifyOptions) {
     ctx.fillStyle = randomColor(180, 230)
     ctx.fillRect(0, 0, width, height)
 
-    if (type === 'character') {
+    if (options?.type === 'character') {
+      const { length = 4, characterPool = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ' } = options?.config ?? {}
       for (let i = 0; i < length; i += 1) {
         const text = characterPool[randomNum(0, characterPool.length)]
         imgCode += text
@@ -99,11 +99,13 @@ export function useImageVerify(options?: ImageVerifyOptions) {
         ctx.fillText(text, x + 5, y)
       }
     }
-    if (type === 'operation') {
+    if (options?.type === 'operation') {
+      const { figure = 10, arith } = options?.config ?? {}
+
       let num1 = Math.floor(Math.random() * figure)
       let num2 = Math.floor(Math.random() * figure)
       let codeShow = ''
-      const _arith = arith || ['+', '-', '*'][Math.floor(Math.random() * 3)]
+      const _arith = arith ?? ['+', '-', '*'][Math.floor(Math.random() * 3)]
       switch (_arith) {
         case '+':
           imgCode = (num1 + num2).toString()

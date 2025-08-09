@@ -8,10 +8,12 @@ import { h, ref, useTemplateRef } from 'vue'
 interface Values {
   id?: string
   num?: number
+  hidden?: boolean
 }
 const presetForm = useTemplateRef('preset-form')
 const values = ref<Values>({
   id: '1',
+  hidden: false,
 })
 const temValue = ref('value')
 const flag = ref(true)
@@ -28,6 +30,19 @@ const options: PresetFormOptions<Values> = [
     key: 'num',
     required: true,
     gridSpan: 12,
+  },
+  {
+    type: 'switch',
+    label: 'Hidden',
+    key: 'hidden',
+    gridSpan: 12,
+  },
+  {
+    type: 'input',
+    label: 'Input',
+    key: 'id',
+    gridSpan: 12,
+    hidden: () => values.value.hidden ?? true,
   },
   {
     gridSpan: 24,
@@ -79,6 +94,7 @@ function onValidated(values: any) {
       </template>
     </NPresetForm>
     <pre>值：{{ values }}</pre>
+    <pre>{{ options }}</pre>
   </NFlex>
 </template>
 

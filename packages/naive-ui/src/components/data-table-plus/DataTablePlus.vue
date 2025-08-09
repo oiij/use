@@ -47,8 +47,6 @@ const _filterLayout = computed(() => {
     collapsedFlex: _layout[1] === 'flex',
   }
 })
-const _options = computed(() => filterOptions?.filter(f => !f.hidden).filter(f => !f.collapsed))
-const _collapsedOptions = computed(() => filterOptions?.filter(f => !f.hidden).filter(f => f.collapsed))
 
 const columnsReactive = reactive<DataTableColumns<R>>(columns ?? [])
 const dataTableRef = useTemplateRef<DataTableInst>('data-table-ref')
@@ -283,6 +281,9 @@ const exposeActions: DataTablePlusExposeActions<P, D> = {
     return runAsync(Object.assign(params.value[0], _params))
   },
 }
+const _options = computed(() => filterOptions?.filter(f => typeof f.hidden === 'function' ? !f.hidden(exposeRefs) : !f.hidden).filter(f => !f.collapsed))
+const _collapsedOptions = computed(() => filterOptions?.filter(f => typeof f.hidden === 'function' ? !f.hidden(exposeRefs) : !f.hidden).filter(f => f.collapsed))
+
 defineExpose({
   refs: exposeRefs,
   actions: exposeActions,
