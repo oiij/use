@@ -48,18 +48,26 @@ function api(params?: Params) {
 const filterOptions: DataTablePlusFilterOptions<Params, Res, Row> = [
   {
     key: 'search',
-    label: '搜索',
+    label: '搜索1',
     type: 'search',
-    collapsed: true,
+    gridSpan: 12,
+  },
+  {
+    key: 'search',
+    label: '搜索2',
+    type: 'search',
+    gridSpan: 12,
   },
   {
     key: 'id',
     type: 'input',
     label: true,
+    gridSpan: 12,
     collapsed: true,
   },
   {
     collapsed: true,
+    gridSpan: 12,
     render: (refs, actions) => {
       return h(NButton, {
         onClick: () => {
@@ -152,6 +160,9 @@ function onUpdateCheckedRowKeys(key: any, rows: any, meta: any) {
       :style="{ width: '100%', height: '500px' }"
       :api="api"
       :filter-options="filterOptions"
+      filter-collapsed-type="modal"
+      filter-modal-trigger="auto"
+      clearable
       :columns="columns"
       :columns-filter-options="(filters) => ({ filterPage: filters.page, filters })"
       @click-row="onClickRow"

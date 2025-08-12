@@ -9,12 +9,12 @@ import type { DataTableBaseColumn, DataTableColumns, DataTableFilterState, DataT
 import type { InternalRowData, RowKey } from 'naive-ui/es/data-table/src/interface'
 import type { RObject } from '../remote-request/index'
 import type { DataTablePlusEmits, DataTablePlusExposeActions, DataTablePlusExposeRefs, DataTablePlusPagination, DataTablePlusProps } from './index'
-import { NButton, NCollapseTransition, NDataTable, NDivider, NFlex, NGi, NGrid, NPagination } from 'naive-ui'
-import { computed, h, reactive, ref, toRaw, useTemplateRef } from 'vue'
+import { NBadge, NButton, NCollapseTransition, NDataTable, NDivider, NFlex, NModal, NPagination } from 'naive-ui'
+import { computed, reactive, ref, toRaw, toValue, useTemplateRef } from 'vue'
 import useRequest from 'vue-hooks-plus/es/useRequest'
-import { renderLabel } from '../preset-input/_utils'
-import { NPresetInput } from '../preset-input/index'
 import { NSearchInput } from '../search-input/index'
+import FlexFilter from './FlexFilter.vue'
+import GridFilter from './GridFilter.vue'
 
 const {
   api,
@@ -26,9 +26,14 @@ const {
   filterGridProps,
   filterFlexProps,
   filterLayout = 'grid',
+  filterCollapsedType = 'collapsed',
+  filterModalProps,
+  filterModalTrigger = 'manual',
+  filterLabel = '更多筛选',
   fields,
   search,
   pagination,
+  clearable,
   columnsFilterOptions,
   columnsSorterOptions,
   dataTableProps,
@@ -76,6 +81,7 @@ const _defaultParams = {
   [_fields.search]: null,
   ...defaultParams,
 } as P
+const _defaultParamsCache = structuredClone(toRaw(toValue(_defaultParams)))
 const { loading, data, error, params, run, runAsync, refresh, refreshAsync, cancel, mutate } = useRequest<D, P[]>(api, {
   defaultParams: [
     _defaultParams,
@@ -244,15 +250,51 @@ function rowProps(row: R, index: number) {
 }
 
 const filterCollapsed = ref(false)
+const _paramsCache = ref<P>({} as P)
 
-function onValueUpdate(val: any, key?: keyof P) {
+function onValueUpdate(val: any, key?: keyof P, manual?: boolean) {
   if (key) {
-    _run({
-      [key]: val,
-    } as P)
+    if (manual) {
+      if (filterModalTrigger === 'manual') {
+        _paramsCache.value[key] = val
+      }
+      if (filterModalTrigger === 'auto') {
+        _run({
+          [key]: val,
+        } as P)
+      }
+    }
+    else {
+      _run({
+        [key]: val,
+      } as P)
+    }
   }
 }
+const modalFlag = ref(false)
+function showFilterModal() {
+  modalFlag.value = true
+}
+function resetParams() {
+  _run(_defaultParamsCache)
+}
 
+function handlePositiveClick() {
+  _run(_paramsCache.value)
+}
+const showBadgeFlag = computed(() => {
+  const excludeKeys = [_fields.page, _fields.pageSize]
+  return Object
+    .entries(params.value[0])
+    .filter(([key]) => !excludeKeys.includes(key))
+    .some(([_key, val]) => !(
+      val === undefined
+      || val === null
+      || (Array.isArray(val) && val.length === 0)
+      || (typeof val === 'string' && val.trim() === '')
+      || (typeof val === 'boolean' && val === true)
+    ))
+})
 const exposeRefs: DataTablePlusExposeRefs<P, D, R> = {
   loading,
   data,
@@ -280,6 +322,8 @@ const exposeActions: DataTablePlusExposeActions<P, D> = {
   runParamsAsync: async (_params: Partial<P>) => {
     return runAsync(Object.assign(params.value[0], _params))
   },
+  showFilterModal,
+  resetParams,
 }
 const _options = computed(() => filterOptions?.filter(f => typeof f.hidden === 'function' ? !f.hidden(exposeRefs) : !f.hidden).filter(f => !f.collapsed))
 const _collapsedOptions = computed(() => filterOptions?.filter(f => typeof f.hidden === 'function' ? !f.hidden(exposeRefs) : !f.hidden).filter(f => f.collapsed))
@@ -305,111 +349,63 @@ defineExpose({
           :value="params[0][_fields.search]"
           :loading="loading"
           v-bind="searchProps"
-          @update:value="(val) => onValueUpdate(val, _fields.search)"
+          @update:value="(val) => _run({ [ _fields.search]: val } as P) "
         />
+        <NBadge :show="showBadgeFlag" dot>
+          <NButton v-if="filterCollapsedType === 'modal'" @click="showFilterModal">
+            {{ filterLabel }}
+          </NButton>
+        </NBadge>
+        <NButton v-if="clearable" @click="resetParams">
+          清除
+        </NButton>
         <slot name="header-extra" :refs="exposeRefs" :actions="exposeActions" />
       </NFlex>
     </slot>
     <slot name="filter" :refs="exposeRefs" :actions="exposeActions">
       <NFlex vertical>
-        <NGrid v-if="_filterLayout.grid && _options && _options.length > 0" v-bind="filterGridProps">
-          <NGi
-            v-for="({ key, gridSpan, gridItemProps, render, label, ...options }, _index) in filterOptions?.filter(f => !f.collapsed)"
-            :key="_index"
-            :span="gridSpan"
-            v-bind="gridItemProps"
-          >
-            <component
-              :is="renderLabel(render(exposeRefs, exposeActions), label, { path: key as string, labelPlacement: 'left' })"
-              v-if="render"
-            />
-            <component
-              :is="renderLabel(
-                h(NPresetInput, {
-                  'options': options,
-                  'value': key ? params[0][key] : undefined,
-                  'onUpdate:value': (val) => onValueUpdate(val, key),
-                }),
-                label,
-                { path: key as string, labelPlacement: 'left' })"
-              v-else
-            />
-          </NGi>
-        </NGrid>
-        <NFlex v-if="_filterLayout.flex && _options && _options.length > 0" v-bind="filterFlexProps">
-          <template
-            v-for="({ key, render, label, ...options }, _index) in filterOptions?.filter(f => !f.collapsed)"
-            :key="_index"
-          >
-            <component
-              :is="renderLabel(render(exposeRefs, exposeActions), label, { path: key as string, labelPlacement: 'left' })"
-              v-if="render"
-            />
-            <component
-              :is="renderLabel(
-                h(NPresetInput, {
-                  'options': options,
-                  'value': key ? params[0][key] : undefined,
-                  'onUpdate:value': (val) => onValueUpdate(val, key),
-                }),
-                label,
-                { path: key as string, labelPlacement: 'left' })"
-              v-else
-            />
-          </template>
-        </NFlex>
-        <NDivider v-if="_collapsedOptions && _collapsedOptions.length > 0" style="margin:5px 0;">
+        <GridFilter
+          v-if="_filterLayout.grid"
+          :options="_options"
+          :expose-refs="exposeRefs"
+          :expose-actions="exposeActions"
+          :params="params"
+          :grid-props="filterGridProps"
+          @update:value="(val, key) => onValueUpdate(val, key)"
+        />
+        <FlexFilter
+          v-if="_filterLayout.flex"
+          :options="_options"
+          :expose-refs="exposeRefs"
+          :expose-actions="exposeActions"
+          :params="params"
+          :grid-props="filterGridProps"
+          @update:value="(val, key) => onValueUpdate(val, key)"
+        />
+        <NDivider v-if="_collapsedOptions && filterCollapsedType === 'collapsed' && _collapsedOptions.length > 0" style="margin:5px 0;">
           <NButton size="tiny" @click="filterCollapsed = !filterCollapsed">
             {{ filterCollapsed ? '折叠' : '展开' }}
           </NButton>
         </NDivider>
-        <NCollapseTransition :show="filterCollapsed">
-          <NGrid v-if="_filterLayout.collapsedGrid && _collapsedOptions && _collapsedOptions.length > 0" v-bind="filterGridProps">
-            <NGi
-              v-for="({ key, gridSpan, gridItemProps, render, label, ...options }, _index) in filterOptions?.filter(f => f.collapsed)"
-              :key="_index"
-              :span="gridSpan"
-              v-bind="gridItemProps"
-            >
-              <component
-                :is="renderLabel(render(exposeRefs, exposeActions), label, { path: key as string, labelPlacement: 'left' })"
-                v-if="render"
-              />
-              <component
-                :is="renderLabel(
-                  h(NPresetInput, {
-                    'options': options,
-                    'value': key ? params[0][key] : undefined,
-                    'onUpdate:value': (val) => onValueUpdate(val, key),
-                  }),
-                  label,
-                  { path: key as string, labelPlacement: 'left' })"
-                v-else
-              />
-            </NGi>
-          </NGrid>
-          <NFlex v-if="_filterLayout.collapsedFlex && _collapsedOptions && _collapsedOptions.length > 0" v-bind="filterFlexProps">
-            <template
-              v-for="({ key, render, label, ...options }, _index) in filterOptions?.filter(f => f.collapsed)"
-              :key="_index"
-            >
-              <component
-                :is="renderLabel(render(exposeRefs, exposeActions), label, { path: key as string, labelPlacement: 'left' })"
-                v-if="render"
-              />
-              <component
-                :is="renderLabel(
-                  h(NPresetInput, {
-                    'options': options,
-                    'value': key ? params[0][key] : undefined,
-                    'onUpdate:value': (val) => onValueUpdate(val, key),
-                  }),
-                  label,
-                  { path: key as string, labelPlacement: 'left' })"
-                v-else
-              />
-            </template>
-          </NFlex>
+        <NCollapseTransition v-if="_collapsedOptions && filterCollapsedType === 'collapsed' && _collapsedOptions.length > 0" :show="filterCollapsed">
+          <GridFilter
+            v-if="_filterLayout.collapsedGrid"
+            :options="_collapsedOptions"
+            :expose-refs="exposeRefs"
+            :expose-actions="exposeActions"
+            :params="params"
+            :grid-props="filterGridProps"
+            @update:value="(val, key) => onValueUpdate(val, key)"
+          />
+          <FlexFilter
+            v-if="_filterLayout.collapsedFlex"
+            :options="_collapsedOptions"
+            :expose-refs="exposeRefs"
+            :expose-actions="exposeActions"
+            :params="params"
+            :grid-props="filterFlexProps"
+            @update:value="(val, key) => onValueUpdate(val, key)"
+          />
         </NCollapseTransition>
       </NFlex>
     </slot>
@@ -455,6 +451,36 @@ defineExpose({
         />
       </NFlex>
     </slot>
+    <NModal
+      v-if="filterCollapsedType === 'modal'"
+      v-model:show="modalFlag"
+      preset="dialog"
+      :title="filterLabel"
+      :positive-text="filterModalTrigger === 'manual' ? '确定' : undefined"
+      v-bind="filterModalProps"
+      @positive-click="handlePositiveClick"
+    >
+      <slot name="filter-modal" :refs="exposeRefs" :actions="exposeActions">
+        <GridFilter
+          v-if="_filterLayout.collapsedGrid"
+          :options="_collapsedOptions"
+          :expose-refs="exposeRefs"
+          :expose-actions="exposeActions"
+          :params="params"
+          :grid-props="filterGridProps"
+          @update:value="(val, key) => onValueUpdate(val, key, true)"
+        />
+        <FlexFilter
+          v-if="_filterLayout.collapsedFlex"
+          :options="_collapsedOptions"
+          :expose-refs="exposeRefs"
+          :expose-actions="exposeActions"
+          :params="params"
+          :grid-props="filterFlexProps"
+          @update:value="(val, key) => onValueUpdate(val, key, true)"
+        />
+      </slot>
+    </NModal>
   </NFlex>
 </template>
 

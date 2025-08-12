@@ -4,7 +4,7 @@ export { default as NRemoteRequest } from './RemoteRequest.vue'
 
 export type RObject = Record<string, any>
 export type RemoteRequestFields = Partial<Record<string, string>>
-export interface RemoteRequestProps<P extends RObject, D extends RObject> {
+export interface RemoteRequestProps<P extends RObject = RObject, D extends RObject = RObject> {
   api: (...args: P[]) => Promise<D>
   defaultParams?: Partial<P>
   manual?: boolean
@@ -12,7 +12,7 @@ export interface RemoteRequestProps<P extends RObject, D extends RObject> {
   requestOptions?: UseRequestOptions<D, P[]>
   requestPlugins?: UseRequestPlugin<D, P[]>[]
 }
-export interface RemoteRequestEmits<P extends RObject, D extends RObject> {
+export interface RemoteRequestEmits<P extends RObject = RObject, D extends RObject = RObject> {
   (e: 'before', params: P[]): void
   (e: 'success', data: D, params: P[]): void
   (e: 'error', err: Error, params: P[]): void

@@ -10,7 +10,7 @@ export type PresetFormExposeRefs<V extends Record<string, any> = Record<string, 
 export type PresetFormExposeActions<V extends Record<string, any> = Record<string, any>> = Pick<NaiveFormReturns<V>, 'validate' | 'resetValidation' | 'resetForm' | 'reset' | 'clear' | 'onValidated'> & {
   setValues: (value: Partial<V>) => void
 }
-export type PresetFormOptions<V extends Record<string, any> = Record<string, any>> = (PresetInputOptions & {
+export type PresetFormOptionsItem<V extends Record<string, any> = Record<string, any>> = PresetInputOptions & {
   key?: keyof V
   label?: string | boolean |(FormItemProps & {
     style?: CSSProperties
@@ -23,7 +23,9 @@ export type PresetFormOptions<V extends Record<string, any> = Record<string, any
   gridSpan?: string | number
   gridItemProps?: GridItemProps
   render?: (refs: PresetFormExposeRefs<V>, actions: PresetFormExposeActions<V>) => VNode | null
-})[]
+}
+export type PresetFormOptions<V extends Record<string, any> = Record<string, any>> = PresetFormOptionsItem<V>[]
+
 export interface PresetFormProps<V extends Record<string, any> = Record<string, any>> {
   options?: PresetFormOptions<V>
   values?: V

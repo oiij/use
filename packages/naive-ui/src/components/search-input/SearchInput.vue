@@ -44,7 +44,6 @@ watchEffect(() => {
       ref="input-ref"
       v-model:value="_value"
       clearable
-      :loading="loading"
       :placeholder="placeholder"
       v-bind="inputProps"
       @keydown="handleKeyDown"

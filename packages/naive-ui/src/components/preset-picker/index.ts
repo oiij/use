@@ -7,13 +7,13 @@ export { default as NPresetPicker } from './PresetPicker.vue'
 
 export type PresetPickerValue = string | number | (string | number)[] | null
 
-export type PresetPickerExposeRefs<R extends RObject> = & {
+export type PresetPickerExposeRefs<R extends RObject = RObject> = & {
   showModalFlag: Ref<boolean, boolean>
   checkedRowKeys: Ref<(string | number)[], (string | number)[]>
   checkedRows: Ref<R[], R[]>
   columns: DataTableColumns<any>
 }
-export type PresetPickerExposeActions<R extends RObject> = & {
+export type PresetPickerExposeActions<R extends RObject = RObject> = & {
   showModal: () => void
   updateCheckedRowKeysEffect: (keys: (string | number)[], rows: (R | undefined)[], meta: { row: R | undefined, action: 'check' | 'uncheck' | 'checkAll' | 'uncheckAll' }, currentData: R[]) => void
   clickRowEffect: (row: R) => void
@@ -22,7 +22,7 @@ export type PresetPickerExposeActions<R extends RObject> = & {
   setCheckedRows: (rows: R[]) => void
 }
 
-export type PresetPickerProps<V extends PresetPickerValue, R extends RObject> = & {
+export type PresetPickerProps<V extends PresetPickerValue, R extends RObject = RObject> = & {
   value?: V
   fallbackLabel?: string | ((val: string | number) => string)
   multiple?: boolean
@@ -38,7 +38,7 @@ export type PresetPickerProps<V extends PresetPickerValue, R extends RObject> = 
   badgeProps?: BadgeProps
   modalProps?: ModalProps
 }
-export type PresetPickerEmits<V extends PresetPickerValue, R extends RObject> = & {
+export type PresetPickerEmits<V extends PresetPickerValue, R extends RObject = RObject> = & {
   (e: 'update:value', val: V | null, raw: R | R[] | null): void
   (e: 'afterEnter'): void
   (e: 'afterLeave'): void

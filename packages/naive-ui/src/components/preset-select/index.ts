@@ -6,7 +6,7 @@ import type { RemoteRequestEmits, RemoteRequestProps, RObject } from '../remote-
 export { default as NPresetSelect } from './PresetSelect.vue'
 
 export type ArrayAwareType<V, T> = V extends null ? null : (V extends any[] ? T[] : T) | null
-export type OptionFormat<R extends RObject> = (row: R) => SelectOption | SelectGroupOption | false | undefined | null
+export type OptionFormat<R extends RObject = RObject> = (row: R) => SelectOption | SelectGroupOption | false | undefined | null
 export type PresetSelectValue = string | number | (string | number)[] | null
 export type PresetSelectFields = Partial<Record<'page' | 'pageSize' | 'search' | 'list' | 'count' | 'rowKey' | 'label' | 'value' | 'children', string>>
 export interface PresetSelectPagination {
@@ -14,12 +14,12 @@ export interface PresetSelectPagination {
   pageSize: number
   itemCount: number
 }
-export type PresetSelectExposeRefs<P extends RObject, D extends RObject, R extends RObject> = DataTablePlusExposeRefsBase<P, D, R> & {
+export type PresetSelectExposeRefs<P extends RObject = RObject, D extends RObject = RObject, R extends RObject = RObject> = DataTablePlusExposeRefsBase<P, D, R> & {
   selectRef: Readonly<ShallowRef<SelectInst | null>>
 }
-export type PresetSelectExposeActions<P extends RObject, D extends RObject> = DataTablePlusExposeActions<P, D>
+export type PresetSelectExposeActions<P extends RObject = RObject, D extends RObject = RObject> = Omit<DataTablePlusExposeActions<P, D>, 'showFilterModal' | 'resetParams'>
 
-export type PresetSelectProps<V extends PresetSelectValue, P extends RObject, D extends RObject, R extends RObject> = RemoteRequestProps<P, D> & {
+export type PresetSelectProps<V extends PresetSelectValue, P extends RObject = RObject, D extends RObject = RObject, R extends RObject = RObject> = RemoteRequestProps<P, D> & {
   value?: V
   fallbackLabel?: string | ((val: string | number) => SelectOption)
   multiple?: boolean
@@ -31,7 +31,7 @@ export type PresetSelectProps<V extends PresetSelectValue, P extends RObject, D 
   selectProps?: SelectProps
   pagination?: Omit<PaginationProps, 'page' | 'pageSize'> | boolean
 }
-export type PresetSelectEmits<V extends PresetSelectValue, P extends RObject, D extends RObject, R extends RObject> = RemoteRequestEmits<P, D> & {
+export type PresetSelectEmits<V extends PresetSelectValue, P extends RObject = RObject, D extends RObject = RObject, R extends RObject = RObject> = RemoteRequestEmits<P, D> & {
   (e: 'blur', ev: FocusEvent): void
   (e: 'clear',): void
   (e: 'create', label: string): SelectOption
