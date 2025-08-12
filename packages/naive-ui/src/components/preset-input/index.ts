@@ -1,5 +1,5 @@
 import type { ButtonProps, CheckboxGroupProps, CheckboxProps, ColorPickerProps, DatePickerProps, DividerProps, DynamicTagsProps, InputNumberProps, InputProps, RadioGroupProps, RadioProps, RateProps, SelectProps, SliderProps, SwitchProps, TimePickerProps } from 'naive-ui'
-import type { CSSProperties } from 'vue'
+import type { ClassStyle } from '../data-table-plus'
 import type { SearchInputProps } from '../search-input/index'
 
 export { default as NPresetInput } from './PresetInput.vue'
@@ -24,10 +24,7 @@ export interface PresetInputType {
 export type PresetInputOptions = {
   [K in keyof PresetInputType]: {
     type?: K
-    props?: PresetInputType[K] & {
-      style?: CSSProperties
-      class?: string
-    }
+    props?: PresetInputType[K] & ClassStyle
   }
 }[keyof PresetInputType]
 export interface PresetInputProps<V> {

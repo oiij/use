@@ -1,6 +1,7 @@
 import type { BadgeProps, ButtonProps, DataTableColumns, ModalProps } from 'naive-ui'
 import type { TableSelectionColumn } from 'naive-ui/es/data-table/src/interface'
 import type { Ref } from 'vue'
+import type { ClassStyle } from '../data-table-plus'
 import type { RObject } from '../remote-request/index'
 
 export { default as NPresetPicker } from './PresetPicker.vue'
@@ -33,10 +34,10 @@ export type PresetPickerProps<V extends PresetPickerValue, R extends RObject = R
   columns?: DataTableColumns<R>
   selectionOptions?: TableSelectionColumn
   fields?: { label?: string, value?: string }
-  buttonProps?: ButtonProps
-  clearButtonProps?: ButtonProps
-  badgeProps?: BadgeProps
-  modalProps?: ModalProps
+  buttonProps?: ButtonProps & ClassStyle
+  clearButtonProps?: ButtonProps & ClassStyle
+  badgeProps?: BadgeProps & ClassStyle
+  modalProps?: ModalProps & ClassStyle
 }
 export type PresetPickerEmits<V extends PresetPickerValue, R extends RObject = RObject> = & {
   (e: 'update:value', val: V | null, raw: R | R[] | null): void

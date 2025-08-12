@@ -1,4 +1,5 @@
 import type { ButtonProps, InputProps } from 'naive-ui'
+import type { ClassStyle } from '../data-table-plus'
 
 export { default as NSearchInput } from './SearchInput.vue'
 export interface SearchInputProps {
@@ -8,6 +9,6 @@ export interface SearchInputProps {
   loading?: boolean
   autoTrigger?: boolean | number
   searchButton?: 'text' | 'icon' | boolean
-  inputProps?: InputProps
-  buttonProps?: ButtonProps
+  inputProps?: InputProps & ClassStyle
+  buttonProps?: ButtonProps & ClassStyle
 }

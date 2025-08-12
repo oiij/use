@@ -39,8 +39,8 @@ const {
   dataTableProps,
   requestOptions,
   requestPlugins,
-  customStyle,
-  customClass,
+  style: _style,
+  class: _class,
 } = defineProps<DataTablePlusProps<P, D, R>>()
 const emit = defineEmits<DataTablePlusEmits<P, D, R>>()
 const _filterLayout = computed(() => {
@@ -415,8 +415,8 @@ defineExpose({
       flex-height
       :single-line="false"
       :scroll-x="scrollX"
-      :style="{ flex: 1, ...customStyle }"
-      :class="customClass"
+      :style="{ flex: 1, ..._style }"
+      :class="_class"
       :row-key="row => row[_fields.rowKey]"
       :children-key="_fields.children"
       :loading="loading"
@@ -454,6 +454,7 @@ defineExpose({
     <NModal
       v-if="filterCollapsedType === 'modal'"
       v-model:show="modalFlag"
+      style="width:auto;"
       preset="dialog"
       :title="filterLabel"
       :positive-text="filterModalTrigger === 'manual' ? '确定' : undefined"

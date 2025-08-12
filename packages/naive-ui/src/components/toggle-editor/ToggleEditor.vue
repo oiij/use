@@ -1,10 +1,11 @@
 <script setup lang='ts'>
 import type { InputProps } from 'naive-ui'
+import type { ClassStyle } from '../data-table-plus'
 import { NInput } from 'naive-ui'
 import { nextTick, ref, useTemplateRef } from 'vue'
 
 const { inputProps } = defineProps<{
-  inputProps?: InputProps
+  inputProps?: InputProps & ClassStyle
 }>()
 const value = defineModel<string>('value')
 const editorFlag = ref(false)

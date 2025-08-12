@@ -1,5 +1,6 @@
 import type { PaginationProps, SelectGroupOption, SelectInst, SelectOption, SelectProps } from 'naive-ui'
 import type { ShallowRef } from 'vue'
+import type { ClassStyle } from '../data-table-plus'
 import type { DataTablePlusExposeActions, DataTablePlusExposeRefsBase } from '../data-table-plus/index'
 import type { RemoteRequestEmits, RemoteRequestProps, RObject } from '../remote-request/index'
 
@@ -28,8 +29,8 @@ export type PresetSelectProps<V extends PresetSelectValue, P extends RObject = R
   debounce?: boolean | number
   optionFormat?: OptionFormat<R>
   fields?: PresetSelectFields
-  selectProps?: SelectProps
-  pagination?: Omit<PaginationProps, 'page' | 'pageSize'> | boolean
+  selectProps?: SelectProps & ClassStyle
+  pagination?: Omit<PaginationProps, 'page' | 'pageSize'> & ClassStyle | boolean
 }
 export type PresetSelectEmits<V extends PresetSelectValue, P extends RObject = RObject, D extends RObject = RObject, R extends RObject = RObject> = RemoteRequestEmits<P, D> & {
   (e: 'blur', ev: FocusEvent): void

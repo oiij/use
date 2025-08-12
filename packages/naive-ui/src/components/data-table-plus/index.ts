@@ -7,7 +7,10 @@ import type { RemoteRequestEmits, RemoteRequestProps, RObject } from '../remote-
 import type { SearchInputProps } from '../search-input/index'
 
 export { default as NDataTablePlus } from './DataTablePlus.vue'
-
+export type ClassStyle = & {
+  class?: string
+  style?: CSSProperties
+}
 export interface DataTablePlusExposeActions<P extends RObject = RObject, D extends RObject = RObject> {
   run: (params: P) => void
   runAsync: (params: P) => Promise<D>
@@ -56,23 +59,23 @@ export type DataTablePlusProps<P extends RObject = RObject, D extends RObject = 
   title?: string
   columns?: DataTableColumns<R>
   filterOptions?: DataTablePlusFilterOptions<P, D, R>
-  filterGridProps?: GridProps
-  filterFlexProps?: FlexProps
+  filterGridProps?: GridProps & ClassStyle
+  filterFlexProps?: FlexProps & ClassStyle
   filterLayout?: 'grid' | 'flex' | ['grid' | 'flex']
   filterCollapsedType?: 'collapsed' | 'modal'
   filterModalTrigger?: 'manual' | 'auto'
   filterLabel?: string
-  filterModalProps?: ModalProps
+  filterModalProps?: ModalProps & ClassStyle
   contextMenuOptions?: DropdownOption[]
   fields?: DataTablePlusFields
-  search?: SearchInputProps | boolean
-  pagination?: Omit<PaginationProps, 'page' | 'pageSize'> | boolean
+  search?: SearchInputProps & ClassStyle | boolean
+  pagination?: Omit<PaginationProps, 'page' | 'pageSize'> & ClassStyle | boolean
   clearable?: boolean
   columnsFilterOptions?: (filters: DataTableFilterState) => Record<string, any>
   columnsSorterOptions?: (sorters: Record<string, DataTableSortState>) => Record<string, any>
-  dataTableProps?: DataTableProps
-  customStyle?: CSSProperties
-  customClass?: string
+  dataTableProps?: DataTableProps & ClassStyle
+  style?: CSSProperties
+  class?: string
 }
 export type DataTablePlusEmits<P extends RObject = RObject, D extends RObject = RObject, R extends RObject = RObject> = RemoteRequestEmits<P, D> & {
   (e: 'clickRow', row: R, index: number, event: MouseEvent, currentData: R[]): void
