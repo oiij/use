@@ -39,8 +39,6 @@ const {
   dataTableProps,
   requestOptions,
   requestPlugins,
-  style: _style,
-  class: _class,
 } = defineProps<DataTablePlusProps<P, D, R>>()
 const emit = defineEmits<DataTablePlusEmits<P, D, R>>()
 const _filterLayout = computed(() => {
@@ -335,17 +333,17 @@ defineExpose({
 </script>
 
 <template>
-  <NFlex vertical>
+  <NFlex :style="{ width: 100, height: 100 }" vertical>
     <slot name="header" :refs="exposeRefs" :actions="exposeActions">
       <NFlex>
         <slot name="title">
-          <div style="height:100%;display:flex;align-items:center;">
-            <span v-if="title" style="font-size:16px;">{{ title }}</span>
+          <div :style="{ height: '100%', display: 'flex', alignItems: 'center' }">
+            <span v-if="title" :style="{ fontSize: '16px' }">{{ title }}</span>
           </div>
         </slot>
         <NSearchInput
           v-if="search"
-          style="margin-left: auto;width:260px"
+          :style="{ marginLeft: 'auto', width: '260px' }"
           :value="params[0][_fields.search]"
           :loading="loading"
           v-bind="searchProps"
@@ -382,7 +380,7 @@ defineExpose({
           :grid-props="filterGridProps"
           @update:value="(val, key) => onValueUpdate(val, key)"
         />
-        <NDivider v-if="_collapsedOptions && filterCollapsedType === 'collapsed' && _collapsedOptions.length > 0" style="margin:5px 0;">
+        <NDivider v-if="_collapsedOptions && filterCollapsedType === 'collapsed' && _collapsedOptions.length > 0" :style="{ margin: '5px 0' }">
           <NButton size="tiny" @click="filterCollapsed = !filterCollapsed">
             {{ filterCollapsed ? '折叠' : '展开' }}
           </NButton>
@@ -415,8 +413,7 @@ defineExpose({
       flex-height
       :single-line="false"
       :scroll-x="scrollX"
-      :style="{ flex: 1, ..._style }"
-      :class="_class"
+      :style="{ flex: 1 }"
       :row-key="row => row[_fields.rowKey]"
       :children-key="_fields.children"
       :loading="loading"
@@ -443,7 +440,7 @@ defineExpose({
         <slot name="footer-extra" :refs="exposeRefs" :actions="exposeActions" />
         <NPagination
           v-if="pagination"
-          style="margin-left: auto;"
+          :style="{ marginLeft: 'auto' }"
           :disabled="loading"
           v-bind="{ ...paginationProps, ...paginationRef }"
           @update:page="vOn.onUpdatePage"
@@ -454,7 +451,7 @@ defineExpose({
     <NModal
       v-if="filterCollapsedType === 'modal'"
       v-model:show="modalFlag"
-      style="width:auto;"
+      :style="{ width: 'auto' }"
       preset="dialog"
       :title="filterLabel"
       :positive-text="filterModalTrigger === 'manual' ? '确定' : undefined"

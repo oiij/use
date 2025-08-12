@@ -113,7 +113,7 @@ function onPresetInputUpdate(val: any, key?: keyof V) {
           />
         </template>
       </NFlex>
-      <NDivider v-if="_collapsedOptions && _collapsedOptions.length > 0" style="margin:5px 0;">
+      <NDivider v-if="_collapsedOptions && _collapsedOptions.length > 0" :style="{ margin: '5px 0' }">
         <NButton size="tiny" @click="filterCollapsed = !filterCollapsed">
           {{ filterCollapsed ? '折叠' : '展开' }}
         </NButton>

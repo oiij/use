@@ -256,7 +256,7 @@ defineExpose({
           <slot name="footer-extra" :refs="exposeRefs" :actions="exposeActions" />
           <NPagination
             v-if="pagination"
-            style="margin-left: auto;"
+            :style="{ marginLeft: 'auto' }"
             simple
             :disabled="loading"
             v-bind="{ ...paginationProps, ...paginationRef }"

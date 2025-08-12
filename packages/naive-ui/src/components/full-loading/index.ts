@@ -1,5 +1,6 @@
 import type { SpinProps } from 'naive-ui'
 import type { CSSProperties, RendererElement } from 'vue'
+import type { ClassStyle } from '../data-table-plus'
 
 export { default as NFullLoading } from './FullLoading.vue'
 export interface FullLoadingProps {
@@ -9,5 +10,5 @@ export interface FullLoadingProps {
   blur?: boolean
   disableScroll?: boolean
   scrollSelector?: string | HTMLElement
-  spinProps?: Omit<SpinProps, 'show'>
+  spinProps?: Omit<SpinProps, 'show'> & ClassStyle
 }

@@ -9,7 +9,7 @@ import type { SearchInputProps } from '../search-input/index'
 export { default as NDataTablePlus } from './DataTablePlus.vue'
 export type ClassStyle = & {
   class?: string
-  style?: CSSProperties
+  style?: CSSProperties | string
 }
 export interface DataTablePlusExposeActions<P extends RObject = RObject, D extends RObject = RObject> {
   run: (params: P) => void
@@ -74,8 +74,6 @@ export type DataTablePlusProps<P extends RObject = RObject, D extends RObject = 
   columnsFilterOptions?: (filters: DataTableFilterState) => Record<string, any>
   columnsSorterOptions?: (sorters: Record<string, DataTableSortState>) => Record<string, any>
   dataTableProps?: DataTableProps & ClassStyle
-  style?: CSSProperties
-  class?: string
 }
 export type DataTablePlusEmits<P extends RObject = RObject, D extends RObject = RObject, R extends RObject = RObject> = RemoteRequestEmits<P, D> & {
   (e: 'clickRow', row: R, index: number, event: MouseEvent, currentData: R[]): void
