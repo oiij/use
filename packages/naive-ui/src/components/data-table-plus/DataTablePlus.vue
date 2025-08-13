@@ -355,7 +355,7 @@ defineExpose({
           @update:value="(val) => _run({ [ _fields.search]: val } as P) "
         />
         <NBadge :show="showBadgeFlag" dot>
-          <NButton v-if="filterCollapsedType === 'modal'" @click="showFilterModal">
+          <NButton v-if="filterCollapsedType === 'modal' && (_collapsedOptions?.length ?? 0) > 0" @click="showFilterModal">
             {{ filterLabel }}
           </NButton>
         </NBadge>
@@ -454,7 +454,7 @@ defineExpose({
       </NFlex>
     </slot>
     <NModal
-      v-if="filterCollapsedType === 'modal'"
+      v-if="filterCollapsedType === 'modal' && (_collapsedOptions?.length ?? 0) > 0"
       v-model:show="modalFlag"
       :style="{ width: 'auto' }"
       preset="dialog"
