@@ -70,7 +70,7 @@ export type DataTablePlusProps<P extends RObject = RObject, D extends RObject = 
   fields?: DataTablePlusFields
   search?: SearchInputProps & ClassStyle | boolean
   pagination?: Omit<PaginationProps, 'page' | 'pageSize'> & ClassStyle | boolean
-  clearable?: boolean
+  clearable?: boolean | 'main' | 'modal'
   columnsFilterOptions?: (filters: DataTableFilterState) => Record<string, any>
   columnsSorterOptions?: (sorters: Record<string, DataTableSortState>) => Record<string, any>
   dataTableProps?: DataTableProps & ClassStyle

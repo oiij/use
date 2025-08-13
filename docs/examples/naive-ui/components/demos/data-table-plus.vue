@@ -3,7 +3,7 @@
 import type { DataTablePlusFilterOptions } from '@oiij/naive-ui/components'
 import type { DataTableColumns } from 'naive-ui'
 import { NDataTablePlus } from '@oiij/naive-ui/components'
-import { NButton, NFlex } from 'naive-ui'
+import { NButton, NFlex, NInput } from 'naive-ui'
 import { h, useTemplateRef } from 'vue'
 
 interface Params {
@@ -11,6 +11,8 @@ interface Params {
   page?: number
   pageSize?: number
   search?: string
+  timeRange?: number[]
+
 }
 interface Row {
   id: number
@@ -51,12 +53,14 @@ const filterOptions: DataTablePlusFilterOptions<Params, Res, Row> = [
     label: '搜索1',
     type: 'search',
     gridSpan: 12,
+    collapsed: true,
   },
   {
     key: 'search',
     label: '搜索2',
     type: 'search',
     gridSpan: 12,
+    collapsed: true,
   },
   {
     key: 'id',
@@ -64,6 +68,17 @@ const filterOptions: DataTablePlusFilterOptions<Params, Res, Row> = [
     label: true,
     gridSpan: 12,
     collapsed: true,
+  },
+  {
+    key: 'timeRange',
+    type: 'date-picker',
+    label: '时间范围',
+    gridSpan: 12,
+    collapsed: true,
+    props: {
+      type: 'daterange',
+
+    },
   },
   {
     collapsed: true,
@@ -161,8 +176,9 @@ function onUpdateCheckedRowKeys(key: any, rows: any, meta: any) {
       :api="api"
       :filter-options="filterOptions"
       filter-collapsed-type="modal"
-      filter-modal-trigger="auto"
-      clearable
+      filter-modal-trigger="manual"
+      :filter-modal-props="{ contentStyle: { width: '600px' } }"
+      :clearable="true"
       :columns="columns"
       :columns-filter-options="(filters) => ({ filterPage: filters.page, filters })"
       @click-row="onClickRow"
@@ -171,9 +187,10 @@ function onUpdateCheckedRowKeys(key: any, rows: any, meta: any) {
       @update:checked-row-keys="onUpdateCheckedRowKeys"
     >
       <template #header-extra>
-        <NButton @click="tableRef?.actions.refresh()">
+        <NInput style="width:100px;" />
+        <!-- <NButton @click="tableRef?.actions.refresh()">
           Refresh
-        </NButton>
+        </NButton> -->
       </template>
     </NDataTablePlus>
     <pre>{{ tableRef?.refs.params }}</pre>

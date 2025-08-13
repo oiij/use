@@ -26,7 +26,7 @@ const {
   filterGridProps,
   filterFlexProps,
   filterLayout = 'grid',
-  filterCollapsedType = 'collapsed',
+  filterCollapsedType = 'modal',
   filterModalProps,
   filterModalTrigger = 'manual',
   filterLabel = '更多筛选',
@@ -250,9 +250,9 @@ function rowProps(row: R, index: number) {
 const filterCollapsed = ref(false)
 const _paramsCache = ref<P>({} as P)
 
-function onValueUpdate(val: any, key?: keyof P, manual?: boolean) {
+function onValueUpdate(val: any, key?: keyof P) {
   if (key) {
-    if (manual) {
+    if (filterCollapsedType === 'modal') {
       if (filterModalTrigger === 'manual') {
         _paramsCache.value[key] = val
       }
@@ -274,7 +274,11 @@ function showFilterModal() {
   modalFlag.value = true
 }
 function resetParams() {
-  _run(_defaultParamsCache)
+  run(structuredClone(_defaultParamsCache))
+}
+
+function handleNegativeClick() {
+  resetParams()
 }
 
 function handlePositiveClick() {
@@ -333,7 +337,7 @@ defineExpose({
 </script>
 
 <template>
-  <NFlex :style="{ width: 100, height: 100 }" vertical>
+  <NFlex :style="{ width: '100%', height: '100%' }" vertical>
     <slot name="header" :refs="exposeRefs" :actions="exposeActions">
       <NFlex>
         <slot name="title">
@@ -343,7 +347,7 @@ defineExpose({
         </slot>
         <NSearchInput
           v-if="search"
-          :style="{ marginLeft: 'auto', width: '260px' }"
+          :style="{ marginLeft: 'auto', width: '280px' }"
           :value="params[0][_fields.search]"
           :loading="loading"
           v-bind="searchProps"
@@ -354,7 +358,7 @@ defineExpose({
             {{ filterLabel }}
           </NButton>
         </NBadge>
-        <NButton v-if="clearable" @click="resetParams">
+        <NButton v-if="typeof clearable === 'boolean' ? clearable === true : clearable === 'main'" @click="resetParams">
           清除
         </NButton>
         <slot name="header-extra" :refs="exposeRefs" :actions="exposeActions" />
@@ -454,8 +458,10 @@ defineExpose({
       :style="{ width: 'auto' }"
       preset="dialog"
       :title="filterLabel"
+      :negative-text="(typeof clearable === 'boolean' ? clearable === true : clearable === 'modal') ? '清除' : undefined"
       :positive-text="filterModalTrigger === 'manual' ? '确定' : undefined"
       v-bind="filterModalProps"
+      @negative-click="handleNegativeClick"
       @positive-click="handlePositiveClick"
     >
       <slot name="filter-modal" :refs="exposeRefs" :actions="exposeActions">
@@ -466,7 +472,7 @@ defineExpose({
           :expose-actions="exposeActions"
           :params="params"
           :grid-props="filterGridProps"
-          @update:value="(val, key) => onValueUpdate(val, key, true)"
+          @update:value="(val, key) => onValueUpdate(val, key)"
         />
         <FlexFilter
           v-if="_filterLayout.collapsedFlex"
@@ -475,7 +481,7 @@ defineExpose({
           :expose-actions="exposeActions"
           :params="params"
           :grid-props="filterFlexProps"
-          @update:value="(val, key) => onValueUpdate(val, key, true)"
+          @update:value="(val, key) => onValueUpdate(val, key)"
         />
       </slot>
     </NModal>
