@@ -23,7 +23,7 @@ export type PresetFormOptionsItem<V extends Record<string, any> = Record<string,
 }
 export type PresetFormOptions<V extends Record<string, any> = Record<string, any>> = PresetFormOptionsItem<V>[]
 
-export interface PresetFormProps<V extends Record<string, any> = Record<string, any>> {
+export type PresetFormProps<V extends Record<string, any> = Record<string, any>> = & {
   options?: PresetFormOptions<V>
   values?: V
   rules?: NaiveFormRules<V>

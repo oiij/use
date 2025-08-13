@@ -4,7 +4,7 @@ import type { SearchInputProps } from '../search-input/index'
 
 export { default as NPresetInput } from './PresetInput.vue'
 
-export interface PresetInputType {
+export type PresetInputType = & {
   'button': ButtonProps & { label?: string }
   'color-picker': ColorPickerProps
   'checkbox': CheckboxGroupProps & { options?: CheckboxProps[] }
@@ -27,7 +27,7 @@ export type PresetInputOptions = {
     props?: PresetInputType[K] & ClassStyle
   }
 }[keyof PresetInputType]
-export interface PresetInputProps<V> {
+export type PresetInputProps<V> = & {
   value?: V
   options?: PresetInputOptions
 }

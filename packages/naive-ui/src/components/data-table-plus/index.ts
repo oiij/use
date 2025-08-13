@@ -11,7 +11,7 @@ export type ClassStyle = & {
   class?: string
   style?: CSSProperties | string
 }
-export interface DataTablePlusExposeActions<P extends RObject = RObject, D extends RObject = RObject> {
+export type DataTablePlusExposeActionsBase<P extends RObject = RObject, D extends RObject = RObject> = & {
   run: (params: P) => void
   runAsync: (params: P) => Promise<D>
   refresh: () => void
@@ -21,10 +21,13 @@ export interface DataTablePlusExposeActions<P extends RObject = RObject, D exten
   setParams: (params: Partial<P>) => void
   runParams: (params: Partial<P>) => void
   runParamsAsync: (params: Partial<P>) => Promise<D>
+}
+export type DataTablePlusExposeActions<P extends RObject = RObject, D extends RObject = RObject> = DataTablePlusExposeActionsBase<P, D> & {
+  onValueUpdate: (key: keyof P, val: any) => void
   showFilterModal: () => void
   resetParams: () => void
 }
-export interface DataTablePlusPagination {
+export type DataTablePlusPagination = & {
   page: number
   pageSize: number
   itemCount: number

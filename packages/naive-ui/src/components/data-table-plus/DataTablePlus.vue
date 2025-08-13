@@ -250,7 +250,7 @@ function rowProps(row: R, index: number) {
 const filterCollapsed = ref(false)
 const _paramsCache = ref<P>({} as P)
 
-function onValueUpdate(val: any, key?: keyof P) {
+function onValueUpdate(key: keyof P, val: any) {
   if (key) {
     if (filterCollapsedType === 'modal') {
       if (filterModalTrigger === 'manual') {
@@ -326,6 +326,7 @@ const exposeActions: DataTablePlusExposeActions<P, D> = {
   },
   showFilterModal,
   resetParams,
+  onValueUpdate,
 }
 const _options = computed(() => filterOptions?.filter(f => typeof f.hidden === 'function' ? !f.hidden(exposeRefs) : !f.hidden).filter(f => !f.collapsed))
 const _collapsedOptions = computed(() => filterOptions?.filter(f => typeof f.hidden === 'function' ? !f.hidden(exposeRefs) : !f.hidden).filter(f => f.collapsed))
@@ -373,7 +374,7 @@ defineExpose({
           :expose-actions="exposeActions"
           :params="params"
           :grid-props="filterGridProps"
-          @update:value="(val, key) => onValueUpdate(val, key)"
+          @update:value="(val, key) => onValueUpdate(key, val)"
         />
         <FlexFilter
           v-if="_filterLayout.flex"
@@ -382,7 +383,7 @@ defineExpose({
           :expose-actions="exposeActions"
           :params="params"
           :grid-props="filterGridProps"
-          @update:value="(val, key) => onValueUpdate(val, key)"
+          @update:value="(val, key) => onValueUpdate(key, val)"
         />
         <NDivider v-if="_collapsedOptions && filterCollapsedType === 'collapsed' && _collapsedOptions.length > 0" :style="{ margin: '5px 0' }">
           <NButton size="tiny" @click="filterCollapsed = !filterCollapsed">
@@ -397,7 +398,7 @@ defineExpose({
             :expose-actions="exposeActions"
             :params="params"
             :grid-props="filterGridProps"
-            @update:value="(val, key) => onValueUpdate(val, key)"
+            @update:value="(val, key) => onValueUpdate(key, val)"
           />
           <FlexFilter
             v-if="_filterLayout.collapsedFlex"
@@ -406,7 +407,7 @@ defineExpose({
             :expose-actions="exposeActions"
             :params="params"
             :grid-props="filterFlexProps"
-            @update:value="(val, key) => onValueUpdate(val, key)"
+            @update:value="(val, key) => onValueUpdate(key, val)"
           />
         </NCollapseTransition>
       </NFlex>
@@ -472,7 +473,7 @@ defineExpose({
           :expose-actions="exposeActions"
           :params="params"
           :grid-props="filterGridProps"
-          @update:value="(val, key) => onValueUpdate(val, key)"
+          @update:value="(val, key) => onValueUpdate(key, val)"
         />
         <FlexFilter
           v-if="_filterLayout.collapsedFlex"
@@ -481,7 +482,7 @@ defineExpose({
           :expose-actions="exposeActions"
           :params="params"
           :grid-props="filterFlexProps"
-          @update:value="(val, key) => onValueUpdate(val, key)"
+          @update:value="(val, key) => onValueUpdate(key, val)"
         />
       </slot>
     </NModal>

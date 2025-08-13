@@ -3,7 +3,7 @@ import type { CSSProperties, VNodeChild } from 'vue'
 
 export { default as NBubble } from './Bubble.vue'
 
-export interface BubbleProps {
+export type BubbleProps = & {
   avatar?: {
     icon?: VNodeChild
     props?: AvatarProps

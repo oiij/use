@@ -4,7 +4,7 @@ import type { Ref } from 'vue'
 import { createEventHook } from '@vueuse/core'
 import { ref, toRaw, toRef, toValue } from 'vue'
 
-export interface NaiveFormClearRules {
+export type NaiveFormClearRules = & {
   string?: string | null
   number?: number | null
   boolean?: boolean | null
@@ -58,7 +58,7 @@ function deepMerge(target: Record<string, any> = {}, source: Record<string, any>
   return target
 }
 export type NaiveFormRules<T extends Record<string, any>> = Partial<Record<keyof T, FormRules | FormItemRule | FormItemRule[]>>
-export interface NaiveFormOptions<T extends Record<string, any>> {
+export type NaiveFormOptions<T extends Record<string, any>> = & {
   rules?: NaiveFormRules<T>
   clearRules?: NaiveFormClearRules
 }

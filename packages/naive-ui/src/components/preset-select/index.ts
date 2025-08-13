@@ -1,7 +1,7 @@
 import type { PaginationProps, SelectGroupOption, SelectInst, SelectOption, SelectProps } from 'naive-ui'
 import type { ShallowRef } from 'vue'
 import type { ClassStyle } from '../data-table-plus'
-import type { DataTablePlusExposeActions, DataTablePlusExposeRefsBase } from '../data-table-plus/index'
+import type { DataTablePlusExposeActionsBase, DataTablePlusExposeRefsBase } from '../data-table-plus/index'
 import type { RemoteRequestEmits, RemoteRequestProps, RObject } from '../remote-request/index'
 
 export { default as NPresetSelect } from './PresetSelect.vue'
@@ -10,7 +10,7 @@ export type ArrayAwareType<V, T> = V extends null ? null : (V extends any[] ? T[
 export type OptionFormat<R extends RObject = RObject> = (row: R) => SelectOption | SelectGroupOption | false | undefined | null
 export type PresetSelectValue = string | number | (string | number)[] | null
 export type PresetSelectFields = Partial<Record<'page' | 'pageSize' | 'search' | 'list' | 'count' | 'rowKey' | 'label' | 'value' | 'children', string>>
-export interface PresetSelectPagination {
+export type PresetSelectPagination = & {
   page: number
   pageSize: number
   itemCount: number
@@ -18,7 +18,9 @@ export interface PresetSelectPagination {
 export type PresetSelectExposeRefs<P extends RObject = RObject, D extends RObject = RObject, R extends RObject = RObject> = DataTablePlusExposeRefsBase<P, D, R> & {
   selectRef: Readonly<ShallowRef<SelectInst | null>>
 }
-export type PresetSelectExposeActions<P extends RObject = RObject, D extends RObject = RObject> = Omit<DataTablePlusExposeActions<P, D>, 'showFilterModal' | 'resetParams'>
+export type PresetSelectExposeActions<P extends RObject = RObject, D extends RObject = RObject> = DataTablePlusExposeActionsBase<P, D> & {
+
+}
 
 export type PresetSelectProps<V extends PresetSelectValue, P extends RObject = RObject, D extends RObject = RObject, R extends RObject = RObject> = RemoteRequestProps<P, D> & {
   value?: V

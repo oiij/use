@@ -3,7 +3,7 @@ import type { ClassStyle } from '../data-table-plus'
 import type { FullLoadingProps } from '../full-loading/index'
 
 export { default as NConfigProviders } from './ConfigProviders.vue'
-export interface ConfigProvidersProps {
+export type ConfigProvidersProps = & {
   globalStyle?: boolean
   configProviderProps?: ConfigProviderProps & ClassStyle
   loadingBarProps?: LoadingBarProviderProps & ClassStyle
@@ -14,7 +14,7 @@ export interface ConfigProvidersProps {
   messageProviderProps?: MessageProviderProps & ClassStyle
 }
 
-export interface LoadingIns {
+export type LoadingIns = & {
   start: () => void
   finish: () => void
 }

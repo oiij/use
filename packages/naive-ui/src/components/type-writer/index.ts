@@ -1,5 +1,5 @@
 export { default as NTypeWriter } from './TypeWriter.vue'
-export interface TypeWriterProps {
+export type TypeWriterProps = & {
   value?: string
   typing?: boolean
   markdown?: boolean
