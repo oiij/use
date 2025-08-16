@@ -1,7 +1,7 @@
 {
   "name": "@oiij/naive-ui",
   "type": "module",
-  "version": "0.0.46",
+  "version": "0.0.47",
   "description": "Som Composable Functions And Components for Vue 3",
   "author": "oiij",
   "license": "MIT",

@@ -68,6 +68,7 @@ export type DataTablePlusProps<P extends RObject = RObject, D extends RObject = 
   filterCollapsedType?: 'collapsed' | 'modal'
   filterModalTrigger?: 'manual' | 'auto'
   filterLabel?: string
+  filterClearLabel?: string
   filterModalProps?: ModalProps & ClassStyle
   contextMenuOptions?: DropdownOption[]
   fields?: DataTablePlusFields

@@ -30,6 +30,7 @@ const {
   filterModalProps,
   filterModalTrigger = 'manual',
   filterLabel = '更多筛选',
+  filterClearLabel = '清除筛选',
   fields,
   search,
   pagination,
@@ -354,13 +355,13 @@ defineExpose({
           v-bind="searchProps"
           @update:value="(val) => _run({ [ _fields.search]: val } as P) "
         />
-        <NBadge :show="showBadgeFlag" dot>
-          <NButton v-if="filterCollapsedType === 'modal' && (_collapsedOptions?.length ?? 0) > 0" @click="showFilterModal">
+        <NBadge v-if="filterCollapsedType === 'modal' && (_collapsedOptions?.length ?? 0) > 0" :show="showBadgeFlag" dot>
+          <NButton @click="showFilterModal">
             {{ filterLabel }}
           </NButton>
         </NBadge>
         <NButton v-if="typeof clearable === 'boolean' ? clearable === true : clearable === 'main'" @click="resetParams">
-          清除
+          {{ filterClearLabel }}
         </NButton>
         <slot name="header-extra" :refs="exposeRefs" :actions="exposeActions" />
       </NFlex>

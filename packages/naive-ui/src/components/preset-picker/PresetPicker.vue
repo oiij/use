@@ -157,7 +157,7 @@ defineExpose({
 </script>
 
 <template>
-  <NTooltip :show="Array.isArray(value) ? undefined : false" :trigger="Array.isArray(value) ? 'hover' : 'manual'">
+  <NTooltip :disabled="Array.isArray(value) ? false : true" :trigger="Array.isArray(value) ? 'hover' : 'manual'">
     <template #trigger>
       <NBadge :value="checkedCount" v-bind="badgeProps">
         <NButtonGroup>
