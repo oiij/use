@@ -157,10 +157,10 @@ defineExpose({
 </script>
 
 <template>
-  <NTooltip :disabled="Array.isArray(value) ? false : true" :trigger="Array.isArray(value) ? 'hover' : 'manual'">
-    <template #trigger>
-      <NBadge :value="checkedCount" v-bind="badgeProps">
-        <NButtonGroup>
+  <NBadge :value="checkedCount" v-bind="badgeProps">
+    <NButtonGroup>
+      <NTooltip :disabled="Array.isArray(value) ? false : true" :trigger="Array.isArray(value) ? 'hover' : 'manual'">
+        <template #trigger>
           <NButton :type="type" :disabled="disabled" v-bind="buttonProps" @click="showModal">
             <template #icon>
               <slot name="button-icon" />
@@ -168,52 +168,52 @@ defineExpose({
             <slot name="button">
               <span>{{ Array.isArray(value) ? '已选择' : _label }}</span>
             </slot>
-            <NModal
-              v-model:show="showModalFlag"
-              style="width:auto;"
-              preset="dialog"
-              :title="placeholder"
-              positive-text="确认"
-              negative-text="取消"
-              v-bind="modalProps"
-              @positive-click="onPositiveClick"
-              @negative-click="onNegativeClick"
-              @close="emit('close')"
-              @after-enter="emit('afterEnter')"
-              @after-leave="emit('afterLeave')"
-              @esc="emit('esc')"
-              @mask-click="emit('maskClick')"
-              @update:show="(val) => emit('update:show', val)"
-            >
-              <slot :refs="exposeRefs" :actions="exposeActions" />
-              <template #action>
-                <slot name="modal-action" />
-              </template>
-              <template #header>
-                <slot name="modal-header" />
-              </template>
-              <template #icon>
-                <slot name="modal-icon" />
-              </template>
-              <template #close>
-                <slot name="modal-close" />
-              </template>
-            </NModal>
           </NButton>
-          <slot name="clear-button">
-            <NButton v-if="showClearButton" circle :type="type" v-bind="clearButtonProps" @click.stop="clearValue">
-              <template #icon>
-                <slot name="clear-icon">
-                  <MageMultiplyCircleFill />
-                </slot>
-              </template>
-            </NButton>
-          </slot>
-        </NButtonGroup>
-      </NBadge>
-    </template>
-    <div>{{ Array.isArray(value) ? _label : '' }}</div>
-  </NTooltip>
+        </template>
+        <div>{{ Array.isArray(value) ? _label : '' }}</div>
+      </NTooltip>
+      <slot name="clear-button">
+        <NButton v-if="showClearButton" circle :type="type" v-bind="clearButtonProps" @click.stop="clearValue">
+          <template #icon>
+            <slot name="clear-icon">
+              <MageMultiplyCircleFill />
+            </slot>
+          </template>
+        </NButton>
+      </slot>
+      <NModal
+        v-model:show="showModalFlag"
+        style="width:auto;"
+        preset="dialog"
+        :title="placeholder"
+        positive-text="确认"
+        negative-text="取消"
+        v-bind="modalProps"
+        @positive-click="onPositiveClick"
+        @negative-click="onNegativeClick"
+        @close="emit('close')"
+        @after-enter="emit('afterEnter')"
+        @after-leave="emit('afterLeave')"
+        @esc="emit('esc')"
+        @mask-click="emit('maskClick')"
+        @update:show="(val) => emit('update:show', val)"
+      >
+        <slot :refs="exposeRefs" :actions="exposeActions" />
+        <template #action>
+          <slot name="modal-action" />
+        </template>
+        <template #header>
+          <slot name="modal-header" />
+        </template>
+        <template #icon>
+          <slot name="modal-icon" />
+        </template>
+        <template #close>
+          <slot name="modal-close" />
+        </template>
+      </NModal>
+    </NButtonGroup>
+  </NBadge>
 </template>
 
 <style scoped>

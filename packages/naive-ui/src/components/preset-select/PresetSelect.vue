@@ -36,12 +36,6 @@ const emit = defineEmits<PresetSelectEmits<V, P, D, R>>()
 const selectRef = useTemplateRef('select-ref')
 const _fields = { page: 'page', pageSize: 'pageSize', search: 'search', list: 'list', count: 'count', label: 'label', value: 'value', children: 'children', ...fields }
 const paginationProps = reactive<PaginationProps>({
-  showSizePicker: true,
-  pageSizes: [10, 20, 30],
-  pageSlot: 5,
-  prefix: (info) => {
-    return `共${info.itemCount}条数据`
-  },
   ...(pagination && typeof pagination === 'boolean' ? {} : pagination),
 })
 const paginationRef = ref<PresetSelectPagination>({

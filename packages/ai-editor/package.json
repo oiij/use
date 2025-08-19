@@ -1,7 +1,7 @@
 {
   "name": "@oiij/ai-editor",
   "type": "module",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "A Vue Composable for AI Editor",
   "author": "oiij",
   "license": "MIT",
@@ -39,12 +39,12 @@
     "prepublishOnly": "pnpm build"
   },
   "peerDependencies": {
-    "@vueuse/core": "^13.6.0",
+    "@vueuse/core": "^13.7.0",
     "aieditor": "^1.4.0",
     "vue": "^3.5.18"
   },
   "devDependencies": {
-    "@vueuse/core": "^13.6.0",
+    "@vueuse/core": "^13.7.0",
     "aieditor": "^1.4.0",
     "vue": "^3.5.18"
   },

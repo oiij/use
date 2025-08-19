@@ -1,7 +1,7 @@
 {
   "name": "@oiij/emoji-picker",
   "type": "module",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "A Vue Composable for emoji-picker",
   "author": "oiij",
   "license": "MIT",
@@ -39,13 +39,13 @@
   },
   "peerDependencies": {
     "@emoji-mart/data": "^1.2.1",
-    "@vueuse/core": "^13.6.0",
+    "@vueuse/core": "^13.7.0",
     "emoji-mart": "^5.6.0",
     "vue": "^3.5.18"
   },
   "devDependencies": {
     "@emoji-mart/data": "^1.2.1",
-    "@vueuse/core": "^13.6.0",
+    "@vueuse/core": "^13.7.0",
     "emoji-mart": "^5.6.0",
     "vue": "^3.5.18"
   },

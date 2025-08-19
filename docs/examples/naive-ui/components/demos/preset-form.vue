@@ -29,6 +29,9 @@ const options: PresetFormOptions<Values> = [
     label: 'Num',
     key: 'num',
     required: true,
+    rules: {
+      type: 'number',
+    },
     gridSpan: 12,
   },
   {

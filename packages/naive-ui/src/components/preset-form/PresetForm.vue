@@ -13,7 +13,7 @@ import { renderLabel } from '../preset-input/_utils'
 import { NPresetInput } from '../preset-input/index'
 import { options2Rules } from './_utils'
 
-const { options, values, rules, clearRules, formProps: defaultProps, gridProps, flexProps, layout = 'grid' } = defineProps<PresetFormProps<V>>()
+const { options, values, rules, clearRules, formProps, gridProps, flexProps, layout = 'grid' } = defineProps<PresetFormProps<V>>()
 const emit = defineEmits<{
   (e: 'validated', val: V): void
 }>()
@@ -70,7 +70,7 @@ function onPresetInputUpdate(val: any, key?: keyof V) {
 </script>
 
 <template>
-  <NForm ref="formRef" :model="formValue" :rules="(formRules as any)" v-bind="defaultProps">
+  <NForm ref="formRef" :model="formValue" :rules="(formRules as any)" v-bind="formProps">
     <slot name="header" :refs="exposeRefs" :actions="exposeActions" />
     <slot :refs="exposeRefs" :actions="exposeActions">
       <NGrid v-if="_layout.grid && _options && _options.length > 0" v-bind="gridProps">

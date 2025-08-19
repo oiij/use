@@ -2,7 +2,7 @@ import type { ValidateError } from 'async-validator'
 import type { FormInst, FormItemRule, FormRules } from 'naive-ui'
 import type { Ref } from 'vue'
 import { createEventHook } from '@vueuse/core'
-import { ref, toRaw, toRef, toValue } from 'vue'
+import { reactive, ref, toRaw, toValue } from 'vue'
 
 export type NaiveFormClearRules = & {
   string?: string | null
@@ -71,7 +71,7 @@ export function useNaiveForm<T extends Record<string, any> = Record<string, any>
   const formRef = ref<FormInst>()
   const formProps = {
     ref: formRef,
-    model: formValue,
+    model: reactive(formValue.value),
     rules: formRules,
   }
   const onValidatedEvent = createEventHook<[T]>()
@@ -104,7 +104,7 @@ export function useNaiveForm<T extends Record<string, any> = Record<string, any>
 
   return {
     formRef,
-    formValue: toRef(formValue) as Ref<T>,
+    formValue,
     formRules,
     formProps,
     validate,

@@ -1,7 +1,7 @@
 {
   "name": "@oiij/markdown-it",
   "type": "module",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "A Vue Composable for markdown-it",
   "author": "oiij",
   "license": "MIT",
@@ -39,14 +39,14 @@
     "prepublishOnly": "pnpm build"
   },
   "peerDependencies": {
-    "@vueuse/core": "^13.6.0",
+    "@vueuse/core": "^13.7.0",
     "dompurify": "^3.2.6",
     "markdown-it": "^14.1.0",
     "vue": "^3.5.18"
   },
   "devDependencies": {
     "@types/markdown-it": "^14.1.2",
-    "@vueuse/core": "^13.6.0",
+    "@vueuse/core": "^13.7.0",
     "dompurify": "^3.2.6",
     "markdown-it": "^14.1.0",
     "vue": "^3.5.18"
