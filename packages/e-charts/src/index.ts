@@ -72,7 +72,7 @@ export function useECharts(options?: Ref<EChartsOption> | ComputedRef<EChartsOpt
         resize()
         return
       }
-      const theme = darkMode?.value ? 'dark' : 'light'
+      const theme = darkMode?.value ? 'dark' : 'default'
       if (optionsRef.value) {
         eChart.value = init(domRef.value, theme, { ...initOptions })
         setOption(optionsRef.value)
@@ -96,8 +96,7 @@ export function useECharts(options?: Ref<EChartsOption> | ComputedRef<EChartsOpt
   }
 
   function updateTheme() {
-    destroy()
-    render()
+    eChart.value?.setTheme(darkMode?.value ? 'dark' : 'default')
   }
 
   watch([width, height], ([width, height]) => {
