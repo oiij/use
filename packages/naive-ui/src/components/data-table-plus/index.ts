@@ -75,6 +75,9 @@ export type DataTablePlusProps<P extends RObject = RObject, D extends RObject = 
   search?: SearchInputProps & ClassStyle | boolean
   pagination?: Omit<PaginationProps, 'page' | 'pageSize'> & ClassStyle | boolean
   clearable?: boolean | 'main' | 'modal'
+  infiniteScroll?: boolean | {
+    threshold?: number
+  }
   columnsFilterOptions?: (filters: DataTableFilterState) => Record<string, any>
   columnsSorterOptions?: (sorters: Record<string, DataTableSortState>) => Record<string, any>
   dataTableProps?: DataTableProps & ClassStyle
@@ -84,6 +87,7 @@ export type DataTablePlusEmits<P extends RObject = RObject, D extends RObject = 
   (e: 'contextMenuRow', row: R, index: number, event: MouseEvent, currentData: R[]): void
   (e: 'load', row: R): Promise<void>
   (e: 'scroll', ev: Event): void
+  (e: 'scrollBottom', ev: Event): void
   (e: 'update:checkedRowKeys',
     keys: (string | number)[],
     rows: (R | undefined)[],

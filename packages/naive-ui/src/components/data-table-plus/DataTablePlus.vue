@@ -35,6 +35,7 @@ const {
   search,
   pagination,
   clearable,
+  infiniteScroll,
   columnsFilterOptions,
   columnsSorterOptions,
   dataTableProps,
@@ -72,6 +73,17 @@ const paginationRef = ref<DataTablePlusPagination>({
   pageSize: 10,
   itemCount: 0,
 })
+const noMore = computed(() => paginationRef.value.page >= Math.ceil(paginationRef.value.itemCount / paginationRef.value.pageSize))
+const clearFlag = ref(false)
+const infiniteScrollConfig = typeof infiniteScroll === 'object'
+  ? {
+      threshold: 0,
+      ...infiniteScroll,
+    }
+  : {
+      threshold: 0,
+    }
+
 const filtersRef = ref<DataTableFilterState>()
 const sortersRef = ref<Record<string, DataTableSortState>>()
 const _defaultParams = {
@@ -87,6 +99,27 @@ const { loading, data, error, params, run, runAsync, refresh, refreshAsync, canc
   ],
   manual,
   ...requestOptions,
+  formatResult: (res: D) => {
+    if (requestOptions && 'formatResult' in requestOptions && typeof requestOptions.formatResult === 'function') {
+      requestOptions.formatResult(res)
+    }
+    if (infiniteScroll) {
+      if (clearFlag.value) {
+        clearFlag.value = false
+        return res
+      }
+
+      if (!data.value) {
+        return res
+      }
+      const oldData = (data.value[_fields.list] ? toRaw(data.value[_fields.list]) : []) as D[]
+      return {
+        ...res,
+        [_fields.list]: [...oldData, ...res[_fields.list]],
+      }
+    }
+    return res as D
+  },
   onBefore: (params) => {
     requestOptions?.onBefore?.(params)
     emit('before', params)
@@ -177,6 +210,24 @@ function _run(_params: Partial<P>) {
     ..._params,
   })
 }
+function checkBottom(ev: Event) {
+  const container = ev.target
+  if (container
+    && 'scrollHeight' in container
+    && typeof container.scrollHeight === 'number'
+    && 'clientHeight' in container
+    && typeof container.clientHeight === 'number'
+    && 'scrollTop' in container
+    && typeof container.scrollTop === 'number'
+  ) {
+    const scrollHeight = container.scrollHeight
+    const clientHeight = container.clientHeight
+    const scrollTop = container.scrollTop
+    const isBottom = scrollTop + clientHeight >= scrollHeight - infiniteScrollConfig.threshold
+    return isBottom
+  }
+  return false
+}
 const vOn = {
   onUpdatePage: (page: number) => {
     emit('update:page', page)
@@ -222,8 +273,20 @@ const vOn = {
   onLoad: (row: any) => {
     return emit('load', row as R)
   },
-  onScroll: (e: Event) => {
-    emit('scroll', e)
+  onScroll: (ev: Event) => {
+    emit('scroll', ev)
+    if (infiniteScroll) {
+      const isBottom = checkBottom(ev)
+      if (isBottom) {
+        emit('scrollBottom', ev)
+        if (noMore.value) {
+          return
+        }
+        _run({
+          [_fields.page]: paginationRef.value.page + 1,
+        } as P)
+      }
+    }
   },
   onUpdateCheckedRowKeys: (keys: RowKey[], _rows: InternalRowData[], meta: {
     row: InternalRowData | undefined
@@ -258,13 +321,17 @@ function onValueUpdate(key: keyof P, val: any) {
         _paramsCache.value[key] = val
       }
       if (filterModalTrigger === 'auto') {
+        clearFlag.value = true
         _run({
+          [_fields.page]: 1,
           [key]: val,
         } as P)
       }
     }
     else {
+      clearFlag.value = true
       _run({
+        [_fields.page]: 1,
         [key]: val,
       } as P)
     }
@@ -283,7 +350,18 @@ function handleNegativeClick() {
 }
 
 function handlePositiveClick() {
-  _run(_paramsCache.value)
+  clearFlag.value = true
+  _run({
+    [_fields.page]: 1,
+    ..._paramsCache.value,
+  })
+}
+function onSearch(val: any) {
+  clearFlag.value = true
+  _run({
+    [_fields.page]: 1,
+    [_fields.search]: val,
+  } as P)
 }
 const showBadgeFlag = computed(() => {
   const excludeKeys = [_fields.page, _fields.pageSize]
@@ -353,7 +431,7 @@ defineExpose({
           :value="params[0][_fields.search]"
           :loading="loading"
           v-bind="searchProps"
-          @update:value="(val) => _run({ [ _fields.search]: val } as P) "
+          @update:value="(val) => onSearch(val) "
         />
         <NBadge v-if="filterCollapsedType === 'modal' && (_collapsedOptions?.length ?? 0) > 0" :show="showBadgeFlag" dot>
           <NButton @click="showFilterModal">
@@ -445,7 +523,7 @@ defineExpose({
       <NFlex>
         <slot name="footer-extra" :refs="exposeRefs" :actions="exposeActions" />
         <NPagination
-          v-if="pagination"
+          v-if="pagination && !infiniteScroll"
           :style="{ marginLeft: 'auto' }"
           :disabled="loading"
           v-bind="{ ...paginationProps, ...paginationRef }"

@@ -41,10 +41,10 @@ function api(params?: Params) {
             search,
           }
         }),
-        count: 100,
+        count: 34,
         params,
       } as const)
-    }, 1000)
+    }, 100)
   })
 }
 const filterOptions: DataTablePlusFilterOptions<Params, Res, Row> = [
@@ -162,6 +162,9 @@ function onContextMenuRow(data: any) {
 function onUpdateCheckedRowKeys(key: any, rows: any, meta: any) {
   console.log(key, rows, meta)
 }
+function onScrollBottom() {
+  console.log('bottom')
+}
 </script>
 
 <template>
@@ -171,6 +174,7 @@ function onUpdateCheckedRowKeys(key: any, rows: any, meta: any) {
       ref="tableRef"
       pagination
       search
+      infinite-scroll
       title="数据表格"
       :style="{ width: '100%', height: '500px' }"
       :api="api"
@@ -185,6 +189,7 @@ function onUpdateCheckedRowKeys(key: any, rows: any, meta: any) {
       @context-menu-row="onContextMenuRow"
       @success="onLoaded"
       @update:checked-row-keys="onUpdateCheckedRowKeys"
+      @scroll-bottom="onScrollBottom"
     >
       <template #header-extra>
         <NInput style="width:100px;" />
