@@ -43,7 +43,7 @@ use([
 export function register(ext: Parameters<typeof use>[0]) {
   use(ext)
 }
-export function useECharts(options?: Ref<EChartsOption> | EChartsOption, darkMode?: ComputedRef<boolean>, initOptions?: EChartsInitOpts) {
+export function useECharts(options?: Ref<EChartsOption> | ComputedRef<EChartsOption> | EChartsOption, darkMode?: ComputedRef<boolean> | Ref<boolean>, initOptions?: EChartsInitOpts) {
   const domRef = shallowRef<HTMLElement>()
   const eChart = shallowRef<ECharts | null>(null)
   const optionsRef: Ref<EChartsOption | undefined> = ref(toValue(options))

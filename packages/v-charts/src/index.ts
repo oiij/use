@@ -48,7 +48,7 @@ export type {
 export function register(comps: (() => void)[]) {
   VChart.useRegisters(comps)
 }
-export function useVCharts(options?: Ref<ISpec> | ISpec, darkMode?: ComputedRef<boolean>, initOptions?: IInitOption & { treeShaking?: boolean }) {
+export function useVCharts(options?: Ref<ISpec> | ComputedRef<ISpec> | ISpec, darkMode?: Ref<boolean> | ComputedRef<boolean>, initOptions?: IInitOption & { treeShaking?: boolean }) {
   const domRef = ref<HTMLElement>()
   const vChart = shallowRef<VChart | null>(null)
   const optionsRef: Ref<ISpec | undefined> = ref(toValue(options)) as Ref<ISpec | undefined>
