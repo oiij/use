@@ -42,6 +42,7 @@ export const baseChat = [
   registerPieChart,
 ]
 VChart.useRegisters([...registerCartesian, ...baseChat, registerAnimate])
+
 export type {
   ISpec,
 }
@@ -67,7 +68,6 @@ export function useVCharts(options?: Ref<ISpec> | ComputedRef<ISpec> | ISpec, da
   function setOption(spec: ISpec) {
     if (vChart.value) {
       vChart.value.updateSpec(spec)
-      vChart.value.renderSync()
       onUpdateEvent.trigger(spec)
     }
   }
@@ -103,9 +103,7 @@ export function useVCharts(options?: Ref<ISpec> | ComputedRef<ISpec> | ISpec, da
     vChart.value = null
     onDisposeEvent.trigger()
   }
-  function updateTheme() {
-    vChart.value?.setCurrentThemeSync(darkMode?.value ? 'dark' : 'light')
-  }
+
   watch([width, height], ([width, height]) => {
     if (width > 0 && height > 0) {
       if (vChart.value) {
@@ -126,8 +124,9 @@ export function useVCharts(options?: Ref<ISpec> | ComputedRef<ISpec> | ISpec, da
       }
     }
   })
-  watch(() => darkMode?.value, () => {
-    updateTheme()
+  watchEffect(() => {
+    destroy()
+    render()
   })
   onUnmounted(() => {
     destroy()

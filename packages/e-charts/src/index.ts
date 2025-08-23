@@ -61,7 +61,7 @@ export function useECharts(options?: Ref<EChartsOption> | ComputedRef<EChartsOpt
 
   function setOption(updateOptions: EChartsOption) {
     if (eChart.value) {
-      eChart.value.setOption({ ...updateOptions, backgroundColor: 'transparent' })
+      eChart.value.setOption(updateOptions)
       onUpdateEvent.trigger(updateOptions)
     }
   }
@@ -95,10 +95,6 @@ export function useECharts(options?: Ref<EChartsOption> | ComputedRef<EChartsOpt
     onDisposeEvent.trigger()
   }
 
-  function updateTheme() {
-    eChart.value?.setTheme(darkMode?.value ? 'dark' : 'default')
-  }
-
   watch([width, height], ([width, height]) => {
     if (width > 0 && height > 0) {
       if (eChart.value) {
@@ -121,8 +117,9 @@ export function useECharts(options?: Ref<EChartsOption> | ComputedRef<EChartsOpt
     }
   })
 
-  watch(() => darkMode?.value, () => {
-    updateTheme()
+  watchEffect(() => {
+    destroy()
+    render()
   })
 
   onUnmounted(() => {

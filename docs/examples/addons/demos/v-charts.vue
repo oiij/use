@@ -1,68 +1,74 @@
 <script setup lang='ts'>
+import type { ISpec } from '@oiij/v-charts'
 import { useVCharts } from '@oiij/v-charts'
+import { useData } from 'vitepress'
+import { computed } from 'vue'
 
-const { domRef } = useVCharts({
-  type: 'line',
-  data: {
-    values: [
-      { type: 'Nail polish', country: 'Africa', value: 4229 },
-      { type: 'Nail polish', country: 'EU', value: 4376 },
-      { type: 'Nail polish', country: 'China', value: 3054 },
-      { type: 'Nail polish', country: 'USA', value: 12814 },
-      { type: 'Eyebrow pencil', country: 'Africa', value: 3932 },
-      { type: 'Eyebrow pencil', country: 'EU', value: 3987 },
-      { type: 'Eyebrow pencil', country: 'China', value: 5067 },
-      { type: 'Eyebrow pencil', country: 'USA', value: 13012 },
-      { type: 'Rouge', country: 'Africa', value: 5221 },
-      { type: 'Rouge', country: 'EU', value: 3574 },
-      { type: 'Rouge', country: 'China', value: 7004 },
-      { type: 'Rouge', country: 'USA', value: 11624 },
-      { type: 'Lipstick', country: 'Africa', value: 9256 },
-      { type: 'Lipstick', country: 'EU', value: 4376 },
-      { type: 'Lipstick', country: 'China', value: 9054 },
-      { type: 'Lipstick', country: 'USA', value: 8814 },
-      { type: 'Eyeshadows', country: 'Africa', value: 3308 },
-      { type: 'Eyeshadows', country: 'EU', value: 4572 },
-      { type: 'Eyeshadows', country: 'China', value: 12043 },
-      { type: 'Eyeshadows', country: 'USA', value: 12998 },
-      { type: 'Eyeliner', country: 'Africa', value: 5432 },
-      { type: 'Eyeliner', country: 'EU', value: 3417 },
-      { type: 'Eyeliner', country: 'China', value: 15067 },
-      { type: 'Eyeliner', country: 'USA', value: 12321 },
-      { type: 'Foundation', country: 'Africa', value: 13701 },
-      { type: 'Foundation', country: 'EU', value: 5231 },
-      { type: 'Foundation', country: 'China', value: 10119 },
-      { type: 'Foundation', country: 'USA', value: 10342 },
-      { type: 'Lip gloss', country: 'Africa', value: 4008 },
-      { type: 'Lip gloss', country: 'EU', value: 4572 },
-      { type: 'Lip gloss', country: 'China', value: 12043 },
-      { type: 'Lip gloss', country: 'USA', value: 22998 },
-      { type: 'Mascara', country: 'Africa', value: 18712 },
-      { type: 'Mascara', country: 'EU', value: 6134 },
-      { type: 'Mascara', country: 'China', value: 10419 },
-      { type: 'Mascara', country: 'USA', value: 11261 },
+const { isDark } = useData()
+const options = computed(() => {
+  return {
+    type: 'pie',
+    data: [
+      {
+        id: 'id0',
+        values: [
+          { type: 'oxygen', value: '46.60' },
+          { type: 'silicon', value: '27.72' },
+          { type: 'aluminum', value: '8.13' },
+          { type: 'iron', value: '5' },
+          { type: 'calcium', value: '3.63' },
+          { type: 'sodium', value: '2.83' },
+          { type: 'potassium', value: '2.59' },
+          { type: 'others', value: '3.5' },
+        ],
+      },
     ],
-  },
-  percent: true,
-  xField: 'type',
-  yField: 'value',
-  seriesField: 'country',
-  animationAppear: {
-    duration: 1500,
-    easing: 'linear',
-  },
-  legends: [{ visible: true, position: 'middle', orient: 'bottom' }],
-  axes: [
-    {
-      orient: 'left',
-      label: {
-        formatMethod(val) {
-          return typeof val === 'string' ? `${(Number(val) * 100).toFixed(2)}%` : val
+    outerRadius: 0.8,
+    innerRadius: 0.5,
+    padAngle: 0.6,
+    valueField: 'value',
+    categoryField: 'type',
+    pie: {
+      style: {
+        cornerRadius: 10,
+      },
+      state: {
+        hover: {
+          outerRadius: 0.85,
+          stroke: '#000',
+          lineWidth: 1,
+        },
+        selected: {
+          outerRadius: 0.85,
+          stroke: '#000',
+          lineWidth: 1,
         },
       },
     },
-  ],
+    title: {
+      visible: true,
+      text: 'Statistics of Surface Element Content',
+    },
+    legends: {
+      visible: true,
+      orient: 'left',
+    },
+    label: {
+      visible: true,
+    },
+    tooltip: {
+      mark: {
+        content: [
+          {
+            key: datum => datum?.type,
+            value: datum => `${datum?.value}%`,
+          },
+        ],
+      },
+    },
+  } as ISpec
 })
+const { domRef } = useVCharts(options, isDark)
 </script>
 
 <template>
