@@ -43,12 +43,16 @@ function api(params?: Params) {
 </script>
 
 <template>
+  <!-- @vue-generic {Params,Res,Row} -->
   <NRemoteRequest :api="api">
-    <template #default="{ refs, actions }">
-      <pre v-for="(item, index) in refs.data.value?.list" :key="index">{{ item.id }}</pre>
-      <NButton @click="() => actions.run({ page: refs.params.value[0].page += 1 })">
+    <template #default="{ params, loading, list, runParams }">
+      <pre v-for="(item, index) in list" :key="index">{{ item.id }}</pre>
+      <NButton :loading="loading" @click="() => runParams({ page: (params[0].page ?? 1) + 1 }) ">
         下一页
       </NButton>
+      {{ loading }}
+      {{ list }}
+      {{ params }}
     </template>
   </NRemoteRequest>
 </template>

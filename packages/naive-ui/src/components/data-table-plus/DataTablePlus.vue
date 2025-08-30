@@ -1,20 +1,19 @@
 <script setup lang='ts'
   generic="
-    P extends RObject,
-    D extends RObject,
-    R extends RObject
+    P extends DataObject,
+    D extends DataObject,
+    R extends DataObject
   "
 >
 import type { DataTableBaseColumn, DataTableColumns, DataTableFilterState, DataTableInst, DataTableSortState, PaginationProps } from 'naive-ui'
+
 import type { InternalRowData, RowKey } from 'naive-ui/es/data-table/src/interface'
-import type { RObject } from '../remote-request/index'
-import type { DataTablePlusEmits, DataTablePlusExposeActions, DataTablePlusExposeRefs, DataTablePlusPagination, DataTablePlusProps } from './index'
-import { NBadge, NButton, NCollapseTransition, NDataTable, NDivider, NFlex, NModal, NPagination } from 'naive-ui'
+import type { DataObject } from '../../composables/index'
+import type { DataTablePlusEmits, DataTablePlusExpose, DataTablePlusProps } from './index'
+import { NDataTable, NFlex, NPagination } from 'naive-ui'
 import { computed, reactive, ref, toRaw, toValue, useTemplateRef } from 'vue'
-import useRequest from 'vue-hooks-plus/es/useRequest'
+import { useDataRequest } from '../../composables/index'
 import { NSearchInput } from '../search-input/index'
-import FlexFilter from './FlexFilter.vue'
-import GridFilter from './GridFilter.vue'
 
 const {
   api,
@@ -22,39 +21,20 @@ const {
   title,
   manual,
   columns,
-  filterOptions,
-  filterGridProps,
-  filterFlexProps,
-  filterLayout = 'grid',
-  filterCollapsedType = 'modal',
-  filterModalProps,
-  filterModalTrigger = 'manual',
-  filterLabel = '更多筛选',
-  filterClearLabel = '清除筛选',
   fields,
   search,
-  pagination,
-  clearable,
-  infiniteScroll,
+  pagination: propsPagination,
   columnsFilterOptions,
   columnsSorterOptions,
-  dataTableProps,
   requestOptions,
   requestPlugins,
+  dataTableProps,
 } = defineProps<DataTablePlusProps<P, D, R>>()
 const emit = defineEmits<DataTablePlusEmits<P, D, R>>()
-const _filterLayout = computed(() => {
-  const _layout = typeof filterLayout === 'string' ? [filterLayout, filterLayout] : filterLayout
-  return {
-    grid: _layout[0] === 'grid',
-    flex: _layout[0] === 'flex',
-    collapsedGrid: _layout[1] === 'grid',
-    collapsedFlex: _layout[1] === 'flex',
-  }
-})
 
 const columnsReactive = reactive<DataTableColumns<R>>(columns ?? [])
 const dataTableRef = useTemplateRef<DataTableInst>('data-table-ref')
+
 const _fields = { page: 'page', pageSize: 'pageSize', filter: 'filter', sorter: 'sorter', list: 'list', count: 'count', rowKey: 'id', search: 'search', children: 'children', ...fields }
 const searchProps = {
   ...(search && typeof search === 'boolean' ? {} : search),
@@ -66,104 +46,46 @@ const paginationProps = reactive<PaginationProps>({
   prefix: (info) => {
     return `共${info.itemCount}条数据`
   },
-  ...(pagination && typeof pagination === 'boolean' ? {} : pagination),
+  ...(propsPagination && typeof propsPagination === 'boolean' ? {} : propsPagination),
 })
-const paginationRef = ref<DataTablePlusPagination>({
-  page: 1,
-  pageSize: 10,
-  itemCount: 0,
-})
-const noMore = computed(() => paginationRef.value.page >= Math.ceil(paginationRef.value.itemCount / paginationRef.value.pageSize))
-const clearFlag = ref(false)
-const infiniteScrollConfig = typeof infiniteScroll === 'object'
-  ? {
-      threshold: 0,
-      ...infiniteScroll,
-    }
-  : {
-      threshold: 0,
-    }
 
 const filtersRef = ref<DataTableFilterState>()
 const sortersRef = ref<Record<string, DataTableSortState>>()
-const _defaultParams = {
-  [_fields.page]: paginationRef.value.page,
-  [_fields.pageSize]: paginationRef.value.pageSize,
-  [_fields.search]: null,
-  ...defaultParams,
-} as P
-const _defaultParamsCache = structuredClone(toRaw(toValue(_defaultParams)))
-const { loading, data, error, params, run, runAsync, refresh, refreshAsync, cancel, mutate } = useRequest<D, P[]>(api, {
-  defaultParams: [
-    _defaultParams,
-  ],
-  manual,
-  ...requestOptions,
-  formatResult: (res: D) => {
-    if (requestOptions && 'formatResult' in requestOptions && typeof requestOptions.formatResult === 'function') {
-      requestOptions.formatResult(res)
-    }
-    if (infiniteScroll) {
-      if (clearFlag.value) {
-        clearFlag.value = false
-        return res
-      }
 
-      if (!data.value) {
-        return res
-      }
-      const oldData = (data.value[_fields.list] ? toRaw(data.value[_fields.list]) : []) as D[]
-      return {
-        ...res,
-        [_fields.list]: [...oldData, ...res[_fields.list]],
-      }
-    }
-    return res as D
-  },
-  onBefore: (params) => {
-    requestOptions?.onBefore?.(params)
-    emit('before', params)
-  },
-  onSuccess: (data, params) => {
-    requestOptions?.onSuccess?.(data, params)
-    emit('success', data, params)
-    onSuccessEffect(data, params)
-  },
-  onError: (err, params) => {
-    requestOptions?.onError?.(err, params)
-    emit('error', err, params)
-  },
-  onFinally: (params, data, err) => {
-    requestOptions?.onFinally?.(params, data, err)
-    emit('finally', params, data, err)
-  },
-
-}, requestPlugins)
 const _dataCache: R[] = []
-const rawList = computed(() => {
-  if (!data.value)
-    return []
-  if (!Array.isArray(data.value[_fields.list])) {
-    console.warn(`DataTablePlus: data[${_fields.list}] must be an array`)
-    return []
-  }
-  return data.value[_fields.list] as R[]
+
+const { loading, data, error, params, list, pagination, run, runAsync, refresh, refreshAsync, cancel, mutate, setParams, runParams, runParamsAsync, onBefore, onSuccess, onError, onFinally } = useDataRequest<P, D, R>(api, {
+  defaultParams,
+  manual,
+  fields: _fields,
+  requestOptions,
+  requestPlugins,
 })
+onBefore((params) => {
+  emit('before', params)
+})
+onSuccess((data, params) => {
+  emit('success', data, params)
+  onSuccessEffect(data, params)
+})
+onError((err, params) => {
+  emit('error', err, params)
+})
+onFinally((params, data, err) => {
+  emit('finally', params, data, err)
+})
+
 const scrollX = computed(() => {
   return columns?.reduce((pre, cur) => {
     return pre + Number(cur.width ?? 100)
   }, 0)
 })
-function onSuccessEffect(data: D, params: P[]) {
+function onSuccessEffect(data: D, _params: P[]) {
   data[_fields.list]?.forEach((f: any) => {
     if (!_dataCache.some(s => s[_fields.rowKey] === f[_fields.rowKey])) {
       _dataCache.push(f)
     }
   })
-  paginationRef.value.page = _fields.page in params[0] ? Number(params[0][_fields.page]) : 1
-  paginationRef.value.pageSize = _fields.pageSize in params[0] ? Number(params[0][_fields.pageSize]) : 10
-  paginationRef.value.itemCount = _fields.count in data ? Number(data[_fields.count]) : 0
-
   if (columnsReactive) {
     for (const item of columnsReactive) {
       if ('key' in item) {
@@ -204,36 +126,12 @@ function onSuccessEffect(data: D, params: P[]) {
   }
 }
 
-function _run(_params: Partial<P>) {
-  return run({
-    ...params.value[0],
-    ..._params,
-  })
-}
-function checkBottom(ev: Event) {
-  const container = ev.target
-  if (container
-    && 'scrollHeight' in container
-    && typeof container.scrollHeight === 'number'
-    && 'clientHeight' in container
-    && typeof container.clientHeight === 'number'
-    && 'scrollTop' in container
-    && typeof container.scrollTop === 'number'
-  ) {
-    const scrollHeight = container.scrollHeight
-    const clientHeight = container.clientHeight
-    const scrollTop = container.scrollTop
-    const isBottom = scrollTop + clientHeight >= scrollHeight - infiniteScrollConfig.threshold
-    return isBottom
-  }
-  return false
-}
 const vOn = {
   onUpdatePage: (page: number) => {
     emit('update:page', page)
     if (loading.value)
       return
-    _run({
+    runParams({
       [_fields.page]: page,
     } as P)
   },
@@ -241,14 +139,14 @@ const vOn = {
     emit('update:pageSize', pageSize)
     if (loading.value)
       return
-    _run({
+    runParams({
       [_fields.pageSize]: pageSize,
     } as P)
   },
   onUpdateFilters: (filters: DataTableFilterState, initiatorColumn: DataTableBaseColumn) => {
     emit('update:filters', filters, initiatorColumn)
     filtersRef.value = filters
-    _run({
+    runParams({
       [_fields.page]: 1,
       ...columnsFilterOptions ? columnsFilterOptions(filters) : { [_fields.filter]: filters },
     } as P)
@@ -265,7 +163,7 @@ const vOn = {
       sorter[options.columnKey] = options
     }
     sortersRef.value = sorter
-    _run({
+    runParams({
       [_fields.page]: 1,
       ...columnsSorterOptions ? columnsSorterOptions(sorter) : { [_fields.sorter]: sorter },
     } as P)
@@ -275,150 +173,85 @@ const vOn = {
   },
   onScroll: (ev: Event) => {
     emit('scroll', ev)
-    if (infiniteScroll) {
-      const isBottom = checkBottom(ev)
-      if (isBottom) {
-        emit('scrollBottom', ev)
-        if (noMore.value) {
-          return
-        }
-        _run({
-          [_fields.page]: paginationRef.value.page + 1,
-        } as P)
-      }
-    }
   },
   onUpdateCheckedRowKeys: (keys: RowKey[], _rows: InternalRowData[], meta: {
     row: InternalRowData | undefined
     action: 'check' | 'uncheck' | 'checkAll' | 'uncheckAll'
   }) => {
     const rows = keys.map(m => _dataCache.find(f => f[_fields.rowKey] === m))
-    emit('update:checkedRowKeys', keys, rows, { row: toRaw(meta.row) as R | undefined, action: meta.action }, toRaw(rawList.value))
+    emit('update:checkedRowKeys', keys, rows, { row: toRaw(meta.row) as R | undefined, action: meta.action }, toRaw(list.value))
   },
   onUpdateExpandedRowKeys: (keys: (string | number)[]) => {
-    emit('update:expandedRowKeys', keys, toRaw(rawList.value))
+    emit('update:expandedRowKeys', keys, toRaw(list.value))
   },
 }
 
 function rowProps(row: R, index: number) {
   return {
     onClick: (event: MouseEvent) => {
-      emit('clickRow', toRaw(row), index, event, toRaw(rawList.value))
+      emit('clickRow', toRaw(row), index, event, toRaw(list.value))
     },
     onContextmenu: (event: MouseEvent) => {
-      emit('contextMenuRow', toRaw(row), index, event, toRaw(rawList.value))
+      emit('contextMenuRow', toRaw(row), index, event, toRaw(list.value))
     },
   }
 }
 
-const filterCollapsed = ref(false)
-const _paramsCache = ref<P>({} as P)
-
-function onValueUpdate(key: keyof P, val: any) {
-  if (key) {
-    if (filterCollapsedType === 'modal') {
-      if (filterModalTrigger === 'manual') {
-        _paramsCache.value[key] = val
-      }
-      if (filterModalTrigger === 'auto') {
-        clearFlag.value = true
-        _run({
-          [_fields.page]: 1,
-          [key]: val,
-        } as P)
-      }
-    }
-    else {
-      clearFlag.value = true
-      _run({
-        [_fields.page]: 1,
-        [key]: val,
-      } as P)
-    }
-  }
-}
-const modalFlag = ref(false)
-function showFilterModal() {
-  modalFlag.value = true
-}
-function resetParams() {
-  run(structuredClone(_defaultParamsCache))
-}
-
-function handleNegativeClick() {
-  resetParams()
-}
-
-function handlePositiveClick() {
-  clearFlag.value = true
-  _run({
-    [_fields.page]: 1,
-    ..._paramsCache.value,
-  })
-}
 function onSearch(val: any) {
-  clearFlag.value = true
-  _run({
+  if (loading.value)
+    return
+
+  runParams({
     [_fields.page]: 1,
     [_fields.search]: val,
   } as P)
 }
-const showBadgeFlag = computed(() => {
-  const excludeKeys = [_fields.page, _fields.pageSize]
-  return Object
-    .entries(params.value[0])
-    .filter(([key]) => !excludeKeys.includes(key))
-    .some(([_key, val]) => !(
-      val === undefined
-      || val === null
-      || (Array.isArray(val) && val.length === 0)
-      || (typeof val === 'string' && val.trim() === '')
-      || (typeof val === 'boolean' && val === true)
-    ))
-})
-const exposeRefs: DataTablePlusExposeRefs<P, D, R> = {
+
+const expose: DataTablePlusExpose<P, D, R> = {
   loading,
   data,
   error,
   params,
-  pagination: paginationRef,
-  filters: filtersRef,
-  sorters: sortersRef,
-  rawList,
-  dataTableRef,
-}
-const exposeActions: DataTablePlusExposeActions<P, D> = {
+  list,
+  pagination,
   run,
   runAsync,
   refresh,
   refreshAsync,
   cancel,
   mutate,
-  setParams: (_params: Partial<P>) => {
-    Object.assign(params.value[0], _params)
-  },
-  runParams: (_params: Partial<P>) => {
-    return run(Object.assign(params.value[0], _params))
-  },
-  runParamsAsync: async (_params: Partial<P>) => {
-    return runAsync(Object.assign(params.value[0], _params))
-  },
-  showFilterModal,
-  resetParams,
-  onValueUpdate,
+  setParams,
+  runParams,
+  runParamsAsync,
+  onBefore,
+  onSuccess,
+  onError,
+  onFinally,
+  filters: filtersRef,
+  sorters: sortersRef,
+  dataTableRef,
 }
-const _options = computed(() => filterOptions?.filter(f => typeof f.hidden === 'function' ? !f.hidden(exposeRefs) : !f.hidden).filter(f => !f.collapsed))
-const _collapsedOptions = computed(() => filterOptions?.filter(f => typeof f.hidden === 'function' ? !f.hidden(exposeRefs) : !f.hidden).filter(f => f.collapsed))
-
-defineExpose({
-  refs: exposeRefs,
-  actions: exposeActions,
+const templateBind = computed(() => {
+  return {
+    ...expose,
+    loading: toValue(loading),
+    data: toValue(data),
+    error: toValue(error),
+    params: toValue(params),
+    list: toValue(list),
+    pagination: toValue(pagination),
+    filters: toValue(filtersRef),
+    sorters: toValue(sortersRef),
+    dataTableRef: toValue(dataTableRef),
+  }
 })
+
+defineExpose(expose)
 </script>
 
 <template>
   <NFlex :style="{ width: '100%', height: '100%' }" vertical>
-    <slot name="header" :refs="exposeRefs" :actions="exposeActions">
+    <slot name="header" v-bind="templateBind">
       <NFlex>
         <slot name="title">
           <div :style="{ height: '100%', display: 'flex', alignItems: 'center' }">
@@ -433,64 +266,10 @@ defineExpose({
           v-bind="searchProps"
           @update:value="(val) => onSearch(val) "
         />
-        <NBadge v-if="filterCollapsedType === 'modal' && (_collapsedOptions?.length ?? 0) > 0" :show="showBadgeFlag" dot>
-          <NButton @click="showFilterModal">
-            {{ filterLabel }}
-          </NButton>
-        </NBadge>
-        <NButton v-if="typeof clearable === 'boolean' ? clearable === true : clearable === 'main'" @click="resetParams">
-          {{ filterClearLabel }}
-        </NButton>
-        <slot name="header-extra" :refs="exposeRefs" :actions="exposeActions" />
+        <slot name="header-extra" v-bind="templateBind" />
       </NFlex>
     </slot>
-    <slot name="filter" :refs="exposeRefs" :actions="exposeActions">
-      <NFlex vertical>
-        <GridFilter
-          v-if="_filterLayout.grid"
-          :options="_options"
-          :expose-refs="exposeRefs"
-          :expose-actions="exposeActions"
-          :params="params"
-          :grid-props="filterGridProps"
-          @update:value="(val, key) => onValueUpdate(key, val)"
-        />
-        <FlexFilter
-          v-if="_filterLayout.flex"
-          :options="_options"
-          :expose-refs="exposeRefs"
-          :expose-actions="exposeActions"
-          :params="params"
-          :grid-props="filterGridProps"
-          @update:value="(val, key) => onValueUpdate(key, val)"
-        />
-        <NDivider v-if="_collapsedOptions && filterCollapsedType === 'collapsed' && _collapsedOptions.length > 0" :style="{ margin: '5px 0' }">
-          <NButton size="tiny" @click="filterCollapsed = !filterCollapsed">
-            {{ filterCollapsed ? '折叠' : '展开' }}
-          </NButton>
-        </NDivider>
-        <NCollapseTransition v-if="_collapsedOptions && filterCollapsedType === 'collapsed' && _collapsedOptions.length > 0" :show="filterCollapsed">
-          <GridFilter
-            v-if="_filterLayout.collapsedGrid"
-            :options="_collapsedOptions"
-            :expose-refs="exposeRefs"
-            :expose-actions="exposeActions"
-            :params="params"
-            :grid-props="filterGridProps"
-            @update:value="(val, key) => onValueUpdate(key, val)"
-          />
-          <FlexFilter
-            v-if="_filterLayout.collapsedFlex"
-            :options="_collapsedOptions"
-            :expose-refs="exposeRefs"
-            :expose-actions="exposeActions"
-            :params="params"
-            :grid-props="filterFlexProps"
-            @update:value="(val, key) => onValueUpdate(key, val)"
-          />
-        </NCollapseTransition>
-      </NFlex>
-    </slot>
+    <slot name="filter" v-bind="templateBind" />
     <NDataTable
       ref="data-table-ref"
       remote
@@ -502,7 +281,7 @@ defineExpose({
       :children-key="_fields.children"
       :loading="loading"
       :columns="columnsReactive"
-      :data="rawList"
+      :data="list"
       :row-props="rowProps"
       v-bind="dataTableProps"
       @update:filters="vOn.onUpdateFilters"
@@ -513,58 +292,25 @@ defineExpose({
       @update:expanded-row-keys="vOn.onUpdateExpandedRowKeys"
     >
       <template #empty>
-        <slot name="empty" :refs="exposeRefs" :actions="exposeActions" />
+        <slot name="empty" v-bind="templateBind" />
       </template>
       <template #loading>
-        <slot name="loading" :refs="exposeRefs" :actions="exposeActions" />
+        <slot name="loading" v-bind="templateBind" />
       </template>
     </NDataTable>
-    <slot name="footer" :refs="exposeRefs" :actions="exposeActions">
+    <slot name="footer" v-bind="templateBind">
       <NFlex>
-        <slot name="footer-extra" :refs="exposeRefs" :actions="exposeActions" />
+        <slot name="footer-extra" v-bind="templateBind" />
         <NPagination
-          v-if="pagination && !infiniteScroll"
+          v-if="pagination"
           :style="{ marginLeft: 'auto' }"
           :disabled="loading"
-          v-bind="{ ...paginationProps, ...paginationRef }"
+          v-bind="{ ...paginationProps, ...pagination }"
           @update:page="vOn.onUpdatePage"
           @update:page-size="vOn.onUpdatePageSize"
         />
       </NFlex>
     </slot>
-    <NModal
-      v-if="filterCollapsedType === 'modal' && (_collapsedOptions?.length ?? 0) > 0"
-      v-model:show="modalFlag"
-      :style="{ width: 'auto' }"
-      preset="dialog"
-      :title="filterLabel"
-      :negative-text="(typeof clearable === 'boolean' ? clearable === true : clearable === 'modal') ? '清除' : undefined"
-      :positive-text="filterModalTrigger === 'manual' ? '确定' : undefined"
-      v-bind="filterModalProps"
-      @negative-click="handleNegativeClick"
-      @positive-click="handlePositiveClick"
-    >
-      <slot name="filter-modal" :refs="exposeRefs" :actions="exposeActions">
-        <GridFilter
-          v-if="_filterLayout.collapsedGrid"
-          :options="_collapsedOptions"
-          :expose-refs="exposeRefs"
-          :expose-actions="exposeActions"
-          :params="params"
-          :grid-props="filterGridProps"
-          @update:value="(val, key) => onValueUpdate(key, val)"
-        />
-        <FlexFilter
-          v-if="_filterLayout.collapsedFlex"
-          :options="_collapsedOptions"
-          :expose-refs="exposeRefs"
-          :expose-actions="exposeActions"
-          :params="params"
-          :grid-props="filterFlexProps"
-          @update:value="(val, key) => onValueUpdate(key, val)"
-        />
-      </slot>
-    </NModal>
   </NFlex>
 </template>
 

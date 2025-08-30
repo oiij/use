@@ -1,10 +1,10 @@
 <!-- eslint-disable no-console -->
 <script setup lang='ts'>
-import type { DataTablePlusFilterOptions } from '@oiij/naive-ui/components'
+import type { PresetFormOptions } from '@oiij/naive-ui/components'
 import type { DataTableColumns } from 'naive-ui'
-import { NDataTablePlus } from '@oiij/naive-ui/components'
-import { NButton, NFlex, NInput } from 'naive-ui'
-import { h, useTemplateRef } from 'vue'
+import { NDataTablePlus, NPresetForm } from '@oiij/naive-ui/components'
+import { NButton, NButtonGroup, NFlex } from 'naive-ui'
+import { h, ref, useTemplateRef } from 'vue'
 
 interface Params {
   id?: number
@@ -26,7 +26,9 @@ interface Res {
   params: any
   count: number
 }
-const tableRef = useTemplateRef('tableRef')
+const dataTableRef = useTemplateRef('data-table-ref')
+const presetFormRef = useTemplateRef('preset-form-ref')
+
 function api(params?: Params) {
   const { page = 1, pageSize = 10, search = '' } = params ?? {}
   return new Promise<Res>((resolve) => {
@@ -47,48 +49,71 @@ function api(params?: Params) {
     }, 100)
   })
 }
-const filterOptions: DataTablePlusFilterOptions<Params, Res, Row> = [
+const collapsed = ref(true)
+
+const filterOptions: PresetFormOptions<Params> = [
   {
     key: 'search',
     label: '搜索1',
     type: 'search',
-    gridSpan: 12,
-    collapsed: true,
+    span: 8,
   },
   {
     key: 'search',
     label: '搜索2',
     type: 'search',
-    gridSpan: 12,
-    collapsed: true,
+    span: 8,
   },
   {
     key: 'id',
     type: 'input',
-    label: true,
-    gridSpan: 12,
-    collapsed: true,
+    span: 8,
   },
   {
     key: 'timeRange',
     type: 'date-picker',
     label: '时间范围',
-    gridSpan: 12,
-    collapsed: true,
+    span: 8,
     props: {
       type: 'daterange',
 
     },
   },
   {
-    collapsed: true,
-    gridSpan: 12,
-    render: (refs, actions) => {
-      return h(NButton, {
-        onClick: () => {
-          console.log(refs.data, actions)
-        },
-      }, { default: () => 'Button' })
+    span: 8,
+    props: {
+      suffix: true,
+    },
+    render: ({ formValue, resetForm }) => {
+      return h(NButtonGroup, {}, {
+        default: () => [
+          h(NButton, {
+            onClick: () => {
+              console.log(formValue.value)
+
+              dataTableRef.value?.runParams({
+                ...formValue.value,
+              })
+            },
+          }, { default: () => '过滤' }),
+          h(NButton, {
+            onClick: () => {
+              resetForm()
+              dataTableRef.value?.runParams({
+                ...formValue.value,
+              })
+            },
+          }, { default: () => '重置' }),
+          h(NButton, {
+            onClick: () => {
+              console.log(presetFormRef.value)
+
+              collapsed.value = !collapsed.value
+            },
+          }, { default: () => collapsed.value ? '展开' : '收起' }),
+
+        ],
+      })
     },
   },
 ]
@@ -171,7 +196,7 @@ function onScrollBottom() {
   <NFlex vertical>
     <!-- @vue-generic {Params,Res,Row} -->
     <NDataTablePlus
-      ref="tableRef"
+      ref="data-table-ref"
       pagination
       search
       infinite-scroll
@@ -191,14 +216,10 @@ function onScrollBottom() {
       @update:checked-row-keys="onUpdateCheckedRowKeys"
       @scroll-bottom="onScrollBottom"
     >
-      <template #header-extra>
-        <NInput style="width:100px;" />
-        <!-- <NButton @click="tableRef?.actions.refresh()">
-          Refresh
-        </NButton> -->
+      <template #filter>
+        <NPresetForm ref="preset-form-ref" :options="filterOptions" :form-props="{ labelPlacement: 'top', showFeedback: true }" :grid-props="{ xGap: 10, collapsed }" />
       </template>
     </NDataTablePlus>
-    <pre>{{ tableRef?.refs.params }}</pre>
   </NFlex>
 </template>
 

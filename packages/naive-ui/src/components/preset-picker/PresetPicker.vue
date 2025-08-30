@@ -1,14 +1,14 @@
 <script setup lang='ts'
   generic="
     V extends PresetPickerValue,
-    R extends RObject,
+    R extends DataObject,
   "
 >
 import type { DataTableColumns } from 'naive-ui'
 import type { TableColumn } from 'naive-ui/lib/data-table/src/interface'
 import type { Ref } from 'vue'
-import type { RObject } from '../remote-request/index'
-import type { PresetPickerEmits, PresetPickerExposeActions, PresetPickerExposeRefs, PresetPickerProps, PresetPickerValue } from './index'
+import type { DataObject } from '../../composables/index'
+import type { PresetPickerEmits, PresetPickerExpose, PresetPickerProps, PresetPickerValue } from './index'
 import { NBadge, NButton, NButtonGroup, NModal, NTooltip } from 'naive-ui'
 import { computed, reactive, ref, toRaw, toValue, watch } from 'vue'
 import MageMultiplyCircleFill from '../icons/MageMultiplyCircleFill.vue'
@@ -131,13 +131,12 @@ const showClearButton = computed(() => {
   return clearable && (Array.isArray(value) ? value.length > 0 : !!value)
 })
 const checkedCount = computed(() => Array.isArray(value) ? value.length : undefined)
-const exposeRefs: PresetPickerExposeRefs<R> = {
+
+const expose: PresetPickerExpose<R> = {
   showModalFlag,
   checkedRowKeys,
   checkedRows,
   columns: _columns,
-}
-const exposeActions: PresetPickerExposeActions<R> = {
   showModal,
   updateCheckedRowKeysEffect,
   clickRowEffect,
@@ -148,12 +147,18 @@ const exposeActions: PresetPickerExposeActions<R> = {
   setCheckedRows: (rows: R[]) => {
     checkedRows.value = rows
   },
-
 }
-defineExpose({
-  refs: exposeRefs,
-  actions: exposeActions,
+const templateBind = computed(() => {
+  return {
+    ...expose,
+    showModalFlag: toValue(showModalFlag),
+    checkedRowKeys: toValue(checkedRowKeys),
+    checkedRows: toValue(checkedRows),
+    columns: toValue(_columns),
+  }
 })
+
+defineExpose(expose)
 </script>
 
 <template>
@@ -198,7 +203,7 @@ defineExpose({
         @mask-click="emit('maskClick')"
         @update:show="(val) => emit('update:show', val)"
       >
-        <slot :refs="exposeRefs" :actions="exposeActions" />
+        <slot v-bind="templateBind" />
         <template #action>
           <slot name="modal-action" />
         </template>

@@ -1,6 +1,7 @@
 import type { ValidateError } from 'async-validator'
 import type { FormInst, FormItemRule, FormRules } from 'naive-ui'
 import type { Ref } from 'vue'
+import type { DataObject } from './useDataRequest'
 import { createEventHook } from '@vueuse/core'
 import { reactive, ref, toRaw, toValue } from 'vue'
 
@@ -41,7 +42,7 @@ function clearObjectValues<T extends JSONValue>(obj: T, rules?: NaiveFormClearRu
   return obj
 }
 
-function deepMerge(target: Record<string, any> = {}, source: Record<string, any> = {}): Record<string, any> {
+function deepMerge(target: DataObject = {}, source: DataObject = {}): DataObject {
   for (const key in source) {
     if (Object.prototype.hasOwnProperty.call(source, key)) {
       const sourceValue = source[key]
@@ -57,24 +58,28 @@ function deepMerge(target: Record<string, any> = {}, source: Record<string, any>
   }
   return target
 }
-export type NaiveFormRules<T extends Record<string, any>> = Partial<Record<keyof T, FormRules | FormItemRule | FormItemRule[]>>
-export type NaiveFormOptions<T extends Record<string, any>> = & {
-  rules?: NaiveFormRules<T>
+export type NaiveFormRules<T extends DataObject> = Partial<Record<keyof T, FormRules | FormItemRule | FormItemRule[]>>
+export type NaiveFormOptions<T extends DataObject> = & {
+  rules?: NaiveFormRules<T> | Ref<NaiveFormRules<T>>
   clearRules?: NaiveFormClearRules
 }
 
-export function useNaiveForm<T extends Record<string, any> = Record<string, any>>(value?: T | Ref<T>, options?: NaiveFormOptions<T>) {
+export function useNaiveForm<T extends DataObject = DataObject>(value?: T | Ref<T>, options?: NaiveFormOptions<T>) {
   const { rules, clearRules } = options ?? {}
   const cacheValue = structuredClone(toRaw(toValue(value)))
   const formValue = ref(toValue(value ?? {})) as Ref<T>
-  const formRules = rules
+  const formRules = ref(toValue(rules) ?? {}) as Ref<NaiveFormRules<T>>
   const formRef = ref<FormInst>()
   const formProps = {
     ref: formRef,
     model: reactive(formValue.value),
-    rules: formRules,
+    rules: reactive(formRules.value),
   }
   const onValidatedEvent = createEventHook<[T]>()
+
+  function setValue(_value: Partial<T>) {
+    Object.assign(formValue.value, _value)
+  }
   function validate() {
     return new Promise<{ warnings?: ValidateError[][] }>((resolve, reject) => {
       if (!formRef.value) {
@@ -107,6 +112,7 @@ export function useNaiveForm<T extends Record<string, any> = Record<string, any>
     formValue,
     formRules,
     formProps,
+    setValue,
     validate,
     resetValidation,
     resetForm,
@@ -115,4 +121,4 @@ export function useNaiveForm<T extends Record<string, any> = Record<string, any>
     onValidated: onValidatedEvent.on,
   }
 }
-export type NaiveFormReturns<T extends Record<string, any> = Record<string, any>> = ReturnType<typeof useNaiveForm<T>>
+export type NaiveFormReturns<T extends DataObject = DataObject> = ReturnType<typeof useNaiveForm<T>>

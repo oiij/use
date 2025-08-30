@@ -1,24 +1,24 @@
 <script setup lang='ts'
   generic="
     V extends PresetSelectValue,
-    P extends RObject,
-    D extends RObject,
-    R extends RObject,
+    P extends DataObject,
+    D extends DataObject,
+    R extends DataObject,
   "
 >
-import type { PaginationProps, SelectGroupOption, SelectOption } from 'naive-ui'
-import type { RObject } from '../remote-request/index'
-import type { PresetSelectEmits, PresetSelectExposeActions, PresetSelectExposeRefs, PresetSelectPagination, PresetSelectProps, PresetSelectValue } from './index'
+import type { PaginationProps, SelectGroupOption, SelectInst, SelectOption } from 'naive-ui'
+import type { DataObject } from '../../composables/index'
+import type { PresetSelectEmits, PresetSelectExpose, PresetSelectProps, PresetSelectValue } from './index'
 import { useDebounceFn } from '@vueuse/core'
 import { NFlex, NPagination, NSelect } from 'naive-ui'
 import { computed, reactive, ref, toRaw, toValue, useTemplateRef } from 'vue'
-import useRequest from 'vue-hooks-plus/es/useRequest'
+import { useDataRequest } from '../../composables/index'
 
 const {
   api,
   value,
   fallbackLabel,
-  defaultParams: propsParams,
+  defaultParams,
   manual = true,
   multiple = false,
   disabled,
@@ -27,68 +27,50 @@ const {
   optionFormat,
   fields,
   selectProps,
-  pagination,
+  pagination: propsPagination,
   requestOptions,
   requestPlugins,
 } = defineProps<PresetSelectProps<V, P, D, R>>()
 
 const emit = defineEmits<PresetSelectEmits<V, P, D, R>>()
-const selectRef = useTemplateRef('select-ref')
-const _fields = { page: 'page', pageSize: 'pageSize', search: 'search', list: 'list', count: 'count', label: 'label', value: 'value', children: 'children', ...fields }
+const selectRef = useTemplateRef<SelectInst>('select-ref')
+const _fields = { page: 'page', pageSize: 'pageSize', search: 'search', list: 'list', count: 'count', label: 'label', value: 'value', rowKey: 'id', children: 'children', ...fields }
 const paginationProps = reactive<PaginationProps>({
-  ...(pagination && typeof pagination === 'boolean' ? {} : pagination),
+  ...(propsPagination && typeof propsPagination === 'boolean' ? {} : propsPagination),
 })
-const paginationRef = ref<PresetSelectPagination>({
-  page: 1,
-  pageSize: 10,
-  itemCount: 0,
-})
-const _defaultParams = {
-  [_fields.page]: paginationRef.value.page,
-  [_fields.pageSize]: paginationRef.value.pageSize,
-  [_fields.search]: '',
-  ...propsParams,
-} as P
 
-const { data, error, loading, params, run, runAsync, refresh, refreshAsync, cancel, mutate } = useRequest<D, P[]>(api, {
-  defaultParams: [
-    _defaultParams,
-  ],
+const _dataCache: R[] = []
+
+const { loading, data, error, params, list, pagination, run, runAsync, refresh, refreshAsync, cancel, mutate, setParams, runParams, runParamsAsync, onBefore, onSuccess, onError, onFinally } = useDataRequest<P, D, R>(api, {
+  defaultParams,
   manual,
-  ...requestOptions,
-  onBefore: (params) => {
-    requestOptions?.onBefore?.(params)
-    emit('before', params)
-  },
-  onSuccess: (data, params) => {
-    requestOptions?.onSuccess?.(data, params)
-    emit('success', data, params)
-    onSuccessEffect(data, params)
-  },
-  onError: (err, params) => {
-    requestOptions?.onError?.(err, params)
-    emit('error', err, params)
-  },
-  onFinally: (params, data, err) => {
-    requestOptions?.onFinally?.(params, data, err)
-    emit('finally', params, data, err)
-  },
-
-}, requestPlugins)
-const rawList = computed(() => {
-  if (!data.value)
-    return []
-  if (!Array.isArray(data.value[_fields.list])) {
-    console.warn(`DataTablePlus: data[${_fields.list}] must be an array`)
-    return []
-  }
-  const list = data.value[_fields.list] as R[]
-  return list
+  fields: _fields,
+  requestOptions,
+  requestPlugins,
 })
+
+onBefore((params) => {
+  emit('before', params)
+})
+onSuccess((data, params) => {
+  emit('success', data, params)
+  data[_fields.list]?.forEach((f: any) => {
+    if (!_dataCache.some(s => s[_fields.rowKey] === f[_fields.rowKey])) {
+      _dataCache.push(f)
+    }
+  })
+})
+onError((err, params) => {
+  emit('error', err, params)
+})
+onFinally((params, data, err) => {
+  emit('finally', params, data, err)
+})
+
 const optionsReactive = computed<(SelectOption | SelectGroupOption)[]>(() => {
   return typeof optionFormat === 'function'
-    ? rawList.value.map(m => optionFormat(m)).filter(f => !!f) as (SelectOption | SelectGroupOption)[]
-    : rawList.value.map((m) => {
+    ? list.value.map(m => optionFormat(m)).filter(f => !!f) as (SelectOption | SelectGroupOption)[]
+    : list.value.map((m) => {
         return {
           [_fields.label]: m[_fields.label],
           [_fields.value]: m[_fields.value],
@@ -97,24 +79,14 @@ const optionsReactive = computed<(SelectOption | SelectGroupOption)[]>(() => {
       })
 })
 
-function onSuccessEffect(data: D, params: P[]) {
-  paginationRef.value.page = params[0] && _fields.page in params[0] ? Number(params[0][_fields.page]) : 1
-  paginationRef.value.pageSize = params[0] && _fields.pageSize in params[0] ? Number(params[0][_fields.pageSize]) : 10
-  paginationRef.value.itemCount = _fields.count in data ? Number(data[_fields.count]) : 0
-}
-function _run(_params?: Partial<P>) {
-  return run({
-    ...params.value[0],
-    ..._params,
-  })
-}
 const searchValue = ref('')
 const debounceSearch = useDebounceFn(() => {
-  _run({
+  runParams({
     [_fields.page]: 1,
     [_fields.search]: searchValue.value,
   } as P)
 }, typeof debounce === 'number' ? debounce : 500)
+
 const vOnSelect = {
   onBlur: (ev: FocusEvent) => {
     emit('blur', ev)
@@ -133,7 +105,7 @@ const vOnSelect = {
   },
 
   onUpdateValue: (val: V | null, option: SelectOption | SelectOption[] | null) => {
-    const rawSelectValue = Array.isArray(val) ? rawList.value.filter(f => val.includes(f[_fields.value])) : rawList.value.find(f => f[_fields.value] === val) ?? null
+    const rawSelectValue = Array.isArray(val) ? list.value.filter(f => val.includes(f[_fields.value])) : list.value.find(f => f[_fields.value] === val) ?? null
     emit('update:value', val, option, toRaw(toValue(rawSelectValue)))
   },
   onSearch: (val: string) => {
@@ -142,7 +114,7 @@ const vOnSelect = {
       return
     debounce
       ? debounceSearch()
-      : _run({
+      : runParams({
           [_fields.page]: 1,
           [_fields.search]: searchValue.value,
         } as P)
@@ -151,7 +123,7 @@ const vOnSelect = {
     if (show) {
       if (!data.value) {
         if (manual) {
-          run(_defaultParams)
+          runParams({ ...defaultParams ?? {} as P })
         }
       }
     }
@@ -162,7 +134,7 @@ const vOnPagination = {
     emit('update:page', page)
     if (loading.value)
       return
-    _run({
+    runParams({
       [_fields.page]: page,
     } as P)
   },
@@ -170,7 +142,7 @@ const vOnPagination = {
     emit('update:pageSize', pageSize)
     if (loading.value)
       return
-    _run({
+    runParams({
       [_fields.pageSize]: pageSize,
     } as P)
   },
@@ -184,36 +156,42 @@ function fallbackOption(val: string | number): SelectOption {
       }
 }
 
-const exposeRefs: PresetSelectExposeRefs<P, D, R> = {
+const expose: PresetSelectExpose<P, D, R> = {
   loading,
   data,
   error,
   params,
-  pagination: paginationRef,
-  rawList,
-  selectRef,
-}
-const exposeActions: PresetSelectExposeActions<P, D> = {
+  list,
+  pagination,
   run,
   runAsync,
   refresh,
   refreshAsync,
   cancel,
   mutate,
-  setParams: (_params: Partial<P>) => {
-    Object.assign(params.value[0], _params)
-  },
-  runParams: (_params: Partial<P>) => {
-    return run(Object.assign(params.value[0], _params))
-  },
-  runParamsAsync: async (_params: Partial<P>) => {
-    return runAsync(Object.assign(params.value[0], _params))
-  },
+  setParams,
+  runParams,
+  runParamsAsync,
+  onBefore,
+  onSuccess,
+  onError,
+  onFinally,
+  selectRef,
 }
-defineExpose({
-  refs: exposeRefs,
-  actions: exposeActions,
+const templateBind = computed(() => {
+  return {
+    ...expose,
+    loading: toValue(loading),
+    data: toValue(data),
+    error: toValue(error),
+    params: toValue(params),
+    list: toValue(list),
+    pagination: toValue(pagination),
+    selectRef: toValue(selectRef),
+  }
 })
+
+defineExpose(expose)
 </script>
 
 <template>
@@ -242,18 +220,18 @@ defineExpose({
     @update:value="vOnSelect.onUpdateValue"
   >
     <template #header>
-      <slot name="header" :refs="exposeRefs" :actions="exposeActions" />
+      <slot name="header" v-bind="templateBind" />
     </template>
     <template #action>
-      <slot name="footer" :refs="exposeRefs" :actions="exposeActions">
+      <slot name="footer" v-bind="templateBind">
         <NFlex>
-          <slot name="footer-extra" :refs="exposeRefs" :actions="exposeActions" />
+          <slot name="footer-extra" v-bind="templateBind" />
           <NPagination
             v-if="pagination"
             :style="{ marginLeft: 'auto' }"
             simple
             :disabled="loading"
-            v-bind="{ ...paginationProps, ...paginationRef }"
+            v-bind="{ ...paginationProps, ...pagination }"
             @update:page="vOnPagination.onUpdatePage"
             @update:page-size="vOnPagination.onUpdatePageSize"
           />
@@ -261,10 +239,10 @@ defineExpose({
       </slot>
     </template>
     <template #empty>
-      <slot name="empty" />
+      <slot name="empty" v-bind="templateBind" />
     </template>
     <template #arrow>
-      <slot name="arrow" />
+      <slot name="arrow" v-bind="templateBind" />
     </template>
   </NSelect>
 </template>

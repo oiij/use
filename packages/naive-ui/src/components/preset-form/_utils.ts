@@ -1,24 +1,30 @@
-import type { NaiveFormRules, PresetFormOptions } from '.'
+import type { FormItemRule } from 'naive-ui'
+import type { DataObject } from '../../composables/index'
 
-export function options2Rules<D extends Record<string, any>>(options?: PresetFormOptions<D>): NaiveFormRules<D> | undefined {
-  if (!options) {
-    return undefined
-  }
-  const rules: NaiveFormRules<D> = {}
-
-  options.forEach((f) => {
-    if (f.key) {
-      if (f.required) {
-        rules[f.key] = {
-          required: true,
-          message: `${typeof f.label === 'string' ? f.label : typeof f.label === 'object' && f.label.label === 'string' ? f.label.label : typeof f.key === 'string' ? f.key : '字段'}不能为空`,
-          trigger: ['input', 'blur'],
-        }
-      }
-      if (f.rules) {
-        rules[f.key] = Object.assign(rules[f.key] ?? {}, f.rules)
-      }
+export function mergeRule<D extends DataObject = DataObject>(option?: {
+  key?: keyof D
+  label?: string | (() => string)
+  required?: boolean | (() => boolean)
+  rule?: FormItemRule | FormItemRule[]
+}) {
+  const { key, label, required, rule } = option ?? {}
+  let _rule: FormItemRule | FormItemRule[] | undefined
+  const _required = typeof required === 'function' ? required() : required
+  if (_required) {
+    const message = `${typeof label === 'string' ? label : typeof label === 'function' ? label() : typeof key === 'string' ? key : '字段'}不能为空`
+    _rule = {
+      required: true,
+      message,
+      trigger: ['input', 'blur'],
     }
-  })
-  return rules
+  }
+  if (rule) {
+    if (_rule) {
+      Object.assign(_rule, rule)
+    }
+    else {
+      _rule = rule
+    }
+  }
+  return _rule
 }

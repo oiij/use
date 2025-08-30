@@ -1,37 +1,23 @@
 <script setup lang='ts'
   generic="
-    V extends RObject,
+    V extends DataObject,
   "
 >
-import type { NaiveFormRules } from '../../composables/useNaiveForm'
-import type { RObject } from '../remote-request/index'
-import type { PresetFormProps } from './index'
-import { NButton, NCollapseTransition, NDivider, NFlex, NForm, NGi, NGrid } from 'naive-ui'
-import { computed, h, ref } from 'vue'
-import { useNaiveForm } from '../../composables/useNaiveForm'
-import { renderLabel } from '../preset-input/_utils'
+import type { DataObject } from '../../composables/index'
+import type { PresetFormExpose, PresetFormProps } from './index'
+import { NButton, NCollapseTransition, NDivider, NForm, NFormItemGi, NGrid } from 'naive-ui'
+import { computed, ref, toValue } from 'vue'
+import { useNaiveForm } from '../../composables/index'
 import { NPresetInput } from '../preset-input/index'
-import { options2Rules } from './_utils'
+import { mergeRule } from './_utils'
 
-const { options, values, rules, clearRules, formProps, gridProps, flexProps, layout = 'grid' } = defineProps<PresetFormProps<V>>()
+const { options, values, rules, clearRules, formProps, gridProps } = defineProps<PresetFormProps<V>>()
 const emit = defineEmits<{
   (e: 'validated', val: V): void
 }>()
-const _layout = computed(() => {
-  const _layout = typeof layout === 'string' ? [layout, layout] : layout
-  return {
-    grid: _layout[0] === 'grid',
-    flex: _layout[0] === 'flex',
-    collapsedGrid: _layout[1] === 'grid',
-    collapsedFlex: _layout[1] === 'flex',
-  }
-})
 
-const { formValue, formRules, formRef, validate, resetValidation, resetForm, reset, clear, onValidated } = useNaiveForm(values, {
-  rules: {
-    ...rules,
-    ...options2Rules(options),
-  } as NaiveFormRules<V>,
+const { formValue, formRules, formRef, formProps: _formProps, setValue, validate, resetValidation, resetForm, reset, clear, onValidated } = useNaiveForm(values, {
+  rules,
   clearRules,
 })
 onValidated((value) => {
@@ -39,129 +25,87 @@ onValidated((value) => {
 })
 const filterCollapsed = ref(false)
 
-const exposeRefs = {
+const _options = computed(() => options?.filter(f => typeof f.hidden === 'function' ? !f.hidden() : !f.hidden).filter(f => typeof f.collapsed === 'function' ? !f.collapsed() : !f.collapsed))
+const _collapsedOptions = computed(() => options?.filter(f => typeof f.hidden === 'function' ? !f.hidden() : !f.hidden).filter(f => typeof f.collapsed === 'function' ? !f.collapsed() : f.collapsed))
+
+function onPresetInputUpdate(val: any, key?: keyof V) {
+  if (key) {
+    setValue({ [key]: val } as V)
+  }
+}
+
+const expose: PresetFormExpose<V> = {
   formRef,
   formValue,
   formRules,
-}
-const exposeActions = {
+  formProps: _formProps,
+  setValue,
   validate,
   resetValidation,
   resetForm,
   reset,
   clear,
   onValidated,
-  setValues: (value: Partial<V>) => {
-    Object.assign(formValue.value, value)
-  },
 }
-const _options = computed(() => options?.filter(f => typeof f.hidden === 'function' ? !f.hidden(exposeRefs) : !f.hidden).filter(f => !f.collapsed))
-const _collapsedOptions = computed(() => options?.filter(f => typeof f.hidden === 'function' ? !f.hidden(exposeRefs) : !f.hidden).filter(f => f.collapsed))
 
-defineExpose({
-  refs: exposeRefs,
-  actions: exposeActions,
-})
-function onPresetInputUpdate(val: any, key?: keyof V) {
-  if (key) {
-    exposeActions.setValues({ [key]: val } as V)
+const templateBind = computed(() => {
+  return {
+    ...expose,
+    formRef: toValue(formRef),
+    formValue: toValue(formValue),
+    formRules: toValue(formRules),
+    formProps: toValue(_formProps),
   }
-}
+})
+
+defineExpose(expose)
 </script>
 
 <template>
   <NForm ref="formRef" :model="formValue" :rules="(formRules as any)" v-bind="formProps">
-    <slot name="header" :refs="exposeRefs" :actions="exposeActions" />
-    <slot :refs="exposeRefs" :actions="exposeActions">
-      <NGrid v-if="_layout.grid && _options && _options.length > 0" v-bind="gridProps">
-        <NGi
-          v-for="({ key, gridSpan, gridItemProps, render, label, ...opt }, _index) in _options"
-          :key="_index"
-          :span="gridSpan"
-          v-bind="gridItemProps"
-        >
-          <component :is="renderLabel(render(exposeRefs, exposeActions), label, { path: key as string })" v-if="render" />
-          <component
-            :is="renderLabel(
-              h(NPresetInput, {
-                'options': opt,
-                'value': key ? formValue[key] : undefined,
-                'onUpdate:value': (val) => onPresetInputUpdate(val, key),
-              }),
-              label,
-              { path: key as string })"
-            v-else
-          />
-        </NGi>
-      </NGrid>
-      <NFlex v-if="_layout.flex && _options && _options.length > 0" v-bind="flexProps">
-        <template
-          v-for="({ key, render, label, ...opt }, _index) in _options"
-          :key="_index"
-        >
-          <component :is="renderLabel(render(exposeRefs, exposeActions), label, { path: key as string })" v-if="render" />
-          <component
-            :is="renderLabel(
-              h(NPresetInput, {
-                'options': opt,
-                'value': key ? formValue[key] : undefined,
-                'onUpdate:value': (val) => onPresetInputUpdate(val, key),
-              }),
-              label,
-              { path: key as string })"
-            v-else
-          />
-        </template>
-      </NFlex>
-      <NDivider v-if="_collapsedOptions && _collapsedOptions.length > 0" :style="{ margin: '5px 0' }">
-        <NButton size="tiny" @click="filterCollapsed = !filterCollapsed">
-          {{ filterCollapsed ? '折叠' : '展开' }}
-        </NButton>
-      </NDivider>
-      <NCollapseTransition :show="filterCollapsed">
-        <NGrid v-if="_layout.collapsedGrid && _collapsedOptions && _collapsedOptions.length > 0" v-bind="gridProps">
-          <NGi
-            v-for="({ key, gridSpan, gridItemProps, render, label, ...opt }, _index) in _collapsedOptions"
+    <slot name="header" v-bind="templateBind" />
+    <slot v-bind="templateBind">
+      <template v-if="_options && _options.length > 0">
+        <NGrid v-bind="gridProps">
+          <NFormItemGi
+            v-for="({ key, label, required, span, rule, props, render, ...opt }, _index) in _options"
             :key="_index"
-            :span="gridSpan"
-            v-bind="gridItemProps"
+            :label="typeof label === 'function' ? label() : label"
+            :span="typeof span === 'function' ? span() : span"
+            :path="typeof key === 'string' ? key : undefined"
+            :rule="mergeRule({ key, label, required, rule })"
+            v-bind="props"
           >
-            <component :is="renderLabel(render(exposeRefs, exposeActions), label, { path: key as string })" v-if="render" />
-            <component
-              :is="renderLabel(
-                h(NPresetInput, {
-                  'options': opt,
-                  'value': key ? formValue[key] : undefined,
-                  'onUpdate:value': (val) => onPresetInputUpdate(val, key),
-                }),
-                label,
-                { path: key as string })"
-              v-else
-            />
-          </NGi>
+            <component :is="render(expose)" v-if="render" />
+            <NPresetInput v-else :options="opt" :value="key ? formValue[key] : undefined" @update:value="(val) => onPresetInputUpdate(val, key)" />
+          </NFormItemGi>
         </NGrid>
-        <NFlex v-if="_layout.collapsedFlex && _collapsedOptions && _collapsedOptions.length > 0" v-bind="flexProps">
-          <template
-            v-for="({ key, render, label, ...opt }, _index) in _collapsedOptions"
-            :key="_index"
-          >
-            <component :is="renderLabel(render(exposeRefs, exposeActions), label, { path: key as string })" v-if="render" />
-            <component
-              :is="renderLabel(
-                h(NPresetInput, {
-                  'options': opt,
-                  'value': key ? formValue[key] : undefined,
-                  'onUpdate:value': (val) => onPresetInputUpdate(val, key),
-                }),
-                label,
-                { path: key as string })"
-              v-else
-            />
-          </template>
-        </NFlex>
-      </NCollapseTransition>
+      </template>
+      <template v-if="_collapsedOptions && _collapsedOptions.length > 0">
+        <NDivider :style="{ margin: '5px 0' }">
+          <NButton size="tiny" @click="filterCollapsed = !filterCollapsed">
+            {{ filterCollapsed ? '折叠' : '展开' }}
+          </NButton>
+        </NDivider>
+        <NCollapseTransition :show="filterCollapsed">
+          <NGrid v-bind="gridProps">
+            <NFormItemGi
+              v-for="({ key, label, required, span, rule, props, render, ...opt }, _index) in _collapsedOptions"
+              :key="_index"
+              :label="typeof label === 'function' ? label() : label"
+              :span="typeof span === 'function' ? span() : span"
+              :path="typeof key === 'string' ? key : undefined"
+              :rule="mergeRule({ key, label, required, rule })"
+              v-bind="props"
+            >
+              <component :is="render(expose)" v-if="render" />
+              <NPresetInput v-else :options="opt" :value="key ? formValue[key] : undefined" @update:value="(val) => onPresetInputUpdate(val, key)" />
+            </NFormItemGi>
+          </NGrid>
+        </NCollapseTransition>
+      </template>
     </slot>
-    <slot name="footer" :refs="exposeRefs" :actions="exposeActions" />
+    <slot name="footer" v-bind="templateBind" />
   </NForm>
 </template>
 

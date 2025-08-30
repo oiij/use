@@ -22,33 +22,33 @@ const options: PresetFormOptions<Values> = [
     type: 'input',
     label: 'ID',
     key: 'id',
-    gridSpan: 12,
+    span: 12,
   },
   {
     type: 'input-number',
     label: 'Num',
     key: 'num',
     required: true,
-    rules: {
+    rule: {
       type: 'number',
     },
-    gridSpan: 12,
+    span: 12,
   },
   {
     type: 'switch',
     label: 'Hidden',
     key: 'hidden',
-    gridSpan: 12,
+    span: 12,
   },
   {
     type: 'input',
     label: 'Input',
     key: 'id',
-    gridSpan: 12,
+    span: 12,
     hidden: () => values.value.hidden ?? true,
   },
   {
-    gridSpan: 24,
+    span: 24,
     render: () => {
       return flag.value ? h(NInput, { 'value': temValue.value, 'onUpdate:value': val => temValue.value = val }) : null
     },
@@ -56,7 +56,7 @@ const options: PresetFormOptions<Values> = [
   ...(Array.from({ length: 5 }).map(() => {
     return {
       type: 'divider' as any,
-      gridSpan: 24,
+      span: 24,
     }
   })),
 ]
@@ -64,7 +64,7 @@ const rules: NaiveFormRules<Values> = {
   id: { required: true },
 }
 function handleValidate() {
-  presetForm.value?.actions.validate()
+  presetForm.value?.validate()
 }
 function onValidated(values: any) {
   console.log(values)

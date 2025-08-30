@@ -1,10 +1,9 @@
 <!-- eslint-disable no-console -->
 <script setup lang='ts'>
-import type { DataTablePlusFilterOptions } from '@oiij/naive-ui/components'
 import type { DataTableColumns } from 'naive-ui'
 import { NDataTablePlus, NPresetPicker } from '@oiij/naive-ui/components'
-import { NButton, NFlex, NSwitch } from 'naive-ui'
-import { h, ref } from 'vue'
+import { NFlex, NSwitch } from 'naive-ui'
+import { ref } from 'vue'
 
 interface Params {
   id?: number
@@ -50,30 +49,7 @@ const params = {
   page: 1,
   pageSize: 20,
 }
-const filterOptions: DataTablePlusFilterOptions<Params, Res, Row> = [
-  {
-    key: 'search',
-    label: '搜索',
-    type: 'search',
-    collapsed: true,
-  },
-  {
-    key: 'id',
-    type: 'input',
-    label: true,
-    collapsed: true,
-  },
-  {
-    collapsed: true,
-    render: (refs, actions) => {
-      return h(NButton, {
-        onClick: () => {
-          console.log(refs.data, actions)
-        },
-      }, { default: () => 'Button' })
-    },
-  },
-]
+
 function onLoaded(data: Res) {
   console.log(data)
 }
@@ -173,7 +149,7 @@ function onSuccess(res: Res, params: Params[]) {
         @update:value="onUpdateValue"
         @success="onSuccess"
       >
-        <template #default="{ refs, actions }">
+        <template #default="{ columns: _columns, checkedRowKeys, clickRowEffect, updateCheckedRowKeysEffect }">
           <!-- @vue-generic {Params,Res,Row} -->
           <NDataTablePlus
             pagination
@@ -181,14 +157,13 @@ function onSuccess(res: Res, params: Params[]) {
             title="数据表格"
             :style="{ width: '900px', height: '600px' }"
             :api="api"
-            :filter-options="filterOptions"
-            :columns="refs.columns"
+            :columns="_columns"
             :data-table-props="{
-              checkedRowKeys: refs.checkedRowKeys.value,
+              checkedRowKeys,
             }"
-            @click-row="actions.clickRowEffect"
+            @click-row="clickRowEffect"
             @success="onLoaded"
-            @update:checked-row-keys="actions.updateCheckedRowKeysEffect"
+            @update:checked-row-keys="updateCheckedRowKeysEffect"
           />
         </template>
       </NPresetPicker>

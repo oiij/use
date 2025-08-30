@@ -8,26 +8,24 @@
 
 ```ts
 export type PresetPickerValue = string | number | (string | number)[] | null
-export interface PresetPickerExposeRefs<R extends RObject> {
+export interface PresetPickerExpose<R extends DataObject = DataObject> {
   showModalFlag: Ref<boolean, boolean>
   checkedRowKeys: Ref<(string | number)[], (string | number)[]>
   checkedRows: Ref<R[], R[]>
   columns: DataTableColumns<any>
-}
-export interface PresetPickerExposeActions<R extends RObject> {
   showModal: () => void
-  onUpdateCheckedRowKeys: (keys: (string | number)[], rows: (R | undefined)[], meta: {
+  updateCheckedRowKeysEffect: (keys: (string | number)[], rows: (R | undefined)[], meta: {
     row: R | undefined
     action: 'check' | 'uncheck' | 'checkAll' | 'uncheckAll'
   }, currentData: R[]) => void
-  onClickRow: (row: R) => void
-  onNegativeClick: () => void
-  onPositiveClick: () => void
+  clickRowEffect: (row: R) => void
   clearValue: () => void
+  setCheckedRowKeys: (keys: (string | number)[]) => void
+  setCheckedRows: (rows: R[]) => void
 }
-export type PresetPickerProps<V extends PresetPickerValue, R extends RObject> = & {
+export interface PresetPickerProps<V extends PresetPickerValue, R extends DataObject = DataObject> {
   value?: V
-  fallbackLabel?: string
+  fallbackLabel?: string | ((val: string | number) => string)
   multiple?: boolean
   disabled?: boolean
   clearable?: boolean
@@ -36,14 +34,15 @@ export type PresetPickerProps<V extends PresetPickerValue, R extends RObject> = 
   columns?: DataTableColumns<R>
   selectionOptions?: TableSelectionColumn
   fields?: {
-    rowKey?: string
+    label?: string
+    value?: string
   }
-  buttonProps?: ButtonProps
-  clearButtonProps?: ButtonProps
-  badgeProps?: BadgeProps
-  modalProps?: ModalProps
+  buttonProps?: ButtonProps & ClassStyle
+  clearButtonProps?: ButtonProps & ClassStyle
+  badgeProps?: BadgeProps & ClassStyle
+  modalProps?: ModalProps & ClassStyle
 }
-export type PresetPickerEmits<V extends PresetPickerValue, R extends RObject> = & {
+export interface PresetPickerEmits<V extends PresetPickerValue, R extends DataObject = DataObject> {
   (e: 'update:value', val: V | null, raw: R | R[] | null): void
   (e: 'afterEnter'): void
   (e: 'afterLeave'): void

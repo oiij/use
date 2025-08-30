@@ -1,10 +1,11 @@
 import type { UseRequestOptions, UseRequestPlugin } from 'vue-hooks-plus/es/useRequest/types'
+import type { DataObject, DataRequestFields, UseDataRequestReturns } from '../../composables/index'
 
 export { default as NRemoteRequest } from './RemoteRequest.vue'
 
-export type RObject = Record<string, any>
-export type RemoteRequestFields = Partial<Record<string, string>>
-export type RemoteRequestProps<P extends RObject = RObject, D extends RObject = RObject> = & {
+export type RemoteRequestFields = DataRequestFields & {}
+export type RemoteRequestExpose<P extends DataObject = DataObject, D extends DataObject = DataObject, R extends DataObject = DataObject> = UseDataRequestReturns<P, D, R>
+export type RemoteRequestProps<P extends DataObject = DataObject, D extends DataObject = DataObject> = & {
   api: (...args: P[]) => Promise<D>
   defaultParams?: Partial<P>
   manual?: boolean
@@ -12,7 +13,7 @@ export type RemoteRequestProps<P extends RObject = RObject, D extends RObject = 
   requestOptions?: UseRequestOptions<D, P[]>
   requestPlugins?: UseRequestPlugin<D, P[]>[]
 }
-export type RemoteRequestEmits<P extends RObject = RObject, D extends RObject = RObject> = & {
+export type RemoteRequestEmits<P extends DataObject = DataObject, D extends DataObject = DataObject> = & {
   (e: 'before', params: P[]): void
   (e: 'success', data: D, params: P[]): void
   (e: 'error', err: Error, params: P[]): void

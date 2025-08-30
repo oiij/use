@@ -27,13 +27,14 @@ const components: Record<keyof PresetInputType, Component> = {
   'time-picker': NTimePicker,
 }
 function packageComponent() {
-  const { type, props } = options ?? {}
+  const { type, props, slots } = options ?? {}
   if (type === 'button') {
     const { label, ..._props } = props ?? {}
     return h(components[type], {
       ..._props,
     }, {
       default: () => label,
+      ...slots,
     })
   }
   if (type === 'checkbox') {
@@ -46,12 +47,15 @@ function packageComponent() {
       ..._props,
     }, {
       default: () => options?.map(m => h(NCheckbox, { ...m })),
+      ...slots,
     })
   }
   if (type === 'divider') {
     const { ..._props } = props ?? {}
     return h(components[type], {
       ..._props,
+    }, {
+      ...slots,
     })
   }
   if (type === 'radio') {
@@ -64,6 +68,7 @@ function packageComponent() {
       ..._props,
     }, {
       default: () => options?.map(m => h(NRadio, { ...m })),
+      ...slots,
     })
   }
   if (type && components[type]) {
@@ -73,6 +78,8 @@ function packageComponent() {
         emit('update:value', val as any)
       },
       ...props,
+    }, {
+      ...slots,
     })
   }
 }

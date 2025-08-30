@@ -8,37 +8,38 @@
 
 ```ts
 export type ArrayAwareType<V, T> = V extends null ? null : (V extends any[] ? T[] : T) | null
-export type OptionFormat<R extends RObject> = (row: R) => SelectOption | SelectGroupOption | false | undefined | null
+export type OptionFormat<R extends DataObject = DataObject> = (row: R) => SelectOption | SelectGroupOption | false | undefined | null
 export type PresetSelectValue = string | number | (string | number)[] | null
-export type PresetSelectFields = Partial<Record<'page' | 'pageSize' | 'search' | 'list' | 'count' | 'rowKey' | 'label' | 'value' | 'children', string>>
-export interface PresetSelectPagination {
-  page: number
-  pageSize: number
-  itemCount: number
+export type PresetSelectFields = DataRequestFields & {
+  label?: string
+  value?: string
+  rowKey?: string
+  search?: string
+  children?: string
 }
-export type PresetSelectExposeRefs<P extends RObject, D extends RObject, R extends RObject> = DataTablePlusExposeRefsBase<P, D, R> & {
+export type PresetSelectExpose<P extends DataObject = DataObject, D extends DataObject = DataObject, R extends DataObject = DataObject> = UseDataRequestReturns<P, D, R> & {
   selectRef: Readonly<ShallowRef<SelectInst | null>>
 }
-export type PresetSelectExposeActions<P extends RObject, D extends RObject> = DataTablePlusExposeActions<P, D>
-export type PresetSelectProps<V extends PresetSelectValue, P extends RObject, D extends RObject, R extends RObject> = RemoteRequestProps<P, D> & {
+export type PresetSelectProps<V extends PresetSelectValue, P extends DataObject = DataObject, D extends DataObject = DataObject, R extends DataObject = DataObject> = RemoteRequestProps<P, D> & {
   value?: V
-  fallbackLabel?: string
+  fallbackLabel?: string | ((val: string | number) => SelectOption)
   multiple?: boolean
   disabled?: boolean
+  clearable?: boolean
   debounce?: boolean | number
   optionFormat?: OptionFormat<R>
   fields?: PresetSelectFields
-  selectProps?: SelectProps
-  pagination?: Omit<PaginationProps, 'page' | 'pageSize'> | boolean
+  selectProps?: SelectProps & ClassStyle
+  pagination?: Omit<PaginationProps, 'page' | 'pageSize'> & ClassStyle | boolean
 }
-export type PresetSelectEmits<V extends PresetSelectValue, P extends RObject, D extends RObject, R extends RObject> = RemoteRequestEmits<P, D> & {
+export type PresetSelectEmits<V extends PresetSelectValue, P extends DataObject = DataObject, D extends DataObject = DataObject, R extends DataObject = DataObject> = RemoteRequestEmits<P, D> & {
   (e: 'blur', ev: FocusEvent): void
   (e: 'clear'): void
   (e: 'create', label: string): SelectOption
   (e: 'focus', ev: FocusEvent): void
   (e: 'scroll', ev: Event): void
   (e: 'search', value: string): void
-  (e: 'update:value', val: V | null, option: ArrayAwareType<V, SelectOption>, raw: ArrayAwareType<V, R>): void
+  (e: 'update:value', val: V | null, option: SelectOption | SelectOption[] | null, raw: R | R[] | null): void
   (e: 'update:page', page: number): void
   (e: 'update:pageSize', pageSize: number): void
 }

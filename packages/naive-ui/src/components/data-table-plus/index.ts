@@ -1,9 +1,8 @@
-import type { DataTableColumns, DataTableFilterState, DataTableInst, DataTableProps, DataTableSortState, DropdownOption, FlexProps, FormItemProps, GridItemProps, GridProps, ModalProps, PaginationProps } from 'naive-ui'
+import type { DataTableColumns, DataTableFilterState, DataTableInst, DataTableProps, DataTableSortState, PaginationProps } from 'naive-ui'
 import type { FilterState, TableBaseColumn } from 'naive-ui/es/data-table/src/interface'
-import type { ComputedRef, CSSProperties, Ref, ShallowRef, VNode } from 'vue'
-import type { useRequestResult } from 'vue-hooks-plus/es/useRequest/types'
-import type { PresetInputOptions } from '../preset-input/index'
-import type { RemoteRequestEmits, RemoteRequestProps, RObject } from '../remote-request/index'
+import type { CSSProperties, Ref, ShallowRef } from 'vue'
+import type { DataObject, DataRequestFields, UseDataRequestReturns } from '../../composables/index'
+import type { RemoteRequestEmits, RemoteRequestProps } from '../remote-request/index'
 import type { SearchInputProps } from '../search-input/index'
 
 export { default as NDataTablePlus } from './DataTablePlus.vue'
@@ -11,78 +10,31 @@ export type ClassStyle = & {
   class?: string
   style?: CSSProperties | string
 }
-export type DataTablePlusExposeActionsBase<P extends RObject = RObject, D extends RObject = RObject> = & {
-  run: (params: P) => void
-  runAsync: (params: P) => Promise<D>
-  refresh: () => void
-  refreshAsync: () => Promise<D>
-  cancel: () => void
-  mutate: (data?: D | ((oldData?: D | undefined) => D | undefined) | undefined) => void
-  setParams: (params: Partial<P>) => void
-  runParams: (params: Partial<P>) => void
-  runParamsAsync: (params: Partial<P>) => Promise<D>
-}
-export type DataTablePlusExposeActions<P extends RObject = RObject, D extends RObject = RObject> = DataTablePlusExposeActionsBase<P, D> & {
-  onValueUpdate: (key: keyof P, val: any) => void
-  showFilterModal: () => void
-  resetParams: () => void
-}
-export type DataTablePlusPagination = & {
-  page: number
-  pageSize: number
-  itemCount: number
-}
-export type DataTablePlusExposeRefsBase<P extends RObject = RObject, D extends RObject = RObject, R extends RObject = RObject> = Pick<useRequestResult<D, P[], false, false>, 'loading' | 'data' | 'error' | 'params'> & {
-  pagination: Readonly<Ref<DataTablePlusPagination, DataTablePlusPagination>>
-  rawList: ComputedRef<R[]>
-}
-export type DataTablePlusExposeRefs<P extends RObject = RObject, D extends RObject = RObject, R extends RObject = RObject> = DataTablePlusExposeRefsBase<P, D, R> & {
+export type DataTablePlusExpose<P extends DataObject = DataObject, D extends DataObject = DataObject, R extends DataObject = DataObject> = UseDataRequestReturns<P, D, R> & {
   filters: Ref<DataTableFilterState | undefined>
   sorters: Ref<Record<string, DataTableSortState> | undefined>
   dataTableRef: Readonly<ShallowRef<DataTableInst | null>>
 }
-export type DataTablePlusFilterOptionItem<P extends RObject = RObject, D extends RObject = RObject, R extends RObject = RObject> = PresetInputOptions & {
-  key?: keyof P
-  label?: string | boolean |(FormItemProps & {
-    style?: CSSProperties
-    class?: string
-  })
-  collapsed?: boolean
-  hidden?: boolean | ((refs: DataTablePlusExposeRefs<P, D, R>) => boolean)
-  gridSpan?: string | number
-  gridItemProps?: GridItemProps
-  render?: (refs: DataTablePlusExposeRefs<P, D, R>, actions: DataTablePlusExposeActions<P, D>) => VNode | null
 
+export type DataTablePlusFields = DataRequestFields & {
+  filter?: string
+  sorter?: string
+  rowKey?: string
+  search?: string
+  children?: string
 }
-export type DataTablePlusFilterOptions<P extends RObject = RObject, D extends RObject = RObject, R extends RObject = RObject> = DataTablePlusFilterOptionItem<P, D, R>[]
 
-export type DataTablePlusFields = Partial<Record<'page' | 'pageSize' | 'filter' | 'sorter' | 'list' | 'count' | 'rowKey' | 'search' | 'children', string>>
-
-export type DataTablePlusProps<P extends RObject = RObject, D extends RObject = RObject, R extends RObject = RObject> = RemoteRequestProps<P, D> & {
+export type DataTablePlusProps<P extends DataObject = DataObject, D extends DataObject = DataObject, R extends DataObject = DataObject> = RemoteRequestProps<P, D> & {
   title?: string
   columns?: DataTableColumns<R>
-  filterOptions?: DataTablePlusFilterOptions<P, D, R>
-  filterGridProps?: GridProps & ClassStyle
-  filterFlexProps?: FlexProps & ClassStyle
-  filterLayout?: 'grid' | 'flex' | ['grid' | 'flex']
-  filterCollapsedType?: 'collapsed' | 'modal'
-  filterModalTrigger?: 'manual' | 'auto'
-  filterLabel?: string
-  filterClearLabel?: string
-  filterModalProps?: ModalProps & ClassStyle
-  contextMenuOptions?: DropdownOption[]
   fields?: DataTablePlusFields
   search?: SearchInputProps & ClassStyle | boolean
-  pagination?: Omit<PaginationProps, 'page' | 'pageSize'> & ClassStyle | boolean
-  clearable?: boolean | 'main' | 'modal'
-  infiniteScroll?: boolean | {
-    threshold?: number
-  }
+  pagination?: Omit<PaginationProps, 'page' | 'pageSize' | 'itemCount'> & ClassStyle | boolean
   columnsFilterOptions?: (filters: DataTableFilterState) => Record<string, any>
   columnsSorterOptions?: (sorters: Record<string, DataTableSortState>) => Record<string, any>
   dataTableProps?: DataTableProps & ClassStyle
 }
-export type DataTablePlusEmits<P extends RObject = RObject, D extends RObject = RObject, R extends RObject = RObject> = RemoteRequestEmits<P, D> & {
+export type DataTablePlusEmits<P extends DataObject = DataObject, D extends DataObject = DataObject, R extends DataObject = DataObject> = RemoteRequestEmits<P, D> & {
   (e: 'clickRow', row: R, index: number, event: MouseEvent, currentData: R[]): void
   (e: 'contextMenuRow', row: R, index: number, event: MouseEvent, currentData: R[]): void
   (e: 'load', row: R): Promise<void>

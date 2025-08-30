@@ -1,20 +1,18 @@
 import type { BadgeProps, ButtonProps, DataTableColumns, ModalProps } from 'naive-ui'
 import type { TableSelectionColumn } from 'naive-ui/es/data-table/src/interface'
 import type { Ref } from 'vue'
+import type { DataObject } from '../../composables/index'
 import type { ClassStyle } from '../data-table-plus'
-import type { RObject } from '../remote-request/index'
 
 export { default as NPresetPicker } from './PresetPicker.vue'
 
 export type PresetPickerValue = string | number | (string | number)[] | null
 
-export type PresetPickerExposeRefs<R extends RObject = RObject> = & {
+export type PresetPickerExpose<R extends DataObject = DataObject> = & {
   showModalFlag: Ref<boolean, boolean>
   checkedRowKeys: Ref<(string | number)[], (string | number)[]>
   checkedRows: Ref<R[], R[]>
   columns: DataTableColumns<any>
-}
-export type PresetPickerExposeActions<R extends RObject = RObject> = & {
   showModal: () => void
   updateCheckedRowKeysEffect: (keys: (string | number)[], rows: (R | undefined)[], meta: { row: R | undefined, action: 'check' | 'uncheck' | 'checkAll' | 'uncheckAll' }, currentData: R[]) => void
   clickRowEffect: (row: R) => void
@@ -23,7 +21,7 @@ export type PresetPickerExposeActions<R extends RObject = RObject> = & {
   setCheckedRows: (rows: R[]) => void
 }
 
-export type PresetPickerProps<V extends PresetPickerValue, R extends RObject = RObject> = & {
+export type PresetPickerProps<V extends PresetPickerValue, R extends DataObject = DataObject> = & {
   value?: V
   fallbackLabel?: string | ((val: string | number) => string)
   multiple?: boolean
@@ -39,7 +37,7 @@ export type PresetPickerProps<V extends PresetPickerValue, R extends RObject = R
   badgeProps?: BadgeProps & ClassStyle
   modalProps?: ModalProps & ClassStyle
 }
-export type PresetPickerEmits<V extends PresetPickerValue, R extends RObject = RObject> = & {
+export type PresetPickerEmits<V extends PresetPickerValue, R extends DataObject = DataObject> = & {
   (e: 'update:value', val: V | null, raw: R | R[] | null): void
   (e: 'afterEnter'): void
   (e: 'afterLeave'): void

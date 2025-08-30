@@ -7,30 +7,26 @@
 ## Types
 
 ```ts
-export type PresetFormExposeRefs<V extends Record<string, any> = Record<string, any>> = Pick<NaiveFormReturns<V>, 'formValue' | 'formRef' | 'formRules'>
-export type PresetFormExposeActions<V extends Record<string, any> = Record<string, any>> = Pick<NaiveFormReturns<V>, 'validate' | 'resetValidation' | 'resetForm' | 'reset' | 'clear' | 'onValidated'> & {
-  setValues: (value: Partial<V>) => void
-}
-export type PresetFormOptions<V extends Record<string, any> = Record<string, any>> = (PresetInputOptions & {
+export type PresetFormExpose<V extends DataObject = DataObject> = NaiveFormReturns<V>
+export type PresetFormOptionItem<V extends DataObject = DataObject> = PresetInputOptions & {
   key?: keyof V
-  label?: string | boolean | (FormItemProps & {
-    style?: CSSProperties
-    class?: string
-  })
-  rules?: FormRules | FormItemRule | FormItemRule[]
-  collapsed?: boolean
-  gridItemProps?: GridItemProps
-  render?: (refs: PresetFormExposeRefs<V>, actions: PresetFormExposeActions<V>) => VNode
-})[]
-export interface PresetFormProps<V extends Record<string, any> = Record<string, any>> {
+  label?: string | (() => string)
+  required?: boolean | (() => boolean)
+  collapsed?: boolean | (() => boolean)
+  span?: string | number | (() => string | number)
+  hidden?: boolean | (() => boolean)
+  rule?: FormRules | FormItemRule | FormItemRule[]
+  props?: FormItemGiProps & ClassStyle
+  render?: (params: PresetFormExpose<V>) => VNode | null
+}
+export type PresetFormOptions<V extends DataObject = DataObject> = PresetFormOptionItem<V>[]
+export type PresetFormProps<V extends DataObject = DataObject> = & {
   options?: PresetFormOptions<V>
   values?: V
   rules?: NaiveFormRules<V>
   clearRules?: NaiveFormClearRules
-  formProps?: FormProps
-  gridProps?: GridProps
-  flexProps?: FlexProps
-  layout?: 'grid' | 'flex' | ['grid' | 'flex']
+  formProps?: FormProps & ClassStyle
+  gridProps?: GridProps & ClassStyle
 }
 ```
 
@@ -43,8 +39,6 @@ export interface PresetFormProps<V extends Record<string, any> = Record<string, 
 | rules     | NaiveFormRules    | -       | 表单校验规则   |
 | formProps | FormProps         | -       | Form配置       |
 | gridProps | GridProps         | -       | Grid配置       |
-| flexProps | FlexProps         | -       | Flex配置       |
-| layout    | 'grid' or 'flex'  | -       | 布局方式       |
 
 ## Emits
 
