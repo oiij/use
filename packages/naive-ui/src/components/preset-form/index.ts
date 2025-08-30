@@ -1,8 +1,8 @@
 import type { FormItemGiProps, FormItemRule, FormProps, FormRules, GridProps } from 'naive-ui'
 import type { VNode } from 'vue'
-import type { DataObject } from '../../composables/index'
+import type { DataObject } from '../../composables/useDataRequest'
 import type { NaiveFormClearRules, NaiveFormReturns, NaiveFormRules } from '../../composables/useNaiveForm'
-import type { ClassStyle } from '../data-table-plus'
+import type { ClassStyle } from '../data-table-plus/index'
 import type { PresetInputOptions } from '../preset-input/index'
 
 export type { NaiveFormRules } from '../../composables/useNaiveForm'

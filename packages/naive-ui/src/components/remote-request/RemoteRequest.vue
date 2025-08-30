@@ -5,10 +5,10 @@
     R extends DataObject,
   "
 >
-import type { DataObject } from '../../composables/index'
+import type { DataObject } from '../../composables/useDataRequest'
 import type { RemoteRequestEmits, RemoteRequestExpose, RemoteRequestProps } from './index'
 import { computed, toValue } from 'vue'
-import { useDataRequest } from '../../composables/index'
+import { useDataRequest } from '../../composables/useDataRequest'
 
 const { api, defaultParams, manual, fields, requestOptions, requestPlugins } = defineProps<RemoteRequestProps<P, D>>()
 const emit = defineEmits<RemoteRequestEmits<P, D>>()

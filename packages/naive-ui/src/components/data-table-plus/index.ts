@@ -1,7 +1,7 @@
 import type { DataTableColumns, DataTableFilterState, DataTableInst, DataTableProps, DataTableSortState, PaginationProps } from 'naive-ui'
 import type { FilterState, TableBaseColumn } from 'naive-ui/es/data-table/src/interface'
 import type { CSSProperties, Ref, ShallowRef } from 'vue'
-import type { DataObject, DataRequestFields, UseDataRequestReturns } from '../../composables/index'
+import type { DataObject, DataRequestFields, UseDataRequestReturns } from '../../composables/useDataRequest'
 import type { RemoteRequestEmits, RemoteRequestProps } from '../remote-request/index'
 import type { SearchInputProps } from '../search-input/index'
 

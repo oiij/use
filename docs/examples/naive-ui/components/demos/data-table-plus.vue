@@ -81,7 +81,7 @@ const filterOptions: PresetFormOptions<Params> = [
   },
   {
     span: 8,
-    props: {
+    itemProps: {
       suffix: true,
     },
     render: ({ formValue, resetForm }) => {

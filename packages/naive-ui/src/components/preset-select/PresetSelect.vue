@@ -7,12 +7,12 @@
   "
 >
 import type { PaginationProps, SelectGroupOption, SelectInst, SelectOption } from 'naive-ui'
-import type { DataObject } from '../../composables/index'
+import type { DataObject } from '../../composables/useDataRequest'
 import type { PresetSelectEmits, PresetSelectExpose, PresetSelectProps, PresetSelectValue } from './index'
 import { useDebounceFn } from '@vueuse/core'
 import { NFlex, NPagination, NSelect } from 'naive-ui'
 import { computed, reactive, ref, toRaw, toValue, useTemplateRef } from 'vue'
-import { useDataRequest } from '../../composables/index'
+import { useDataRequest } from '../../composables/useDataRequest'
 
 const {
   api,
@@ -42,7 +42,10 @@ const paginationProps = reactive<PaginationProps>({
 const _dataCache: R[] = []
 
 const { loading, data, error, params, list, pagination, run, runAsync, refresh, refreshAsync, cancel, mutate, setParams, runParams, runParamsAsync, onBefore, onSuccess, onError, onFinally } = useDataRequest<P, D, R>(api, {
-  defaultParams,
+  defaultParams: {
+    [_fields.search]: null,
+    ...defaultParams,
+  } as P,
   manual,
   fields: _fields,
   requestOptions,

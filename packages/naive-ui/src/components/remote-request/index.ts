@@ -1,5 +1,5 @@
 import type { UseRequestOptions, UseRequestPlugin } from 'vue-hooks-plus/es/useRequest/types'
-import type { DataObject, DataRequestFields, UseDataRequestReturns } from '../../composables/index'
+import type { DataObject, DataRequestFields, UseDataRequestReturns } from '../../composables/useDataRequest'
 
 export { default as NRemoteRequest } from './RemoteRequest.vue'
 

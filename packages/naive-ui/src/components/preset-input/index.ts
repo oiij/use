@@ -1,6 +1,6 @@
 import type { ButtonProps, CheckboxGroupProps, CheckboxProps, ColorPickerProps, DatePickerProps, DividerProps, DynamicTagsProps, InputNumberProps, InputProps, RadioGroupProps, RadioProps, RateProps, SelectProps, SliderProps, SwitchProps, TimePickerProps } from 'naive-ui'
 import type { VNode } from 'vue'
-import type { ClassStyle } from '../data-table-plus'
+import type { ClassStyle } from '../data-table-plus/index'
 import type { SearchInputProps } from '../search-input/index'
 
 export { default as NPresetInput } from './PresetInput.vue'

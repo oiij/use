@@ -7,7 +7,7 @@
 import type { DataTableColumns } from 'naive-ui'
 import type { TableColumn } from 'naive-ui/lib/data-table/src/interface'
 import type { Ref } from 'vue'
-import type { DataObject } from '../../composables/index'
+import type { DataObject } from '../../composables/useDataRequest'
 import type { PresetPickerEmits, PresetPickerExpose, PresetPickerProps, PresetPickerValue } from './index'
 import { NBadge, NButton, NButtonGroup, NModal, NTooltip } from 'naive-ui'
 import { computed, reactive, ref, toRaw, toValue, watch } from 'vue'

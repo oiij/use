@@ -1,8 +1,8 @@
 import type { BadgeProps, ButtonProps, DataTableColumns, ModalProps } from 'naive-ui'
 import type { TableSelectionColumn } from 'naive-ui/es/data-table/src/interface'
 import type { Ref } from 'vue'
-import type { DataObject } from '../../composables/index'
-import type { ClassStyle } from '../data-table-plus'
+import type { DataObject } from '../../composables/useDataRequest'
+import type { ClassStyle } from '../data-table-plus/index'
 
 export { default as NPresetPicker } from './PresetPicker.vue'
 

@@ -12,7 +12,7 @@ import type { DataObject } from '../../composables/index'
 import type { DataTablePlusEmits, DataTablePlusExpose, DataTablePlusProps } from './index'
 import { NDataTable, NFlex, NPagination } from 'naive-ui'
 import { computed, reactive, ref, toRaw, toValue, useTemplateRef } from 'vue'
-import { useDataRequest } from '../../composables/index'
+import { useDataRequest } from '../../composables/useDataRequest'
 import { NSearchInput } from '../search-input/index'
 
 const {
@@ -55,7 +55,10 @@ const sortersRef = ref<Record<string, DataTableSortState>>()
 const _dataCache: R[] = []
 
 const { loading, data, error, params, list, pagination, run, runAsync, refresh, refreshAsync, cancel, mutate, setParams, runParams, runParamsAsync, onBefore, onSuccess, onError, onFinally } = useDataRequest<P, D, R>(api, {
-  defaultParams,
+  defaultParams: {
+    [_fields.search]: null,
+    ...defaultParams,
+  } as P,
   manual,
   fields: _fields,
   requestOptions,
