@@ -126,7 +126,12 @@ const vOnSelect = {
     if (show) {
       if (!data.value) {
         if (manual) {
-          runParams({ ...defaultParams ?? {} as P })
+          runParams({
+            [_fields.page]: 1,
+            [_fields.pageSize]: 10,
+            [_fields.search]: null,
+            ...defaultParams ?? {} as P,
+          })
         }
       }
     }

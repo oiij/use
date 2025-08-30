@@ -45,8 +45,8 @@ function api(params?: Params) {
 }
 const value = ref(50)
 const params = {
-  page: 1,
-  pageSize: 20,
+  // page: 1,
+  // pageSize: 20,
 }
 const optionFormat: OptionFormat<Row> = (row) => {
   return row.id === 3
@@ -74,6 +74,7 @@ function onSuccess(res: Res, params: Params[]) {
       :api="api"
       :default-params="params"
       pagination
+      manual
       :option-format="optionFormat"
       :fields="{ label: 'name', value: 'id' }"
       fallback-label="伍Ⅹ"
