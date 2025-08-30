@@ -25,8 +25,14 @@ onValidated((value) => {
 })
 const filterCollapsed = ref(false)
 
-const _options = computed(() => options?.filter(f => typeof f.hidden === 'function' ? !f.hidden() : !f.hidden).filter(f => typeof f.collapsed === 'function' ? !f.collapsed() : !f.collapsed))
-const _collapsedOptions = computed(() => options?.filter(f => typeof f.hidden === 'function' ? !f.hidden() : !f.hidden).filter(f => typeof f.collapsed === 'function' ? !f.collapsed() : f.collapsed))
+const _options = computed(() => {
+  return options?.filter(f => typeof f.hidden === 'function' ? !f.hidden() : !f.hidden)
+    .filter(f => typeof f.collapsed === 'function' ? !f.collapsed() : !f.collapsed)
+})
+const _collapsedOptions = computed(() => {
+  return options?.filter(f => typeof f.hidden === 'function' ? !f.hidden() : !f.hidden)
+    .filter(f => typeof f.collapsed === 'function' ? !f.collapsed() : f.collapsed)
+})
 
 function onPresetInputUpdate(val: any, key?: keyof V) {
   if (key) {
@@ -68,13 +74,13 @@ defineExpose(expose)
       <template v-if="_options && _options.length > 0">
         <NGrid v-bind="gridProps">
           <NFormItemGi
-            v-for="({ key, label, required, span, rule, props, render, ...opt }, _index) in _options"
+            v-for="({ key, label, required, span, rule, itemProps, render, ...opt }, _index) in _options"
             :key="_index"
             :label="typeof label === 'function' ? label() : label"
             :span="typeof span === 'function' ? span() : span"
             :path="typeof key === 'string' ? key : undefined"
             :rule="mergeRule({ key, label, required, rule })"
-            v-bind="props"
+            v-bind="itemProps"
           >
             <component :is="render(expose)" v-if="render" />
             <NPresetInput v-else :options="opt" :value="key ? formValue[key] : undefined" @update:value="(val) => onPresetInputUpdate(val, key)" />
@@ -90,13 +96,13 @@ defineExpose(expose)
         <NCollapseTransition :show="filterCollapsed">
           <NGrid v-bind="gridProps">
             <NFormItemGi
-              v-for="({ key, label, required, span, rule, props, render, ...opt }, _index) in _collapsedOptions"
+              v-for="({ key, label, required, span, rule, itemProps, render, ...opt }, _index) in _collapsedOptions"
               :key="_index"
               :label="typeof label === 'function' ? label() : label"
               :span="typeof span === 'function' ? span() : span"
               :path="typeof key === 'string' ? key : undefined"
               :rule="mergeRule({ key, label, required, rule })"
-              v-bind="props"
+              v-bind="itemProps"
             >
               <component :is="render(expose)" v-if="render" />
               <NPresetInput v-else :options="opt" :value="key ? formValue[key] : undefined" @update:value="(val) => onPresetInputUpdate(val, key)" />

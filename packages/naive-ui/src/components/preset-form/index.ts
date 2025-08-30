@@ -18,7 +18,7 @@ export type PresetFormOptionItem<V extends DataObject = DataObject> = PresetInpu
   span?: string | number | (() => string | number)
   hidden?: boolean | (() => boolean)
   rule?: FormRules | FormItemRule | FormItemRule[]
-  props?: FormItemGiProps & ClassStyle
+  itemProps?: FormItemGiProps & ClassStyle
   render?: (params: PresetFormExpose<V>) => VNode | null
 }
 export type PresetFormOptions<V extends DataObject = DataObject> = PresetFormOptionItem<V>[]
