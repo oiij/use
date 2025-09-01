@@ -1,4 +1,4 @@
-import type { FormItemGiProps, FormItemRule, FormProps, FormRules, GridProps } from 'naive-ui'
+import type { FormItemProps, FormItemRule, FormProps, FormRules, GridItemProps, GridProps } from 'naive-ui'
 import type { VNode } from 'vue'
 import type { DataObject } from '../../composables/useDataRequest'
 import type { NaiveFormClearRules, NaiveFormReturns, NaiveFormRules } from '../../composables/useNaiveForm'
@@ -18,8 +18,8 @@ export type PresetFormOptionItem<V extends DataObject = DataObject> = PresetInpu
   span?: string | number | (() => string | number)
   hidden?: boolean | (() => boolean)
   rule?: FormRules | FormItemRule | FormItemRule[]
-  itemProps?: FormItemGiProps & ClassStyle
-  render?: (params: PresetFormExpose<V>) => VNode | null
+  itemProps?: FormItemProps & GridItemProps & ClassStyle
+  render?: (params: PresetFormExpose<V> & { overflow: boolean }) => VNode | null
 }
 export type PresetFormOptions<V extends DataObject = DataObject> = PresetFormOptionItem<V>[]
 

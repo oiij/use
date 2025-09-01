@@ -5,7 +5,7 @@
 >
 import type { DataObject } from '../../composables/useDataRequest'
 import type { PresetFormExpose, PresetFormProps } from './index'
-import { NButton, NCollapseTransition, NDivider, NForm, NFormItemGi, NGrid } from 'naive-ui'
+import { NButton, NCollapseTransition, NDivider, NForm, NFormItem, NFormItemGi, NGi, NGrid } from 'naive-ui'
 import { computed, ref, toValue } from 'vue'
 import { useNaiveForm } from '../../composables/useNaiveForm'
 import { NPresetInput } from '../preset-input/index'
@@ -73,18 +73,24 @@ defineExpose(expose)
     <slot v-bind="templateBind">
       <template v-if="_options && _options.length > 0">
         <NGrid v-bind="gridProps">
-          <NFormItemGi
-            v-for="({ key, label, required, span, rule, itemProps, render, ...opt }, _index) in _options"
+          <NGi
+            v-for="({ key, label, required, span, rule, itemProps: { offset, span: _span, suffix, ..._itemProps } = {}, render, ...opt }, _index) in _options"
             :key="_index"
-            :label="typeof label === 'function' ? label() : label"
-            :span="typeof span === 'function' ? span() : span"
-            :path="typeof key === 'string' ? key : undefined"
-            :rule="mergeRule({ key, label, required, rule })"
-            v-bind="itemProps"
+            :span="typeof span === 'function' ? span() : span ?? _span"
+            v-bind="{ offset, suffix }"
           >
-            <component :is="render(expose)" v-if="render" />
-            <NPresetInput v-else :options="opt" :value="key ? formValue[key] : undefined" @update:value="(val) => onPresetInputUpdate(val, key)" />
-          </NFormItemGi>
+            <template #default="{ overflow }">
+              <NFormItem
+                :label="typeof label === 'function' ? label() : label"
+                :path="typeof key === 'string' ? key : undefined"
+                :rule="mergeRule({ key, label, required, rule })"
+                v-bind="_itemProps"
+              >
+                <component :is="render({ ...expose, overflow })" v-if="render" />
+                <NPresetInput v-else :options="opt" :value="key ? formValue[key] : undefined" @update:value="(val) => onPresetInputUpdate(val, key)" />
+              </NFormItem>
+            </template>
+          </NGi>
         </NGrid>
       </template>
       <template v-if="_collapsedOptions && _collapsedOptions.length > 0">
@@ -95,18 +101,24 @@ defineExpose(expose)
         </NDivider>
         <NCollapseTransition :show="filterCollapsed">
           <NGrid v-bind="gridProps">
-            <NFormItemGi
-              v-for="({ key, label, required, span, rule, itemProps, render, ...opt }, _index) in _collapsedOptions"
+            <NGi
+              v-for="({ key, label, required, span, rule, itemProps: { offset, span: _span, suffix, ..._itemProps } = {}, render, ...opt }, _index) in _collapsedOptions"
               :key="_index"
-              :label="typeof label === 'function' ? label() : label"
-              :span="typeof span === 'function' ? span() : span"
-              :path="typeof key === 'string' ? key : undefined"
-              :rule="mergeRule({ key, label, required, rule })"
-              v-bind="itemProps"
+              :span="typeof span === 'function' ? span() : span ?? _span"
+              v-bind="{ offset, suffix }"
             >
-              <component :is="render(expose)" v-if="render" />
-              <NPresetInput v-else :options="opt" :value="key ? formValue[key] : undefined" @update:value="(val) => onPresetInputUpdate(val, key)" />
-            </NFormItemGi>
+              <template #default="{ overflow }">
+                <NFormItem
+                  :label="typeof label === 'function' ? label() : label"
+                  :path="typeof key === 'string' ? key : undefined"
+                  :rule="mergeRule({ key, label, required, rule })"
+                  v-bind="_itemProps"
+                >
+                  <component :is="render({ ...expose, overflow })" v-if="render" />
+                  <NPresetInput v-else :options="opt" :value="key ? formValue[key] : undefined" @update:value="(val) => onPresetInputUpdate(val, key)" />
+                </NFormItem>
+              </template>
+            </NGi>
           </NGrid>
         </NCollapseTransition>
       </template>

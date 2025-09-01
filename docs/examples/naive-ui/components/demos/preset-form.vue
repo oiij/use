@@ -53,6 +53,15 @@ const options: PresetFormOptions<Values> = [
       return flag.value ? h(NInput, { 'value': temValue.value, 'onUpdate:value': val => temValue.value = val }) : null
     },
   },
+  {
+    label: 'overflow',
+    itemProps: {
+      suffix: true,
+    },
+    render: ({ overflow }) => {
+      return h('span', {}, { default: () => overflow })
+    },
+  },
   ...(Array.from({ length: 5 }).map(() => {
     return {
       type: 'divider' as any,
