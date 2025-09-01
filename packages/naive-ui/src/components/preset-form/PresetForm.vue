@@ -5,7 +5,7 @@
 >
 import type { DataObject } from '../../composables/useDataRequest'
 import type { PresetFormExpose, PresetFormProps } from './index'
-import { NButton, NCollapseTransition, NDivider, NForm, NFormItem, NFormItemGi, NGi, NGrid } from 'naive-ui'
+import { NButton, NCollapseTransition, NDivider, NForm, NFormItem, NGi, NGrid } from 'naive-ui'
 import { computed, ref, toValue } from 'vue'
 import { useNaiveForm } from '../../composables/useNaiveForm'
 import { NPresetInput } from '../preset-input/index'
