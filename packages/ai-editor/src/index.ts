@@ -8,7 +8,7 @@ import 'aieditor/dist/style.css'
 export type {
   AiEditorOptions,
 }
-export function useAiEditor(defaultValue?: Ref<string> | string, darkMode?: ComputedRef<boolean>, language?: ComputedRef<'zh' | 'en'>, options?: Omit<AiEditorOptions, 'element'>) {
+export function useAiEditor(defaultValue?: Ref<string> | string, darkMode?: ComputedRef<boolean> | Ref<boolean>, language?: ComputedRef<'zh' | 'en'> | Ref<'zh' | 'en'>, options?: Omit<AiEditorOptions, 'element'>) {
   const value = ref(toValue(defaultValue))
   watchEffect(() => {
     value.value = toValue(defaultValue)

@@ -123,7 +123,7 @@ const _label = computed(() => {
   }
   if (value && !Array.isArray(value)) {
     const item = checkedRows.value.find(f => f?.[_fields.value] === value)
-    return item && item?.[_fields.label] ? item[_fields.label] : typeof fallbackLabel === 'function' ? fallbackLabel(value) : (fallbackLabel ?? value)
+    return item && item?.[_fields.label] ? item?.[_fields.label] : typeof fallbackLabel === 'function' ? fallbackLabel(value) : (fallbackLabel ?? value)
   }
   return placeholder
 })

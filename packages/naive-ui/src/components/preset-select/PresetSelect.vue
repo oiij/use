@@ -57,8 +57,8 @@ onBefore((params) => {
 })
 onSuccess((data, params) => {
   emit('success', data, params)
-  data[_fields.list]?.forEach((f: any) => {
-    if (!_dataCache.some(s => s[_fields.rowKey] === f[_fields.rowKey])) {
+  data?.[_fields.list]?.forEach((f: any) => {
+    if (!_dataCache.some(s => s?.[_fields.rowKey] === f?.[_fields.rowKey])) {
       _dataCache.push(f)
     }
   })
@@ -75,9 +75,9 @@ const optionsReactive = computed<(SelectOption | SelectGroupOption)[]>(() => {
     ? list.value.map(m => optionFormat(m)).filter(f => !!f) as (SelectOption | SelectGroupOption)[]
     : list.value.map((m) => {
         return {
-          [_fields.label]: m[_fields.label],
-          [_fields.value]: m[_fields.value],
-          [_fields.children]: m[_fields.children],
+          [_fields.label]: m?.[_fields.label],
+          [_fields.value]: m?.[_fields.value],
+          [_fields.children]: m?.[_fields.children],
         }
       })
 })
@@ -108,7 +108,7 @@ const vOnSelect = {
   },
 
   onUpdateValue: (val: V | null, option: SelectOption | SelectOption[] | null) => {
-    const rawSelectValue = Array.isArray(val) ? list.value.filter(f => val.includes(f[_fields.value])) : list.value.find(f => f[_fields.value] === val) ?? null
+    const rawSelectValue = Array.isArray(val) ? list.value.filter(f => val.includes(f?.[_fields.value])) : list.value.find(f => f?.[_fields.value] === val) ?? null
     emit('update:value', val, option, toRaw(toValue(rawSelectValue)))
   },
   onSearch: (val: string) => {

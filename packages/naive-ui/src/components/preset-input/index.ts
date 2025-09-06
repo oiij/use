@@ -1,35 +1,35 @@
 import type { ButtonProps, CheckboxGroupProps, CheckboxProps, ColorPickerProps, DatePickerProps, DividerProps, DynamicTagsProps, InputNumberProps, InputProps, RadioGroupProps, RadioProps, RateProps, SelectProps, SliderProps, SwitchProps, TimePickerProps } from 'naive-ui'
-import type { VNode } from 'vue'
+import type { VNode, VNodeArrayChildren } from 'vue'
 import type { ClassStyle } from '../data-table-plus/index'
 import type { SearchInputProps } from '../search-input/index'
 
 export { default as NPresetInput } from './PresetInput.vue'
-
+type RawChildren = string | number | boolean | VNode | VNodeArrayChildren | (() => any)
 export type PresetInputType = & {
   'button': {
     props?: ButtonProps & { label?: string }
     slots?: {
-      default?: () => VNode
-      icon?: () => VNode
+      default?: () => RawChildren
+      icon?: () => RawChildren
     }
   }
   'color-picker': {
     props?: ColorPickerProps
     slots?: {
-      label?: (color: string | null) => VNode
-      action?: () => VNode
+      label?: (color: string | null) => RawChildren
+      action?: () => RawChildren
     }
   }
   'checkbox': {
     props?: CheckboxGroupProps & { options?: CheckboxProps[] }
     slots?: {
-      default?: () => VNode
+      default?: () => RawChildren
     }
   }
   'divider': {
     props?: DividerProps
     slots?: {
-      default?: () => VNode
+      default?: () => RawChildren
     }
   }
   'date-picker': {
@@ -39,84 +39,84 @@ export type PresetInputType = & {
   'dynamic-tags': {
     props?: DynamicTagsProps
     slots?: {
-      input?: (info: { submit: (value: any) => void, deactivate: () => void }) => VNode
-      trigger?: (info: { activate: () => void, disabled: boolean }) => VNode
+      input?: (info: { submit: (value: any) => void, deactivate: () => void }) => RawChildren
+      trigger?: (info: { activate: () => void, disabled: boolean }) => RawChildren
     }
   }
   'input': {
     props?: InputProps
     slots?: {
-      clearIcon?: () => VNode
-      count?: (props: { value: string }) => VNode
-      passwordInvisibleIcon?: () => VNode
-      passwordVisibleIcon?: () => VNode
-      prefix?: () => VNode
-      separator?: () => VNode
-      suffix?: () => VNode
+      clearIcon?: () => RawChildren
+      count?: (props: { value: string }) => RawChildren
+      passwordInvisibleIcon?: () => RawChildren
+      passwordVisibleIcon?: () => RawChildren
+      prefix?: () => RawChildren
+      separator?: () => RawChildren
+      suffix?: () => RawChildren
     }
 
   }
   'input-number': {
     props?: InputNumberProps
     slots?: {
-      addIcon?: () => VNode
-      minusIcon?: () => VNode
-      prefix?: () => VNode
-      suffix?: () => VNode
+      addIcon?: () => RawChildren
+      minusIcon?: () => RawChildren
+      prefix?: () => RawChildren
+      suffix?: () => RawChildren
     }
   }
   'search': {
     props?: SearchInputProps
     slots?: {
-      prefix?: () => VNode
-      prefixIcon?: () => VNode
-      button?: (props: { value: string, loading: boolean }) => VNode
-      buttonIcon?: () => VNode
+      prefix?: () => RawChildren
+      prefixIcon?: () => RawChildren
+      button?: (props: { value: string, loading: boolean }) => RawChildren
+      buttonIcon?: () => RawChildren
 
     }
   }
   'radio': {
     props?: RadioGroupProps & { options?: RadioProps[] }
     slots?: {
-      default?: () => VNode
+      default?: () => RawChildren
     }
   }
   'rate': {
     props?: RateProps
     slots?: {
-      default?: (info: { index: number }) => VNode
+      default?: (info: { index: number }) => RawChildren
     }
   }
   'select': {
     props?: SelectProps
     slots?: {
-      header?: () => VNode
-      action?: () => VNode
-      empty?: () => VNode
-      arrow?: () => VNode
+      header?: () => RawChildren
+      action?: () => RawChildren
+      empty?: () => RawChildren
+      arrow?: () => RawChildren
     }
   }
   'slider': {
     props?: SliderProps
     slots?: {
-      thumb?: () => VNode
+      thumb?: () => RawChildren
     }
   }
   'switch': {
     props?: SwitchProps
     slots?: {
-      checked?: () => VNode
-      checkedIcon?: () => VNode
-      icon?: () => VNode
-      unchecked?: () => VNode
-      uncheckedIcon?: () => VNode
+      checked?: () => RawChildren
+      checkedIcon?: () => RawChildren
+      icon?: () => RawChildren
+      unchecked?: () => RawChildren
+      uncheckedIcon?: () => RawChildren
     }
 
   }
   'time-picker': {
     props?: TimePickerProps
     slots?: {
-      icon?: () => VNode
+      icon?: () => RawChildren
     }
 
   }

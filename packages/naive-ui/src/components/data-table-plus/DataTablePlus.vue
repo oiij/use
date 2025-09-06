@@ -85,7 +85,7 @@ const scrollX = computed(() => {
 })
 function onSuccessEffect(data: D, _params: P[]) {
   data[_fields.list]?.forEach((f: any) => {
-    if (!_dataCache.some(s => s[_fields.rowKey] === f[_fields.rowKey])) {
+    if (!_dataCache.some(s => s?.[_fields.rowKey] === f?.[_fields.rowKey])) {
       _dataCache.push(f)
     }
   })
@@ -181,7 +181,7 @@ const vOn = {
     row: InternalRowData | undefined
     action: 'check' | 'uncheck' | 'checkAll' | 'uncheckAll'
   }) => {
-    const rows = keys.map(m => _dataCache.find(f => f[_fields.rowKey] === m))
+    const rows = keys.map(m => _dataCache.find(f => f?.[_fields.rowKey] === m))
     emit('update:checkedRowKeys', keys, rows, { row: toRaw(meta.row) as R | undefined, action: meta.action }, toRaw(list.value))
   },
   onUpdateExpandedRowKeys: (keys: (string | number)[]) => {
@@ -264,7 +264,7 @@ defineExpose(expose)
         <NSearchInput
           v-if="search"
           :style="{ marginLeft: 'auto', width: '280px' }"
-          :value="params[0][_fields.search]"
+          :value="params[0]?.[_fields.search]"
           :loading="loading"
           v-bind="searchProps"
           @update:value="(val) => onSearch(val) "
@@ -280,7 +280,7 @@ defineExpose(expose)
       :single-line="false"
       :scroll-x="scrollX"
       :style="{ flex: 1 }"
-      :row-key="row => row[_fields.rowKey]"
+      :row-key="row => row?.[_fields.rowKey]"
       :children-key="_fields.children"
       :loading="loading"
       :columns="columnsReactive"
