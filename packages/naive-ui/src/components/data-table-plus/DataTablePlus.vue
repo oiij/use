@@ -264,7 +264,7 @@ defineExpose(expose)
         <NSearchInput
           v-if="search"
           :style="{ marginLeft: 'auto', width: '280px' }"
-          :value="params[0]?.[_fields.search]"
+          :value="params?.[0]?.[_fields.search]"
           :loading="loading"
           v-bind="searchProps"
           @update:value="(val) => onSearch(val) "
