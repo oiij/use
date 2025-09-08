@@ -1,5 +1,6 @@
 <script setup lang='ts'>
 import type { TabsProps } from '.'
+import type { TabItemKey } from './index'
 import { useStyle } from '@oiij/css-render'
 import { useScrollView } from '@oiij/use'
 import { colord } from 'colord'
@@ -12,9 +13,9 @@ import TabItem from './TabItem.vue'
 const { colors, dropdown, addable, options } = defineProps<TabsProps>()
 
 const emit = defineEmits<{
-  (e: 'click', v: string): void
-  (e: 'contextmenu', v: string): void
-  (e: 'close', v: string): void
+  (e: 'click', v: TabItemKey, index: number): void
+  (e: 'contextmenu', v: TabItemKey, index: number): void
+  (e: 'close', v: TabItemKey, index: number): void
   (e: 'add'): void
 }>()
 
@@ -33,14 +34,14 @@ watch(value, () => {
 const backgroundDark = computed(() => colord(background).darken(0.9).toHex())
 const activeDark = computed(() => colord(active).darken(0.8).toHex())
 const primaryDark = computed(() => colord(primary).darken(0.3).toHex())
-function onItemClick(key: string) {
-  emit('click', key)
+function onItemClick(key: TabItemKey, index: number) {
+  emit('click', key, index)
 }
-function onItemContextMenu(key: string) {
-  emit('contextmenu', key)
+function onItemContextMenu(key: TabItemKey, index: number) {
+  emit('contextmenu', key, index)
 }
-function onItemClose(key: string) {
-  emit('close', key)
+function onItemClose(key: TabItemKey, index: number) {
+  emit('close', key, index)
 }
 </script>
 
@@ -62,7 +63,17 @@ function onItemClose(key: string) {
     <slot name="prefix" />
     <div ref="scrollRef" :class="[`${tabsCssName}__content`]">
       <transition-group name="group" tag="div" :class="[`${tabsCssName}__scroll`]">
-        <TabItem v-for="({ key, ...item }, index) in options" :key="key" v-bind="item" :index="index" :active-index="activeIndex" @item-click="onItemClick(key)" @item-contextmenu="onItemContextMenu(key)" @item-close="onItemClose(key)" />
+        <TabItem
+          v-for="({ key, ...item }, index) in options"
+          :key="key"
+          v-bind="item"
+          :item-key="key"
+          :item-index="index"
+          :active-index="activeIndex"
+          @item-click="onItemClick(key, index)"
+          @item-contextmenu="onItemContextMenu(key, index)"
+          @item-close="onItemClose(key, index)"
+        />
       </transition-group>
     </div>
     <slot name="suffix" />

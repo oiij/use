@@ -1,24 +1,24 @@
 import type { VNode } from 'vue'
 
 type VNodeChild = VNode | string | number | undefined | void | null | boolean
-
-export { default as CTabItem } from './TabItem.vue'
+export type TabItemKey = string | number
 export { default as CTabs } from './Tabs.vue'
 export interface TabsOptions {
-  key: string
-  label: string | (() => VNodeChild)
-  icon?: () => VNodeChild
+  key: TabItemKey
+  label: string | ((key: TabItemKey, index: number) => VNodeChild)
+  icon?: (key: TabItemKey, index: number) => VNodeChild
   closable?: boolean
   disabled?: boolean
   loading?: boolean
-  loadingIcon?: () => VNodeChild
-  onClick?: (ev: MouseEvent) => void
-  onContextMenu?: (ev: MouseEvent) => void
-  onClose?: () => void
+  loadingIcon?: (key: TabItemKey, index: number) => VNodeChild
+  onClick?: (key: TabItemKey, index: number, ev: MouseEvent) => void
+  onContextMenu?: (key: TabItemKey, index: number, ev: MouseEvent) => void
+  onClose?: (key: TabItemKey, index: number, ev: MouseEvent) => void
 }
 export type TabsItemProps = Omit<TabsOptions, 'key'> & {
   activeIndex?: number
-  index: number
+  itemIndex: number
+  itemKey: TabItemKey
 }
 export interface TabsProps {
   colors?: {

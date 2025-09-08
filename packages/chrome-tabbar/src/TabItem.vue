@@ -5,29 +5,29 @@ import { tabsItemCssName } from './cssr'
 import LineMdLoadingTwotoneLoop from './icons/LineMdLoadingTwotoneLoop.vue'
 import RiCloseLine from './icons/RiCloseLine.vue'
 
-const { label, icon, activeIndex = 0, index, disabled, closable, loading, loadingIcon, onClick, onClose, onContextMenu } = defineProps<TabsItemProps>()
+const { label, icon, activeIndex = 0, itemIndex, itemKey, disabled, closable, loading, loadingIcon, onClick, onClose, onContextMenu } = defineProps<TabsItemProps>()
 const emit = defineEmits<{
   (e: 'itemClick', ev: MouseEvent): void
   (e: 'itemContextmenu', ev: MouseEvent): void
   (e: 'itemClose'): void
 }>()
-const showLine = computed(() => activeIndex !== index && activeIndex !== index - 1)
-const active = computed(() => activeIndex === index)
-const defaultContent = computed(() => typeof label === 'string' ? h('span', { class: `${tabsItemCssName}__label` }, label) : label)
-const defaultLoadingIcon = computed(() => loadingIcon ?? h(LineMdLoadingTwotoneLoop))
+const showLine = computed(() => activeIndex !== itemIndex && activeIndex !== itemIndex - 1)
+const active = computed(() => activeIndex === itemIndex)
+const defaultContent = computed(() => typeof label === 'string' ? h('span', { class: `${tabsItemCssName}__label` }, label) : label(itemKey, itemIndex))
+const defaultLoadingIcon = computed(() => loadingIcon?.(itemKey, itemIndex) ?? h(LineMdLoadingTwotoneLoop))
 
 function handleClick(ev: MouseEvent) {
   ev.stopPropagation()
   emit('itemClick', ev)
-  onClick?.(ev)
+  onClick?.(itemKey, itemIndex, ev)
 }
 function handleContextMenu(ev: MouseEvent) {
   emit('itemContextmenu', ev)
-  onContextMenu?.(ev)
+  onContextMenu?.(itemKey, itemIndex, ev)
 }
-function handleClose() {
+function handleClose(ev: MouseEvent) {
   emit('itemClose')
-  onClose?.()
+  onClose?.(itemKey, itemIndex, ev)
 }
 </script>
 
@@ -45,7 +45,7 @@ function handleClose() {
   >
     <div :class="[`${tabsItemCssName}__content`]">
       <div :class="[`${tabsItemCssName}__icon`]">
-        <component :is="loading ? defaultLoadingIcon : icon" />
+        <component :is="loading ? defaultLoadingIcon : icon?.(itemKey, itemIndex) ?? undefined" />
       </div>
       <div :class="[`${tabsItemCssName}__slot`]">
         <component :is="defaultContent" />

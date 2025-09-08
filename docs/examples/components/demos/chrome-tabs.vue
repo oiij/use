@@ -7,7 +7,7 @@ import CustomLoadingIcon from './icons/CustomLoadingIcon.vue'
 import DogIcon from './icons/DogIcon.vue'
 import MageDashboardPlusFill from './icons/MageDashboardPlusFill.vue'
 
-const value = ref('tab1')
+const value = ref<string | number>('tab1')
 const options: TabsOptions[] = reactive([
   {
     key: 'tab1',
@@ -66,11 +66,11 @@ function handleAdd() {
   })
   value.value = key
 }
-function onClose(v: string) {
+function onClose(v: string | number) {
   const index = options.findIndex(f => f.key === v)
   options.splice(index, 1)
 }
-function handleClick(key: string) {
+function handleClick(key: string | number) {
   value.value = key
 }
 </script>
