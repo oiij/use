@@ -11,7 +11,7 @@ const emit = defineEmits<{
   (e: 'itemContextmenu', ev: MouseEvent): void
   (e: 'itemClose'): void
 }>()
-const showLine = computed(() => activeIndex !== itemIndex && activeIndex !== itemIndex - 1)
+const showLine = computed(() => activeIndex !== itemIndex && activeIndex - 1 !== itemIndex)
 const active = computed(() => activeIndex === itemIndex)
 const defaultContent = computed(() => typeof label === 'string' ? h('span', { class: `${tabsItemCssName}__label` }, label) : label(itemKey, itemIndex))
 const defaultLoadingIcon = computed(() => loadingIcon?.(itemKey, itemIndex) ?? h(LineMdLoadingTwotoneLoop))
@@ -37,7 +37,7 @@ function handleClose(ev: MouseEvent) {
       tabsItemCssName,
       {
         [`${tabsItemCssName}--active`]: active,
-        [`${tabsItemCssName}--disabled`]: disabled,
+        [`${tabsItemCssName}--disabled`]: typeof disabled === 'function' ? disabled(itemKey, itemIndex) : disabled,
       },
     ]"
     @click="handleClick"
@@ -45,12 +45,12 @@ function handleClose(ev: MouseEvent) {
   >
     <div :class="[`${tabsItemCssName}__content`]">
       <div :class="[`${tabsItemCssName}__icon`]">
-        <component :is="loading ? defaultLoadingIcon : icon?.(itemKey, itemIndex) ?? undefined" />
+        <component :is="typeof loading === 'function' ? loading(itemKey, itemIndex) : loading ? defaultLoadingIcon : icon?.(itemKey, itemIndex) ?? undefined" />
       </div>
       <div :class="[`${tabsItemCssName}__slot`]">
         <component :is="defaultContent" />
       </div>
-      <div v-if="closable" :class="[`${tabsItemCssName}__close`]" @click.stop="handleClose">
+      <div v-if="typeof closable === 'function' ? closable(itemKey, itemIndex) : closable" :class="[`${tabsItemCssName}__close`]" @click.stop="handleClose">
         <RiCloseLine />
       </div>
     </div>

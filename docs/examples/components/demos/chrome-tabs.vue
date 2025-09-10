@@ -1,6 +1,6 @@
 <!-- eslint-disable no-alert -->
 <script setup lang='ts'>
-import type { TabsOptions } from '@oiij/chrome-tabs'
+import type { TabsOption } from '@oiij/chrome-tabs'
 import { CTabs } from '@oiij/chrome-tabs'
 import { h, reactive, ref } from 'vue'
 import CustomLoadingIcon from './icons/CustomLoadingIcon.vue'
@@ -8,7 +8,7 @@ import DogIcon from './icons/DogIcon.vue'
 import MageDashboardPlusFill from './icons/MageDashboardPlusFill.vue'
 
 const value = ref<string | number>('tab1')
-const options: TabsOptions[] = reactive([
+const options: TabsOption[] = reactive([
   {
     key: 'tab1',
     label: 'Closable',

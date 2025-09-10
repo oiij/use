@@ -88,7 +88,7 @@ export function tabsCssr() {
       flexShrink: 0,
       cursor: 'default',
       userSelect: 'none',
-      padding: '6px 10px 0px 10px',
+      padding: '6px 15px 0px 15px',
     }, [
       cM('disabled', {
         cursor: 'not-allowed',

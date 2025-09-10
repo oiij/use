@@ -10,9 +10,10 @@ import RiAddLine from './icons/RiAddLine.vue'
 import RiArrowDropDownLine from './icons/RiArrowDropDownLine.vue'
 import TabItem from './TabItem.vue'
 
-const { colors, dropdown, addable, options } = defineProps<TabsProps>()
+const { value, colors, dropdown, addable, options, loadingValue, contentClass, contentStyle } = defineProps<TabsProps>()
 
 const emit = defineEmits<{
+  (e: 'update:value', v?: TabItemKey | null): void
   (e: 'click', v: TabItemKey, index: number): void
   (e: 'contextmenu', v: TabItemKey, index: number): void
   (e: 'close', v: TabItemKey, index: number): void
@@ -21,11 +22,10 @@ const emit = defineEmits<{
 
 useStyle('n-chrome-tabs', tabsCssr())
 
-const { background = '#E5E7EB', active = '#fff', primary = 'rgba(251,191,36,1)' } = colors ?? {}
-const value = defineModel<string | number>('value')
-const activeIndex = computed(() => options?.findIndex(f => f.key === value.value))
+const { background = '#F1F1F1', active = '#fff', primary = 'rgba(0,0,0,.1)' } = colors ?? {}
+const activeIndex = computed(() => value ? options?.findIndex(f => f.key === value) : 0)
 const { scrollRef, scrollToView } = useScrollView({ activeClassName: `.${tabsItemCssName}--active`, direction: 'horizontal' })
-watch(value, () => {
+watch(() => value, () => {
   scrollToView()
 }, {
   immediate: true,
@@ -35,6 +35,7 @@ const backgroundDark = computed(() => colord(background).darken(0.9).toHex())
 const activeDark = computed(() => colord(active).darken(0.8).toHex())
 const primaryDark = computed(() => colord(primary).darken(0.3).toHex())
 function onItemClick(key: TabItemKey, index: number) {
+  emit('update:value', key)
   emit('click', key, index)
 }
 function onItemContextMenu(key: TabItemKey, index: number) {
@@ -61,11 +62,12 @@ function onItemClose(key: TabItemKey, index: number) {
       <RiArrowDropDownLine />
     </div>
     <slot name="prefix" />
-    <div ref="scrollRef" :class="[`${tabsCssName}__content`]">
+    <div ref="scrollRef" :class="[`${tabsCssName}__content`, contentClass]" :style="contentStyle">
       <transition-group name="group" tag="div" :class="[`${tabsCssName}__scroll`]">
         <TabItem
           v-for="({ key, ...item }, index) in options"
           :key="key"
+          :loading="loadingValue === key"
           v-bind="item"
           :item-key="key"
           :item-index="index"

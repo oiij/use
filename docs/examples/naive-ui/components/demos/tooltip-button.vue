@@ -4,7 +4,7 @@ import { NTooltipButton } from '@oiij/naive-ui/components'
 
 <template>
   <div>
-    <NTooltipButton value="Tooltip Content.">
+    <NTooltipButton tooltip="Tooltip Content.">
       Button
     </NTooltipButton>
   </div>
