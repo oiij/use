@@ -5,7 +5,7 @@ import { tabsItemCssName } from './cssr'
 import LineMdLoadingTwotoneLoop from './icons/LineMdLoadingTwotoneLoop.vue'
 import RiCloseLine from './icons/RiCloseLine.vue'
 
-const { label, icon, activeIndex = 0, itemIndex, itemKey, disabled, closable, loading, loadingIcon, onClick, onClose, onContextMenu } = defineProps<TabsItemProps>()
+const { label, icon, disabled, closable, loading, loadingIcon, onClick, onClose, onContextMenu, activeIndex = 0, itemIndex, itemKey, iconSize = 20 } = defineProps<TabsItemProps>()
 const emit = defineEmits<{
   (e: 'itemClick', ev: MouseEvent): void
   (e: 'itemContextmenu', ev: MouseEvent): void
@@ -44,7 +44,7 @@ function handleClose(ev: MouseEvent) {
     @contextmenu="handleContextMenu"
   >
     <div :class="[`${tabsItemCssName}__content`]">
-      <div :class="[`${tabsItemCssName}__icon`]">
+      <div :class="[`${tabsItemCssName}__icon`]" :style="{ fontSize: `${iconSize}px` }">
         <component :is="typeof loading === 'function' ? loading(itemKey, itemIndex) : loading ? defaultLoadingIcon : icon?.(itemKey, itemIndex) ?? undefined" />
       </div>
       <div :class="[`${tabsItemCssName}__slot`]">

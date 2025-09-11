@@ -21,6 +21,7 @@ export type TabsItemProps = Omit<TabsOption, 'key'> & {
   activeIndex?: number
   itemIndex: number
   itemKey: TabItemKey
+  iconSize?: number
 }
 export type TabsProps = & {
   value?: TabItemKey
@@ -33,6 +34,7 @@ export type TabsProps = & {
   addable?: boolean
   options?: TabsOption[]
   loadingValue?: TabItemKey
+  iconSize?: number
   contentClass?: string
   contentStyle?: CSSProperties | string
 }

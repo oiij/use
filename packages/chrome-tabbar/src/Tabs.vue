@@ -10,7 +10,7 @@ import RiAddLine from './icons/RiAddLine.vue'
 import RiArrowDropDownLine from './icons/RiArrowDropDownLine.vue'
 import TabItem from './TabItem.vue'
 
-const { value, colors, dropdown, addable, options, loadingValue, contentClass, contentStyle } = defineProps<TabsProps>()
+const { value, colors, dropdown, addable, options, loadingValue, iconSize, contentClass, contentStyle } = defineProps<TabsProps>()
 
 const emit = defineEmits<{
   (e: 'update:value', v?: TabItemKey | null): void
@@ -72,6 +72,7 @@ function onItemClose(key: TabItemKey, index: number) {
           :item-key="key"
           :item-index="index"
           :active-index="activeIndex"
+          :icon-size="iconSize"
           @item-click="onItemClick(key, index)"
           @item-contextmenu="onItemContextMenu(key, index)"
           @item-close="onItemClose(key, index)"
