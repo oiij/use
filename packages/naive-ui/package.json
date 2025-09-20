@@ -1,7 +1,7 @@
 {
   "name": "@oiij/naive-ui",
   "type": "module",
-  "version": "0.0.58",
+  "version": "0.0.59",
   "description": "Some Composable Functions And Components for Vue 3",
   "author": "oiij",
   "license": "MIT",
@@ -48,27 +48,27 @@
     "@oiij/css-render": "workspace:*",
     "@oiij/markdown-it": "workspace:*",
     "@oiij/use": "workspace:*",
-    "@vueuse/core": "^13.7.0",
+    "@vueuse/core": "^13.9.0",
     "async-validator": "^4.2.5",
     "colord": "^2.9.3",
-    "naive-ui": "^2.42.0",
+    "naive-ui": "^2.43.1",
     "prismjs": "^1.30.0",
-    "vue": "^3.5.18",
-    "vue-hooks-plus": "^2.4.0"
+    "vue": "^3.5.21",
+    "vue-hooks-plus": "^2.4.1"
   },
   "devDependencies": {
     "@oiij/css-render": "workspace:*",
     "@oiij/markdown-it": "workspace:*",
     "@oiij/use": "workspace:*",
     "@types/prismjs": "^1.26.5",
-    "@vueuse/core": "^13.7.0",
+    "@vueuse/core": "^13.9.0",
     "async-validator": "^4.2.5",
     "colord": "^2.9.3",
-    "naive-ui": "^2.42.0",
+    "naive-ui": "^2.43.1",
     "prismjs": "^1.30.0",
-    "vue": "^3.5.18",
-    "vue-component-type-helpers": "^3.0.5",
-    "vue-hooks-plus": "^2.4.0"
+    "vue": "^3.5.21",
+    "vue-component-type-helpers": "^3.0.7",
+    "vue-hooks-plus": "^2.4.1"
   },
   "publishConfig": {
     "access": "public"
