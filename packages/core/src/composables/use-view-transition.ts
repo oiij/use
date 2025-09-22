@@ -15,7 +15,7 @@ const styleText = `
   z-index: 1;
 }
 ::view-transition-new(root),._::view-transition-old(root){
-  z-index: 2147483646;
+  z-index: 99999;
 }`
 export function useViewTransition(options?: ViewTransitionOptions) {
   const isAppearanceTransition = typeof document !== 'undefined' && !!document.startViewTransition && !window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -54,6 +54,7 @@ export function useViewTransition(options?: ViewTransitionOptions) {
       {
         duration,
         easing,
+        fill: 'forwards',
         pseudoElement: `::view-transition-${reverse ? 'old' : 'new'}(root)`,
       },
     ).finished
