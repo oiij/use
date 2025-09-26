@@ -10,15 +10,17 @@ import type { DataTableBaseColumn, DataTableColumns, DataTableFilterState, DataT
 import type { InternalRowData, RowKey } from 'naive-ui/es/data-table/src/interface'
 import type { DataObject } from '../../composables/index'
 import type { DataTablePlusEmits, DataTablePlusExpose, DataTablePlusProps } from './index'
-import { NDataTable, NFlex, NPagination } from 'naive-ui'
+import { buttonProps, NButton, NDataTable, NFlex, NPagination } from 'naive-ui'
 import { computed, reactive, ref, toRaw, toValue, useTemplateRef } from 'vue'
 import { useDataRequest } from '../../composables/useDataRequest'
+import MageArrowUp from '../icons/MageArrowUp.vue'
 import { NSearchInput } from '../search-input/index'
 
 const {
   api,
   defaultParams,
   title,
+  scrollTop,
   manual,
   columns,
   fields,
@@ -48,7 +50,27 @@ const paginationProps = reactive<PaginationProps>({
   },
   ...(propsPagination && typeof propsPagination === 'boolean' ? {} : propsPagination),
 })
-
+const scrollTopProps = {
+  ...typeof scrollTop === 'boolean'
+    ? {
+        top: 180,
+        buttonProps: undefined,
+      }
+    : typeof scrollTop === 'number'
+      ? {
+          top: scrollTop,
+          buttonProps: undefined,
+        }
+      : typeof scrollTop === 'object'
+        ? {
+            top: scrollTop.top ?? 180,
+            buttonProps: scrollTop.buttonProps ?? {},
+          }
+        : {
+            top: 180,
+            buttonProps: undefined,
+          },
+}
 const filtersRef = ref<DataTableFilterState>()
 const sortersRef = ref<Record<string, DataTableSortState>>()
 
@@ -128,7 +150,7 @@ function onSuccessEffect(data: D, _params: P[]) {
     }
   }
 }
-
+const _scrollTop = ref(0)
 const vOn = {
   onUpdatePage: (page: number) => {
     emit('update:page', page)
@@ -175,6 +197,10 @@ const vOn = {
     return emit('load', row as R)
   },
   onScroll: (ev: Event) => {
+    if (scrollTop && ev.target && 'scrollTop' in ev.target && typeof ev.target.scrollTop === 'number') {
+      _scrollTop.value = ev.target.scrollTop
+    }
+
     emit('scroll', ev)
   },
   onUpdateCheckedRowKeys: (keys: RowKey[], _rows: InternalRowData[], meta: {
@@ -209,7 +235,13 @@ function onSearch(val: any) {
     [_fields.search]: val,
   } as P)
 }
-
+function handleScrollTop() {
+  dataTableRef.value?.scrollTo({
+    left: 0,
+    top: 0,
+    behavior: 'smooth',
+  })
+}
 const expose: DataTablePlusExpose<P, D, R> = {
   loading,
   data,
@@ -273,34 +305,48 @@ defineExpose(expose)
       </NFlex>
     </slot>
     <slot name="filter" v-bind="templateBind" />
-    <NDataTable
-      ref="data-table-ref"
-      remote
-      flex-height
-      :single-line="false"
-      :scroll-x="scrollX"
-      :style="{ flex: 1 }"
-      :row-key="row => row?.[_fields.rowKey]"
-      :children-key="_fields.children"
-      :loading="loading"
-      :columns="columnsReactive"
-      :data="list"
-      :row-props="rowProps"
-      v-bind="dataTableProps"
-      @update:filters="vOn.onUpdateFilters"
-      @update:sorter="vOn.onUpdateSorter"
-      @load="vOn.onLoad"
-      @scroll="vOn.onScroll"
-      @update:checked-row-keys="vOn.onUpdateCheckedRowKeys"
-      @update:expanded-row-keys="vOn.onUpdateExpandedRowKeys"
-    >
-      <template #empty>
-        <slot name="empty" v-bind="templateBind" />
-      </template>
-      <template #loading>
-        <slot name="loading" v-bind="templateBind" />
-      </template>
-    </NDataTable>
+    <div :style="{ flex: 1, position: 'relative' }">
+      <NDataTable
+        ref="data-table-ref"
+        remote
+        flex-height
+        :single-line="false"
+        :scroll-x="scrollX"
+        :style="{ width: '100%', height: '100%' }"
+        :row-key="row => row?.[_fields.rowKey]"
+        :children-key="_fields.children"
+        :loading="loading"
+        :columns="columnsReactive"
+        :data="list"
+        :row-props="rowProps"
+        v-bind="dataTableProps"
+        @update:filters="vOn.onUpdateFilters"
+        @update:sorter="vOn.onUpdateSorter"
+        @load="vOn.onLoad"
+        @scroll="vOn.onScroll"
+        @update:checked-row-keys="vOn.onUpdateCheckedRowKeys"
+        @update:expanded-row-keys="vOn.onUpdateExpandedRowKeys"
+      >
+        <template #empty>
+          <slot name="empty" v-bind="templateBind" />
+        </template>
+        <template #loading>
+          <slot name="loading" v-bind="templateBind" />
+        </template>
+      </NDataTable>
+      <NButton
+        v-if="scrollTop && _scrollTop > scrollTopProps.top"
+        secondary
+        circle
+        :style="{ position: 'absolute', right: '20px', bottom: '20px' }"
+        v-bind="scrollTopProps.buttonProps"
+        @click="handleScrollTop"
+      >
+        <template #icon>
+          <MageArrowUp />
+        </template>
+      </NButton>
+    </div>
     <slot name="footer" v-bind="templateBind">
       <NFlex>
         <slot name="footer-extra" v-bind="templateBind" />

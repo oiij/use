@@ -30,7 +30,7 @@ const dataTableRef = useTemplateRef('data-table-ref')
 const presetFormRef = useTemplateRef('preset-form-ref')
 
 function api(params?: Params) {
-  const { page = 1, pageSize = 10, search = '' } = params ?? {}
+  const { page = 1, pageSize = 20, search = '' } = params ?? {}
   return new Promise<Res>((resolve) => {
     setTimeout(() => {
       return resolve({
@@ -199,6 +199,7 @@ function onScrollBottom() {
       ref="data-table-ref"
       pagination
       search
+      scroll-top
       infinite-scroll
       title="数据表格"
       :style="{ width: '100%', height: '500px' }"

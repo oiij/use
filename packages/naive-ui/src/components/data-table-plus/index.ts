@@ -1,4 +1,4 @@
-import type { DataTableColumns, DataTableFilterState, DataTableInst, DataTableProps, DataTableSortState, PaginationProps } from 'naive-ui'
+import type { ButtonProps, DataTableColumns, DataTableFilterState, DataTableInst, DataTableProps, DataTableSortState, PaginationProps } from 'naive-ui'
 import type { FilterState, TableBaseColumn } from 'naive-ui/es/data-table/src/interface'
 import type { CSSProperties, Ref, ShallowRef } from 'vue'
 import type { DataObject, DataRequestFields, UseDataRequestReturns } from '../../composables/useDataRequest'
@@ -26,6 +26,7 @@ export type DataTablePlusFields = DataRequestFields & {
 
 export type DataTablePlusProps<P extends DataObject = DataObject, D extends DataObject = DataObject, R extends DataObject = DataObject> = RemoteRequestProps<P, D> & {
   title?: string
+  scrollTop?: number | boolean | { top?: number, buttonProps?: ButtonProps & ClassStyle }
   columns?: DataTableColumns<R>
   fields?: DataTablePlusFields
   search?: SearchInputProps & ClassStyle | boolean

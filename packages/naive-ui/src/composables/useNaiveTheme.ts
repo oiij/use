@@ -1,6 +1,6 @@
 import type { GlobalThemeOverrides, NDateLocale } from 'naive-ui'
 import type { ComputedRef, Ref } from 'vue'
-import { colord } from 'colord'
+import type { Colors } from './_helper'
 import {
   darkTheme,
   dateEnUS,
@@ -9,22 +9,8 @@ import {
   zhCN,
 } from 'naive-ui'
 import { computed, ref, toValue, watchEffect } from 'vue'
+import { getColors } from './_helper'
 
-interface Color {
-  primary: string
-  info: string
-  success: string
-  warning: string
-  error: string
-}
-function getStatusColor(color = '#ff461f') {
-  return {
-    color,
-    hover: colord(color).lighten(0.1).toHex(),
-    pressed: colord(color).darken(0.1).toHex(),
-    suppl: colord(color).lighten(0.1).toHex(),
-  }
-}
 const naiveLocaleMap: {
   [key: string]: {
     name: string
@@ -43,24 +29,15 @@ const naiveLocaleMap: {
     locale: enUS,
   },
 }
-function getColors(color: Color) {
-  const { primary, info, success, warning, error } = color
-  return {
-    primary: getStatusColor(primary),
-    info: getStatusColor(info),
-    success: getStatusColor(success),
-    warning: getStatusColor(warning),
-    error: getStatusColor(error),
-  }
-}
+
 interface NaiveThemeOptions {
   language?: string | Ref<string>
   darkMode?: boolean | Ref<boolean>
-  color?: Color
+  colors?: Colors
   globalThemeOverrides?: GlobalThemeOverrides
 }
 export function useNaiveTheme(options?: NaiveThemeOptions) {
-  const { language, darkMode, color, globalThemeOverrides } = options ?? {}
+  const { language, darkMode, colors, globalThemeOverrides } = options ?? {}
   const languageRef = ref(toValue(language))
   watchEffect(() => {
     languageRef.value = toValue(language)
@@ -69,17 +46,10 @@ export function useNaiveTheme(options?: NaiveThemeOptions) {
   watchEffect(() => {
     darkModeRef.value = toValue(darkMode)
   })
-  const { common, Dialog, ...extra } = globalThemeOverrides ?? {}
-  const colorRef = ref<Color>({
-    primary: '#64748B',
-    info: '#06b6d4',
-    success: '#10b981',
-    warning: '#fbbf24',
-    error: '#f43f5e',
-    ...color,
-  })
-  function setColor(v: Color) {
-    colorRef.value = v
+  const { common, ...extra } = globalThemeOverrides ?? {}
+  const colorRef = ref<Colors>({ ...colors })
+  function setColor(v: Partial<Colors>) {
+    colorRef.value = { ...colorRef.value, ...v }
   }
   const theme = computed(() => {
     return darkModeRef?.value ? darkTheme : undefined
@@ -89,34 +59,27 @@ export function useNaiveTheme(options?: NaiveThemeOptions) {
     return {
       common: {
         bodyColor: darkModeRef?.value ? '#1f1f1f' : '#f5f5f5',
-        primaryColor: primary.color,
-        primaryColorHover: primary.hover,
-        primaryColorPressed: primary.pressed,
-        primaryColorSuppl: primary.suppl,
-        infoColor: info.color,
-        infoColorHover: info.hover,
-        infoColorPressed: info.pressed,
-        infoColorSuppl: info.suppl,
-        successColor: success.color,
-        successColorHover: success.hover,
-        successColorPressed: success.pressed,
-        successColorSuppl: success.suppl,
-        warningColor: warning.color,
-        warningColorHover: warning.hover,
-        warningColorPressed: warning.pressed,
-        warningColorSuppl: warning.suppl,
-        errorColor: error.color,
-        errorColorHover: error.hover,
-        errorColorPressed: error.pressed,
-        errorColorSuppl: error.suppl,
-        borderRadius: '6px',
+        primaryColor: primary?.color,
+        primaryColorHover: primary?.hover,
+        primaryColorPressed: primary?.pressed,
+        primaryColorSuppl: primary?.suppl,
+        infoColor: info?.color,
+        infoColorHover: info?.hover,
+        infoColorPressed: info?.pressed,
+        infoColorSuppl: info?.suppl,
+        successColor: success?.color,
+        successColorHover: success?.hover,
+        successColorPressed: success?.pressed,
+        successColorSuppl: success?.suppl,
+        warningColor: warning?.color,
+        warningColorHover: warning?.hover,
+        warningColorPressed: warning?.pressed,
+        warningColorSuppl: warning?.suppl,
+        errorColor: error?.color,
+        errorColorHover: error?.hover,
+        errorColorPressed: error?.pressed,
+        errorColorSuppl: error?.suppl,
         ...common,
-      },
-      Dialog: {
-        borderRadius: '12px',
-        padding: '20px',
-        closeMargin: '20px 20px 0 0',
-        ...Dialog,
       },
       ...extra,
     }
