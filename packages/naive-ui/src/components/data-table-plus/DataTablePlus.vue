@@ -10,7 +10,7 @@ import type { DataTableBaseColumn, DataTableColumns, DataTableFilterState, DataT
 import type { InternalRowData, RowKey } from 'naive-ui/es/data-table/src/interface'
 import type { DataObject } from '../../composables/index'
 import type { DataTablePlusEmits, DataTablePlusExpose, DataTablePlusProps } from './index'
-import { buttonProps, NButton, NDataTable, NFlex, NPagination } from 'naive-ui'
+import { NButton, NDataTable, NFlex, NPagination } from 'naive-ui'
 import { computed, reactive, ref, toRaw, toValue, useTemplateRef } from 'vue'
 import { useDataRequest } from '../../composables/useDataRequest'
 import MageArrowUp from '../icons/MageArrowUp.vue'
