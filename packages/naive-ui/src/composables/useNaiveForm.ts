@@ -3,6 +3,7 @@ import type { FormInst, FormItemRule, FormRules } from 'naive-ui'
 import type { Ref } from 'vue'
 import type { DataObject } from './useDataRequest'
 import { createEventHook } from '@vueuse/core'
+import { cloneDeep } from 'es-toolkit/object'
 import { reactive, ref, toRaw, toValue } from 'vue'
 
 export type NaiveFormClearRules = & {
@@ -66,7 +67,7 @@ export type NaiveFormOptions<T extends DataObject> = & {
 
 export function useNaiveForm<T extends DataObject = DataObject>(value?: T | Ref<T>, options?: NaiveFormOptions<T>) {
   const { rules, clearRules } = options ?? {}
-  const cacheValue = structuredClone(toRaw(toValue(value)))
+  const cacheValue = cloneDeep(toValue(value))
   const formValue = ref(toValue(value ?? {})) as Ref<T>
   const formRules = ref(toValue(rules) ?? {}) as Ref<NaiveFormRules<T>>
   const formRef = ref<FormInst>()
@@ -99,7 +100,7 @@ export function useNaiveForm<T extends DataObject = DataObject>(value?: T | Ref<
   }
   function resetForm() {
     clear()
-    const _cacheValue = structuredClone(cacheValue)
+    const _cacheValue = cloneDeep(cacheValue)
     deepMerge(formValue.value, _cacheValue)
   }
   function reset() {

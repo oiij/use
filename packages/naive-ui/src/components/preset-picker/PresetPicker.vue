@@ -9,6 +9,7 @@ import type { TableColumn } from 'naive-ui/lib/data-table/src/interface'
 import type { Ref } from 'vue'
 import type { DataObject } from '../../composables/useDataRequest'
 import type { PresetPickerEmits, PresetPickerExpose, PresetPickerProps, PresetPickerValue } from './index'
+import { cloneDeep } from 'es-toolkit/object'
 import { NBadge, NButton, NButtonGroup, NModal, NTooltip } from 'naive-ui'
 import { computed, reactive, ref, toRaw, toValue, watch } from 'vue'
 import MageMultiplyCircleFill from '../icons/MageMultiplyCircleFill.vue'
@@ -52,7 +53,7 @@ const _columns: DataTableColumns<any> = reactive([
 ])
 const showModalFlag = ref(false)
 function showModal() {
-  checkedRowKeys.value = structuredClone(Array.isArray(value) ? toRaw(value) : value ? [value] : []) as (string | number)[]
+  checkedRowKeys.value = cloneDeep(Array.isArray(value) ? value : value ? [value] : []) as (string | number)[]
   showModalFlag.value = true
 }
 function clickRowEffect(row: R) {
