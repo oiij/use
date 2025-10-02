@@ -22,7 +22,6 @@ const emit = defineEmits<{
 
 useStyle('n-chrome-tabs', tabsCssr())
 
-const { background = '#F1F1F1', active = '#fff', primary = 'rgba(0,0,0,.1)' } = colors ?? {}
 const activeIndex = computed(() => value ? options?.findIndex(f => f.key === value) : 0)
 const { scrollRef, scrollToView } = useScrollView({ activeClassName: `.${tabsItemCssName}--active`, direction: 'horizontal' })
 watch(() => value, () => {
@@ -30,10 +29,22 @@ watch(() => value, () => {
 }, {
   immediate: true,
 })
+const lightColors = computed(() => {
+  return {
+    background: '#F1F1F1',
+    active: '#fff',
+    primary: 'rgba(0,0,0,.1)',
+    ...colors,
+  }
+})
+const darkColors = computed(() => {
+  return {
+    background: colord(lightColors.value.background).darken(0.8).toHex(),
+    active: colord(lightColors.value.active).darken(0.8).toHex(),
+    primary: colord(lightColors.value.primary).darken(0.3).toHex(),
+  }
+})
 
-const backgroundDark = computed(() => colord(background).darken(0.9).toHex())
-const activeDark = computed(() => colord(active).darken(0.8).toHex())
-const primaryDark = computed(() => colord(primary).darken(0.3).toHex())
 function onItemClick(key: TabItemKey, index: number) {
   emit('update:value', key)
   emit('click', key, index)
@@ -50,12 +61,12 @@ function onItemClose(key: TabItemKey, index: number) {
   <div
     :class="[tabsCssName]"
     :style="{
-      '--background-color': `${background}`,
-      '--background-color-dark': `${backgroundDark}`,
-      '--active-background-color': `${active}`,
-      '--active-background-color-dark': `${activeDark}`,
-      '--primary-color': `${primary}`,
-      '--primary-color-dark': `${primaryDark}`,
+      '--background-color': `${lightColors.background}`,
+      '--background-color-dark': `${darkColors.background}`,
+      '--active-background-color': `${lightColors.active}`,
+      '--active-background-color-dark': `${darkColors.active}`,
+      '--primary-color': `${lightColors.primary}`,
+      '--primary-color-dark': `${darkColors.primary}`,
     }"
   >
     <div v-if="dropdown" :class="[`${tabsCssName}__icon`]">
