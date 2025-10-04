@@ -36,7 +36,6 @@ export function useEventSource<T extends HandlerType = HandlerType, D extends Me
   watchEffect(() => {
     if (urlRef.value !== toValue(url)) {
       urlRef.value = toValue(url)
-      close()
       if (!manual) {
         connect()
       }
@@ -83,14 +82,12 @@ export function useEventSource<T extends HandlerType = HandlerType, D extends Me
     source.value.addEventListener('error', onError, { signal: controller.value.signal })
   }
   function close() {
-    source.value?.close()
+    if (source.value?.readyState === 1) {
+      source.value?.close()
+    }
     setStatus()
   }
 
-  function reconnect() {
-    close()
-    connect()
-  }
   if (!manual) {
     connect()
   }
@@ -134,7 +131,7 @@ export function useEventSource<T extends HandlerType = HandlerType, D extends Me
       if (retryCount < retries) {
         retryCount++
         setTimeout(() => {
-          reconnect()
+          connect()
         }, delay)
       }
       else {
@@ -183,7 +180,6 @@ export function useEventSource<T extends HandlerType = HandlerType, D extends Me
     error,
     controller,
     connect,
-    reconnect,
     close,
     destroy,
     registerHandler,

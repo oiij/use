@@ -44,7 +44,6 @@ export function useWebSocket<T extends HandlerType = HandlerType, D extends Mess
   watchEffect(() => {
     if (urlRef.value !== toValue(url)) {
       urlRef.value = toValue(url)
-      close()
       if (!manual) {
         connect()
       }
@@ -96,12 +95,9 @@ export function useWebSocket<T extends HandlerType = HandlerType, D extends Mess
   }
 
   function close() {
-    socket.value?.close()
-  }
-
-  function reconnect() {
-    close()
-    connect()
+    if (socket.value?.readyState === 1) {
+      socket.value?.close()
+    }
   }
 
   if (!manual) {
@@ -161,7 +157,7 @@ export function useWebSocket<T extends HandlerType = HandlerType, D extends Mess
       if (retryCount < retries) {
         retryCount++
         setTimeout(() => {
-          reconnect()
+          connect()
         }, delay)
       }
       else {
@@ -210,7 +206,6 @@ export function useWebSocket<T extends HandlerType = HandlerType, D extends Mess
     error,
     controller,
     connect,
-    reconnect,
     close,
     sendRaw,
     send,

@@ -40,7 +40,7 @@ export class IWebSocket<T extends MessageType, D extends MessageRaw = string> {
         if (this.#retryCount < retries) {
           this.#retryCount++
           setTimeout(() => {
-            this.reconnect()
+            this.connect()
           }, delay)
         }
         else {
@@ -178,14 +178,9 @@ export class IWebSocket<T extends MessageType, D extends MessageRaw = string> {
   }
 
   close() {
-    if (this.socket) {
+    if (this.socket?.readyState === 1) {
       this.socket.close()
     }
-  }
-
-  reconnect() {
-    this.close()
-    this.connect()
   }
 
   send(data: any) {

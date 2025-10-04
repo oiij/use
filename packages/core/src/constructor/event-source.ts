@@ -40,7 +40,7 @@ export class IEventSource<T extends MessageType, D extends MessageRaw = string> 
         if (this.#retryCount < retries) {
           this.#retryCount++
           setTimeout(() => {
-            this.reconnect()
+            this.connect()
           }, delay)
         }
         else {
@@ -165,14 +165,10 @@ export class IEventSource<T extends MessageType, D extends MessageRaw = string> 
   }
 
   close() {
-    if (this.source) {
+    if (this.source?.readyState === 1) {
       this.source.close()
+      this.#setStatus()
     }
-  }
-
-  reconnect() {
-    this.close()
-    this.connect()
   }
 
   destroy() {
