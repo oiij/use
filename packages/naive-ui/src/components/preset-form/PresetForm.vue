@@ -1,8 +1,4 @@
-<script setup lang='ts'
-  generic="
-    V extends DataObject,
-  "
->
+<script setup lang='ts' generic=" V extends DataObject">
 import type { DataObject } from '../../composables/useDataRequest'
 import type { PresetFormExpose, PresetFormProps } from './index'
 import { NButton, NCollapseTransition, NDivider, NForm, NFormItem, NGi, NGrid } from 'naive-ui'

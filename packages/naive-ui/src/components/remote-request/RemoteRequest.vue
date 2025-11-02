@@ -1,10 +1,4 @@
-<script setup lang='ts'
-  generic="
-    P extends DataObject,
-    D extends DataObject,
-    R extends DataObject,
-  "
->
+<script setup lang='ts' generic="P extends DataObject, D extends DataObject, R extends DataObject">
 import type { DataObject } from '../../composables/useDataRequest'
 import type { RemoteRequestEmits, RemoteRequestExpose, RemoteRequestProps } from './index'
 import { computed, toValue } from 'vue'

@@ -16,14 +16,15 @@ const ReadyState: {
   2: 'CLOSING',
   3: 'CLOSED',
 }
-interface UseWebsocketOptions {
+type MessageRaw = any
+
+export type UseWebsocketOptions<T extends HandlerType = HandlerType> = & {
   protocols?: string | string[]
   manual?: boolean
   autoRetry?: AutoRetry
-  parseMessage?: boolean
+  parseMessage?: boolean | ((raw: MessageRaw) => Record<keyof T, unknown> | Promise<Record<keyof T, unknown>>)
   handlerKey?: string
 }
-type MessageRaw = any
 interface HandlerType {
   [key: string]: any
 }
@@ -34,7 +35,7 @@ export type ReturnHandlerType<U> = {
     payload: U[K]
   }
 }[keyof U]
-export function useWebSocket<T extends HandlerType = HandlerType, D extends MessageRaw = MessageRaw>(url?: string | URL | Ref<string | URL>, options?: UseWebsocketOptions) {
+export function useWebSocket<T extends HandlerType = HandlerType, D extends MessageRaw = MessageRaw>(url?: string | URL | Ref<string | URL>, options?: UseWebsocketOptions<T>) {
   const { manual = false, autoRetry, parseMessage = false, handlerKey = 'type', ..._options } = options ?? {}
   const { retries = 3, delay = 1000, onFailed } = typeof autoRetry === 'boolean' ? {} : autoRetry ?? {}
   let retryCount = 0
@@ -119,7 +120,7 @@ export function useWebSocket<T extends HandlerType = HandlerType, D extends Mess
     onOpenEvent.trigger(ev)
   }
 
-  function onMessage(ev: MessageEvent<D>) {
+  async function onMessage(ev: MessageEvent<D>) {
     setStatus()
     data.value = ev.data
     dataRecord.value.push(ev.data)
@@ -128,7 +129,7 @@ export function useWebSocket<T extends HandlerType = HandlerType, D extends Mess
     onMessageEvent.trigger(ev)
     if (parseMessage && typeof ev.data === 'string') {
       try {
-        const dataJson = JSON.parse(ev.data) as Record<keyof T, any> | null
+        const dataJson = typeof parseMessage === 'function' ? (await Promise.try(parseMessage, ev.data)) : JSON.parse(ev.data) as Record<keyof T, any> | null
         if (dataJson?.[handlerKey]) {
           handlerMap.get(dataJson[handlerKey])?.forEach((f) => {
             f(dataJson)

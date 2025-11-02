@@ -4,7 +4,7 @@ import { CubeTextureLoader, MeshStandardMaterial, TextureLoader } from 'three'
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import { OBJLoader } from 'three/addons/loaders/OBJLoader.js'
-import { isMesh } from '.'
+import { isMesh } from './index'
 
 interface LoaderOptions {
   manager?: LoadingManager
@@ -67,27 +67,31 @@ type TextureLoaderOptions = LoaderOptions & {
 }
 type PathMapsKeys = 'map' | 'alphaMap' | 'normalMap' | 'bumpMap' | 'displacementMap' | 'roughnessMap' | 'metalnessMap' | 'aoMap' | 'envMap' | 'iridescenceMap' | 'emissiveMap' | 'clearcoatMap' | 'sheenMap' | 'gradientMap' | 'matcap'
 
-export async function textureLoader(path: string): Promise<{ loader: TextureLoader, texture: Texture }>
-export async function textureLoader(path: string[], options?: TextureLoaderOptions): Promise<{ loader: TextureLoader, texture: Texture[] }>
-export async function textureLoader(path: Partial<Record<PathMapsKeys, string>>, options?: TextureLoaderOptions): Promise<{ loader: TextureLoader, texture: Partial<Record<PathMapsKeys, Texture>> }>
+export async function textureLoader(path: string, options?: TextureLoaderOptions): Promise<{ loader: TextureLoader, texture: Texture<HTMLImageElement> }>
+export async function textureLoader(path: string[], options?: TextureLoaderOptions): Promise<{ loader: TextureLoader, texture: Texture<HTMLImageElement>[] }>
+export async function textureLoader(path: Partial<Record<PathMapsKeys, string>>, options?: TextureLoaderOptions): Promise<{ loader: TextureLoader, texture: Partial<Record<PathMapsKeys, Texture<HTMLImageElement>>> }>
 export async function textureLoader(path: string | string[] | Partial<Record<PathMapsKeys, string>>, options?: TextureLoaderOptions) {
   const { manager, onProgress } = options ?? {}
   const loader = new TextureLoader(manager)
-  function texture() {
-    if (typeof path === 'string') {
-      return loader.loadAsync(path, onProgress)
-    }
-    if (Array.isArray(path)) {
-      return Promise.all(path.map(m => loader.loadAsync(m, onProgress)))
-    }
-    if (typeof path === 'object') {
-      const paths = Object.entries(path).map(([key, path]) => loader.loadAsync(path, onProgress).then(texture => [key, texture] as const))
-      return Promise.all(paths).then(entries => Object.fromEntries(entries))
+
+  if (typeof path === 'string') {
+    return {
+      loader,
+      texture: await loader.loadAsync(path, onProgress),
     }
   }
-  return {
-    loader,
-    texture: await texture(),
+  if (Array.isArray(path)) {
+    return {
+      loader,
+      texture: await Promise.all(path.map(m => loader.loadAsync(m, onProgress))),
+    }
+  }
+  if (typeof path === 'object') {
+    const paths = Object.entries(path).map(([key, path]) => loader.loadAsync(path, onProgress).then(texture => [key, texture] as const))
+    return {
+      loader,
+      texture: await Promise.all(paths).then(entries => Object.fromEntries(entries)),
+    }
   }
 }
 

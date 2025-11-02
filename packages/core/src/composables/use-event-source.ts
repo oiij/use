@@ -15,18 +15,19 @@ const ReadyState: {
   1: 'OPEN',
   2: 'CLOSED',
 }
-type UseEventSourceOptions = EventSourceInit & {
+type MessageRaw = any
+
+export type UseEventSourceOptions<T extends HandlerType = HandlerType> = EventSourceInit & {
   manual?: boolean
   autoRetry?: AutoRetry
-  parseMessage?: boolean
+  parseMessage?: boolean | ((raw: MessageRaw) => Record<keyof T, unknown> | Promise<Record<keyof T, unknown>>)
   handlerKey?: string
 }
-type MessageRaw = any
 interface HandlerType {
   [key: string]: any
 }
 
-export function useEventSource<T extends HandlerType = HandlerType, D extends MessageRaw = MessageRaw>(url?: string | URL | Ref<string | URL>, options?: UseEventSourceOptions) {
+export function useEventSource<T extends HandlerType = HandlerType, D extends MessageRaw = MessageRaw>(url?: string | URL | Ref<string | URL>, options?: UseEventSourceOptions<T>) {
   const { manual = false, autoRetry, parseMessage = false, handlerKey = 'type', ..._options } = options ?? {}
   const { retries = 3, delay = 1000, onFailed } = typeof autoRetry === 'boolean' ? {} : autoRetry ?? {}
   let retryCount = 0
@@ -101,7 +102,7 @@ export function useEventSource<T extends HandlerType = HandlerType, D extends Me
     onOpenEvent.trigger(ev)
   }
 
-  function onMessage(ev: MessageEvent<D>) {
+  async function onMessage(ev: MessageEvent<D>) {
     setStatus()
     data.value = ev.data
     dataRecord.value.push(ev.data)
@@ -110,7 +111,7 @@ export function useEventSource<T extends HandlerType = HandlerType, D extends Me
     onMessageEvent.trigger(ev)
     if (parseMessage && typeof ev.data === 'string') {
       try {
-        const dataJson = JSON.parse(ev.data) as Record<keyof T, any> | null
+        const dataJson = typeof parseMessage === 'function' ? (await Promise.try(parseMessage, ev.data)) : JSON.parse(ev.data) as Record<keyof T, any> | null
         if (dataJson?.[handlerKey]) {
           handlerMap.get(dataJson[handlerKey])?.forEach((f) => {
             f(dataJson)

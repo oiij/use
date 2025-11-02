@@ -1,11 +1,4 @@
-<script setup lang='ts'
-  generic="
-    V extends PresetSelectValue,
-    P extends DataObject,
-    D extends DataObject,
-    R extends DataObject,
-  "
->
+<script setup lang='ts' generic="V extends PresetSelectValue, P extends DataObject, D extends DataObject, R extends DataObject">
 import type { PaginationProps, SelectGroupOption, SelectInst, SelectOption } from 'naive-ui'
 import type { DataObject } from '../../composables/useDataRequest'
 import type { PresetSelectEmits, PresetSelectExpose, PresetSelectProps, PresetSelectValue } from './index'

@@ -1,7 +1,7 @@
 {
   "name": "@oiij/v-charts",
   "type": "module",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "A Vue Composable for VCharts",
   "author": "oiij",
   "license": "MIT",
@@ -39,14 +39,14 @@
     "prepublishOnly": "pnpm build"
   },
   "peerDependencies": {
-    "@visactor/vchart": "^2.0.5",
-    "@vueuse/core": "^13.9.0",
-    "vue": "^3.5.21"
+    "@visactor/vchart": "^2.0.7",
+    "@vueuse/core": "^14.0.0",
+    "vue": "^3.5.22"
   },
   "devDependencies": {
-    "@visactor/vchart": "^2.0.5",
-    "@vueuse/core": "^13.9.0",
-    "vue": "^3.5.21"
+    "@visactor/vchart": "^2.0.7",
+    "@vueuse/core": "^14.0.0",
+    "vue": "^3.5.22"
   },
   "publishConfig": {
     "access": "public"
