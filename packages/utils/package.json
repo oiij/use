@@ -1,7 +1,7 @@
 {
   "name": "@oiij/utils",
   "type": "module",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": " A collection of utility functions for JavaScript and TypeScript.",
   "author": "oiij",
   "license": "MIT",
@@ -88,15 +88,9 @@
     "bumpp": "bumpp --no-push",
     "prepublishOnly": "pnpm build"
   },
-  "peerDependencies": {
-
-  },
-  "dependencies": {
-
-  },
-  "devDependencies": {
-
-  },
+  "peerDependencies": {},
+  "dependencies": {},
+  "devDependencies": {},
   "publishConfig": {
     "access": "public"
   }

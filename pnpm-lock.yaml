@@ -105,6 +105,9 @@ importers:
       esno:
         specifier: ^4.8.0
         version: 4.8.0
+      jsonfile:
+        specifier: ^6.2.0
+        version: 6.2.0
       lint-staged:
         specifier: ^16.2.6
         version: 16.2.6

@@ -1,7 +1,7 @@
 {
   "name": "@oiij/v-charts",
   "type": "module",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "A Vue Composable for VCharts",
   "author": "oiij",
   "license": "MIT",
