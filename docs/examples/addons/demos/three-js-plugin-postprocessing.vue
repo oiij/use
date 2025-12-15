@@ -6,7 +6,7 @@ import { useAmbientLight, useAxesHelper, useDirectionalLight, useGridHelper } fr
 
 import { NCheckbox, NFlex } from 'naive-ui'
 import { BoxGeometry, Mesh, MeshPhongMaterial, SphereGeometry, TetrahedronGeometry } from 'three'
-import { ref } from 'vue'
+import { ref, useTemplateRef } from 'vue'
 
 const enablePostprocessing = ref(true)
 const { ambientLight, show: showAmbientLight } = useAmbientLight({
@@ -19,7 +19,7 @@ const { directionalLight, show: showDirectionalLight, directionalLightHelper } =
 const { gridHelper } = useGridHelper()
 const { axesHelper, show: showAxesHelper } = useAxesHelper()
 
-const { domRef, renderer, scene, camera, onLoop, onResize, onDoubleClick, onContextMenu, onIntersectObject } = useThreeJs({
+const { renderer, scene, camera, onLoop, onResize, onDoubleClick, onContextMenu, onIntersectObject } = useThreeJs(useTemplateRef('dom-ref'), {
   renderer: {
     ...RendererOptions,
   },
@@ -92,7 +92,7 @@ createObj()
         enablePostprocessing
       </NCheckbox>
     </NFlex>
-    <div ref="domRef" style="width: 100%; height: 400px;" />
+    <div ref="dom-ref" style="width: 100%; height: 400px;" />
   </NFlex>
 </template>
 

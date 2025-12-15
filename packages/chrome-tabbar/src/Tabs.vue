@@ -4,7 +4,7 @@ import type { TabItemKey } from './index'
 import { useStyle } from '@oiij/css-render'
 import { useScrollView } from '@oiij/use'
 import { colord } from 'colord'
-import { computed, watch } from 'vue'
+import { computed, useTemplateRef, watch } from 'vue'
 import { tabsCssName, tabsCssr, tabsItemCssName } from './cssr'
 import RiAddLine from './icons/RiAddLine.vue'
 import RiArrowDropDownLine from './icons/RiArrowDropDownLine.vue'
@@ -23,7 +23,7 @@ const emit = defineEmits<{
 useStyle('n-chrome-tabs', tabsCssr())
 
 const activeIndex = computed(() => value ? options?.findIndex(f => f.key === value) : 0)
-const { scrollRef, scrollToView } = useScrollView({ activeClassName: `.${tabsItemCssName}--active`, direction: 'horizontal' })
+const { scrollToView } = useScrollView(useTemplateRef('scroll-ref'), { activeClassName: `.${tabsItemCssName}--active`, direction: 'horizontal' })
 watch(() => value, () => {
   scrollToView()
 }, {
@@ -73,7 +73,7 @@ function onItemClose(key: TabItemKey, index: number) {
       <RiArrowDropDownLine />
     </div>
     <slot name="prefix" />
-    <div ref="scrollRef" :class="[`${tabsCssName}__content`, contentClass]" :style="contentStyle">
+    <div ref="scroll-ref" :class="[`${tabsCssName}__content`, contentClass]" :style="contentStyle">
       <transition-group name="group" tag="div" :class="[`${tabsCssName}__scroll`]">
         <TabItem
           v-for="({ key, ...item }, index) in options"

@@ -1,7 +1,7 @@
 {
   "name": "@oiij/three-js",
   "type": "module",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "A Vue Composable for Three.js",
   "author": "oiij",
   "license": "MIT",
@@ -18,24 +18,21 @@
   "sideEffects": false,
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs"
     },
     "./plugins": {
-      "types": "./dist/plugins/index.d.ts",
-      "import": "./dist/plugins/index.js",
-      "require": "./dist/plugins/index.cjs"
+      "types": "./dist/plugins/index.d.mts",
+      "import": "./dist/plugins/index.mjs"
     },
     "./utils": {
-      "types": "./dist/utils/index.d.ts",
-      "import": "./dist/utils/index.js",
-      "require": "./dist/utils/index.cjs"
+      "types": "./dist/utils/index.d.mts",
+      "import": "./dist/utils/index.mjs"
     }
   },
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
   "files": [
     "LICENSE",
     "README.md",
@@ -49,29 +46,29 @@
     "prepublishOnly": "pnpm build"
   },
   "peerDependencies": {
-    "@tweakpane/core": "^2.0.5",
-    "@tweakpane/plugin-essentials": "^0.2.1",
-    "@tweenjs/tween.js": "^25.0.0",
-    "@vueuse/core": "^14.0.0",
-    "cannon-es": "^0.20.0",
-    "mitt": "^3.0.1",
-    "postprocessing": "^6.37.8",
-    "three": "^0.181.0",
-    "tweakpane": "^4.0.5",
-    "vue": "^3.5.22"
+    "@tweakpane/core": "catalog:",
+    "@tweakpane/plugin-essentials": "catalog:",
+    "@tweenjs/tween.js": "catalog:",
+    "@vueuse/core": "catalog:",
+    "cannon-es": "catalog:",
+    "mitt": "catalog:",
+    "postprocessing": "catalog:",
+    "three": "catalog:",
+    "tweakpane": "catalog:",
+    "vue": "catalog:"
   },
   "devDependencies": {
-    "@tweakpane/core": "^2.0.5",
-    "@tweakpane/plugin-essentials": "^0.2.1",
-    "@tweenjs/tween.js": "^25.0.0",
-    "@types/three": "^0.181.0",
-    "@vueuse/core": "^14.0.0",
-    "cannon-es": "^0.20.0",
-    "mitt": "^3.0.1",
-    "postprocessing": "^6.37.8",
-    "three": "^0.181.0",
-    "tweakpane": "^4.0.5",
-    "vue": "^3.5.22"
+    "@tweakpane/core": "catalog:",
+    "@tweakpane/plugin-essentials": "catalog:",
+    "@tweenjs/tween.js": "catalog:",
+    "@types/three": "catalog:",
+    "@vueuse/core": "catalog:",
+    "cannon-es": "catalog:",
+    "mitt": "catalog:",
+    "postprocessing": "catalog:",
+    "three": "catalog:",
+    "tweakpane": "catalog:",
+    "vue": "catalog:"
   },
   "publishConfig": {
     "access": "public"

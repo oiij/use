@@ -1,7 +1,7 @@
 {
   "name": "@oiij/naive-ui",
   "type": "module",
-  "version": "0.0.63",
+  "version": "0.0.64",
   "description": "Some Composable Functions And Components for Vue 3",
   "author": "oiij",
   "license": "MIT",
@@ -18,19 +18,17 @@
   "sideEffects": false,
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs"
     },
     "./components": {
       "types": "./dist/components.d.ts",
-      "import": "./dist/components.js",
-      "require": "./dist/components.cjs"
+      "import": "./dist/components.js"
     }
   },
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
   "files": [
     "LICENSE",
     "README.md",
@@ -48,29 +46,28 @@
     "@oiij/css-render": "workspace:*",
     "@oiij/markdown-it": "workspace:*",
     "@oiij/use": "workspace:*",
-    "@vueuse/core": "^14.0.0",
-    "async-validator": "^4.2.5",
-    "colord": "^2.9.3",
-    "es-toolkit": "^1.41.0",
-    "naive-ui": "^2.43.1",
-    "prismjs": "^1.30.0",
-    "vue": "^3.5.22",
-    "vue-hooks-plus": "^2.4.1"
+    "@vueuse/core": "catalog:",
+    "async-validator": "catalog:",
+    "colord": "catalog:",
+    "es-toolkit": "catalog:",
+    "naive-ui": "catalog:",
+    "prismjs": "catalog:",
+    "vue": "catalog:",
+    "vue-hooks-plus": "catalog:"
   },
   "devDependencies": {
     "@oiij/css-render": "workspace:*",
     "@oiij/markdown-it": "workspace:*",
     "@oiij/use": "workspace:*",
-    "@types/prismjs": "^1.26.5",
-    "@vueuse/core": "^14.0.0",
-    "async-validator": "^4.2.5",
-    "colord": "^2.9.3",
-    "es-toolkit": "^1.41.0",
-    "naive-ui": "^2.43.1",
-    "prismjs": "^1.30.0",
-    "vue": "^3.5.22",
-    "vue-component-type-helpers": "^3.1.2",
-    "vue-hooks-plus": "^2.4.1"
+    "@types/prismjs": "catalog:",
+    "@vueuse/core": "catalog:",
+    "async-validator": "catalog:",
+    "colord": "catalog:",
+    "es-toolkit": "catalog:",
+    "naive-ui": "catalog:",
+    "prismjs": "catalog:",
+    "vue": "catalog:",
+    "vue-hooks-plus": "catalog:"
   },
   "publishConfig": {
     "access": "public"

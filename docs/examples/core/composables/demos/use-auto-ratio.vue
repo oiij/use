@@ -4,8 +4,7 @@ import { useAutoRatio } from '@oiij/use'
 import { NFlex, NInput } from 'naive-ui'
 import { ref, useTemplateRef } from 'vue'
 
-const targetRef = useTemplateRef('targetRef')
-const { domRef } = useAutoRatio(1, targetRef)
+useAutoRatio(useTemplateRef('dom-ref'), 1, useTemplateRef('target-ref'))
 const size = ref({
   width: '100%',
   height: '200px',
@@ -22,8 +21,8 @@ const size = ref({
         高:<NInput v-model:value="size.height" />
       </div>
     </NFlex>
-    <div ref="targetRef" style="background-color: antiquewhite;" :style="{ width: `${size.width}`, height: `${size.height}` }">
-      <div ref="domRef" style="background-color: darkcyan;" />
+    <div ref="target-ref" style="background-color: antiquewhite;" :style="{ width: `${size.width}`, height: `${size.height}` }">
+      <div ref="dom-ref" style="background-color: darkcyan;" />
     </div>
   </NFlex>
 </template>

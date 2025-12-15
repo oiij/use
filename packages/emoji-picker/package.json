@@ -1,7 +1,7 @@
 {
   "name": "@oiij/emoji-picker",
   "type": "module",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "A Vue Composable for emoji-picker",
   "author": "oiij",
   "license": "MIT",
@@ -15,16 +15,9 @@
     "@oiij/use"
   ],
   "sideEffects": false,
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
-    }
-  },
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
   "files": [
     "LICENSE",
     "README.md",
@@ -38,16 +31,16 @@
     "prepublishOnly": "pnpm build"
   },
   "peerDependencies": {
-    "@emoji-mart/data": "^1.2.1",
-    "@vueuse/core": "^14.0.0",
-    "emoji-mart": "^5.6.0",
-    "vue": "^3.5.22"
+    "@emoji-mart/data": "catalog:",
+    "@vueuse/core": "catalog:",
+    "emoji-mart": "catalog:",
+    "vue": "catalog:"
   },
   "devDependencies": {
-    "@emoji-mart/data": "^1.2.1",
-    "@vueuse/core": "^14.0.0",
-    "emoji-mart": "^5.6.0",
-    "vue": "^3.5.22"
+    "@emoji-mart/data": "catalog:",
+    "@vueuse/core": "catalog:",
+    "emoji-mart": "catalog:",
+    "vue": "catalog:"
   },
   "publishConfig": {
     "access": "public"

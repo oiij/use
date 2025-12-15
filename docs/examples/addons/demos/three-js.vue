@@ -6,6 +6,7 @@ import { useAmbientLight, useAxesHelper, useDirectionalLight, useGridHelper, use
 
 import { NCheckbox, NFlex } from 'naive-ui'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
+import { useTemplateRef } from 'vue'
 
 const { onLoad } = useLoader(GLTFLoader, '/dear.gltf')
 
@@ -17,7 +18,7 @@ const { pane, fpsGraph, show: showPane } = usePane()
 pane.addBinding(ambientLight, 'visible', { label: '环境光' })
 pane.addBinding(axesHelper, 'visible', { label: '坐标轴' })
 
-const { domRef, scene, controls, onBeforeLoop, onAfterLoop } = useThreeJs({
+const { scene, controls, onBeforeLoop, onAfterLoop } = useThreeJs(useTemplateRef('dom-ref'), {
   camera: {
     position: [0, 2, 3],
   },
@@ -54,7 +55,7 @@ onLoad((gltf) => {
         启用Gui
       </NCheckbox>
     </NFlex>
-    <div ref="domRef" style="width: 100%; height: 400px;" />
+    <div ref="dom-ref" style="width: 100%; height: 400px;" />
   </NFlex>
 </template>
 

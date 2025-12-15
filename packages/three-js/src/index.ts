@@ -1,8 +1,9 @@
 import type { Light, Object3D, WebGLRendererParameters } from 'three'
+import type { TemplateRef } from 'vue'
 import { createEventHook, useDebounceFn, useElementSize, useEventListener, useRafFn } from '@vueuse/core'
 import { Clock, PerspectiveCamera, Scene, VSMShadowMap, WebGLRenderer } from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
-import { computed, ref, watch } from 'vue'
+import { computed, watch } from 'vue'
 import { useDisposable } from './utils/_utils'
 import { onIntersectObject as _onIntersectObject } from './utils/utils'
 
@@ -46,7 +47,7 @@ function createCamera(options?: ThreeJsOptions['camera']) {
     camera,
   }
 }
-export function useThreeJs(options?: ThreeJsOptions) {
+export function useThreeJs(templateRef: TemplateRef<HTMLElement>, options?: ThreeJsOptions) {
   const { renderer: rendererOptions, camera: cameraOptions, disableRender = false, lights = [], helpers = [] } = options ?? {}
   const { renderer } = createRenderer(rendererOptions)
   const scene = new Scene()
@@ -55,8 +56,7 @@ export function useThreeJs(options?: ThreeJsOptions) {
   const controls = new OrbitControls(camera, renderer.domElement)
   controls.enableDamping = true
 
-  const domRef = ref<HTMLElement>()
-  const { width, height } = useElementSize(domRef, {
+  const { width, height } = useElementSize(templateRef, {
     width: 0,
     height: 0,
   })
@@ -91,10 +91,10 @@ export function useThreeJs(options?: ThreeJsOptions) {
   }
   let renderDmm: HTMLCanvasElement | null = null
   function create() {
-    if (domRef.value) {
+    if (templateRef.value) {
       resize()
       if (!renderDmm) {
-        domRef.value.appendChild(renderer.domElement)
+        templateRef.value.appendChild(renderer.domElement)
         renderDmm = renderer.domElement
         onCreatedEvent.trigger(renderer)
       }
@@ -162,7 +162,7 @@ export function useThreeJs(options?: ThreeJsOptions) {
   useEventListener(renderer.domElement, 'dblclick', onDoubleClickEvent.trigger)
 
   return {
-    domRef,
+    templateRef,
     renderer,
     scene,
     camera,

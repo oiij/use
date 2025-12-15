@@ -76,7 +76,7 @@ const sortersRef = ref<Record<string, DataTableSortState>>()
 
 const _dataCache: R[] = []
 
-const { loading, data, error, params, list, pagination, run, runAsync, refresh, refreshAsync, cancel, mutate, setParams, runParams, runParamsAsync, onBefore, onSuccess, onError, onFinally } = useDataRequest<P, D, R>(api, {
+const { loading, data, error, params, list, pagination: paginationRef, run, runAsync, refresh, refreshAsync, cancel, mutate, setParams, runParams, runParamsAsync, onBefore, onSuccess, onError, onFinally } = useDataRequest<P, D, R>(api, {
   defaultParams: {
     [_fields.search]: null,
     ...defaultParams,
@@ -248,7 +248,7 @@ const expose: DataTablePlusExpose<P, D, R> = {
   error,
   params,
   list,
-  pagination,
+  pagination: paginationRef,
   run,
   runAsync,
   refresh,
@@ -274,7 +274,7 @@ const templateBind = computed(() => {
     error: toValue(error),
     params: toValue(params),
     list: toValue(list),
-    pagination: toValue(pagination),
+    paginationRef: toValue(paginationRef),
     filters: toValue(filtersRef),
     sorters: toValue(sortersRef),
     dataTableRef: toValue(dataTableRef),
@@ -299,7 +299,7 @@ defineExpose(expose)
           :value="params?.[0]?.[_fields.search]"
           :loading="loading"
           v-bind="searchProps"
-          @update:value="(val) => onSearch(val) "
+          @update:value="(val?:string | null) => onSearch(val) "
         />
         <slot name="header-extra" v-bind="templateBind" />
       </NFlex>
@@ -313,7 +313,7 @@ defineExpose(expose)
         :single-line="false"
         :scroll-x="scrollX"
         :style="{ width: '100%', height: '100%' }"
-        :row-key="row => row?.[_fields.rowKey]"
+        :row-key="(row:R) => row?.[_fields.rowKey]"
         :children-key="_fields.children"
         :loading="loading"
         :columns="columnsReactive"
@@ -351,10 +351,10 @@ defineExpose(expose)
       <NFlex>
         <slot name="footer-extra" v-bind="templateBind" />
         <NPagination
-          v-if="pagination"
+          v-if="propsPagination"
           :style="{ marginLeft: 'auto' }"
           :disabled="loading"
-          v-bind="{ ...paginationProps, ...pagination }"
+          v-bind="{ ...paginationProps, ...paginationRef }"
           @update:page="vOn.onUpdatePage"
           @update:page-size="vOn.onUpdatePageSize"
         />

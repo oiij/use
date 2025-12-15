@@ -1,5 +1,5 @@
 import type { BundledLanguage, BundledTheme, CodeToHastOptions } from 'shiki'
-import type { ComputedRef, Ref } from 'vue'
+import type { ComputedRef, Ref, TemplateRef } from 'vue'
 import { codeToHtml } from 'shiki'
 import { isReactive, isRef, onMounted, ref, toValue, watch, watchEffect } from 'vue'
 
@@ -8,7 +8,7 @@ export type {
   BundledTheme,
   CodeToHastOptions,
 }
-export function useShiki(defaultValue?: string | Ref<string>, darkMode?: ComputedRef<boolean>, options?: CodeToHastOptions<BundledLanguage, BundledTheme>) {
+export function useShiki(templateRef: TemplateRef<HTMLElement>, defaultValue?: string | Ref<string>, darkMode?: ComputedRef<boolean>, options?: CodeToHastOptions<BundledLanguage, BundledTheme>) {
   const _options = {
     lang: 'javascript',
     theme: `vitesse-${darkMode?.value ? 'dark' : 'light'}`,
@@ -21,7 +21,6 @@ export function useShiki(defaultValue?: string | Ref<string>, darkMode?: Compute
     })
   }
   const html = ref('')
-  const domRef = ref<HTMLElement>()
   function format(value: string, options?: CodeToHastOptions<BundledLanguage, BundledTheme>) {
     let isCancel = false
     function cancel() {
@@ -32,8 +31,8 @@ export function useShiki(defaultValue?: string | Ref<string>, darkMode?: Compute
         codeToHtml(value, { ..._options, ...options }).then((result) => {
           if (!isCancel) {
             html.value = result
-            if (domRef.value) {
-              domRef.value.innerHTML = result
+            if (templateRef.value) {
+              templateRef.value.innerHTML = result
             }
             resolve(result)
           }
@@ -77,7 +76,7 @@ export function useShiki(defaultValue?: string | Ref<string>, darkMode?: Compute
   return {
     value,
     html,
-    domRef,
+    templateRef,
     format,
   }
 }

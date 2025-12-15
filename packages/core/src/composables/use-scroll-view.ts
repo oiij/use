@@ -1,18 +1,18 @@
+import type { TemplateRef } from 'vue'
 import { useDebounceFn, useElementSize, useEventListener } from '@vueuse/core'
-import { nextTick, ref, watch } from 'vue'
+import { nextTick, watch } from 'vue'
 
 interface ScrollViewOptions {
   activeClassName?: string
   enableWheel?: boolean
   direction?: 'horizontal' | 'vertical'
 }
-export function useScrollView(options?: ScrollViewOptions) {
+export function useScrollView(templateRef: TemplateRef<HTMLElement>, options?: ScrollViewOptions) {
   const { activeClassName = '.active', enableWheel = true, direction = 'vertical' } = options ?? {}
-  const scrollRef = ref<HTMLElement>()
-  const { width, height } = useElementSize(scrollRef)
+  const { width, height } = useElementSize(templateRef)
   async function scrollToView(options?: ScrollIntoViewOptions) {
     await nextTick()
-    const activeEl = scrollRef.value?.querySelector(activeClassName)
+    const activeEl = templateRef.value?.querySelector(activeClassName)
 
     if (!activeEl)
       return
@@ -30,27 +30,27 @@ export function useScrollView(options?: ScrollViewOptions) {
     const { deltaY } = e
     switch (direction) {
       case 'vertical':
-        scrollRef.value?.scrollBy({
+        templateRef.value?.scrollBy({
           top: deltaY > 0 ? height.value : -height.value,
           behavior: 'smooth',
         })
         break
       case 'horizontal':
-        scrollRef.value?.scrollBy({
+        templateRef.value?.scrollBy({
           left: deltaY > 0 ? width.value : -width.value,
           behavior: 'smooth',
         })
         break
     }
   }
-  useEventListener(scrollRef, 'wheel', wheelEvent)
+  useEventListener(templateRef, 'wheel', wheelEvent)
   const debouncedScrollToView = useDebounceFn(scrollToView, 500)
   watch([width, height], () => {
     debouncedScrollToView()
   })
 
   return {
-    scrollRef,
+    templateRef,
     scrollToView,
   }
 }

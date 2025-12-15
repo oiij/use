@@ -1,5 +1,5 @@
 import type { AiEditorOptions } from 'aieditor'
-import type { ComputedRef, Ref } from 'vue'
+import type { ComputedRef, Ref, TemplateRef } from 'vue'
 import { createEventHook } from '@vueuse/core'
 import { AiEditor } from 'aieditor'
 import { onMounted, onUnmounted, ref, shallowRef, toValue, watch, watchEffect } from 'vue'
@@ -8,12 +8,11 @@ import 'aieditor/dist/style.css'
 export type {
   AiEditorOptions,
 }
-export function useAiEditor(defaultValue?: Ref<string> | string, darkMode?: ComputedRef<boolean> | Ref<boolean>, language?: ComputedRef<'zh' | 'en'> | Ref<'zh' | 'en'>, options?: Omit<AiEditorOptions, 'element'>) {
+export function useAiEditor(templateRef: TemplateRef<HTMLElement>, defaultValue?: Ref<string> | string, darkMode?: ComputedRef<boolean> | Ref<boolean>, language?: ComputedRef<'zh' | 'en'> | Ref<'zh' | 'en'>, options?: Omit<AiEditorOptions, 'element'>) {
   const value = ref(toValue(defaultValue))
   watchEffect(() => {
     value.value = toValue(defaultValue)
   })
-  const domRef = ref<HTMLElement>()
   const aiEditor = shallowRef<AiEditor | null>(null)
   const readonly = ref(false)
   watch(value, (v) => {
@@ -26,10 +25,10 @@ export function useAiEditor(defaultValue?: Ref<string> | string, darkMode?: Comp
     }
   })
   watch(() => darkMode?.value, (v) => {
-    if (domRef.value && aiEditor.value) {
+    if (templateRef.value && aiEditor.value) {
       aiEditor.value.options.theme = v ? 'dark' : 'light'
-      domRef.value.classList.remove(v ? 'aie-theme-light' : 'aie-theme-dark')
-      domRef.value.classList.add(v ? 'aie-theme-dark' : 'aie-theme-light')
+      templateRef.value.classList.remove(v ? 'aie-theme-light' : 'aie-theme-dark')
+      templateRef.value.classList.add(v ? 'aie-theme-dark' : 'aie-theme-light')
     }
   })
   watch(readonly, (v) => {
@@ -38,9 +37,9 @@ export function useAiEditor(defaultValue?: Ref<string> | string, darkMode?: Comp
   const onRenderEvent = createEventHook<[AiEditor ]>()
 
   function render() {
-    if (domRef.value && !aiEditor.value) {
+    if (templateRef.value && !aiEditor.value) {
       aiEditor.value = new AiEditor({
-        element: domRef.value,
+        element: templateRef.value,
         content: value.value,
         lang: language?.value ?? 'zh',
         theme: darkMode?.value ? 'dark' : 'light',
@@ -66,7 +65,7 @@ export function useAiEditor(defaultValue?: Ref<string> | string, darkMode?: Comp
   })
   return {
     value,
-    domRef,
+    templateRef,
     aiEditor,
     readonly,
     onRender: onRenderEvent.on,

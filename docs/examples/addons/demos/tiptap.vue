@@ -1,13 +1,14 @@
 <script setup lang='ts'>
 import { useTipTap } from '@oiij/tiptap'
 import { NFlex } from 'naive-ui'
+import { useTemplateRef } from 'vue'
 
-const { domRef, value } = useTipTap('')
+const { value } = useTipTap(useTemplateRef('dom-ref'), '')
 </script>
 
 <template>
   <NFlex vertical>
-    <div ref="domRef" style="border: 1px solid #333;" />
+    <div ref="dom-ref" style="border: 1px solid #333;" />
     <pre>{{ value }}</pre>
     <pre v-html="value" />
   </NFlex>

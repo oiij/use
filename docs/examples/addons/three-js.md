@@ -34,39 +34,39 @@ interface LoopEvent {
   delta: number
   elapsed: number
 }
-declare function useThreeJs(options?: ThreeJsOptions): {
-  domRef: vue0.Ref<HTMLElement | undefined, HTMLElement | undefined>
+declare function useThreeJs(templateRef: TemplateRef<HTMLElement>, options?: ThreeJsOptions): {
+  templateRef: Readonly<vue0.ShallowRef<HTMLElement | null>>
   renderer: WebGLRenderer
-  scene: Scene
+  scene: Scene<three0.Object3DEventMap>
   camera: PerspectiveCamera
   controls: OrbitControls
   clock: Clock
-  pause: _vueuse_core1.Fn
-  resume: _vueuse_core1.Fn
+  pause: _vueuse_core0.Fn
+  resume: _vueuse_core0.Fn
   isActive: Readonly<vue0.ShallowRef<boolean>>
   dispose: () => void
   onIntersectObject: (obj: Object3D | Object3D[], event: PointerEvent | MouseEvent, callback?: (obj: Object3D[]) => void) => boolean
-  onRendered: _vueuse_core1.EventHookOn<WebGLRenderer>
-  onResize: _vueuse_core1.EventHookOn<{
+  onRendered: _vueuse_core0.EventHookOn<WebGLRenderer>
+  onResize: _vueuse_core0.EventHookOn<{
     width: number
     height: number
     aspect: number
     pixelRatio: number
   }>
-  onDestroy: _vueuse_core1.EventHookOn<[]>
-  onBeforeLoop: _vueuse_core1.EventHookOn<LoopEvent>
-  onLoop: _vueuse_core1.EventHookOn<LoopEvent>
-  onAfterLoop: _vueuse_core1.EventHookOn<LoopEvent>
-  onPointerDown: _vueuse_core1.EventHookOn<[PointerEvent]>
-  onPointerUp: _vueuse_core1.EventHookOn<[PointerEvent]>
-  onPointerMove: _vueuse_core1.EventHookOn<[PointerEvent]>
-  onPointerEnter: _vueuse_core1.EventHookOn<[PointerEvent]>
-  onPointerLeave: _vueuse_core1.EventHookOn<[PointerEvent]>
-  onPointerOut: _vueuse_core1.EventHookOn<[PointerEvent]>
-  onPointerOver: _vueuse_core1.EventHookOn<[PointerEvent]>
-  onClick: _vueuse_core1.EventHookOn<[MouseEvent]>
-  onDoubleClick: _vueuse_core1.EventHookOn<[MouseEvent]>
-  onContextMenu: _vueuse_core1.EventHookOn<[MouseEvent]>
+  onDestroy: _vueuse_core0.EventHookOn<[]>
+  onBeforeLoop: _vueuse_core0.EventHookOn<LoopEvent>
+  onLoop: _vueuse_core0.EventHookOn<LoopEvent>
+  onAfterLoop: _vueuse_core0.EventHookOn<LoopEvent>
+  onPointerDown: _vueuse_core0.EventHookOn<[PointerEvent]>
+  onPointerUp: _vueuse_core0.EventHookOn<[PointerEvent]>
+  onPointerMove: _vueuse_core0.EventHookOn<[PointerEvent]>
+  onPointerEnter: _vueuse_core0.EventHookOn<[PointerEvent]>
+  onPointerLeave: _vueuse_core0.EventHookOn<[PointerEvent]>
+  onPointerOut: _vueuse_core0.EventHookOn<[PointerEvent]>
+  onPointerOver: _vueuse_core0.EventHookOn<[PointerEvent]>
+  onClick: _vueuse_core0.EventHookOn<[MouseEvent]>
+  onDoubleClick: _vueuse_core0.EventHookOn<[MouseEvent]>
+  onContextMenu: _vueuse_core0.EventHookOn<[MouseEvent]>
 }
 type UseThreeJsReturns = ReturnType<typeof useThreeJs>
 ```

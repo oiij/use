@@ -1,7 +1,7 @@
-import type { ComputedRef } from 'vue'
+import type { ComputedRef, TemplateRef } from 'vue'
 import data from '@emoji-mart/data'
 import { Picker } from 'emoji-mart'
-import { onMounted, onUnmounted, ref, shallowRef, watch } from 'vue'
+import { onMounted, onUnmounted, shallowRef, watch } from 'vue'
 
 export interface EmojiResult {
   id: string
@@ -46,7 +46,7 @@ export interface EmojiPickerOptions {
   getSpritesheetURL?: string
 }
 
-export function useEmojiPicker(darkMode?: ComputedRef<boolean>, language?: ComputedRef<'zh' | 'en'>, options?: EmojiPickerOptions) {
+export function useEmojiPicker(templateRef: TemplateRef<HTMLElement>, darkMode?: ComputedRef<boolean>, language?: ComputedRef<'zh' | 'en'>, options?: EmojiPickerOptions) {
   const _options: EmojiPickerOptions = {
     data,
     emojiButtonRadius: '6px',
@@ -62,15 +62,14 @@ export function useEmojiPicker(darkMode?: ComputedRef<boolean>, language?: Compu
     locale: language?.value,
     ...options,
   }
-  const domRef = ref<HTMLElement>()
   const emojiPicker = shallowRef<Picker | null>(null)
 
   let onRender: ((editor: Picker) => void) | null = null
 
   function render() {
-    if (domRef.value && !emojiPicker.value) {
+    if (templateRef.value && !emojiPicker.value) {
       emojiPicker.value = new Picker({
-        parent: domRef.value,
+        parent: templateRef.value,
         ..._options,
       })
       if (typeof onRender === 'function') {
@@ -79,12 +78,12 @@ export function useEmojiPicker(darkMode?: ComputedRef<boolean>, language?: Compu
     }
   }
   function destroy() {
-    if (!domRef.value)
+    if (!templateRef.value)
       return
-    domRef.value.innerHTML = ''
+    templateRef.value.innerHTML = ''
     emojiPicker.value = null
   }
-  watch(domRef, () => {
+  watch(templateRef, () => {
     render()
   })
   watch(() => darkMode?.value, (v) => {
@@ -104,7 +103,7 @@ export function useEmojiPicker(darkMode?: ComputedRef<boolean>, language?: Compu
     destroy()
   })
   return {
-    domRef,
+    templateRef,
     emojiPicker,
     onRender: (fn: (editor: Picker) => void) => {
       onRender = fn

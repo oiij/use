@@ -1,6 +1,6 @@
 import type { ValidateError } from 'async-validator'
 import type { FormInst, FormItemRule, FormRules } from 'naive-ui'
-import type { Ref } from 'vue'
+import type { Ref, TemplateRef } from 'vue'
 import type { DataObject } from './useDataRequest'
 import { createEventHook } from '@vueuse/core'
 import { cloneDeep } from 'es-toolkit/object'
@@ -65,14 +65,12 @@ export type NaiveFormOptions<T extends DataObject> = & {
   clearRules?: NaiveFormClearRules
 }
 
-export function useNaiveForm<T extends DataObject = DataObject>(value?: T | Ref<T>, options?: NaiveFormOptions<T>) {
+export function useNaiveForm<T extends DataObject = DataObject>(formRef: TemplateRef<FormInst>, value?: T | Ref<T>, options?: NaiveFormOptions<T>) {
   const { rules, clearRules } = options ?? {}
   const cacheValue = cloneDeep(toValue(value))
   const formValue = ref(toValue(value ?? {})) as Ref<T>
   const formRules = ref(toValue(rules) ?? {}) as Ref<NaiveFormRules<T>>
-  const formRef = ref<FormInst>()
   const formProps = {
-    ref: formRef,
     model: reactive(formValue.value),
     rules: reactive(formRules.value),
   }

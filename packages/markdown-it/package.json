@@ -1,7 +1,7 @@
 {
   "name": "@oiij/markdown-it",
   "type": "module",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "A Vue Composable for markdown-it",
   "author": "oiij",
   "license": "MIT",
@@ -16,16 +16,9 @@
     "markdown-it"
   ],
   "sideEffects": false,
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
-    }
-  },
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
   "files": [
     "LICENSE",
     "README.md",
@@ -39,17 +32,17 @@
     "prepublishOnly": "pnpm build"
   },
   "peerDependencies": {
-    "@vueuse/core": "^14.0.0",
-    "dompurify": "^3.3.0",
-    "markdown-it": "^14.1.0",
-    "vue": "^3.5.22"
+    "@vueuse/core": "catalog:",
+    "dompurify": "catalog:",
+    "markdown-it": "catalog:",
+    "vue": "catalog:"
   },
   "devDependencies": {
-    "@types/markdown-it": "^14.1.2",
-    "@vueuse/core": "^14.0.0",
-    "dompurify": "^3.3.0",
-    "markdown-it": "^14.1.0",
-    "vue": "^3.5.22"
+    "@types/markdown-it": "catalog:",
+    "@vueuse/core": "catalog:",
+    "dompurify": "catalog:",
+    "markdown-it": "catalog:",
+    "vue": "catalog:"
   },
   "publishConfig": {
     "access": "public"

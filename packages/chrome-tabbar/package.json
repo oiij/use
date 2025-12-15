@@ -1,7 +1,7 @@
 {
   "name": "@oiij/chrome-tabs",
   "type": "module",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "description": "A Vue Component Likes Chrome Tabs Style.",
   "author": "oiij",
   "license": "MIT",
@@ -16,13 +16,6 @@
     "chrome-tabs"
   ],
   "sideEffects": false,
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
-    }
-  },
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -41,14 +34,14 @@
   "peerDependencies": {
     "@oiij/css-render": "workspace:*",
     "@oiij/use": "workspace:*",
-    "colord": "^2.9.3",
-    "vue": "^3.5.22"
+    "colord": "catalog:",
+    "vue": "catalog:"
   },
   "devDependencies": {
     "@oiij/css-render": "workspace:*",
     "@oiij/use": "workspace:*",
-    "colord": "^2.9.3",
-    "vue": "^3.5.22"
+    "colord": "catalog:",
+    "vue": "catalog:"
   },
   "publishConfig": {
     "access": "public"

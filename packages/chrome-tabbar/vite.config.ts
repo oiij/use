@@ -14,8 +14,6 @@ export default defineConfig({
       cssFileName: 'style',
       formats: [
         'es',
-        'umd',
-        'cjs',
       ],
     },
     rollupOptions: {

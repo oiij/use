@@ -2,7 +2,7 @@
 import type { ISpec } from '@oiij/v-charts'
 import { useVCharts } from '@oiij/v-charts'
 import { useData } from 'vitepress'
-import { computed } from 'vue'
+import { computed, useTemplateRef } from 'vue'
 
 const { isDark } = useData()
 const options = computed(() => {
@@ -68,11 +68,11 @@ const options = computed(() => {
     },
   } as ISpec
 })
-const { domRef } = useVCharts(options, isDark)
+useVCharts(useTemplateRef('dom-ref'), options, isDark)
 </script>
 
 <template>
-  <div ref="domRef" style="width:100%;height:400px" />
+  <div ref="dom-ref" style="width:100%;height:400px" />
 </template>
 
 <style scoped>

@@ -15,11 +15,11 @@ pnpm add @oiij/tiptap
 ## Types
 
 ```ts
-declare function useAiEditor(defaultValue?: Ref<string> | string, darkMode?: ComputedRef<boolean>, language?: ComputedRef<'zh' | 'en'>, options?: Omit<AiEditorOptions, 'element'>): {
+declare function useTipTap(templateRef: TemplateRef<HTMLElement>, defaultValue?: Ref<string> | string, options?: Partial<EditorOptions>): {
   value: Ref<string | undefined, string | undefined>
-  domRef: Ref<HTMLElement | undefined, HTMLElement | undefined>
-  aiEditor: vue0.ShallowRef<AiEditor | null, AiEditor | null>
-  readonly: Ref<boolean, boolean>
+  templateRef: Readonly<vue0.ShallowRef<HTMLElement | null>>
+  editor: vue0.ShallowRef<Editor | null, Editor | null>
+  onRender: _vueuse_core0.EventHookOn<[Editor]>
 }
 type AiEditorReturns = ReturnType<typeof useAiEditor>
 ```

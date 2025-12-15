@@ -1,5 +1,5 @@
 import type { EditorOptions } from '@tiptap/core'
-import type { Ref } from 'vue'
+import type { Ref, TemplateRef } from 'vue'
 import { Editor } from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
 
@@ -7,20 +7,19 @@ import { createEventHook } from '@vueuse/core'
 import { isRef, onMounted, onUnmounted, ref, shallowRef, toValue, watch, watchEffect } from 'vue'
 
 export type { EditorOptions }
-export function useTipTap(defaultValue?: Ref<string> | string, options?: Partial<EditorOptions>) {
+export function useTipTap(templateRef: TemplateRef<HTMLElement>, defaultValue?: Ref<string> | string, options?: Partial<EditorOptions>) {
   const value = ref(toValue(defaultValue))
   if (isRef(defaultValue)) {
     watchEffect(() => {
       value.value = toValue(defaultValue.value)
     })
   }
-  const domRef = ref<HTMLElement>()
   const editor = shallowRef<Editor | null>(null)
   const onRenderEvent = createEventHook<[Editor ]>()
   function render() {
-    if (domRef.value && !editor.value) {
+    if (templateRef.value && !editor.value) {
       editor.value = new Editor({
-        element: domRef.value,
+        element: templateRef.value,
         extensions: [StarterKit],
         content: value.value,
         ...options,
@@ -57,7 +56,7 @@ export function useTipTap(defaultValue?: Ref<string> | string, options?: Partial
 
   return {
     value,
-    domRef,
+    templateRef,
     editor,
     onRender: onRenderEvent.on,
   }

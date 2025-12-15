@@ -2,12 +2,12 @@
 <script setup lang='ts'>
 import { useScrollView } from '@oiij/use'
 import { NButton, NFlex } from 'naive-ui'
-import { nextTick, ref } from 'vue'
+import { nextTick, ref, useTemplateRef } from 'vue'
 
 const list = Array.from({ length: 20 }).map((_, i) => `${i}`)
 const activeIndex = ref(0)
-const { scrollRef, scrollToView } = useScrollView()
-const { scrollRef: scrollRef1, scrollToView: scrollToView1 } = useScrollView({
+const { scrollToView } = useScrollView(useTemplateRef('scroll-ref'))
+const { scrollToView: scrollToView1 } = useScrollView(useTemplateRef('scroll-ref-1'), {
   direction: 'horizontal',
 })
 function scrollTo(index: number) {
@@ -29,12 +29,12 @@ function scrollTo(index: number) {
         滚动到最后一个
       </NButton>
     </NFlex>
-    <div ref="scrollRef" style="display: flex;flex-direction: column;gap: 10px;width: 100;height: 300px;overflow: hidden;">
+    <div ref="scroll-ref" style="display: flex;flex-direction: column;gap: 10px;width: 100;height: 300px;overflow: hidden;">
       <div v-for="(item, index) in list" :key="index" style="background-color: bisque; padding: 10px;border-radius: 10px;" :class="[{ active: activeIndex === index }]">
         {{ item }}
       </div>
     </div>
-    <div ref="scrollRef1" style="margin-top: 20px;display: flex;gap: 10px;width: 100;height: 80px;overflow: hidden;">
+    <div ref="scroll-ref-1" style="margin-top: 20px;display: flex;gap: 10px;width: 100;height: 80px;overflow: hidden;">
       <div v-for="(item, index) in list" :key="index" style="background-color: bisque;width: 200px; flex-shrink: 0; padding: 10px;border-radius: 10px;" :class="[{ active: activeIndex === index }]">
         {{ item }}
       </div>

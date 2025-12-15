@@ -1,2 +1,74 @@
+catalogMode: prefer
+
+shellEmulator: true
+
+trustPolicy: no-downgrade
+
 packages:
   - packages/*
+catalog:
+  '@antfu/eslint-config': ^6.7.1
+  '@css-render/plugin-bem': ^0.15.14
+  '@css-render/vue3-ssr': ^0.15.14
+  '@emoji-mart/data': ^1.2.1
+  '@oiij/tsconfig': ^0.0.1
+  '@tiptap/core': ^3.13.0
+  '@tiptap/pm': ^3.13.0
+  '@tiptap/starter-kit': ^3.13.0
+  '@tweakpane/core': ^2.0.5
+  '@tweakpane/plugin-essentials': ^0.2.1
+  '@tweenjs/tween.js': ^25.0.0
+  '@types/file-saver': ^2.0.7
+  '@types/markdown-it': ^14.1.2
+  '@types/node': ^25.0.2
+  '@types/prismjs': ^1.26.5
+  '@types/three': ^0.182.0
+  '@visactor/vchart': ^2.0.11
+  '@vitejs/plugin-vue': ^6.0.3
+  '@vitest/ui': ^4.0.15
+  '@vueuse/core': ^14.1.0
+  aieditor: ^1.4.2
+  async-validator: ^4.2.5
+  bumpp: ^10.3.2
+  cannon-es: ^0.20.0
+  colord: ^2.9.3
+  commitlint: ^20.2.0
+  css-render: ^0.15.14
+  cz-git: ^1.12.0
+  czg: ^1.12.0
+  dompurify: ^3.3.1
+  echarts: ^6.0.0
+  emoji-mart: ^5.6.0
+  es-toolkit: ^1.43.0
+  eslint: ^9.39.2
+  eslint-plugin-format: ^1.1.0
+  esno: ^4.8.0
+  file-saver: ^2.0.5
+  jsonfile: ^6.2.0
+  jspdf: ^3.0.4
+  jszip: ^3.10.1
+  lint-staged: ^16.2.7
+  markdown-it: ^14.1.0
+  mitt: ^3.0.1
+  naive-ui: ^2.43.2
+  nanoid: ^5.1.6
+  pdfjs-dist: ^5.4.449
+  postcss: ^8.5.6
+  postprocessing: ^6.38.0
+  prismjs: ^1.30.0
+  shiki: ^3.20.0
+  simple-git-hooks: ^2.13.1
+  taze: ^19.9.2
+  three: ^0.182.0
+  tsdown: ^0.17.4
+  tweakpane: ^4.0.5
+  typescript: ^5.9.3
+  vite: ^7.2.7
+  vite-plugin-dts: ^4.5.4
+  vitepress: ^1.6.4
+  vitepress-demo-plugin: ^1.5.1
+  vitest: ^4.0.15
+  vue: ^3.5.25
+  vue-hooks-plus: ^2.4.1
+  vue-tsc: ^3.1.8
+  xlsx: ^0.18.5

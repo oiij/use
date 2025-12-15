@@ -1,3 +1,4 @@
+import type { TemplateRef } from 'vue'
 import { useEventListener } from '@vueuse/core'
 import { computed, onMounted, ref } from 'vue'
 
@@ -54,9 +55,8 @@ function drawPoint(ctx: CanvasRenderingContext2D, width: number, height: number,
     ctx.fill()
   }
 }
-export function useImageVerify(options: ImageVerifyOptions = { type: 'character' }) {
+export function useImageVerify(templateRef: TemplateRef<HTMLCanvasElement>, options: ImageVerifyOptions = { type: 'character' }) {
   const { width = 120, height = 40, refreshOnClick = true, disturbLine = 10, disturbPoint = 40 } = options ?? {}
-  const domRef = ref<HTMLCanvasElement>()
   const value = ref('')
   const code = ref('')
   const passed = computed(() => value.value.toUpperCase() === code.value.toUpperCase())
@@ -79,7 +79,7 @@ export function useImageVerify(options: ImageVerifyOptions = { type: 'character'
   function _draw() {
     let imgCode = ''
 
-    const ctx = domRef.value?.getContext('2d')
+    const ctx = templateRef.value?.getContext('2d')
     if (!ctx)
       return imgCode
     ctx.fillStyle = randomColor(180, 230)
@@ -141,23 +141,23 @@ export function useImageVerify(options: ImageVerifyOptions = { type: 'character'
     drawPoint(ctx, width, height, disturbPoint)
     return imgCode
   }
-  useEventListener(domRef, 'click', () => {
+  useEventListener(templateRef, 'click', () => {
     if (refreshOnClick) {
       generate()
     }
   })
   onMounted(() => {
-    if (domRef.value) {
-      domRef.value.width = width
-      domRef.value.height = height
-      domRef.value.style.width = `${width}px`
-      domRef.value.style.height = `${height}px`
+    if (templateRef.value) {
+      templateRef.value.width = width
+      templateRef.value.height = height
+      templateRef.value.style.width = `${width}px`
+      templateRef.value.style.height = `${height}px`
       generate()
     }
   })
 
   return {
-    domRef,
+    templateRef,
     value,
     code,
     passed,

@@ -197,7 +197,7 @@ defineExpose(expose)
         @after-leave="emit('afterLeave')"
         @esc="emit('esc')"
         @mask-click="emit('maskClick')"
-        @update:show="(val) => emit('update:show', val)"
+        @update:show="(val:boolean) => emit('update:show', val)"
       >
         <slot v-bind="templateBind" />
         <template #action>

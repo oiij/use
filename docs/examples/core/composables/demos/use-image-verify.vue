@@ -2,9 +2,10 @@
 <script setup lang='ts'>
 import { useImageVerify } from '@oiij/use'
 import { NButton, NCard, NFlex, NInput, NInputGroup } from 'naive-ui'
+import { useTemplateRef } from 'vue'
 
-const { value, validate, domRef, passed } = useImageVerify({ type: 'character' })
-const { value: value1, validate: validate1, domRef: domRef1, passed: passed1 } = useImageVerify({ type: 'operation', config: { arith: '+' } })
+const { value, validate, passed } = useImageVerify(useTemplateRef('dom-ref'), { type: 'character' })
+const { value: value1, validate: validate1, passed: passed1 } = useImageVerify(useTemplateRef('dom-ref-1'), { type: 'operation', config: { arith: '+' } })
 </script>
 
 <template>
@@ -16,7 +17,7 @@ const { value: value1, validate: validate1, domRef: domRef1, passed: passed1 } =
           验证
         </NButton>
       </NInputGroup>
-      <canvas ref="domRef" style="margin-top: 5px;" />
+      <canvas ref="dom-ref" style="margin-top: 5px;" />
     </NCard>
     <NCard title="计算" style="flex: 1;">
       <NInputGroup>
@@ -25,7 +26,7 @@ const { value: value1, validate: validate1, domRef: domRef1, passed: passed1 } =
           验证
         </NButton>
       </NInputGroup>
-      <canvas ref="domRef1" style="margin-top: 5px;" />
+      <canvas ref="dom-ref-1" style="margin-top: 5px;" />
     </NCard>
   </NFlex>
 </template>

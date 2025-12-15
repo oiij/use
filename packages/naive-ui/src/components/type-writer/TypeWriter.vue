@@ -30,7 +30,7 @@ onUpdate((v) => {
 onStop((v) => {
   emit('stop', v)
 })
-const { html } = useMarkdownIt(typedValue, {
+const { html } = useMarkdownIt(undefined, typedValue, {
   html: true,
   linkify: true,
   typographer: true,

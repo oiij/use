@@ -1,7 +1,7 @@
 {
   "name": "@oiij/css-render",
   "type": "module",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "A Vue Composable for CssRender",
   "author": "oiij",
   "license": "MIT",
@@ -16,16 +16,9 @@
     "shiki"
   ],
   "sideEffects": false,
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
-    }
-  },
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
   "files": [
     "LICENSE",
     "README.md",
@@ -39,16 +32,16 @@
     "prepublishOnly": "pnpm build"
   },
   "peerDependencies": {
-    "@css-render/plugin-bem": "^0.15.14",
-    "@css-render/vue3-ssr": "^0.15.14",
-    "css-render": "^0.15.14",
-    "vue": "^3.5.22"
+    "@css-render/plugin-bem": "catalog:",
+    "@css-render/vue3-ssr": "catalog:",
+    "css-render": "catalog:",
+    "vue": "catalog:"
   },
   "devDependencies": {
-    "@css-render/plugin-bem": "^0.15.14",
-    "@css-render/vue3-ssr": "^0.15.14",
-    "css-render": "^0.15.14",
-    "vue": "^3.5.22"
+    "@css-render/plugin-bem": "catalog:",
+    "@css-render/vue3-ssr": "catalog:",
+    "css-render": "catalog:",
+    "vue": "catalog:"
   },
   "publishConfig": {
     "access": "public"

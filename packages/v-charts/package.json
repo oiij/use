@@ -1,7 +1,7 @@
 {
   "name": "@oiij/v-charts",
   "type": "module",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "A Vue Composable for VCharts",
   "author": "oiij",
   "license": "MIT",
@@ -16,16 +16,9 @@
     "v-charts"
   ],
   "sideEffects": false,
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
-    }
-  },
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
   "files": [
     "LICENSE",
     "README.md",
@@ -39,14 +32,14 @@
     "prepublishOnly": "pnpm build"
   },
   "peerDependencies": {
-    "@visactor/vchart": "^2.0.7",
-    "@vueuse/core": "^14.0.0",
-    "vue": "^3.5.22"
+    "@visactor/vchart": "catalog:",
+    "@vueuse/core": "catalog:",
+    "vue": "catalog:"
   },
   "devDependencies": {
-    "@visactor/vchart": "^2.0.7",
-    "@vueuse/core": "^14.0.0",
-    "vue": "^3.5.22"
+    "@visactor/vchart": "catalog:",
+    "@vueuse/core": "catalog:",
+    "vue": "catalog:"
   },
   "publishConfig": {
     "access": "public"

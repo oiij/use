@@ -15,11 +15,12 @@ pnpm add @oiij/ai-editor
 ## Types
 
 ```ts
-declare function useAiEditor(defaultValue?: Ref<string> | string, darkMode?: ComputedRef<boolean>, language?: ComputedRef<'zh' | 'en'>, options?: Omit<AiEditorOptions, 'element'>): {
+declare function useAiEditor(templateRef: TemplateRef<HTMLElement>, defaultValue?: Ref<string> | string, darkMode?: ComputedRef<boolean> | Ref<boolean>, language?: ComputedRef<'zh' | 'en'> | Ref<'zh' | 'en'>, options?: Omit<AiEditorOptions, 'element'>): {
   value: Ref<string | undefined, string | undefined>
-  domRef: Ref<HTMLElement | undefined, HTMLElement | undefined>
+  templateRef: Readonly<vue0.ShallowRef<HTMLElement | null>>
   aiEditor: vue0.ShallowRef<AiEditor | null, AiEditor | null>
   readonly: Ref<boolean, boolean>
+  onRender: _vueuse_core0.EventHookOn<[AiEditor]>
 }
 type AiEditorReturns = ReturnType<typeof useAiEditor>
 ```

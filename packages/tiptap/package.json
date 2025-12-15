@@ -1,7 +1,7 @@
 {
   "name": "@oiij/tiptap",
   "type": "module",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "A Vue Composable for Tiptap",
   "author": "oiij",
   "license": "MIT",
@@ -16,16 +16,9 @@
     "tiptap"
   ],
   "sideEffects": false,
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
-    }
-  },
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
   "files": [
     "LICENSE",
     "README.md",
@@ -39,18 +32,18 @@
     "prepublishOnly": "pnpm build"
   },
   "peerDependencies": {
-    "@tiptap/core": "^3.10.1",
-    "@tiptap/pm": "^3.10.1",
-    "@tiptap/starter-kit": "^3.10.1",
-    "@vueuse/core": "^14.0.0",
-    "vue": "^3.5.22"
+    "@tiptap/core": "catalog:",
+    "@tiptap/pm": "catalog:",
+    "@tiptap/starter-kit": "catalog:",
+    "@vueuse/core": "catalog:",
+    "vue": "catalog:"
   },
   "devDependencies": {
-    "@tiptap/core": "^3.10.1",
-    "@tiptap/pm": "^3.10.1",
-    "@tiptap/starter-kit": "^3.10.1",
-    "@vueuse/core": "^14.0.0",
-    "vue": "^3.5.22"
+    "@tiptap/core": "catalog:",
+    "@tiptap/pm": "catalog:",
+    "@tiptap/starter-kit": "catalog:",
+    "@vueuse/core": "catalog:",
+    "vue": "catalog:"
   },
   "publishConfig": {
     "access": "public"

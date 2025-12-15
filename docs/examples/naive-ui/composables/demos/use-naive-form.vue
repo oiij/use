@@ -1,7 +1,8 @@
 <script setup lang='ts'>
+import type { FormInst } from 'naive-ui'
 import { useNaiveForm } from '@oiij/naive-ui'
 import { NButton, NCard, NDynamicInput, NDynamicTags, NFlex, NForm, NFormItem, NInput, NInputNumber, NSwitch } from 'naive-ui'
-import { ref } from 'vue'
+import { ref, useTemplateRef } from 'vue'
 
 const _formValue = ref({
   foo: {
@@ -17,7 +18,7 @@ const _formValue = ref({
     value: '一',
   }],
 })
-const { validate, formValue, formProps, resetValidation, resetForm, reset, clear } = useNaiveForm(_formValue.value, {
+const { validate, formValue, formProps, resetValidation, resetForm, reset, clear } = useNaiveForm(useTemplateRef<FormInst>('form-ref'), _formValue.value, {
   rules: {
     foo: {
       bar: {
@@ -39,7 +40,7 @@ const { validate, formValue, formProps, resetValidation, resetForm, reset, clear
 
 <template>
   <NCard>
-    <NForm v-bind="formProps">
+    <NForm v-bind="formProps" ref="form-ref">
       <NFormItem label="foo.bar" path="foo.bar">
         <NInput v-model:value="formValue.foo.bar" placeholder="输入foo" />
       </NFormItem>

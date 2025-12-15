@@ -1,7 +1,7 @@
 {
   "name": "@oiij/xlsx",
   "type": "module",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "A Vue Composable for xlsx",
   "author": "oiij",
   "license": "MIT",
@@ -16,16 +16,9 @@
     "xlsx"
   ],
   "sideEffects": false,
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
-    }
-  },
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
   "files": [
     "LICENSE",
     "README.md",
@@ -39,17 +32,17 @@
     "prepublishOnly": "pnpm build"
   },
   "peerDependencies": {
-    "@vueuse/core": "^14.0.0",
-    "file-saver": "^2.0.5",
-    "vue": "^3.5.22",
-    "xlsx": "^0.18.5"
+    "@vueuse/core": "catalog:",
+    "file-saver": "catalog:",
+    "vue": "catalog:",
+    "xlsx": "catalog:"
   },
   "devDependencies": {
-    "@types/file-saver": "^2.0.7",
-    "@vueuse/core": "^14.0.0",
-    "file-saver": "^2.0.5",
-    "vue": "^3.5.22",
-    "xlsx": "^0.18.5"
+    "@types/file-saver": "catalog:",
+    "@vueuse/core": "catalog:",
+    "file-saver": "catalog:",
+    "vue": "catalog:",
+    "xlsx": "catalog:"
   },
   "publishConfig": {
     "access": "public"

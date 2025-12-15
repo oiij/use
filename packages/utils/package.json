@@ -1,7 +1,7 @@
 {
   "name": "@oiij/utils",
   "type": "module",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": " A collection of utility functions for JavaScript and TypeScript.",
   "author": "oiij",
   "license": "MIT",
@@ -18,69 +18,58 @@
   "sideEffects": false,
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs"
     },
     "./array": {
-      "types": "./dist/array.d.ts",
-      "import": "./dist/array.js",
-      "require": "./dist/array.cjs"
+      "types": "./dist/array.d.mts",
+      "import": "./dist/array.mjs"
     },
     "./color": {
-      "types": "./dist/color.d.ts",
-      "import": "./dist/color.js",
-      "require": "./dist/color.cjs"
+      "types": "./dist/color.d.mts",
+      "import": "./dist/color.mjs"
     },
     "./date": {
-      "types": "./dist/date.d.ts",
-      "import": "./dist/date.js",
-      "require": "./dist/date.cjs"
+      "types": "./dist/date.d.mts",
+      "import": "./dist/date.mjs"
     },
     "./dom": {
-      "types": "./dist/dom.d.ts",
-      "import": "./dist/dom.js",
-      "require": "./dist/dom.cjs"
+      "types": "./dist/dom.d.mts",
+      "import": "./dist/dom.mjs"
     },
     "./is": {
-      "types": "./dist/is.d.ts",
-      "import": "./dist/is.js",
-      "require": "./dist/is.cjs"
+      "types": "./dist/is.d.mts",
+      "import": "./dist/is.mjs"
     },
     "./math": {
-      "types": "./dist/math.d.ts",
-      "import": "./dist/math.js",
-      "require": "./dist/math.cjs"
+      "types": "./dist/math.d.mts",
+      "import": "./dist/math.mjs"
     },
     "./number": {
-      "types": "./dist/number.d.ts",
-      "import": "./dist/number.js",
-      "require": "./dist/number.cjs"
+      "types": "./dist/number.d.mts",
+      "import": "./dist/number.mjs"
     },
     "./object": {
-      "types": "./dist/object.d.ts",
-      "import": "./dist/object.js",
-      "require": "./dist/object.cjs"
+      "types": "./dist/object.d.mts",
+      "import": "./dist/object.mjs"
     },
     "./random": {
-      "types": "./dist/random.d.ts",
-      "import": "./dist/random.js",
-      "require": "./dist/random.cjs"
+      "types": "./dist/random.d.mts",
+      "import": "./dist/random.mjs"
     },
     "./string": {
-      "types": "./dist/string.d.ts",
-      "import": "./dist/string.js",
-      "require": "./dist/string.cjs"
+      "types": "./dist/string.d.mts",
+      "import": "./dist/string.mjs"
     }
   },
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
   "files": [
     "LICENSE",
     "README.md",
     "dist",
-    "package.json"
+    "package.mjson"
   ],
   "scripts": {
     "dev": "tsdown --watch",

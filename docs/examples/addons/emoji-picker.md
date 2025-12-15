@@ -57,10 +57,11 @@ interface EmojiPickerOptions {
   theme?: 'auto' | 'light' | 'dark'
   getSpritesheetURL?: string
 }
-declare function useEmojiPicker(darkMode?: ComputedRef<boolean>, language?: ComputedRef<'zh' | 'en'>, options?: EmojiPickerOptions): {
-  domRef: Ref<HTMLElement | undefined, HTMLElement | undefined>
-  emojiPicker: ShallowRef<Picker | undefined, Picker | undefined>
+declare function useEmojiPicker(templateRef: TemplateRef<HTMLElement>, darkMode?: ComputedRef<boolean>, language?: ComputedRef<'zh' | 'en'>, options?: EmojiPickerOptions): {
+  templateRef: Readonly<vue0.ShallowRef<HTMLElement | null>>
+  emojiPicker: vue0.ShallowRef<Picker | null, Picker | null>
   onRender: (fn: (editor: Picker) => void) => void
 }
+
 type EmojiPickerReturns = ReturnType<typeof useEmojiPicker>
 ```

@@ -2,7 +2,7 @@
 import type { EChartsOption } from '@oiij/e-charts'
 import { useECharts } from '@oiij/e-charts'
 import { useData } from 'vitepress'
-import { computed } from 'vue'
+import { computed, useTemplateRef } from 'vue'
 
 const { isDark } = useData()
 const opt = computed(() => {
@@ -51,11 +51,11 @@ const opt = computed(() => {
   } as EChartsOption
 })
 
-const { domRef } = useECharts(opt, isDark)
+useECharts(useTemplateRef('dom-ref'), opt, isDark)
 </script>
 
 <template>
-  <div ref="domRef" style="width:100%;height:400px" />
+  <div ref="dom-ref" style="width:100%;height:400px" />
 </template>
 
 <style scoped>

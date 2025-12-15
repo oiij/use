@@ -1,13 +1,14 @@
 <script setup lang='ts'>
 import { useShiki } from '@oiij/shiki'
 import { NFlex } from 'naive-ui'
+import { useTemplateRef } from 'vue'
 
-const { value, domRef } = useShiki(`export const foo = 'foo'`)
+const { value } = useShiki(useTemplateRef('dom-ref'), `export const foo = 'foo'`)
 </script>
 
 <template>
   <NFlex vertical>
-    <div ref="domRef" />
+    <div ref="dom-ref" />
     <textarea v-model="value" style="border: 1px solid #000;" />
   </NFlex>
 </template>

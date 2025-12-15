@@ -1,15 +1,14 @@
 import type { MaybeComputedElementRef } from '@vueuse/core'
+import type { TemplateRef } from 'vue'
 import { useElementSize, useWindowSize } from '@vueuse/core'
-import { computed, ref, watchEffect } from 'vue'
+import { computed, watchEffect } from 'vue'
 
-export function useAutoRatio(ratio = 1, target?: MaybeComputedElementRef) {
-  const domRef = ref<HTMLElement>()
-
+export function useAutoRatio(templateRef: TemplateRef<HTMLElement>, ratio = 1, target?: MaybeComputedElementRef) {
   const elementSize = useElementSize(target)
   const windowSize = useWindowSize()
 
-  const targetWidth = computed(() => domRef.value ? elementSize.width.value : windowSize.width.value)
-  const targetHeight = computed(() => domRef.value ? elementSize.height.value : windowSize.height.value)
+  const targetWidth = computed(() => templateRef.value ? elementSize.width.value : windowSize.width.value)
+  const targetHeight = computed(() => templateRef.value ? elementSize.height.value : windowSize.height.value)
 
   const aspectRatio = computed(() => {
     if (targetHeight.value === 0)
@@ -22,13 +21,13 @@ export function useAutoRatio(ratio = 1, target?: MaybeComputedElementRef) {
   const height = computed(() => aspectRatio.value > ratio ? targetHeight.value : targetWidth.value / ratio)
 
   watchEffect(() => {
-    if (domRef.value) {
-      domRef.value.style.width = `${width.value}px`
-      domRef.value.style.height = `${height.value}px`
+    if (templateRef.value) {
+      templateRef.value.style.width = `${width.value}px`
+      templateRef.value.style.height = `${height.value}px`
     }
   })
   return {
-    domRef,
+    templateRef,
     width,
     height,
   }

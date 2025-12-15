@@ -14,8 +14,5 @@ export default defineConfig({
     'src/random.ts',
     'src/string.ts',
   ],
-  format: ['cjs', 'esm'],
-  clean: true,
-  dts: true,
   unbundle: true,
 })

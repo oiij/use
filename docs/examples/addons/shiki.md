@@ -15,10 +15,10 @@ pnpm add @oiij/shiki
 ## Types
 
 ```ts
-declare function useShiki(defaultValue?: string | Ref<string>, darkMode?: ComputedRef<boolean>, options?: CodeToHastOptions<BundledLanguage, BundledTheme>): {
+declare function useShiki(templateRef: TemplateRef<HTMLElement>, defaultValue?: string | Ref<string>, darkMode?: ComputedRef<boolean>, options?: CodeToHastOptions<BundledLanguage, BundledTheme>): {
   value: Ref<string | undefined, string | undefined>
   html: Ref<string, string>
-  domRef: Ref<HTMLElement | undefined, HTMLElement | undefined>
+  templateRef: Readonly<vue0.ShallowRef<HTMLElement | null>>
   format: (value: string, options?: CodeToHastOptions<BundledLanguage, BundledTheme>) => {
     promise: () => Promise<string>
     cancel: () => void

@@ -1,7 +1,7 @@
 import type { BarSeriesOption, LineSeriesOption, PieSeriesOption } from 'echarts/charts'
 import type { DatasetComponentOption, GridComponentOption, LegendComponentOption, TitleComponentOption, ToolboxComponentOption, TooltipComponentOption } from 'echarts/components'
 import type { ComposeOption, ECharts, EChartsInitOpts } from 'echarts/core'
-import type { ComputedRef, Ref } from 'vue'
+import type { ComputedRef, Ref, TemplateRef } from 'vue'
 import { createEventHook, useDebounceFn, useElementSize } from '@vueuse/core'
 import { BarChart, LineChart, PieChart } from 'echarts/charts'
 import { DatasetComponent, GridComponent, LegendComponent, TitleComponent, ToolboxComponent, TooltipComponent, TransformComponent } from 'echarts/components'
@@ -43,8 +43,7 @@ use([
 export function register(ext: Parameters<typeof use>[0]) {
   use(ext)
 }
-export function useECharts(options?: Ref<EChartsOption> | ComputedRef<EChartsOption> | EChartsOption, darkMode?: ComputedRef<boolean> | Ref<boolean>, initOptions?: EChartsInitOpts) {
-  const domRef = shallowRef<HTMLElement>()
+export function useECharts(templateRef: TemplateRef<HTMLElement>, options?: Ref<EChartsOption> | ComputedRef<EChartsOption> | EChartsOption, darkMode?: ComputedRef<boolean> | Ref<boolean>, initOptions?: EChartsInitOpts) {
   const eChart = shallowRef<ECharts | null>(null)
   const optionsRef: Ref<EChartsOption | undefined> = ref(toValue(options))
 
@@ -52,7 +51,7 @@ export function useECharts(options?: Ref<EChartsOption> | ComputedRef<EChartsOpt
     optionsRef.value = toValue(options)
   })
 
-  const { width, height } = useElementSize(domRef)
+  const { width, height } = useElementSize(templateRef)
 
   const onRenderEvent = createEventHook<ECharts>()
   const onUpdateEvent = createEventHook<EChartsOption>()
@@ -67,14 +66,14 @@ export function useECharts(options?: Ref<EChartsOption> | ComputedRef<EChartsOpt
   }
 
   function render() {
-    if (domRef.value) {
+    if (templateRef.value) {
       if (eChart.value) {
         resize()
         return
       }
       const theme = darkMode?.value ? 'dark' : 'default'
       if (optionsRef.value) {
-        eChart.value = init(domRef.value, theme, { ...initOptions })
+        eChart.value = init(templateRef.value, theme, { ...initOptions })
         setOption(optionsRef.value)
         onRenderEvent.trigger(eChart.value)
       }
@@ -127,7 +126,7 @@ export function useECharts(options?: Ref<EChartsOption> | ComputedRef<EChartsOpt
   })
 
   return {
-    domRef,
+    templateRef,
     eChart,
     options: optionsRef,
     onRender: onRenderEvent.on,

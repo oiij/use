@@ -1,5 +1,5 @@
 import type { IInitOption, ISpec } from '@visactor/vchart'
-import type { ComputedRef, Ref } from 'vue'
+import type { ComputedRef, Ref, TemplateRef } from 'vue'
 import { registerAllMarks, registerAnimate, registerAreaChart, registerBarChart, registerBrush, registerCartesianBandAxis, registerCartesianCrossHair, registerCartesianLinearAxis, registerCartesianLogAxis, registerCartesianTimeAxis, registerContinuousLegend, registerCustomMark, registerDataZoom, registerDiscreteLegend, registerDomTooltipHandler, registerLineChart, registerMarkArea, registerMarkLine, registerMarkPoint, registerPieChart, registerPolarBandAxis, registerPolarCrossHair, registerPolarLinearAxis, registerScrollBar, registerTitle, registerTooltip, VChart } from '@visactor/vchart'
 import { createEventHook, useDebounceFn, useElementSize } from '@vueuse/core'
 import { onUnmounted, ref, shallowRef, toValue, watch, watchEffect } from 'vue'
@@ -49,8 +49,7 @@ export type {
 export function register(comps: (() => void)[]) {
   VChart.useRegisters(comps)
 }
-export function useVCharts(options?: Ref<ISpec> | ComputedRef<ISpec> | ISpec, darkMode?: Ref<boolean> | ComputedRef<boolean>, initOptions?: IInitOption & { treeShaking?: boolean }) {
-  const domRef = ref<HTMLElement>()
+export function useVCharts(templateRef: TemplateRef<HTMLElement>, options?: Ref<ISpec> | ComputedRef<ISpec> | ISpec, darkMode?: Ref<boolean> | ComputedRef<boolean>, initOptions?: IInitOption & { treeShaking?: boolean }) {
   const vChart = shallowRef<VChart | null>(null)
   const optionsRef: Ref<ISpec | undefined> = ref(toValue(options)) as Ref<ISpec | undefined>
 
@@ -58,7 +57,7 @@ export function useVCharts(options?: Ref<ISpec> | ComputedRef<ISpec> | ISpec, da
     optionsRef.value = toValue(options)
   })
 
-  const { width, height } = useElementSize(domRef)
+  const { width, height } = useElementSize(templateRef)
 
   const onRenderEvent = createEventHook<VChart>()
   const onUpdateEvent = createEventHook<ISpec>()
@@ -73,7 +72,7 @@ export function useVCharts(options?: Ref<ISpec> | ComputedRef<ISpec> | ISpec, da
   }
 
   function render() {
-    if (domRef.value) {
+    if (templateRef.value) {
       if (vChart.value) {
         resize()
         return
@@ -82,7 +81,7 @@ export function useVCharts(options?: Ref<ISpec> | ComputedRef<ISpec> | ISpec, da
 
       if (optionsRef.value) {
         vChart.value = new VChart(optionsRef.value, {
-          dom: domRef.value,
+          dom: templateRef.value,
           theme,
           ...initOptions,
         })
@@ -132,7 +131,7 @@ export function useVCharts(options?: Ref<ISpec> | ComputedRef<ISpec> | ISpec, da
     destroy()
   })
   return {
-    domRef,
+    templateRef,
     vChart,
     options: optionsRef,
     onRender: onRenderEvent.on,

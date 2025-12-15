@@ -34,7 +34,7 @@ const paginationProps = reactive<PaginationProps>({
 
 const _dataCache: R[] = []
 
-const { loading, data, error, params, list, pagination, run, runAsync, refresh, refreshAsync, cancel, mutate, setParams, runParams, runParamsAsync, onBefore, onSuccess, onError, onFinally } = useDataRequest<P, D, R>(api, {
+const { loading, data, error, params, list, pagination: paginationRef, run, runAsync, refresh, refreshAsync, cancel, mutate, setParams, runParams, runParamsAsync, onBefore, onSuccess, onError, onFinally } = useDataRequest<P, D, R>(api, {
   defaultParams: {
     [_fields.search]: null,
     ...defaultParams,
@@ -163,7 +163,7 @@ const expose: PresetSelectExpose<P, D, R> = {
   error,
   params,
   list,
-  pagination,
+  pagination: paginationRef,
   run,
   runAsync,
   refresh,
@@ -187,7 +187,7 @@ const templateBind = computed(() => {
     error: toValue(error),
     params: toValue(params),
     list: toValue(list),
-    pagination: toValue(pagination),
+    pagination: toValue(paginationRef),
     selectRef: toValue(selectRef),
   }
 })
@@ -228,11 +228,11 @@ defineExpose(expose)
         <NFlex>
           <slot name="footer-extra" v-bind="templateBind" />
           <NPagination
-            v-if="pagination"
+            v-if="propsPagination"
             :style="{ marginLeft: 'auto' }"
             simple
             :disabled="loading"
-            v-bind="{ ...paginationProps, ...pagination }"
+            v-bind="{ ...paginationProps, ...paginationRef }"
             @update:page="vOnPagination.onUpdatePage"
             @update:page-size="vOnPagination.onUpdatePageSize"
           />

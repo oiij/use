@@ -1,7 +1,7 @@
 {
   "name": "@oiij/directives",
   "type": "module",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "description": "",
   "author": "oiij",
   "license": "MIT",
@@ -16,16 +16,9 @@
     "directives"
   ],
   "sideEffects": false,
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
-    }
-  },
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
   "files": [
     "LICENSE",
     "README.md",
@@ -40,11 +33,11 @@
   },
   "peerDependencies": {
     "@oiij/utils": "workspace:*",
-    "vue": "^3.5.22"
+    "vue": "catalog:"
   },
   "devDependencies": {
     "@oiij/utils": "workspace:*",
-    "vue": "^3.5.22"
+    "vue": "catalog:"
   },
   "publishConfig": {
     "access": "public"

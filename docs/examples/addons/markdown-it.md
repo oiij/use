@@ -19,10 +19,10 @@ type MarkDownItOptions = Options & {
   manual?: boolean
   domPurify?: boolean
 }
-declare function useMarkdownIt(defaultValue?: Ref<string> | string, options?: MarkDownItOptions): {
+declare function useMarkdownIt(templateRef?: TemplateRef<HTMLElement>, defaultValue?: Ref<string> | string, options?: MarkDownItOptions): {
   value: Ref<string | undefined, string | undefined>
   html: Ref<string, string>
-  domRef: Ref<HTMLElement | undefined, HTMLElement | undefined>
+  templateRef: Readonly<vue0.ShallowRef<HTMLElement | null>> | undefined
   md: markdownIt
   render: (value: string) => string
 }
