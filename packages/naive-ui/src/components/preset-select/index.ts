@@ -1,8 +1,10 @@
 import type { PaginationProps, SelectGroupOption, SelectInst, SelectOption, SelectProps } from 'naive-ui'
 import type { ShallowRef } from 'vue'
+import type { ComponentExposed } from 'vue-component-type-helpers'
 import type { DataObject, DataRequestFields, UseDataRequestReturns } from '../../composables/useDataRequest'
 import type { ClassStyle } from '../data-table-plus/index'
 import type { RemoteRequestEmits, RemoteRequestProps } from '../remote-request/index'
+import type PresetSelect from './PresetSelect.vue'
 
 export { default as NPresetSelect } from './PresetSelect.vue'
 
@@ -44,3 +46,4 @@ export type PresetSelectEmits<V extends PresetSelectValue, P extends DataObject 
   (e: 'update:page', page: number): void
   (e: 'update:pageSize', pageSize: number): void
 }
+export type PresetSelectInst = ComponentExposed<typeof PresetSelect>

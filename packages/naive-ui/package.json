@@ -1,7 +1,7 @@
 {
   "name": "@oiij/naive-ui",
   "type": "module",
-  "version": "0.0.64",
+  "version": "0.0.65",
   "description": "Some Composable Functions And Components for Vue 3",
   "author": "oiij",
   "license": "MIT",
@@ -18,17 +18,17 @@
   "sideEffects": false,
   "exports": {
     ".": {
-      "types": "./dist/index.d.mts",
-      "import": "./dist/index.mjs"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
     },
     "./components": {
       "types": "./dist/components.d.ts",
       "import": "./dist/components.js"
     }
   },
-  "main": "./dist/index.mjs",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.mts",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "files": [
     "LICENSE",
     "README.md",
@@ -37,8 +37,7 @@
   ],
   "scripts": {
     "dev": "tsdown --watch",
-    "dev:vite": "vite build --watch",
-    "build": "vue-tsc --noEmit && tsdown && vite build",
+    "build": "vue-tsc --noEmit && tsdown",
     "bumpp": "bumpp --no-push",
     "prepublishOnly": "pnpm build"
   },
@@ -53,6 +52,7 @@
     "naive-ui": "catalog:",
     "prismjs": "catalog:",
     "vue": "catalog:",
+    "vue-component-type-helpers": "catalog:",
     "vue-hooks-plus": "catalog:"
   },
   "devDependencies": {
@@ -67,7 +67,9 @@
     "naive-ui": "catalog:",
     "prismjs": "catalog:",
     "vue": "catalog:",
+    "vue-component-type-helpers": "catalog:",
     "vue-hooks-plus": "catalog:"
+
   },
   "publishConfig": {
     "access": "public"
