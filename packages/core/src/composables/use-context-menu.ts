@@ -2,7 +2,7 @@ import type { TemplateRef } from 'vue'
 import { useEventListener } from '@vueuse/core'
 import { nextTick, ref } from 'vue'
 
-export function useContextMenu(templateRef: TemplateRef<HTMLElement>) {
+export function useContextMenu(templateRef?: TemplateRef<HTMLElement>) {
   const x = ref(0)
   const y = ref(0)
   const show = ref(false)
