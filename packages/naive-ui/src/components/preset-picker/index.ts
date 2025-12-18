@@ -29,6 +29,7 @@ export type PresetPickerProps<V extends PresetPickerValue, R extends DataObject 
   multiple?: boolean
   disabled?: boolean
   clearable?: boolean
+  tooltip?: boolean
   placeholder?: string
   type?: ButtonProps['type']
   columns?: DataTableColumns<R>

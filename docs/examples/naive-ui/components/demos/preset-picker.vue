@@ -135,6 +135,7 @@ function onSuccess(res: Res, params: Params[]) {
         :fallback-label="(val) => `${val}找不到`"
         type="primary"
         clearable
+        :tooltip="true"
         :multiple="multiple"
         :button-props="{
           secondary: true,

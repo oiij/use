@@ -15,6 +15,7 @@ const {
   multiple,
   disabled,
   clearable,
+  tooltip = true,
   placeholder = '请选择',
   type,
   columns,
@@ -160,7 +161,7 @@ defineExpose(expose)
 <template>
   <NBadge :value="checkedCount" v-bind="badgeProps">
     <NButtonGroup>
-      <NTooltip :disabled="Array.isArray(value) ? false : true" :trigger="Array.isArray(value) ? 'hover' : 'manual'">
+      <NTooltip :disabled="(!tooltip || !Array.isArray(value)) ? true : false" :trigger="Array.isArray(value) ? 'hover' : 'manual'">
         <template #trigger>
           <NButton :type="type" :disabled="disabled" v-bind="buttonProps" @click="showModal">
             <template #icon>
