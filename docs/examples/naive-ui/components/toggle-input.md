@@ -1,8 +1,8 @@
-# ToggleEditor 切换编辑
+# ToggleInput 切换编辑
 
 ## Demo
 
-<demo vue="./demos/toggle-editor.vue" title="ToggleEditor" />
+<demo vue="./demos/toggle-input.vue" title="ToggleInput" />
 
 ## Props
 

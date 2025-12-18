@@ -79,7 +79,7 @@ export default defineConfig({
               { text: 'PresetSelect', link: '/examples/naive-ui/components/preset-select' },
               { text: 'RemoteRequest', link: '/examples/naive-ui/components/remote-request' },
               { text: 'SearchInput', link: '/examples/naive-ui/components/search-input' },
-              { text: 'ToggleEditor', link: '/examples/naive-ui/components/toggle-editor' },
+              { text: 'ToggleInput', link: '/examples/naive-ui/components/toggle-input' },
               { text: 'TooltipButton', link: '/examples/naive-ui/components/tooltip-button' },
               { text: 'Transition', link: '/examples/naive-ui/components/transition' },
               { text: 'TypeWriter', link: '/examples/naive-ui/components/type-writer' },
