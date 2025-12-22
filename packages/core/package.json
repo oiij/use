@@ -1,7 +1,7 @@
 {
   "name": "@oiij/use",
   "type": "module",
-  "version": "0.0.29",
+  "version": "0.0.30",
   "description": "Som Composable Functions for Vue 3",
   "author": "oiij",
   "license": "MIT",
@@ -41,12 +41,12 @@
     "prepublishOnly": "pnpm build"
   },
   "peerDependencies": {
-    "@vueuse/core": "catalog:",
-    "vue": "catalog:"
+    "@vueuse/core": "catalog:core",
+    "vue": "catalog:core"
   },
   "devDependencies": {
-    "@vueuse/core": "catalog:",
-    "vue": "catalog:"
+    "@vueuse/core": "catalog:core",
+    "vue": "catalog:core"
   },
   "publishConfig": {
     "access": "public"

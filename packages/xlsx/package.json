@@ -1,7 +1,7 @@
 {
   "name": "@oiij/xlsx",
   "type": "module",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "A Vue Composable for xlsx",
   "author": "oiij",
   "license": "MIT",
@@ -32,17 +32,17 @@
     "prepublishOnly": "pnpm build"
   },
   "peerDependencies": {
-    "@vueuse/core": "catalog:",
-    "file-saver": "catalog:",
-    "vue": "catalog:",
-    "xlsx": "catalog:"
+    "@vueuse/core": "catalog:xlsx",
+    "file-saver": "catalog:xlsx",
+    "vue": "catalog:xlsx",
+    "xlsx": "catalog:xlsx"
   },
   "devDependencies": {
-    "@types/file-saver": "catalog:",
-    "@vueuse/core": "catalog:",
-    "file-saver": "catalog:",
-    "vue": "catalog:",
-    "xlsx": "catalog:"
+    "@types/file-saver": "catalog:xlsx",
+    "@vueuse/core": "catalog:xlsx",
+    "file-saver": "catalog:xlsx",
+    "vue": "catalog:xlsx",
+    "xlsx": "catalog:xlsx"
   },
   "publishConfig": {
     "access": "public"

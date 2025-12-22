@@ -8,10 +8,7 @@
       "~/*": [
         "packages/*"
       ]
-    },
-    "types": [
-      "vite/client"
-    ]
+    }
   },
   "include": [
     "packages/**/*.ts",

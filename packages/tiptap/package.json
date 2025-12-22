@@ -1,7 +1,7 @@
 {
   "name": "@oiij/tiptap",
   "type": "module",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "A Vue Composable for Tiptap",
   "author": "oiij",
   "license": "MIT",
@@ -32,18 +32,18 @@
     "prepublishOnly": "pnpm build"
   },
   "peerDependencies": {
-    "@tiptap/core": "catalog:",
-    "@tiptap/pm": "catalog:",
-    "@tiptap/starter-kit": "catalog:",
-    "@vueuse/core": "catalog:",
-    "vue": "catalog:"
+    "@tiptap/core": "catalog:tiptap",
+    "@tiptap/pm": "catalog:tiptap",
+    "@tiptap/starter-kit": "catalog:tiptap",
+    "@vueuse/core": "catalog:tiptap",
+    "vue": "catalog:tiptap"
   },
   "devDependencies": {
-    "@tiptap/core": "catalog:",
-    "@tiptap/pm": "catalog:",
-    "@tiptap/starter-kit": "catalog:",
-    "@vueuse/core": "catalog:",
-    "vue": "catalog:"
+    "@tiptap/core": "catalog:tiptap",
+    "@tiptap/pm": "catalog:tiptap",
+    "@tiptap/starter-kit": "catalog:tiptap",
+    "@vueuse/core": "catalog:tiptap",
+    "vue": "catalog:tiptap"
   },
   "publishConfig": {
     "access": "public"

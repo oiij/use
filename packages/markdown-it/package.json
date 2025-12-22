@@ -1,7 +1,7 @@
 {
   "name": "@oiij/markdown-it",
   "type": "module",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "A Vue Composable for markdown-it",
   "author": "oiij",
   "license": "MIT",
@@ -32,17 +32,17 @@
     "prepublishOnly": "pnpm build"
   },
   "peerDependencies": {
-    "@vueuse/core": "catalog:",
-    "dompurify": "catalog:",
-    "markdown-it": "catalog:",
-    "vue": "catalog:"
+    "@vueuse/core": "catalog:markdown-it",
+    "dompurify": "catalog:markdown-it",
+    "markdown-it": "catalog:markdown-it",
+    "vue": "catalog:markdown-it"
   },
   "devDependencies": {
-    "@types/markdown-it": "catalog:",
-    "@vueuse/core": "catalog:",
-    "dompurify": "catalog:",
-    "markdown-it": "catalog:",
-    "vue": "catalog:"
+    "@types/markdown-it": "catalog:markdown-it",
+    "@vueuse/core": "catalog:markdown-it",
+    "dompurify": "catalog:markdown-it",
+    "markdown-it": "catalog:markdown-it",
+    "vue": "catalog:markdown-it"
   },
   "publishConfig": {
     "access": "public"

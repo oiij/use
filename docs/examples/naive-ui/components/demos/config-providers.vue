@@ -8,9 +8,9 @@ function onClick() {
   window.$message.success('点击了按钮')
 }
 function handleGlobalLoading() {
-  window.$loading.start()
+  window.$loading?.show()
   setTimeout(() => {
-    window.$loading.finish()
+    window.$loading?.hide()
   }, 2000)
 }
 </script>

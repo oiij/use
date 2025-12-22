@@ -1,7 +1,7 @@
 {
   "name": "@oiij/directives",
   "type": "module",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "",
   "author": "oiij",
   "license": "MIT",
@@ -33,11 +33,11 @@
   },
   "peerDependencies": {
     "@oiij/utils": "workspace:*",
-    "vue": "catalog:"
+    "vue": "catalog:directives"
   },
   "devDependencies": {
     "@oiij/utils": "workspace:*",
-    "vue": "catalog:"
+    "vue": "catalog:directives"
   },
   "publishConfig": {
     "access": "public"

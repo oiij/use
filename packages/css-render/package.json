@@ -1,7 +1,7 @@
 {
   "name": "@oiij/css-render",
   "type": "module",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "A Vue Composable for CssRender",
   "author": "oiij",
   "license": "MIT",
@@ -32,16 +32,16 @@
     "prepublishOnly": "pnpm build"
   },
   "peerDependencies": {
-    "@css-render/plugin-bem": "catalog:",
-    "@css-render/vue3-ssr": "catalog:",
-    "css-render": "catalog:",
-    "vue": "catalog:"
+    "@css-render/plugin-bem": "catalog:css-render",
+    "@css-render/vue3-ssr": "catalog:css-render",
+    "css-render": "catalog:css-render",
+    "vue": "catalog:css-render"
   },
   "devDependencies": {
-    "@css-render/plugin-bem": "catalog:",
-    "@css-render/vue3-ssr": "catalog:",
-    "css-render": "catalog:",
-    "vue": "catalog:"
+    "@css-render/plugin-bem": "catalog:css-render",
+    "@css-render/vue3-ssr": "catalog:css-render",
+    "css-render": "catalog:css-render",
+    "vue": "catalog:css-render"
   },
   "publishConfig": {
     "access": "public"

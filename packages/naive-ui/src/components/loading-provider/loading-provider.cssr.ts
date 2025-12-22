@@ -3,10 +3,10 @@ import { cssr, namespace, plugin } from '../_utils'
 
 const { c, cB } = { ...cssr, ...plugin }
 
-export const cName = `${namespace}-full-loading`
-export function fullLoadingCssr() {
+export const cName = `${namespace}-loading-provider`
+export function loadingProviderCssr() {
   return c([
-    cB('full-loading', {
+    cB('loading-provider', {
       position: 'fixed',
       inset: 0,
       zIndex: 99,

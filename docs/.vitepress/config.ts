@@ -68,11 +68,10 @@ export default defineConfig({
           {
             text: 'Components',
             items: [
-              { text: 'Bubble', link: '/examples/naive-ui/components/bubble' },
               { text: 'ConfigProviders', link: '/examples/naive-ui/components/config-providers' },
               { text: 'CopyButton', link: '/examples/naive-ui/components/copy-button' },
               { text: 'DataTablePlus', link: '/examples/naive-ui/components/data-table-plus' },
-              { text: 'FullLoading', link: '/examples/naive-ui/components/full-loading' },
+              { text: 'LoadingProvider', link: '/examples/naive-ui/components/loading-provider' },
               { text: 'PresetForm', link: '/examples/naive-ui/components/preset-form' },
               { text: 'PresetInput', link: '/examples/naive-ui/components/preset-input' },
               { text: 'PresetPicker', link: '/examples/naive-ui/components/preset-picker' },
