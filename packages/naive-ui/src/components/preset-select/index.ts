@@ -9,7 +9,9 @@ import type PresetSelect from './PresetSelect.vue'
 export { default as NPresetSelect } from './PresetSelect.vue'
 
 export type ArrayAwareType<V, T> = V extends null ? null : (V extends any[] ? T[] : T) | null
+
 export type OptionFormat<R extends DataObject = DataObject> = (row: R) => SelectOption | SelectGroupOption | false | undefined | null
+
 export type PresetSelectValue = string | number | (string | number)[] | null
 
 export type PresetSelectFields = DataRequestFields & {
@@ -46,4 +48,5 @@ export type PresetSelectEmits<V extends PresetSelectValue, P extends DataObject 
   (e: 'update:page', page: number): void
   (e: 'update:pageSize', pageSize: number): void
 }
+
 export type PresetSelectInst = ComponentExposed<typeof PresetSelect>

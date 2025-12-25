@@ -3,6 +3,7 @@ import type { ButtonProps, TooltipProps } from 'naive-ui'
 import type { ClassStyle } from '../data-table-plus'
 
 export { default as NCopyButton } from './CopyButton.vue'
+
 export type CopyButtonProps = & {
   value?: string
   config?: UseClipboardOptions<string | undefined>

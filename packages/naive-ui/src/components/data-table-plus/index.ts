@@ -8,6 +8,7 @@ import type { SearchInputProps } from '../search-input/index'
 import type DataTablePlus from './DataTablePlus.vue'
 
 export { default as NDataTablePlus } from './DataTablePlus.vue'
+
 export type ClassStyle = & {
   class?: string
   style?: CSSProperties | string
@@ -55,4 +56,5 @@ export type DataTablePlusEmits<P extends DataObject = DataObject, D extends Data
   (e: 'update:page', page: number): void
   (e: 'update:pageSize', pageSize: number): void
 }
+
 export type DataTablePlusInst = ComponentExposed<typeof DataTablePlus>

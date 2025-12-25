@@ -91,7 +91,7 @@ catalogs:
     vue: ^3.5.26
     xlsx: ^0.18.5
   z_dev:
-    '@antfu/eslint-config': ^6.7.2
+    '@antfu/eslint-config': ^6.7.3
     '@oiij/tsconfig': ^0.0.1
     '@types/three': ^0.182.0
     '@vitest/ui': ^4.0.16
@@ -109,11 +109,11 @@ catalogs:
     simple-git-hooks: ^2.13.1
     taze: ^19.9.2
     three: ^0.182.0
-    tsdown: ^0.18.2
+    tsdown: ^0.18.3
     typescript: ^5.9.3
     unplugin-vue: ^7.1.0
     vitepress: ^1.6.4
     vitepress-demo-plugin: ^1.5.1
     vitest: ^4.0.16
     vue: ^3.5.26
-    vue-tsc: ^3.2.0
+    vue-tsc: ^3.2.1

@@ -2,14 +2,18 @@ import type { SpinProps } from 'naive-ui'
 import type { CSSProperties, InjectionKey, RendererElement } from 'vue'
 import type { ClassStyle } from '../data-table-plus'
 
-export const loadingProviderInjectionKey: InjectionKey<{
+export { default as NLoadingProvider } from './LoadingProvider.vue'
+
+export type LoadingProviderInst = & {
   show: (options?: {
     text?: string
     duration?: number
   }) => void
   hide: () => void
-}> = Symbol('loading-provider-key')
-export { default as NLoadingProvider } from './LoadingProvider.vue'
+}
+
+export const loadingProviderInjectionKey: InjectionKey<LoadingProviderInst> = Symbol('loading-provider-key')
+
 export type LoadingProviderProps = & {
   show?: boolean
   appendTo?: string | RendererElement

@@ -5,7 +5,7 @@ import { defineComponent, onMounted } from 'vue'
 import { useLoading } from '../../composables'
 import { NLoadingProvider } from '../loading-provider'
 
-const { globalStyle = false, configProviderProps, loadingBarProps, loadingProviderProps, dialogProviderProps, modalProviderProps, notificationProviderProps, messageProviderProps } = defineProps<ConfigProvidersProps>()
+const { globalStyle = false, configProviderProps, loadingBarProviderProps, loadingProviderProps, dialogProviderProps, modalProviderProps, notificationProviderProps, messageProviderProps } = defineProps<ConfigProvidersProps>()
 
 // 挂载naive组件的方法至window, 以便在路由钩子函数和请求函数里面调用
 function registerNaiveTools() {
@@ -30,7 +30,7 @@ const NaiveProviderContent = defineComponent({
 
 <template>
   <NConfigProvider v-bind="configProviderProps">
-    <NLoadingBarProvider v-bind="loadingBarProps">
+    <NLoadingBarProvider v-bind="loadingBarProviderProps">
       <NLoadingProvider v-bind="loadingProviderProps">
         <NDialogProvider v-bind="dialogProviderProps">
           <NModalProvider v-bind="modalProviderProps">

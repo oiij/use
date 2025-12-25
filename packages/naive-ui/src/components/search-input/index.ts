@@ -2,6 +2,7 @@ import type { ButtonProps, InputProps } from 'naive-ui'
 import type { ClassStyle } from '../data-table-plus'
 
 export { default as NSearchInput } from './SearchInput.vue'
+
 export type SearchInputProps = & {
   value?: string | null
   type?: ButtonProps['type']

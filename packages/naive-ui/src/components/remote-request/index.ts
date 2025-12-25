@@ -6,7 +6,9 @@ import type RemoteRequest from './RemoteRequest.vue'
 export { default as NRemoteRequest } from './RemoteRequest.vue'
 
 export type RemoteRequestFields = DataRequestFields & {}
+
 export type RemoteRequestExpose<P extends DataObject = DataObject, D extends DataObject = DataObject, R extends DataObject = DataObject> = UseDataRequestReturns<P, D, R>
+
 export type RemoteRequestProps<P extends DataObject = DataObject, D extends DataObject = DataObject> = & {
   api: (...args: P[]) => Promise<D>
   defaultParams?: Partial<P>
@@ -21,4 +23,5 @@ export type RemoteRequestEmits<P extends DataObject = DataObject, D extends Data
   (e: 'error', err: Error, params: P[]): void
   (e: 'finally', params: P[], data?: D, err?: Error): void
 }
+
 export type RemoteRequestInst = ComponentExposed<typeof RemoteRequest>

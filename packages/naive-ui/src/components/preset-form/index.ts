@@ -8,6 +8,7 @@ import type { PresetInputOptions } from '../preset-input/index'
 import type PresetForm from './PresetForm.vue'
 
 export type { NaiveFormRules } from '../../composables/useNaiveForm'
+
 export { default as NPresetForm } from './PresetForm.vue'
 
 export type PresetFormExpose<V extends DataObject = DataObject> = NaiveFormReturns<V>
@@ -33,4 +34,5 @@ export type PresetFormProps<V extends DataObject = DataObject> = & {
   formProps?: FormProps & ClassStyle
   gridProps?: GridProps & ClassStyle
 }
+
 export type PresetFormInst = ComponentExposed<typeof PresetForm>

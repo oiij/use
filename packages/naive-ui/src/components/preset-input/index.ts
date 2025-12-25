@@ -4,7 +4,9 @@ import type { ClassStyle } from '../data-table-plus/index'
 import type { SearchInputProps } from '../search-input/index'
 
 export { default as NPresetInput } from './PresetInput.vue'
+
 type RawChildren = string | number | boolean | VNode | VNodeArrayChildren | (() => any)
+
 export type PresetInputType = & {
   'button': {
     props?: ButtonProps & { label?: string }
@@ -128,6 +130,7 @@ export type PresetInputOptions = {
     slots?: PresetInputType[K]['slots']
   }
 }[keyof PresetInputType]
+
 export type PresetInputProps<V> = & {
   value?: V
   options?: PresetInputOptions
