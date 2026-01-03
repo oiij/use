@@ -11,7 +11,7 @@ hero:
   actions:
     - theme: brand
       text: Examples
-      link: /examples/core/composables/use-auto-ratio
+      link: /examples/index
     - theme: alt
       text: View on GitHub
       link: https://github.com/oiij/use

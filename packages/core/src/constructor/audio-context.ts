@@ -1,202 +1,293 @@
-interface Options {
+import { createEventHook } from '@vueuse/core'
+
+function formatTime(seconds: number): string {
+  const minutes = Math.floor(seconds / 60)
+  seconds = Math.floor(seconds % 60)
+  return `${minutes}:${seconds.toString().padStart(2, '0')}`
+}
+
+export type AudioContextOptions = & {
   analyser?: boolean
   volume?: number
-  fftSize?: number
+  playbackRate?: number
+  fadeOptions?: AudioContextFadeOptions | boolean
+}
+
+export type AudioContextFadeOptions = & {
+  fade?: boolean
+  duration?: number
 }
 
 export class IAudioContext {
-  #options: Options = {}
-  #controller = new AbortController()
-  audioContext = new AudioContext()
-  audioBuffer?: AudioBuffer
-  bufferSource: AudioBufferSourceNode | null = null
-  gainNode = this.audioContext.createGain()
-  analyserNode = this.audioContext.createAnalyser()
-  bufferLength = this.analyserNode.frequencyBinCount
-  unit8Array = new Uint8Array(this.bufferLength)
+  public eqFrequencies: number[] = [32, 64, 125, 250, 500, 1000, 2000, 4000, 8000, 16000]
+  public audioContext: AudioContext
+  public audioElement: HTMLAudioElement
+  public sourceNode: MediaElementAudioSourceNode
+  public gainNode: GainNode
+  public analyserNode: AnalyserNode
+  public filters: BiquadFilterNode[]
+  public filterNode: BiquadFilterNode
+  public volume: number
+  public playbackRate: number
+  public playing: boolean = false
+  public paused: boolean = false
+  public ended: boolean = false
+  public currentTime: number = 0
+  public currentTimeText: string = '0:00'
+  public duration: number = 0
+  public durationText: string = '0:00'
+  public progress: number = 0
+  public cachedDuration: number = 0
+  public cachedDurationText: string = '0:00'
+  public cachedProgress: number = 0
+  public url?: string
 
-  status: AudioContextState = this.audioContext.state
-  playing = false
-  ended = false
-  #startFlag = 0
-  #pauseFlag = 0
-  currentTimeRaw = 0
-  get currentTime() {
-    return this.#formatTime(this.currentTimeRaw)
+  private defaultFadeOptions: AudioContextFadeOptions
+  private onVolumeUpdateEv = createEventHook<HTMLAudioElement>()
+  private onRateUpdateEv = createEventHook<HTMLAudioElement>()
+  private onPlayingEv = createEventHook<HTMLAudioElement>()
+  private onPausedEv = createEventHook<HTMLAudioElement>()
+  private onEndedEv = createEventHook<HTMLAudioElement>()
+  private onTimeUpdateEv = createEventHook<HTMLAudioElement>()
+  private onDurationUpdateEv = createEventHook<HTMLAudioElement>()
+
+  constructor(options?: AudioContextOptions) {
+    const { volume: defaultVolume = 1, playbackRate: defaultPlaybackRate = 1, fadeOptions } = options ?? {}
+
+    this.defaultFadeOptions = typeof fadeOptions === 'boolean' ? { fade: true, duration: 1 } : fadeOptions ?? {}
+
+    this.audioContext = new AudioContext()
+
+    this.audioElement = new Audio()
+    this.audioElement.crossOrigin = 'anonymous'
+
+    this.sourceNode = this.audioContext.createMediaElementSource(this.audioElement)
+    this.gainNode = this.audioContext.createGain()
+    this.analyserNode = this.audioContext.createAnalyser()
+    this.analyserNode.fftSize = 2048
+
+    this.filters = this.eqFrequencies.map((freq) => {
+      const filter = this.audioContext.createBiquadFilter()
+      filter.type = 'peaking'
+      filter.frequency.value = freq
+      filter.Q.value = 1
+      filter.gain.value = 0
+      return filter
+    })
+
+    this.filterNode = this.createFilterNode()
+    this.filterNode.connect(this.analyserNode)
+    this.analyserNode.connect(this.gainNode)
+    this.gainNode.connect(this.audioContext.destination)
+
+    this.volume = defaultVolume
+    this.gainNode.gain.value = this.volume
+
+    this.playbackRate = defaultPlaybackRate
+    this.audioElement.playbackRate = this.playbackRate
+
+    this.setupEventListeners()
   }
 
-  durationRaw = 0
-  get duration() {
-    return this.#formatTime(this.durationRaw)
+  private createFilterNode(): BiquadFilterNode {
+    let filterNode: AudioNode = this.sourceNode
+    this.filters.forEach((filter) => {
+      filterNode.connect(filter)
+      filterNode = filter
+    })
+    return filterNode as BiquadFilterNode
   }
 
-  progressRaw = 0
-  get progress() {
-    return Number(this.progressRaw.toFixed(0))
-  }
+  private setupEventListeners(): void {
+    this.audioElement.addEventListener('volumechange', () => {
+      this.volume = this.audioElement.volume
+      this.onVolumeUpdateEv.trigger(this.audioElement)
+    })
 
-  #volume: number = this.gainNode.gain.value * 100
-  get volume() {
-    return this.#volume
-  }
+    this.audioElement.addEventListener('ratechange', () => {
+      this.playbackRate = this.audioElement.playbackRate
+      this.onRateUpdateEv.trigger(this.audioElement)
+    })
 
-  set volume(val: number) {
-    this.gainNode.gain.value = val / 100
-  }
-
-  #detune = this.bufferSource?.detune.defaultValue ?? 0 // 音调
-  get detune() {
-    return this.#detune
-  }
-
-  set detune(val: number) {
-    if (this.bufferSource)
-      this.bufferSource.detune.value = val
-  }
-
-  #playbackRate = this.bufferSource?.playbackRate.defaultValue ?? 1 // 播放速率
-  get playbackRate() {
-    return this.#playbackRate
-  }
-
-  set playbackRate(val: number) {
-    if (this.bufferSource)
-      this.bufferSource.playbackRate.value = val
-  }
-
-  #onByteTimeDomainDataFn: ((array: Uint8Array) => void) | null = null
-
-  #getByteTimeDomainData() {
-    this.analyserNode.getByteTimeDomainData(this.unit8Array)
-    if (typeof this.#onByteTimeDomainDataFn === 'function') {
-      this.#onByteTimeDomainDataFn(this.unit8Array)
-    }
-    requestAnimationFrame(this.#getByteTimeDomainData)
-  }
-
-  onByteTimeDomainData(fn: (array: Uint8Array) => void) {
-    this.#onByteTimeDomainDataFn = fn
-    if (this.#options.analyser) {
-      this.#getByteTimeDomainData()
-    }
-  }
-
-  #onEndedFn: (() => void) | null = null
-  #onProgressFn: ((progress: number) => void) | null = null
-  #updateDuration() {
-    const _currentTime = this.audioContext.currentTime - this.#startFlag
-    if (_currentTime >= this.durationRaw) {
-      this.playing = false
-      this.ended = true
-      if (typeof this.#onEndedFn === 'function') {
-        this.#onEndedFn()
-      }
-      return
-    }
-    this.currentTimeRaw = _currentTime
-    this.progressRaw = (_currentTime / this.durationRaw) * 100
-    if (typeof this.#onProgressFn === 'function') {
-      this.#onProgressFn(this.progressRaw)
-    }
-    requestAnimationFrame(this.#updateDuration)
-  }
-
-  #formatTime(seconds: number) {
-    const minutes = Math.floor(seconds / 60)
-    seconds = Math.floor(seconds % 60)
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`
-  }
-
-  createBufferSource(audioBuffer: AudioBuffer) {
-    const bufferSource = this.audioContext.createBufferSource()
-    bufferSource.buffer = audioBuffer
-    bufferSource.connect(this.gainNode)
-    return bufferSource
-  }
-
-  setProgress(val: number) {
-    if (this.audioBuffer) {
-      const targetDuration = val / 100 * this.durationRaw
-      this.bufferSource?.stop()
-      this.bufferSource = this.createBufferSource(this.audioBuffer)
-      this.bufferSource.start(0, targetDuration)
-      this.#startFlag = this.audioContext.currentTime - targetDuration
-      if (!this.playing) {
-        this.#pauseFlag = this.audioContext.currentTime - this.#startFlag
-      }
-    }
-  }
-
-  onProgress(fn: (progress: number) => void) {
-    this.#onProgressFn = fn
-  }
-
-  onEnded(fn: () => void) {
-    this.#onEndedFn = fn
-  }
-
-  async playBuffer(arrayBuffer: Uint8Array) {
-    this.audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer.buffer as unknown as ArrayBuffer)
-    this.play()
-  }
-
-  play() {
-    if (this.audioBuffer) {
-      this.bufferSource?.stop()
-      this.bufferSource = this.createBufferSource(this.audioBuffer)
-      this.bufferSource.start(0)
-
+    this.audioElement.addEventListener('playing', () => {
       this.playing = true
-      this.ended = false
+      this.paused = false
+      this.onPlayingEv.trigger(this.audioElement)
+    })
 
-      this.durationRaw = this.audioBuffer.duration
-      this.#startFlag = this.audioContext.currentTime
+    this.audioElement.addEventListener('pause', () => {
+      this.paused = true
+      this.playing = false
+      this.onPausedEv.trigger(this.audioElement)
+    })
 
-      this.#updateDuration()
+    this.audioElement.addEventListener('ended', () => {
+      this.ended = true
+      this.playing = false
+      this.paused = true
+      this.onEndedEv.trigger(this.audioElement)
+    })
+
+    this.audioElement.addEventListener('timeupdate', () => {
+      this.currentTime = this.audioElement.currentTime
+      this.currentTimeText = formatTime(this.currentTime)
+      this.progress = Number(((this.audioElement.currentTime / this.audioElement.duration) * 100).toFixed(2))
+      this.onTimeUpdateEv.trigger(this.audioElement)
+    })
+
+    this.audioElement.addEventListener('durationchange', () => {
+      this.duration = this.audioElement.duration
+      this.durationText = formatTime(this.duration)
+      this.onDurationUpdateEv.trigger(this.audioElement)
+    })
+
+    this.audioElement.addEventListener('canplay', () => {
+      const duration = this.audioElement.buffered.end(Math.max(0, this.audioElement.buffered.length - 1))
+      this.cachedDuration = Number(duration.toFixed(2))
+      this.cachedDurationText = formatTime(this.cachedDuration)
+      this.cachedProgress = Number((duration / this.audioElement.duration * 100).toFixed(2))
+    })
+  }
+
+  public setVolume(volume: number): void {
+    this.volume = Math.max(0, Math.min(1, volume))
+    this.gainNode.gain.cancelScheduledValues(this.audioContext.currentTime)
+    this.gainNode.gain.setValueAtTime(this.volume, this.audioContext.currentTime)
+  }
+
+  public setPlaybackRate(playbackRate: number): void {
+    this.playbackRate = playbackRate
+    this.audioElement.playbackRate = this.playbackRate
+  }
+
+  public setCurrentTime(time: number): void {
+    this.currentTime = time
+    this.audioElement.currentTime = time
+  }
+
+  public setProgress(progress: number): void {
+    this.progress = progress
+    this.audioElement.currentTime = Number(((progress / 100) * this.audioElement.duration).toFixed(2))
+  }
+
+  public async play(_url?: string): Promise<void> {
+    if (_url) {
+      this.url = _url
+    }
+    if (!this.url) {
+      console.error('AudioContext:play error: url is required')
+      throw new Error('AudioContext:play error: url is required')
+    }
+    this.audioElement.src = this.url
+    this.audioElement.load()
+    if (this.audioContext.state === 'suspended') {
+      await this.audioContext.resume()
+    }
+    try {
+      await this.audioElement.play()
+    }
+    catch (error) {
+      console.error('AudioContext:play error:', error)
+      throw error
     }
   }
 
-  pause() {
-    this.audioContext.suspend()
-    this.#pauseFlag = this.audioContext.currentTime - this.#startFlag
-    this.playing = false
-  }
-
-  resume() {
-    if (this.ended) {
-      this.play()
+  public pause(options?: AudioContextFadeOptions): void {
+    const { fade = true, duration = 1 } = options ?? this.defaultFadeOptions
+    if (fade) {
+      const currentTime = this.audioContext.currentTime
+      this.gainNode.gain.cancelScheduledValues(currentTime)
+      this.gainNode.gain.setValueAtTime(this.gainNode.gain.value, currentTime)
+      this.gainNode.gain.linearRampToValueAtTime(0, currentTime + duration)
+      setTimeout(() => {
+        this.audioElement.pause()
+      }, duration * 1000)
       return
     }
-    this.audioContext.resume()
-    this.#startFlag = this.audioContext.currentTime - this.#pauseFlag
-    this.playing = true
+    this.audioElement.pause()
   }
 
-  stop() {
-    this.bufferSource?.stop()
-    this.#pauseFlag = 0
-    this.#startFlag = 0
-    this.currentTimeRaw = 0
-    this.playing = false
-    this.ended = true
-  }
-
-  destroy() {
-    stop()
-    this.bufferSource = null
-    this.audioContext.close()
-  }
-
-  constructor(options?: Options) {
-    this.#options = { ...options }
-    this.#volume = this.#options.volume ?? 80
-    this.analyserNode.fftSize = this.#options.fftSize ?? 2048
-    this.gainNode.connect(this.analyserNode).connect(this.audioContext.destination)
-    this.audioContext.addEventListener('statechange', () => {
-      this.status = this.audioContext.state
-    }, { signal: this.#controller.signal })
-    if (this.#options.analyser) {
-      this.#getByteTimeDomainData()
+  public resume(options?: AudioContextFadeOptions): void {
+    const { fade = true, duration = 1 } = options ?? this.defaultFadeOptions
+    if (fade) {
+      const currentTime = this.audioContext.currentTime
+      this.gainNode.gain.cancelScheduledValues(currentTime)
+      this.gainNode.gain.setValueAtTime(0, currentTime)
+      this.gainNode.gain.linearRampToValueAtTime(this.volume, currentTime + duration)
+      setTimeout(() => {
+        this.audioElement.play()
+      }, duration * 1000)
+      return
     }
+    this.audioElement.play()
+  }
+
+  public stop(): void {
+    this.audioElement.pause()
+    this.audioElement.currentTime = 0
+  }
+
+  public toggle(): void {
+    this.audioElement.paused ? this.resume() : this.pause({ fade: true })
+  }
+
+  public destroy(): void {
+    this.sourceNode.disconnect()
+    this.gainNode.disconnect()
+    this.analyserNode.disconnect()
+    this.filterNode.disconnect()
+    this.audioContext.close()
+    this.audioElement.remove()
+  }
+
+  public getFrequencyData(): Uint8Array {
+    const frequencyData = new Uint8Array(this.analyserNode.frequencyBinCount)
+    this.analyserNode.getByteFrequencyData(frequencyData)
+    return frequencyData
+  }
+
+  public setEQFrequency(index: number, value: number): void {
+    if (this.filters[index]) {
+      this.filters[index].gain.value = value
+    }
+  }
+
+  public getEQFrequency(index: number): number {
+    return this.filters[index]?.gain.value ?? 0
+  }
+
+  public getEQFrequencies(): Array<{ frequency: number, gain: number }> {
+    return this.eqFrequencies.map((freq, index) => ({
+      frequency: freq,
+      gain: this.getEQFrequency(index),
+    }))
+  }
+
+  public get onVolumeUpdate() {
+    return this.onVolumeUpdateEv.on
+  }
+
+  public get onRateUpdate() {
+    return this.onRateUpdateEv.on
+  }
+
+  public get onTimeUpdate() {
+    return this.onTimeUpdateEv.on
+  }
+
+  public get onDurationUpdate() {
+    return this.onDurationUpdateEv.on
+  }
+
+  public get onPlaying() {
+    return this.onPlayingEv.on
+  }
+
+  public get onPaused() {
+    return this.onPausedEv.on
+  }
+
+  public get onEnded() {
+    return this.onEndedEv.on
   }
 }

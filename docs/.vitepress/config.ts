@@ -21,15 +21,21 @@ export default defineConfig({
     logo: '/logo.svg',
     nav: [
       { text: 'Home', link: '/' },
+      { text: 'Examples', link: '/examples' },
     ],
 
     sidebar: [
+      {
+        text: 'Examples',
+        link: '/examples',
+      },
       {
         text: 'Core',
         items: [
           {
             text: 'Composables',
             items: [
+              { text: 'useAudioContext', link: '/examples/core/composables/use-audio-context' },
               { text: 'useAutoRatio', link: '/examples/core/composables/use-auto-ratio' },
               { text: 'useContextMenu', link: '/examples/core/composables/use-context-menu' },
               { text: 'useEventSource', link: '/examples/core/composables/use-event-source' },
