@@ -30,7 +30,7 @@ const naiveLocaleMap: {
   },
 }
 
-interface NaiveThemeOptions {
+type NaiveThemeOptions = {
   language?: string | Ref<string>
   darkMode?: boolean | Ref<boolean>
   colors?: Colors

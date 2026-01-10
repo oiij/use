@@ -18,14 +18,14 @@ const ReadyState: {
 }
 type MessageRaw = any
 
-export type UseWebsocketOptions<T extends HandlerType = HandlerType> = & {
+export type UseWebsocketOptions<T extends HandlerType = HandlerType> = {
   protocols?: string | string[]
   manual?: boolean
   autoRetry?: AutoRetry
   parseMessage?: boolean | ((raw: MessageRaw) => Record<keyof T, unknown> | Promise<Record<keyof T, unknown>>)
   handlerKey?: string
 }
-interface HandlerType {
+type HandlerType = {
   [key: string]: any
 }
 export type ReturnHandlerType<U> = {

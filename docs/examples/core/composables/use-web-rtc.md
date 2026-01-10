@@ -13,7 +13,7 @@ type WebRTCOptions = RTCConfiguration & {
   protocols?: string[]
 }
 type Status = 'pending' | 'ready' | 'connected' | 'closed'
-interface HandleEvent {
+type HandleEvent = {
   'register': {
     key: string
   }

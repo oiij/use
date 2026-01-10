@@ -29,6 +29,7 @@ const setupDirective = {
   },
 }
 declare module 'vue' {
+  // eslint-disable-next-line ts/consistent-type-definitions
   export interface ComponentCustomProperties {
     vArrayBufferSrc: typeof arrayBufferSrc
     vClickOutside: typeof clickOutside

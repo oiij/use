@@ -18,7 +18,7 @@ pnpm add @oiij/three-js
 
 ```ts
 declare const RendererOptions: WebGLRendererParameters
-interface EffectComposerOptions {
+type EffectComposerOptions = {
   depthBuffer?: boolean
   stencilBuffer?: boolean
   alpha?: boolean
@@ -43,7 +43,7 @@ declare function useCopyPass(): {
   copyPass: ShaderPass
   dispose: () => void
 }
-interface SMAAEffectOptions {
+type SMAAEffectOptions = {
   smaa?: {
     preset?: SMAAPreset
     edgeDetectionMode?: EdgeDetectionMode
@@ -62,7 +62,7 @@ declare function useSmaaEffectPass(camera: Camera, options?: SMAAEffectOptions):
   smaaEffectPass: EffectPass
   dispose: () => void
 }
-interface OutlineEffectOptions {
+type OutlineEffectOptions = {
   blendFunction?: BlendFunction
   patternTexture?: Texture
   patternScale?: number

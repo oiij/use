@@ -2,7 +2,7 @@ import type { TemplateRef } from 'vue'
 import { useDebounceFn, useElementSize, useEventListener } from '@vueuse/core'
 import { nextTick, watch } from 'vue'
 
-interface ScrollViewOptions {
+type ScrollViewOptions = {
   activeClassName?: string
   enableWheel?: boolean
   direction?: 'horizontal' | 'vertical'

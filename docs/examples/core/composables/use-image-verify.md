@@ -8,14 +8,14 @@
 
 ```ts
 type ImageVerifyType = 'operation' | 'character'
-interface OperationConfig {
+type OperationConfig = {
   figure?: number
   arith?: '+' | '-' | '*'
 }
-interface CharacterConfig {
+type CharacterConfig = {
   length?: number
 }
-interface ImageVerifyOptions {
+type ImageVerifyOptions = {
   width?: number
   height?: number
   refreshOnClick?: boolean

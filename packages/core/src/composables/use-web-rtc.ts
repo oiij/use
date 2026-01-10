@@ -7,7 +7,7 @@ export type WebRTCOptions = RTCConfiguration & {
 }
 export type Status = 'pending' | 'ready' | 'connected' | 'closed'
 
-export interface HandleEvent {
+export type HandleEvent = {
   'register': {
     payload: {
       key: string

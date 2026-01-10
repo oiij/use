@@ -3,7 +3,7 @@ import { ArrowHelper, AxesHelper, GridHelper, PolarGridHelper, Vector3 } from 't
 import { watchVisible } from './_utils'
 
 // 模拟方向插件
-interface ArrowHelperOptions {
+type ArrowHelperOptions = {
   dir?: [number, number, number] | Vector3
   origin?: [number, number, number] | Vector3
   length?: number
@@ -33,7 +33,7 @@ export function useAxesHelper(size?: number) {
 }
 
 // 网格插件
-interface GridHelperOptions {
+type GridHelperOptions = {
   size?: number
   divisions?: number
   colorCenterLine?: ColorRepresentation
@@ -50,7 +50,7 @@ export function useGridHelper(options?: GridHelperOptions) {
   }
 }
 // 极坐标网格插件
-interface PolarGridHelperOptions {
+type PolarGridHelperOptions = {
   radius?: number
   sectors?: number
   rings?: number

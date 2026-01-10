@@ -7,7 +7,7 @@ import { computed, watch } from 'vue'
 import { useDisposable } from './utils/_utils'
 import { onIntersectObject as _onIntersectObject } from './utils/utils'
 
-export interface ThreeJsOptions {
+export type ThreeJsOptions = {
   renderer?: WebGLRendererParameters
   camera?: {
     fov?: number
@@ -22,7 +22,7 @@ export interface ThreeJsOptions {
   helpers?: Object3D []
 
 }
-interface LoopEvent {
+type LoopEvent = {
   clock: Clock
   delta: number
   elapsed: number

@@ -25,7 +25,7 @@
 ## Types
 
 ```ts
-export interface ConfigProvidersProps {
+export type ConfigProvidersProps = {
   globalStyle?: boolean
   configProviderProps?: ConfigProviderProps
   loadingBarProps?: LoadingBarProviderProps
@@ -36,11 +36,12 @@ export interface ConfigProvidersProps {
   messageProviderProps?: MessageProviderProps
 }
 
-export interface LoadingIns {
+export type LoadingIns = {
   start: () => void
   finish: () => void
 }
 declare global {
+  // eslint-disable-next-line ts/consistent-type-definitions
   interface Window {
     $dialog: DialogProviderInst
     $loading: LoadingIns

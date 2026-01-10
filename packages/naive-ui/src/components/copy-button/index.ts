@@ -4,7 +4,7 @@ import type { ClassStyle } from '../data-table-plus'
 
 export { default as NCopyButton } from './CopyButton.vue'
 
-export type CopyButtonProps = & {
+export type CopyButtonProps = {
   value?: string
   config?: UseClipboardOptions<string | undefined>
   tooltipProps?: TooltipProps & ClassStyle

@@ -15,7 +15,7 @@ pnpm add @oiij/three-js
 ## Types
 
 ```ts
-interface ThreeJsOptions {
+type ThreeJsOptions = {
   renderer?: WebGLRendererParameters
   camera?: {
     fov?: number
@@ -29,7 +29,7 @@ interface ThreeJsOptions {
   lights?: Light[]
   helpers?: Object3D[]
 }
-interface LoopEvent {
+type LoopEvent = {
   clock: Clock
   delta: number
   elapsed: number

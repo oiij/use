@@ -15,7 +15,7 @@ export const RendererOptions: WebGLRendererParameters = {
   stencil: false,
   depth: false,
 }
-interface EffectComposerOptions {
+type EffectComposerOptions = {
   depthBuffer?: boolean
   stencilBuffer?: boolean
   alpha?: boolean
@@ -63,7 +63,7 @@ export function useCopyPass() {
 }
 
 // 伽马矫正抗锯齿优化
-interface SMAAEffectOptions {
+type SMAAEffectOptions = {
   smaa?: {
     preset?: SMAAPreset
     edgeDetectionMode?: EdgeDetectionMode
@@ -121,7 +121,7 @@ export function useSmaaEffectPass(camera: Camera, options?: SMAAEffectOptions) {
 }
 
 // 发光描边效果
-interface OutlineEffectOptions {
+type OutlineEffectOptions = {
   blendFunction?: BlendFunction
   patternTexture?: Texture
   patternScale?: number

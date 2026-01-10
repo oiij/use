@@ -16,12 +16,12 @@ pnpm add @oiij/xlsx
 
 ```ts
 type Data = Record<string, unknown>
-interface Head<T extends Data> {
+type Head<T extends Data> = {
   key: keyof T
   title: string
   transform?: Transform<T>
 }
-interface TransformParam<T extends Data> {
+type TransformParam<T extends Data> = {
   rawValue: T[Head<T>['key']]
   rawRow: T
   rawRowIndex: number

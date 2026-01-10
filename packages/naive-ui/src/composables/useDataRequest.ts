@@ -12,14 +12,14 @@ export type DataRequestFields = Record<string, string | undefined> & {
   rowKey?: string
 }
 
-export type UseDataRequestOptions<P extends DataObject = DataObject, D extends DataObject = DataObject> = & {
+export type UseDataRequestOptions<P extends DataObject = DataObject, D extends DataObject = DataObject> = {
   defaultParams?: Partial<P>
   manual?: boolean
   fields?: DataRequestFields
   requestOptions?: UseRequestOptions<D, P[]>
   requestPlugins?: UseRequestPlugin<D, P[]>[]
 }
-export type UseDataRequestPagination = & {
+export type UseDataRequestPagination = {
   page: number
   pageSize: number
   itemCount: number

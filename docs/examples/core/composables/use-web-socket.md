@@ -13,7 +13,7 @@ type AutoRetry = boolean | {
   delay?: number
   onFailed?: () => void
 }
-interface UseWebsocketOptions {
+type UseWebsocketOptions = {
   protocols?: string | string[]
   manual?: boolean
   autoRetry?: AutoRetry
@@ -21,7 +21,7 @@ interface UseWebsocketOptions {
   handlerKey?: string
 }
 type MessageRaw = any
-interface HandlerType {
+type HandlerType = {
   [key: string]: any
 }
 type ReturnHandlerType<U> = { [K in keyof U]: {

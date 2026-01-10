@@ -7,14 +7,14 @@ function formatTime(seconds: number) {
   return `${minutes}:${seconds.toString().padStart(2, '0')}`
 }
 
-export type AudioContextBufferOptions = & {
+export type AudioContextBufferOptions = {
   analyser?: boolean
   volume?: number
   playbackRate?: number
   fadeOptions?: AudioContextBufferFadeOptions | boolean
 }
 
-export type AudioContextBufferFadeOptions = & {
+export type AudioContextBufferFadeOptions = {
   fade?: boolean
   duration?: number
 }

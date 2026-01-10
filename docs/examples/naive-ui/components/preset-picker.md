@@ -8,7 +8,7 @@
 
 ```ts
 export type PresetPickerValue = string | number | (string | number)[] | null
-export interface PresetPickerExpose<R extends DataObject = DataObject> {
+export type PresetPickerExpose<R extends DataObject = DataObject> = {
   showModalFlag: Ref<boolean, boolean>
   checkedRowKeys: Ref<(string | number)[], (string | number)[]>
   checkedRows: Ref<R[], R[]>
@@ -23,7 +23,7 @@ export interface PresetPickerExpose<R extends DataObject = DataObject> {
   setCheckedRowKeys: (keys: (string | number)[]) => void
   setCheckedRows: (rows: R[]) => void
 }
-export interface PresetPickerProps<V extends PresetPickerValue, R extends DataObject = DataObject> {
+export type PresetPickerProps<V extends PresetPickerValue, R extends DataObject = DataObject> = {
   value?: V
   fallbackLabel?: string | ((val: string | number) => string)
   multiple?: boolean
@@ -42,7 +42,7 @@ export interface PresetPickerProps<V extends PresetPickerValue, R extends DataOb
   badgeProps?: BadgeProps & ClassStyle
   modalProps?: ModalProps & ClassStyle
 }
-export interface PresetPickerEmits<V extends PresetPickerValue, R extends DataObject = DataObject> {
+export type PresetPickerEmits<V extends PresetPickerValue, R extends DataObject = DataObject> = {
   (e: 'update:value', val: V | null, raw: R | R[] | null): void
   (e: 'afterEnter'): void
   (e: 'afterLeave'): void

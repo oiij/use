@@ -11,7 +11,7 @@ const emit = defineEmits<{
 }>()
 const inputRef = useTemplateRef('input-ref')
 const _value = ref(value ?? null)
-const _searchButtonType = computed(() => typeof searchButton === 'boolean' ? 'text' : searchButton)
+const _searchButtonType = computed(() => typeof searchButton === 'boolean' ? 'text' : searchButton ?? 'text')
 const { start } = useTimeoutFn(() => {}, typeof autoTrigger === 'number' ? autoTrigger : 500)
 watchEffect(() => {
   _value.value = value ?? null
@@ -57,7 +57,7 @@ watchEffect(() => {
       </template>
     </NInput>
     <slot name="button" :value :loading>
-      <NButton v-if="_searchButtonType" :type="type" :loading="loading" v-bind="buttonProps" @click="handleClick">
+      <NButton v-if="searchButton" :type="type" :loading="loading" v-bind="buttonProps" @click="handleClick">
         <template v-if="_searchButtonType === 'text'">
           搜索
         </template>

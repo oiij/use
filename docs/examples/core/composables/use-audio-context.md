@@ -8,15 +8,14 @@
 
 ```ts
 // #region src/composables/use-audio-context.d.ts
-interface AudioContextOptions {
-  analyser?: boolean
-  volume?: number
-  playbackRate?: number
-  fadeOptions?: AudioContextFadeOptions | boolean
-}
-interface AudioContextFadeOptions {
+type AudioContextFadeOptions = {
   fade?: boolean
   duration?: number
+}
+type AudioContextOptions = {
+  volume?: number
+  playbackRate?: number
+  fade?: AudioContextFadeOptions | boolean
 }
 declare function useAudioContext(options?: AudioContextOptions): {
   eqFrequencies: number[]
@@ -27,25 +26,27 @@ declare function useAudioContext(options?: AudioContextOptions): {
   analyserNode: AnalyserNode
   filters: BiquadFilterNode[]
   filterNode: BiquadFilterNode
-  volume: vue13004.Ref<number, number>
+  volume: vue1484.Ref<number, number>
   setVolume: (volume: number) => void
-  playbackRate: vue13004.Ref<number, number>
+  muted: vue1484.Ref<boolean, boolean>
+  mute: (mute?: boolean) => void
+  playbackRate: vue1484.Ref<number, number>
   setPlaybackRate: (playbackRate: number) => void
-  playing: vue13004.Ref<boolean, boolean>
-  paused: vue13004.Ref<boolean, boolean>
-  ended: vue13004.Ref<boolean, boolean>
-  currentTime: vue13004.Ref<number, number>
-  currentTimeText: vue13004.ComputedRef<string>
+  playing: Readonly<vue1484.Ref<boolean, boolean>>
+  paused: vue1484.Ref<boolean, boolean>
+  ended: Readonly<vue1484.Ref<boolean, boolean>>
+  currentTime: vue1484.Ref<number, number>
+  currentTimeText: vue1484.ComputedRef<string>
   setCurrentTime: (time: number) => void
-  duration: vue13004.Ref<number, number>
-  durationText: vue13004.ComputedRef<string>
-  progress: vue13004.Ref<number, number>
+  duration: vue1484.Ref<number, number>
+  durationText: vue1484.ComputedRef<string>
+  progress: vue1484.Ref<number, number>
   setProgress: (progress: number) => void
-  cachedDuration: vue13004.Ref<number, number>
-  cachedDurationText: vue13004.ComputedRef<string>
-  cachedProgress: vue13004.Ref<number, number>
-  url: vue13004.Ref<string | undefined, string | undefined>
-  play: (_url?: string) => Promise<void>
+  cachedDuration: vue1484.Ref<number, number>
+  cachedDurationText: vue1484.ComputedRef<string>
+  cachedProgress: vue1484.Ref<number, number>
+  url: vue1484.Ref<string | undefined, string | undefined>
+  play: (url: string) => Promise<void>
   pause: (options?: AudioContextFadeOptions) => void
   resume: (options?: AudioContextFadeOptions) => void
   stop: () => void
@@ -57,20 +58,21 @@ declare function useAudioContext(options?: AudioContextOptions): {
     frequency: number
     gain: number
   }[]
-  onVolumeUpdate: _vueuse_core7706.EventHookOn<HTMLAudioElement>
-  onRateUpdate: _vueuse_core7706.EventHookOn<HTMLAudioElement>
-  onTimeUpdate: _vueuse_core7706.EventHookOn<HTMLAudioElement>
-  onDurationUpdate: _vueuse_core7706.EventHookOn<HTMLAudioElement>
-  onPlaying: _vueuse_core7706.EventHookOn<HTMLAudioElement>
-  onPaused: _vueuse_core7706.EventHookOn<HTMLAudioElement>
-  onEnded: _vueuse_core7706.EventHookOn<HTMLAudioElement>
+  onVolumeUpdate: _vueuse_core931.EventHookOn<HTMLAudioElement>
+  onMuted: _vueuse_core931.EventHookOn<HTMLAudioElement>
+  onRateUpdate: _vueuse_core931.EventHookOn<HTMLAudioElement>
+  onTimeUpdate: _vueuse_core931.EventHookOn<HTMLAudioElement>
+  onDurationUpdate: _vueuse_core931.EventHookOn<HTMLAudioElement>
+  onPlaying: _vueuse_core931.EventHookOn<HTMLAudioElement>
+  onPaused: _vueuse_core931.EventHookOn<HTMLAudioElement>
+  onEnded: _vueuse_core931.EventHookOn<HTMLAudioElement>
 }
 type UseAudioContextReturns = ReturnType<typeof useAudioContext>
 // #endregion
 export { AudioContextFadeOptions, AudioContextOptions, useAudioContext, UseAudioContextReturns }
 
 // #region src/composables/use-spectrum.d.ts
-interface SpectrumBarOptions {
+type SpectrumBarOptions = {
   width?: number
   minHeight?: number
   spacing?: number
@@ -78,7 +80,7 @@ interface SpectrumBarOptions {
   color?: [string, string] | string
   shadow?: boolean
 }
-interface SpectrumLineOptions {
+type SpectrumLineOptions = {
   width?: number
   spacing?: number
   color?: [string, string] | string
@@ -86,7 +88,7 @@ interface SpectrumLineOptions {
   fill?: boolean
   shadow?: boolean
 }
-interface SpectrumCircleBarOptions {
+type SpectrumCircleBarOptions = {
   width?: number
   minHeight?: number
   spacing?: number
@@ -97,7 +99,7 @@ interface SpectrumCircleBarOptions {
   endAngle?: number
   shadow?: boolean
 }
-interface SpectrumCircleLineOptions {
+type SpectrumCircleLineOptions = {
   width?: number
   spacing?: number
   radius?: number
@@ -108,7 +110,7 @@ interface SpectrumCircleLineOptions {
   endAngle?: number
   shadow?: boolean
 }
-interface SpectrumOptions {
+type SpectrumOptions = {
   type?: 'bar' | 'line' | 'circle-bar' | 'circle-line'
   color?: [string, string] | string
   shadow?: boolean

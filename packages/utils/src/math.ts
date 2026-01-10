@@ -1,9 +1,9 @@
-interface Point {
+type Point = {
   x: number
   y: number
 }
 
-interface Rect {
+type Rect = {
   bottom: number
   left: number
   top: number

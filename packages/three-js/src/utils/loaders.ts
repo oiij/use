@@ -6,7 +6,7 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import { OBJLoader } from 'three/addons/loaders/OBJLoader.js'
 import { isMesh } from './index'
 
-interface LoaderOptions {
+type LoaderOptions = {
   manager?: LoadingManager
   onProgress?: (event: ProgressEvent) => void
 }

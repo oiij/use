@@ -7,7 +7,7 @@
 ## Types
 
 ```ts
-export interface SearchInputProps {
+export type SearchInputProps = {
   value?: string | null
   type?: ButtonProps['type']
   placeholder?: string

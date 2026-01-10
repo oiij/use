@@ -7,7 +7,7 @@
 ## Types
 
 ```ts
-export interface PresetInputType {
+export type PresetInputType = {
   'button': ButtonProps & {
     label?: string
   }
@@ -39,7 +39,7 @@ export type PresetInputOptions = {
     }
   };
 }[keyof PresetInputType]
-export interface PresetInputProps<V> {
+export type PresetInputProps<V> = {
   value?: V
   options?: PresetInputOptions
 }

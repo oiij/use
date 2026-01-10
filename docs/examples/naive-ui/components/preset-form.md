@@ -20,7 +20,7 @@ export type PresetFormOptionItem<V extends DataObject = DataObject> = PresetInpu
   render?: (params: PresetFormExpose<V>) => VNode | null
 }
 export type PresetFormOptions<V extends DataObject = DataObject> = PresetFormOptionItem<V>[]
-export type PresetFormProps<V extends DataObject = DataObject> = & {
+export type PresetFormProps<V extends DataObject = DataObject> = {
   options?: PresetFormOptions<V>
   values?: V
   rules?: NaiveFormRules<V>

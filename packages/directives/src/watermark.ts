@@ -2,7 +2,7 @@ import type { Directive } from 'vue'
 
 type TargetElement = HTMLElement & {
 }
-export interface WatermarkOptions {
+export type WatermarkOptions = {
   text?: string
   textColor?: string
   font?: string

@@ -3,7 +3,7 @@ import { jsPDF as JsPDF } from 'jspdf'
 
 export * from './utils'
 type Color = string | [number, number, number, number]
-interface TextStyle {
+type TextStyle = {
   fontSize?: number
   fontName?: string
   fontStyle?: HTMLFontFace['style']
@@ -11,7 +11,7 @@ interface TextStyle {
   textColor?: Color
 
 }
-interface DrawStyle {
+type DrawStyle = {
   drawColor?: Color
   fillColor?: Color
   charSpace?: number

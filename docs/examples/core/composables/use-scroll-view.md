@@ -7,7 +7,7 @@
 ## Types
 
 ```ts
-interface ScrollViewOptions {
+type ScrollViewOptions = {
   activeClassName?: string
   enableWheel?: boolean
   direction?: 'horizontal' | 'vertical'

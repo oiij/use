@@ -7,7 +7,7 @@
 ## Types
 
 ```ts
-export interface NaiveThemeReturns {
+export type NaiveThemeReturns = {
   theme: ComputedRef<typeof darkTheme | undefined>
   themeOverrides: ComputedRef<GlobalThemeOverrides>
   locale: ComputedRef<typeof zhCN | typeof enUS>

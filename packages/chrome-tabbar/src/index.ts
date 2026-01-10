@@ -3,7 +3,7 @@ import type { CSSProperties, VNode } from 'vue'
 type VNodeChild = VNode | string | number | undefined | void | null | boolean
 export type TabItemKey = string | number
 export { default as CTabs } from './Tabs.vue'
-export type TabsOption = & {
+export type TabsOption = {
   key: TabItemKey
   label: string | ((key: TabItemKey, index: number) => VNodeChild)
   icon?: (key: TabItemKey, index: number) => VNodeChild
@@ -23,7 +23,7 @@ export type TabsItemProps = Omit<TabsOption, 'key'> & {
   itemKey: TabItemKey
   iconSize?: number
 }
-export type TabsProps = & {
+export type TabsProps = {
   value?: TabItemKey
   colors?: {
     active?: string

@@ -9,7 +9,7 @@ export type RemoteRequestFields = DataRequestFields & {}
 
 export type RemoteRequestExpose<P extends DataObject = DataObject, D extends DataObject = DataObject, R extends DataObject = DataObject> = UseDataRequestReturns<P, D, R>
 
-export type RemoteRequestProps<P extends DataObject = DataObject, D extends DataObject = DataObject> = & {
+export type RemoteRequestProps<P extends DataObject = DataObject, D extends DataObject = DataObject> = {
   api: (...args: P[]) => Promise<D>
   defaultParams?: Partial<P>
   manual?: boolean
@@ -17,7 +17,7 @@ export type RemoteRequestProps<P extends DataObject = DataObject, D extends Data
   requestOptions?: UseRequestOptions<D, P[]>
   requestPlugins?: UseRequestPlugin<D, P[]>[]
 }
-export type RemoteRequestEmits<P extends DataObject = DataObject, D extends DataObject = DataObject> = & {
+export type RemoteRequestEmits<P extends DataObject = DataObject, D extends DataObject = DataObject> = {
   (e: 'before', params: P[]): void
   (e: 'success', data: D, params: P[]): void
   (e: 'error', err: Error, params: P[]): void

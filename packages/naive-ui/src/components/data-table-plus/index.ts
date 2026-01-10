@@ -9,7 +9,7 @@ import type DataTablePlus from './DataTablePlus.vue'
 
 export { default as NDataTablePlus } from './DataTablePlus.vue'
 
-export type ClassStyle = & {
+export type ClassStyle = {
   class?: string
   style?: CSSProperties | string
 }

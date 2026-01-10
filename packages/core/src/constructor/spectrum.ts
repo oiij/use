@@ -1,7 +1,7 @@
 import type { Ref, TemplateRef } from 'vue'
 import { useRafFn } from '@vueuse/core'
 
-export type SpectrumBarOptions = & {
+export type SpectrumBarOptions = {
   width?: number
   minHeight?: number
   spacing?: number
@@ -9,7 +9,7 @@ export type SpectrumBarOptions = & {
   color?: [string, string] | string
   shadow?: boolean
 }
-export type SpectrumLineOptions = & {
+export type SpectrumLineOptions = {
   width?: number
   spacing?: number
   color?: [string, string] | string
@@ -18,7 +18,7 @@ export type SpectrumLineOptions = & {
   shadow?: boolean
 }
 
-export type SpectrumCircleBarOptions = & {
+export type SpectrumCircleBarOptions = {
   width?: number
   minHeight?: number
   spacing?: number
@@ -29,7 +29,7 @@ export type SpectrumCircleBarOptions = & {
   endAngle?: number
   shadow?: boolean
 }
-export type SpectrumCircleLineOptions = & {
+export type SpectrumCircleLineOptions = {
   width?: number
   spacing?: number
   radius?: number
@@ -41,7 +41,7 @@ export type SpectrumCircleLineOptions = & {
   shadow?: boolean
 
 }
-export type SpectrumOptions = & {
+export type SpectrumOptions = {
   type?: 'bar' | 'line' | 'circle-bar' | 'circle-line'
   color?: [string, string] | string
   shadow?: boolean

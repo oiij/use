@@ -1,7 +1,7 @@
 import { LoadingManager } from 'three'
 import { useLoading } from './use-loading'
 
-export interface SP { url: string, loaded: number, total: number }
+export type SP = { url: string, loaded: number, total: number }
 export function useLoadingManager(_manager?: LoadingManager) {
   const manager = _manager instanceof LoadingManager ? _manager : new LoadingManager()
   const { loading, complete, loaded, total, progress, error, onStartEvent, onLoadEvent, onProgressEvent, onErrorEvent } = useLoading<void, string, SP, SP>()

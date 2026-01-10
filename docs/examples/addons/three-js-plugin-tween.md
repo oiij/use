@@ -17,7 +17,7 @@ pnpm add @oiij/three-js
 ## Types
 
 ```ts
-interface CameraTweenOptions {
+type CameraTweenOptions = {
   duration?: number
   easing?: typeof Easing['Linear']['None']
 }

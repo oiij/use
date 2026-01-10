@@ -5,20 +5,20 @@ import { NPresetSelect } from '@oiij/naive-ui/components'
 import { NButton, NFlex } from 'naive-ui'
 import { ref } from 'vue'
 
-interface Params {
+type Params = {
   id?: number
   page?: number
   pageSize?: number
   search?: string
 }
-interface Row {
+type Row = {
   id: number
   name: string
   page: number
   pageSize: number
   search: string
 }
-interface Res {
+type Res = {
   list: Row[]
   params: any
   count: number

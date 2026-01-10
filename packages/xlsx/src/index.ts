@@ -1,8 +1,8 @@
 import { saveAs } from 'file-saver'
 import { utils, write } from 'xlsx'
 
-export interface SheetColumns<T extends Record<string, any>> { key: keyof T, title: string, transform?: SheetTransform<T> }
-export interface SheetTransformParam<T extends Record<string, any>> {
+export type SheetColumns<T extends Record<string, any>> = { key: keyof T, title: string, transform?: SheetTransform<T> }
+export type SheetTransformParam<T extends Record<string, any>> = {
   rawValue: T[SheetColumns<T>['key']]
   rawRow: T
   rawRowIndex: number

@@ -1,6 +1,6 @@
 import { onUnmounted, readonly, ref, watch } from 'vue'
 
-interface Options {
+type Options = {
   autoPlay?: boolean
   volume?: number
   loop?: boolean

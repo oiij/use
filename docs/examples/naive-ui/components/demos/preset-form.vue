@@ -5,7 +5,7 @@ import { NPresetForm } from '@oiij/naive-ui/components'
 import { NButton, NFlex, NInput, NSwitch } from 'naive-ui'
 import { h, ref, useTemplateRef } from 'vue'
 
-interface Values {
+type Values = {
   id?: string
   num?: number
   hidden?: boolean

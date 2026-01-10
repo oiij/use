@@ -1,27 +1,28 @@
 import { createEventHook } from '@vueuse/core'
-import { computed, onUnmounted, ref, watchEffect } from 'vue'
+import { computed, onUnmounted, readonly, ref, watch } from 'vue'
 
 function formatTime(seconds: number) {
   const minutes = Math.floor(seconds / 60)
   seconds = Math.floor(seconds % 60)
   return `${minutes}:${seconds.toString().padStart(2, '0')}`
 }
-export type AudioContextOptions = & {
-  analyser?: boolean
-  volume?: number
-  playbackRate?: number
-  fadeOptions?: AudioContextFadeOptions | boolean
-}
-export type AudioContextFadeOptions = & {
+export type AudioContextFadeOptions = {
   fade?: boolean
   duration?: number
 }
+export type AudioContextOptions = {
+  volume?: number
+  playbackRate?: number
+  fade?: AudioContextFadeOptions | boolean
+}
+
 export function useAudioContext(options?: AudioContextOptions) {
-  const { volume: defaultVolume = 1, playbackRate: defaultPlaybackRate = 1, fadeOptions } = options ?? {}
+  const { volume: defaultVolume = 1, playbackRate: defaultPlaybackRate = 1, fade } = options ?? {}
   const eqFrequencies = [32, 64, 125, 250, 500, 1000, 2000, 4000, 8000, 16000]
 
-  const defaultFadeOptions = typeof fadeOptions === 'boolean' ? { fade: true, duration: 1 } : fadeOptions ?? {}
+  const defaultFadeOptions = typeof fade === 'boolean' ? { fade: true, duration: 1 } : fade ?? {}
 
+  const controller = new AbortController()
   const audioContext = new AudioContext()
 
   const audioElement = new Audio()
@@ -60,6 +61,7 @@ export function useAudioContext(options?: AudioContextOptions) {
   gainNode.connect(audioContext.destination)
 
   const onVolumeUpdateEv = createEventHook<HTMLAudioElement>()
+  const onMutedEv = createEventHook<HTMLAudioElement>()
   const onRateUpdateEv = createEventHook<HTMLAudioElement>()
   const onPlayingEv = createEventHook<HTMLAudioElement>()
   const onPausedEv = createEventHook<HTMLAudioElement>()
@@ -68,97 +70,56 @@ export function useAudioContext(options?: AudioContextOptions) {
   const onDurationUpdateEv = createEventHook<HTMLAudioElement>()
 
   // volume
-  const volume = ref(defaultVolume)
-  gainNode.gain.value = volume.value
+  const volumeRef = ref(defaultVolume)
+  gainNode.gain.value = volumeRef.value
   function setVolume(volume: number) {
     gainNode.gain.cancelScheduledValues(audioContext.currentTime)
     gainNode.gain.setValueAtTime(Math.max(0, Math.min(1, volume)), audioContext.currentTime)
-  }
-  watchEffect(() => {
-    setVolume(volume.value)
-  })
-  audioElement.addEventListener('volumechange', () => {
-    volume.value = audioElement.volume
+    volumeRef.value = volume
     onVolumeUpdateEv.trigger(audioElement)
+  }
+  watch(volumeRef, (volume) => {
+    setVolume(volume)
+  })
+
+  // mute
+  let volumeCache: number = defaultVolume
+  const mutedRef = ref(false)
+  function mute(mute = true) {
+    if (mute) {
+      volumeCache = volumeRef.value
+      setVolume(0)
+      onMutedEv.trigger(audioElement)
+    }
+    else {
+      setVolume(volumeCache)
+    }
+  }
+  watch(mutedRef, (muted) => {
+    mute(muted)
   })
 
   // playbackRate
-  const playbackRate = ref(defaultPlaybackRate)
+  const playbackRateRef = ref(defaultPlaybackRate)
   function setPlaybackRate(playbackRate: number) {
     audioElement.playbackRate = playbackRate
   }
-  watchEffect(() => {
-    setPlaybackRate(playbackRate.value)
+  watch(playbackRateRef, (playbackRate) => {
+    setPlaybackRate(playbackRate)
   })
   audioElement.addEventListener('ratechange', () => {
-    playbackRate.value = audioElement.playbackRate
+    playbackRateRef.value = audioElement.playbackRate
     onRateUpdateEv.trigger(audioElement)
+  }, {
+    signal: controller.signal,
   })
 
-  const playing = ref(false)
-  audioElement.addEventListener('playing', () => {
-    playing.value = true
-    onPlayingEv.trigger(audioElement)
-  })
-
-  const paused = ref(false)
-  audioElement.addEventListener('pause', () => {
-    paused.value = true
-    onPausedEv.trigger(audioElement)
-  })
-
-  const ended = ref(false)
-  audioElement.addEventListener('ended', () => {
-    ended.value = true
-    onEndedEv.trigger(audioElement)
-  })
-
-  const currentTime = ref(0)
-  const currentTimeText = computed(() => formatTime(currentTime.value))
-  function setCurrentTime(time: number) {
-    audioElement.currentTime = time
-  }
-  watchEffect(() => {
-    setCurrentTime(currentTime.value)
-  })
-
-  const progress = ref(0)
-  function setProgress(progress: number) {
-    audioElement.currentTime = Number(((progress / 100) * audioElement.duration).toFixed(2))
-  }
-
-  audioElement.addEventListener('timeupdate', () => {
-    currentTime.value = audioElement.currentTime
-    progress.value = Number(((audioElement.currentTime / audioElement.duration) * 100).toFixed(2))
-    onTimeUpdateEv.trigger(audioElement)
-  })
-
-  const duration = ref(0)
-  const durationText = computed(() => formatTime(duration.value))
-  audioElement.addEventListener('durationchange', () => {
-    duration.value = audioElement.duration
-    onDurationUpdateEv.trigger(audioElement)
-  })
-
-  const cachedDuration = ref(0)
-  const cachedDurationText = computed(() => formatTime(cachedDuration.value))
-  const cachedProgress = ref(0)
-  audioElement.addEventListener('canplay', () => {
-    const duration = audioElement.buffered.end(Math.max(0, audioElement.buffered.length - 1))
-    cachedDuration.value = Number(duration.toFixed(2))
-    cachedProgress.value = Number((duration / audioElement.duration * 100).toFixed(2))
-  })
-
-  const url = ref<string>()
-  async function play(_url?: string) {
-    if (_url) {
-      url.value = _url
-    }
-    if (!url.value) {
-      console.error('useAudioContext:play error: url is required')
-      throw new Error('useAudioContext:play error: url is required')
-    }
-    audioElement.src = url.value
+  // play&stop
+  const playingRef = ref(false)
+  const urlRef = ref<string>()
+  async function play(url: string) {
+    urlRef.value = url
+    audioElement.src = url
     audioElement.load()
     if (audioContext.state === 'suspended') {
       await audioContext.resume()
@@ -171,6 +132,26 @@ export function useAudioContext(options?: AudioContextOptions) {
       throw error
     }
   }
+  watch(urlRef, (url) => {
+    if (url) {
+      play(url)
+    }
+  })
+
+  function stop() {
+    audioElement.pause()
+    audioElement.currentTime = 0
+  }
+  audioElement.addEventListener('playing', () => {
+    playingRef.value = true
+    onPlayingEv.trigger(audioElement)
+  }, {
+    signal: controller.signal,
+  })
+
+  // pause&resume
+  const pausedRef = ref(false)
+
   function pause(options?: AudioContextFadeOptions) {
     const { fade = true, duration = 1 } = options ?? defaultFadeOptions
     if (fade) {
@@ -199,14 +180,88 @@ export function useAudioContext(options?: AudioContextOptions) {
     }
     audioElement.play()
   }
-  function stop() {
-    audioElement.pause()
-    audioElement.currentTime = 0
-  }
+
   function toggle() {
     audioElement.paused ? resume() : pause({ fade: true })
   }
+  watch(playingRef, (playing) => {
+    if (playing) {
+      resume()
+    }
+    else {
+      pause()
+    }
+  })
+  watch(pausedRef, (paused) => {
+    if (paused) {
+      pause()
+    }
+    else {
+      resume()
+    }
+  })
+  audioElement.addEventListener('pause', () => {
+    pausedRef.value = true
+    onPausedEv.trigger(audioElement)
+  }, {
+    signal: controller.signal,
+  })
+
+  // ended
+  const endedRef = ref(false)
+  audioElement.addEventListener('ended', () => {
+    endedRef.value = true
+    onEndedEv.trigger(audioElement)
+  }, {
+    signal: controller.signal,
+  })
+
+  const currentTimeRef = ref(0)
+  const currentTimeText = computed(() => formatTime(currentTimeRef.value))
+  function setCurrentTime(time: number) {
+    audioElement.currentTime = time
+  }
+  watch(currentTimeRef, (time) => {
+    setCurrentTime(time)
+  })
+
+  const progressRef = ref(0)
+  function setProgress(progress: number) {
+    audioElement.currentTime = Number(((progress / 100) * audioElement.duration).toFixed(2))
+  }
+  watch(progressRef, (progress) => {
+    setProgress(progress)
+  })
+  audioElement.addEventListener('timeupdate', () => {
+    currentTimeRef.value = audioElement.currentTime
+    progressRef.value = Number(((audioElement.currentTime / audioElement.duration) * 100).toFixed(2))
+    onTimeUpdateEv.trigger(audioElement)
+  }, {
+    signal: controller.signal,
+  })
+
+  const durationRef = ref(0)
+  const durationText = computed(() => formatTime(durationRef.value))
+  audioElement.addEventListener('durationchange', () => {
+    durationRef.value = audioElement.duration
+    onDurationUpdateEv.trigger(audioElement)
+  }, {
+    signal: controller.signal,
+  })
+
+  const cachedDurationRef = ref(0)
+  const cachedDurationText = computed(() => formatTime(cachedDurationRef.value))
+  const cachedProgressRef = ref(0)
+  audioElement.addEventListener('canplay', () => {
+    const duration = audioElement.buffered.end(Math.max(0, audioElement.buffered.length - 1))
+    cachedDurationRef.value = Number(duration.toFixed(2))
+    cachedProgressRef.value = Number((duration / audioElement.duration * 100).toFixed(2))
+  }, {
+    signal: controller.signal,
+  })
+
   function destroy() {
+    controller.abort()
     sourceNode.disconnect()
     gainNode.disconnect()
     analyserNode.disconnect()
@@ -244,24 +299,26 @@ export function useAudioContext(options?: AudioContextOptions) {
     analyserNode,
     filters,
     filterNode,
-    volume,
+    volume: volumeRef,
     setVolume,
-    playbackRate,
+    muted: mutedRef,
+    mute,
+    playbackRate: playbackRateRef,
     setPlaybackRate,
-    playing,
-    paused,
-    ended,
-    currentTime,
+    playing: readonly(playingRef),
+    paused: pausedRef,
+    ended: readonly(endedRef),
+    currentTime: currentTimeRef,
     currentTimeText,
     setCurrentTime,
-    duration,
+    duration: durationRef,
     durationText,
-    progress,
+    progress: progressRef,
     setProgress,
-    cachedDuration,
+    cachedDuration: cachedDurationRef,
     cachedDurationText,
-    cachedProgress,
-    url,
+    cachedProgress: cachedProgressRef,
+    url: urlRef,
     play,
     pause,
     resume,
@@ -272,6 +329,7 @@ export function useAudioContext(options?: AudioContextOptions) {
     getEQFrequency,
     getEQFrequencies,
     onVolumeUpdate: onVolumeUpdateEv.on,
+    onMuted: onMutedEv.on,
     onRateUpdate: onRateUpdateEv.on,
     onTimeUpdate: onTimeUpdateEv.on,
     onDurationUpdate: onDurationUpdateEv.on,

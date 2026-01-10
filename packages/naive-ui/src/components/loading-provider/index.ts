@@ -4,7 +4,7 @@ import type { ClassStyle } from '../data-table-plus'
 
 export { default as NLoadingProvider } from './LoadingProvider.vue'
 
-export type LoadingProviderInst = & {
+export type LoadingProviderInst = {
   show: (options?: {
     text?: string
     duration?: number
@@ -14,7 +14,7 @@ export type LoadingProviderInst = & {
 
 export const loadingProviderInjectionKey: InjectionKey<LoadingProviderInst> = Symbol('loading-provider-key')
 
-export type LoadingProviderProps = & {
+export type LoadingProviderProps = {
   show?: boolean
   appendTo?: string | RendererElement
   mask?: boolean | CSSProperties

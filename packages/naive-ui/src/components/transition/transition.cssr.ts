@@ -3,7 +3,7 @@ import { cssr, namespace, plugin } from '../_utils/cssr-bem'
 
 const { c } = cssr
 const { cB } = plugin
-interface FadeInTransitionOptions {
+type FadeInTransitionOptions = {
   name?: string
   enterDuration?: string
   leaveDuration?: string

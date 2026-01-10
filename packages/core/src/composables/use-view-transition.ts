@@ -1,6 +1,6 @@
 import { nextTick } from 'vue'
 
-interface ViewTransitionOptions {
+type ViewTransitionOptions = {
   duration?: number
   easing?: 'ease-in' | 'ease-out' | 'ease-in-out' | 'linear'
   effect?: boolean

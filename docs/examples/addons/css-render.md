@@ -18,13 +18,13 @@ pnpm add @oiij/css-render
 type CssRenderBemPlugin = ReturnType<typeof plugin> & {
   __?: 'css-render-bem'
 }
-interface BemOptions {
+type BemOptions = {
   namespace?: string
   blockPrefix?: string
   elementPrefix?: string
   modifierPrefix?: string
 }
-interface UseBemReturn {
+type UseBemReturn = {
   namespace: string
   blockPrefix: string
   elementPrefix: string

@@ -7,7 +7,7 @@
 ## Types
 
 ```ts
-export type ClassStyle = & {
+export type ClassStyle = {
   class?: string
   style?: CSSProperties | string
 }

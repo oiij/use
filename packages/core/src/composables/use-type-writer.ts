@@ -2,12 +2,12 @@ import type { ComputedRef, Ref } from 'vue'
 import { createEventHook } from '@vueuse/core'
 import { computed, nextTick, ref, watch } from 'vue'
 
-export interface TypeWriterOptions {
+export type TypeWriterOptions = {
   step?: number
   interval?: number
   enabled?: boolean
 }
-interface IEventType {
+type IEventType = {
   update: {
     index: number
     value: string

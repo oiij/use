@@ -3,7 +3,7 @@ import data from '@emoji-mart/data'
 import { Picker } from 'emoji-mart'
 import { onMounted, onUnmounted, shallowRef, watch } from 'vue'
 
-export interface EmojiResult {
+export type EmojiResult = {
   id: string
   name: string
   native: string
@@ -11,7 +11,7 @@ export interface EmojiResult {
   keywords: string[]
   shortcodes: string
 }
-export interface EmojiPickerOptions {
+export type EmojiPickerOptions = {
   parent?: HTMLElement
   data?: object
   i18n?: object

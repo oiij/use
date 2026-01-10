@@ -2,7 +2,7 @@ import type { Loader, LoadingManager } from 'three'
 import { useLoading } from './use-loading'
 import { useLoadingManager } from './use-loading-manager'
 
-export interface LoaderOptions {
+export type LoaderOptions = {
   manager?: LoadingManager
   manual?: boolean
 }

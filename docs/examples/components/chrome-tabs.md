@@ -11,7 +11,7 @@ import type { VNode } from 'vue'
 
 type VNodeChild = VNode | string | number | undefined | void | null | boolean
 
-export interface TabsOptions {
+export type TabsOptions = {
   key: string
   label: string | (() => VNodeChild)
   icon?: () => VNodeChild
@@ -27,7 +27,7 @@ export type TabsItemProps = Omit<TabsOptions, 'key'> & {
   activeIndex?: number
   index: number
 }
-export interface TabsProps {
+export type TabsProps = {
   colors?: {
     active?: string
     primary?: string

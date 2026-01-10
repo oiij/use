@@ -1,13 +1,13 @@
 import { colord } from 'colord'
 
-export type Colors = & {
+export type Colors = {
   primary?: string
   info?: string
   success?: string
   warning?: string
   error?: string
 }
-export type StatusColor = & {
+export type StatusColor = {
   color: string
   hover: string
   pressed: string

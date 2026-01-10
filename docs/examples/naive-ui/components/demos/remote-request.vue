@@ -2,20 +2,20 @@
 import { NRemoteRequest } from '@oiij/naive-ui/components'
 import { NButton } from 'naive-ui'
 
-interface Params {
+type Params = {
   id?: number
   page?: number
   pageSize?: number
   search?: string
 }
-interface Row {
+type Row = {
   id: number
   name: string
   page: number
   pageSize: number
   search: string
 }
-interface Res {
+type Res = {
   list: Row[]
   params: any
   count: number

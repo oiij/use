@@ -15,7 +15,7 @@ pnpm add @oiij/emoji-picker
 ## Types
 
 ```ts
-interface EmojiResult {
+type EmojiResult = {
   id: string
   name: string
   native: string
@@ -23,7 +23,7 @@ interface EmojiResult {
   keywords: string[]
   shortcodes: string
 }
-interface EmojiPickerOptions {
+type EmojiPickerOptions = {
   parent?: HTMLElement
   data?: object
   i18n?: object

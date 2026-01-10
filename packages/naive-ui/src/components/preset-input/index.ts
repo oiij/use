@@ -7,7 +7,7 @@ export { default as NPresetInput } from './PresetInput.vue'
 
 type RawChildren = string | number | boolean | VNode | VNodeArrayChildren | (() => any)
 
-export type PresetInputType = & {
+export type PresetInputType = {
   'button': {
     props?: ButtonProps & { label?: string }
     slots?: {
@@ -131,7 +131,7 @@ export type PresetInputOptions = {
   }
 }[keyof PresetInputType]
 
-export type PresetInputProps<V> = & {
+export type PresetInputProps<V> = {
   value?: V
   options?: PresetInputOptions
 }

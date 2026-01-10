@@ -5,7 +5,7 @@ import type { LoadingProviderProps } from '../loading-provider'
 
 export { default as NConfigProviders } from './ConfigProviders.vue'
 
-export type ConfigProvidersProps = & {
+export type ConfigProvidersProps = {
   globalStyle?: boolean
   configProviderProps?: ConfigProviderProps & ClassStyle
   loadingBarProviderProps?: LoadingBarProviderProps & ClassStyle
@@ -17,6 +17,7 @@ export type ConfigProvidersProps = & {
 }
 
 declare global {
+  // eslint-disable-next-line ts/consistent-type-definitions
   interface Window {
     $dialog: DialogProviderInst
     $loading: ReturnType<typeof useLoading>

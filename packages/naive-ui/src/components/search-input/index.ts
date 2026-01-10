@@ -3,7 +3,7 @@ import type { ClassStyle } from '../data-table-plus'
 
 export { default as NSearchInput } from './SearchInput.vue'
 
-export type SearchInputProps = & {
+export type SearchInputProps = {
   value?: string | null
   type?: ButtonProps['type']
   placeholder?: string

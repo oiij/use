@@ -32,14 +32,14 @@ declare function readPdfFile(buffer: ArrayBuffer): Promise<{
 // #endregion
 // #region src/index.d.ts
 type Color = string | [number, number, number, number]
-interface TextStyle {
+type TextStyle = {
   fontSize?: number
   fontName?: string
   fontStyle?: HTMLFontFace['style']
   fontWeight?: HTMLFontFace['weight']
   textColor?: Color
 }
-interface DrawStyle {
+type DrawStyle = {
   drawColor?: Color
   fillColor?: Color
   charSpace?: number

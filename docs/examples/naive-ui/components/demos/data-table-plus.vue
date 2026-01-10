@@ -6,7 +6,7 @@ import { NDataTablePlus, NPresetForm } from '@oiij/naive-ui/components'
 import { NButton, NButtonGroup, NFlex } from 'naive-ui'
 import { h, ref, useTemplateRef } from 'vue'
 
-interface Params {
+type Params = {
   id?: number
   page?: number
   pageSize?: number
@@ -14,14 +14,14 @@ interface Params {
   timeRange?: number[]
 
 }
-interface Row {
+type Row = {
   id: number
   name: string
   page: number
   pageSize: number
   search: string
 }
-interface Res {
+type Res = {
   list: Row[]
   params: any
   count: number

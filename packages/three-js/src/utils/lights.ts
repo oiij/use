@@ -5,7 +5,7 @@ import { RectAreaLightUniformsLib } from 'three/addons/lights/RectAreaLightUnifo
 import { watchVisible } from './_utils'
 
 // 环境光插件
-interface AmbientLightOptions {
+type AmbientLightOptions = {
   color?: ColorRepresentation
   intensity?: number
 }
@@ -22,7 +22,7 @@ export function useAmbientLight(options?: AmbientLightOptions) {
 }
 
 // 平行光插件
-interface DirectionalLightOptions {
+type DirectionalLightOptions = {
   color?: ColorRepresentation
   intensity?: number
   position?: [number, number, number]
@@ -48,7 +48,7 @@ export function useDirectionalLight(options?: DirectionalLightOptions) {
 }
 
 // 半球光插件
-interface HemisphereLightOptions {
+type HemisphereLightOptions = {
   skyColor?: ColorRepresentation
   groundColor?: ColorRepresentation
   intensity?: number
@@ -72,7 +72,7 @@ export function useHemisphereLight(options?: HemisphereLightOptions) {
   }
 }
 // 点光源插件
-interface PointLightOptions {
+type PointLightOptions = {
   color?: ColorRepresentation
   intensity?: number
   distance?: number
@@ -94,7 +94,7 @@ export function usePointLight(options?: PointLightOptions) {
 }
 
 // 平面光插件
-interface RectAreaLightOptions {
+type RectAreaLightOptions = {
   color?: ColorRepresentation
   intensity?: number
   width?: number
@@ -120,7 +120,7 @@ export function useRectAreaLight(options?: RectAreaLightOptions) {
   }
 }
 // 聚光灯插件
-interface SpotLightOptions {
+type SpotLightOptions = {
   color?: ColorRepresentation
   intensity?: number
   distance?: number

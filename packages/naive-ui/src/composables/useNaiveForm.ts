@@ -6,7 +6,7 @@ import { createEventHook } from '@vueuse/core'
 import { cloneDeep } from 'es-toolkit/object'
 import { reactive, ref, toRaw, toValue } from 'vue'
 
-export type NaiveFormClearRules = & {
+export type NaiveFormClearRules = {
   string?: string | null
   number?: number | null
   boolean?: boolean | null
@@ -60,7 +60,7 @@ function deepMerge(target: DataObject = {}, source: DataObject = {}): DataObject
   return target
 }
 export type NaiveFormRules<T extends DataObject> = Partial<Record<keyof T, FormRules | FormItemRule | FormItemRule[]>>
-export type NaiveFormOptions<T extends DataObject> = & {
+export type NaiveFormOptions<T extends DataObject> = {
   rules?: NaiveFormRules<T> | Ref<NaiveFormRules<T>>
   clearRules?: NaiveFormClearRules
 }

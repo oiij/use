@@ -6,14 +6,13 @@ function formatTime(seconds: number): string {
   return `${minutes}:${seconds.toString().padStart(2, '0')}`
 }
 
-export type AudioContextOptions = & {
-  analyser?: boolean
+export type AudioContextOptions = {
   volume?: number
   playbackRate?: number
-  fadeOptions?: AudioContextFadeOptions | boolean
+  fade?: AudioContextFadeOptions | boolean
 }
 
-export type AudioContextFadeOptions = & {
+export type AudioContextFadeOptions = {
   fade?: boolean
   duration?: number
 }
@@ -28,6 +27,8 @@ export class IAudioContext {
   public filters: BiquadFilterNode[]
   public filterNode: BiquadFilterNode
   public volume: number
+  public muted: boolean = false
+  public volumeCache: number
   public playbackRate: number
   public playing: boolean = false
   public paused: boolean = false
@@ -52,9 +53,9 @@ export class IAudioContext {
   private onDurationUpdateEv = createEventHook<HTMLAudioElement>()
 
   constructor(options?: AudioContextOptions) {
-    const { volume: defaultVolume = 1, playbackRate: defaultPlaybackRate = 1, fadeOptions } = options ?? {}
+    const { volume: defaultVolume = 1, playbackRate: defaultPlaybackRate = 1, fade } = options ?? {}
 
-    this.defaultFadeOptions = typeof fadeOptions === 'boolean' ? { fade: true, duration: 1 } : fadeOptions ?? {}
+    this.defaultFadeOptions = typeof fade === 'boolean' ? { fade: true, duration: 1 } : fade ?? {}
 
     this.audioContext = new AudioContext()
 
@@ -81,6 +82,8 @@ export class IAudioContext {
     this.gainNode.connect(this.audioContext.destination)
 
     this.volume = defaultVolume
+    this.muted = false
+    this.volumeCache = this.volume
     this.gainNode.gain.value = this.volume
 
     this.playbackRate = defaultPlaybackRate
@@ -153,6 +156,17 @@ export class IAudioContext {
     this.volume = Math.max(0, Math.min(1, volume))
     this.gainNode.gain.cancelScheduledValues(this.audioContext.currentTime)
     this.gainNode.gain.setValueAtTime(this.volume, this.audioContext.currentTime)
+  }
+
+  public mute(mute: boolean): void {
+    this.muted = mute
+    if (mute) {
+      this.volumeCache = this.volume
+      this.setVolume(0)
+    }
+    else {
+      this.setVolume(this.volumeCache)
+    }
   }
 
   public setPlaybackRate(playbackRate: number): void {

@@ -2,15 +2,15 @@ import type { TemplateRef } from 'vue'
 import { useEventListener } from '@vueuse/core'
 import { computed, onMounted, ref } from 'vue'
 
-interface OperationConfig {
+type OperationConfig = {
   figure?: number
   arith?: '+' | '-' | '*'
 }
-interface CharacterConfig {
+type CharacterConfig = {
   length?: number
   characterPool?: string
 }
-type ImageVerifyOptionsBase = & {
+type ImageVerifyOptionsBase = {
   width?: number
   height?: number
   refreshOnClick?: boolean

@@ -7,7 +7,7 @@
 ## Types
 
 ```ts
-interface TypeWriterOptions {
+type TypeWriterOptions = {
   step?: number
   interval?: number
   enabled?: boolean

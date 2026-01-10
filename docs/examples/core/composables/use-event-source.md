@@ -20,7 +20,7 @@ type UseEventSourceOptions = EventSourceInit & {
   handlerKey?: string
 }
 type MessageRaw = any
-interface HandlerType {
+type HandlerType = {
   [key: string]: any
 }
 declare function useEventSource<T extends HandlerType = HandlerType, D extends MessageRaw = MessageRaw>(url?: string | URL | Ref<string | URL>, options?: UseEventSourceOptions): {

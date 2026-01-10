@@ -7,10 +7,10 @@ import { ref, watchEffect } from 'vue'
 import { useDisposable } from '../utils/_utils'
 
 // 面板控制器插件
-export interface FPSGraph extends BladeApi<BladeController<View>> {
+export type FPSGraph = {
   begin: () => void
   end: () => void
-}
+} & BladeApi<BladeController<View>>
 export function usePane(options?: PaneConfig) {
   let container = options?.container
   if (!container) {

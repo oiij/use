@@ -4,7 +4,7 @@ import { Easing, Group, Tween } from '@tweenjs/tween.js'
 import { Vector3 } from 'three'
 import { useDisposable } from '../utils/_utils'
 
-interface CameraTweenOptions {
+type CameraTweenOptions = {
   duration?: number
   easing?: typeof Easing['Linear']['None']
 }

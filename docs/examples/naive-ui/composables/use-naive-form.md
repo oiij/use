@@ -7,14 +7,14 @@
 ## Types
 
 ```ts
-interface ClearRules {
+type ClearRules = {
   string?: string | null
   number?: number | null
   boolean?: boolean | null
 }
 type FormType = Record<string, unknown>
 type NaiveFormRules<T extends FormType> = Partial<Record<keyof T, FormRules | FormItemRule | FormItemRule[]>> | undefined
-interface NaiveFormOptions<T extends FormType> {
+type NaiveFormOptions<T extends FormType> = {
   rules?: NaiveFormRules<T>
   clearRules?: ClearRules
 }

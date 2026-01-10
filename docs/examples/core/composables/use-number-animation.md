@@ -8,7 +8,7 @@
 
 ```ts
 type EasingFunction = 'linear' | 'easeIn' | 'easeOut' | 'easeInOut' | ((t: number) => number)
-interface NumberAnimationOptions {
+type NumberAnimationOptions = {
   from?: number
   manual?: boolean
   duration?: number

@@ -23,7 +23,7 @@ export type UseEventSourceOptions<T extends HandlerType = HandlerType> = EventSo
   parseMessage?: boolean | ((raw: MessageRaw) => Record<keyof T, unknown> | Promise<Record<keyof T, unknown>>)
   handlerKey?: string
 }
-interface HandlerType {
+type HandlerType = {
   [key: string]: any
 }
 
