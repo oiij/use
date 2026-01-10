@@ -71,11 +71,17 @@ export function useAudioContext(options?: AudioContextOptions) {
 
   // volume
   const volumeRef = ref(defaultVolume)
+  const mutedRef = ref(false)
   gainNode.gain.value = volumeRef.value
+
   function setVolume(volume: number) {
     gainNode.gain.cancelScheduledValues(audioContext.currentTime)
     gainNode.gain.setValueAtTime(Math.max(0, Math.min(1, volume)), audioContext.currentTime)
     volumeRef.value = volume
+    if (volume === 0) {
+      mutedRef.value = true
+      onMutedEv.trigger(audioElement)
+    }
     onVolumeUpdateEv.trigger(audioElement)
   }
   watch(volumeRef, (volume) => {
@@ -84,12 +90,10 @@ export function useAudioContext(options?: AudioContextOptions) {
 
   // mute
   let volumeCache: number = defaultVolume
-  const mutedRef = ref(false)
   function mute(mute = true) {
     if (mute) {
       volumeCache = volumeRef.value
       setVolume(0)
-      onMutedEv.trigger(audioElement)
     }
     else {
       setVolume(volumeCache)
