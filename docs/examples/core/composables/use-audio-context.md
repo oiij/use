@@ -26,26 +26,27 @@ declare function useAudioContext(options?: AudioContextOptions): {
   analyserNode: AnalyserNode
   filters: BiquadFilterNode[]
   filterNode: BiquadFilterNode
-  volume: vue1484.Ref<number, number>
+  volume: vue0.Ref<number, number>
   setVolume: (volume: number) => void
-  muted: vue1484.Ref<boolean, boolean>
-  mute: (mute?: boolean) => void
-  playbackRate: vue1484.Ref<number, number>
+  muted: Readonly<vue1595.Ref<boolean, boolean>>
+  mute: (muted?: boolean) => void
+  toggleMute: () => void
+  playbackRate: vue0.Ref<number, number>
   setPlaybackRate: (playbackRate: number) => void
-  playing: Readonly<vue1484.Ref<boolean, boolean>>
-  paused: vue1484.Ref<boolean, boolean>
-  ended: Readonly<vue1484.Ref<boolean, boolean>>
-  currentTime: vue1484.Ref<number, number>
-  currentTimeText: vue1484.ComputedRef<string>
+  playing: Readonly<vue0.Ref<boolean, boolean>>
+  paused: vue0.Ref<boolean, boolean>
+  ended: Readonly<vue0.Ref<boolean, boolean>>
+  currentTime: vue0.Ref<number, number>
+  currentTimeText: vue0.ComputedRef<string>
   setCurrentTime: (time: number) => void
-  duration: vue1484.Ref<number, number>
-  durationText: vue1484.ComputedRef<string>
-  progress: vue1484.Ref<number, number>
+  duration: vue0.Ref<number, number>
+  durationText: vue0.ComputedRef<string>
+  progress: vue0.Ref<number, number>
   setProgress: (progress: number) => void
-  cachedDuration: vue1484.Ref<number, number>
-  cachedDurationText: vue1484.ComputedRef<string>
-  cachedProgress: vue1484.Ref<number, number>
-  url: vue1484.Ref<string | undefined, string | undefined>
+  cachedDuration: vue0.Ref<number, number>
+  cachedDurationText: vue0.ComputedRef<string>
+  cachedProgress: vue0.Ref<number, number>
+  url: vue0.Ref<string | undefined, string | undefined>
   play: (url: string) => Promise<void>
   pause: (options?: AudioContextFadeOptions) => void
   resume: (options?: AudioContextFadeOptions) => void
@@ -58,14 +59,14 @@ declare function useAudioContext(options?: AudioContextOptions): {
     frequency: number
     gain: number
   }[]
-  onVolumeUpdate: _vueuse_core931.EventHookOn<HTMLAudioElement>
-  onMuted: _vueuse_core931.EventHookOn<HTMLAudioElement>
-  onRateUpdate: _vueuse_core931.EventHookOn<HTMLAudioElement>
-  onTimeUpdate: _vueuse_core931.EventHookOn<HTMLAudioElement>
-  onDurationUpdate: _vueuse_core931.EventHookOn<HTMLAudioElement>
-  onPlaying: _vueuse_core931.EventHookOn<HTMLAudioElement>
-  onPaused: _vueuse_core931.EventHookOn<HTMLAudioElement>
-  onEnded: _vueuse_core931.EventHookOn<HTMLAudioElement>
+  onVolumeUpdate: _vueuse_core6.EventHookOn<HTMLAudioElement>
+  onMuted: _vueuse_core6.EventHookOn<HTMLAudioElement>
+  onRateUpdate: _vueuse_core6.EventHookOn<HTMLAudioElement>
+  onTimeUpdate: _vueuse_core6.EventHookOn<HTMLAudioElement>
+  onDurationUpdate: _vueuse_core6.EventHookOn<HTMLAudioElement>
+  onPlaying: _vueuse_core6.EventHookOn<HTMLAudioElement>
+  onPaused: _vueuse_core6.EventHookOn<HTMLAudioElement>
+  onEnded: _vueuse_core6.EventHookOn<HTMLAudioElement>
 }
 type UseAudioContextReturns = ReturnType<typeof useAudioContext>
 // #endregion

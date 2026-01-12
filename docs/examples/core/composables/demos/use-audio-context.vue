@@ -5,7 +5,7 @@ import { NButton, NFlex, NFormItem, NFormItemGi, NGrid, NInput, NProgress, NSlid
 import { ref, useTemplateRef } from 'vue'
 
 const url = ref('http://m801.music.126.net/20260102101650/cf983ff9153b3b6a80e54125b64fa7aa/jdymusic/obj/wo3DlMOGwrbDjj7DisKw/30767024375/8ea4/2076/bf6e/2dd19f362027169186dbfcafa9ee7844.mp3?vuutv=fY78tOf49HOb6BqRdATPRA13uLHNEZ5z3drLRtvbqNK/FHxts8wUG+SO+cKtzBFEZXnSdvYKi34pB0Fn/LY0h9D6+I0pQYEcVd9p/K0l0+k=')
-const { play, pause, resume, stop, mute, setEQFrequency, getEQFrequencies, getFrequencyData, setProgress, playing, paused, ended, volume, muted, playbackRate, currentTimeText, durationText, progress, cachedDuration, cachedProgress } = useAudioContext()
+const { play, pause, resume, stop, toggleMute, setEQFrequency, getEQFrequencies, getFrequencyData, setProgress, playing, paused, ended, volume, muted, playbackRate, currentTimeText, durationText, progress, cachedDuration, cachedProgress } = useAudioContext()
 const { pause: pauseSpectrum, resume: resumeSpectrum } = useSpectrum(useTemplateRef('canvas-ref'), getFrequencyData, {
   type: 'bar',
   color: ['#f43f5e', '#ffe4e6'],
@@ -65,7 +65,7 @@ function onEQFrequencyUpdate(index: number, val: number) {
           <NButton @click="() => stop()">
             停止
           </NButton>
-          <NButton @click="() => mute(!muted)">
+          <NButton @click="() => toggleMute()">
             静音
           </NButton>
           <NButton @click="() => resumeSpectrum()">

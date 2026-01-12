@@ -71,17 +71,13 @@ export function useAudioContext(options?: AudioContextOptions) {
 
   // volume
   const volumeRef = ref(defaultVolume)
-  const mutedRef = ref(false)
+  const muted = computed(() => volumeRef.value === 0)
   gainNode.gain.value = volumeRef.value
 
   function setVolume(volume: number) {
     gainNode.gain.cancelScheduledValues(audioContext.currentTime)
     gainNode.gain.setValueAtTime(Math.max(0, Math.min(1, volume)), audioContext.currentTime)
     volumeRef.value = volume
-    if (volume === 0) {
-      mutedRef.value = true
-      onMutedEv.trigger(audioElement)
-    }
     onVolumeUpdateEv.trigger(audioElement)
   }
   watch(volumeRef, (volume) => {
@@ -90,18 +86,19 @@ export function useAudioContext(options?: AudioContextOptions) {
 
   // mute
   let volumeCache: number = defaultVolume
-  function mute(mute = true) {
-    if (mute) {
-      volumeCache = volumeRef.value
+  function mute(muted = true) {
+    if (muted) {
+      volumeCache = Math.max(0.1, volumeRef.value)
+      onMutedEv.trigger(audioElement)
       setVolume(0)
     }
     else {
       setVolume(volumeCache)
     }
   }
-  watch(mutedRef, (muted) => {
-    mute(muted)
-  })
+  function toggleMute() {
+    mute(!muted.value)
+  }
 
   // playbackRate
   const playbackRateRef = ref(defaultPlaybackRate)
@@ -305,8 +302,9 @@ export function useAudioContext(options?: AudioContextOptions) {
     filterNode,
     volume: volumeRef,
     setVolume,
-    muted: mutedRef,
+    muted: readonly(muted),
     mute,
+    toggleMute,
     playbackRate: playbackRateRef,
     setPlaybackRate,
     playing: readonly(playingRef),
