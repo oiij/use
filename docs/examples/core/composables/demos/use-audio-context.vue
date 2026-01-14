@@ -5,7 +5,9 @@ import { NButton, NFlex, NFormItem, NFormItemGi, NGrid, NInput, NProgress, NSlid
 import { ref, useTemplateRef } from 'vue'
 
 const url = ref('')
-const { play, pause, resume, stop, toggleMute, setEQFrequency, getEQFrequencies, getFrequencyData, setProgress, setVolume, setPlaybackRate, playing, paused, ended, volume, muted, playbackRate, currentTimeText, durationText, progress, cachedDuration, cachedProgress } = useAudioContext()
+const { play, pause, resume, stop, toggleMute, setEQFrequency, getEQFrequencies, getFrequencyData, setProgress, setVolume, setPlaybackRate, playing, paused, ended, volume, muted, playbackRate, currentTimeText, durationText, progress, cachedDuration, cachedProgress } = useAudioContext({
+  fade: false,
+})
 const { pause: pauseSpectrum, resume: resumeSpectrum } = useSpectrum(useTemplateRef('canvas-ref'), getFrequencyData, {
   type: 'bar',
   color: ['#f43f5e', '#ffe4e6'],

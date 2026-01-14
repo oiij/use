@@ -20,7 +20,7 @@ export function useAudioContext(options?: AudioContextOptions) {
   const { volume: defaultVolume = 1, playbackRate: defaultPlaybackRate = 1, fade } = options ?? {}
   const eqFrequencies = [32, 64, 125, 250, 500, 1000, 2000, 4000, 8000, 16000]
 
-  const defaultFadeOptions = typeof fade === 'boolean' ? { fade: true, duration: 1 } : fade ?? {}
+  const defaultFadeOptions = typeof fade === 'boolean' ? { fade: true, duration: 0.5 } : fade ?? { }
 
   const controller = new AbortController()
   const audioContext = new AudioContext()
@@ -109,9 +109,12 @@ export function useAudioContext(options?: AudioContextOptions) {
     signal: controller.signal,
   })
 
-  // play&stop
   const playingRef = ref(false)
+  const pausedRef = ref(false)
+  const endedRef = ref(false)
   const urlRef = ref<string>()
+
+  // play&stop
   async function play(url: string) {
     stop()
     urlRef.value = url
@@ -128,18 +131,19 @@ export function useAudioContext(options?: AudioContextOptions) {
     audioElement.pause()
     audioElement.removeAttribute('src')
   }
+
   audioElement.addEventListener('playing', () => {
     playingRef.value = true
+    pausedRef.value = false
+    endedRef.value = false
     onPlayingEv.trigger(audioElement)
   }, {
     signal: controller.signal,
   })
 
   // pause&resume
-  const pausedRef = ref(false)
-
   function pause(options?: AudioContextFadeOptions) {
-    const { fade = true, duration = 1 } = options ?? defaultFadeOptions
+    const { fade = false, duration = 0.5 } = { ...defaultFadeOptions, ...options }
     if (fade) {
       const currentTime = audioContext.currentTime
       gainNode.gain.cancelScheduledValues(currentTime)
@@ -153,7 +157,7 @@ export function useAudioContext(options?: AudioContextOptions) {
     audioElement.pause()
   }
   function resume(options?: AudioContextFadeOptions) {
-    const { fade = true, duration = 1 } = options ?? defaultFadeOptions
+    const { fade = false, duration = 0.5 } = { ...defaultFadeOptions, ...options }
     if (fade) {
       const currentTime = audioContext.currentTime
       gainNode.gain.cancelScheduledValues(currentTime)
@@ -172,15 +176,18 @@ export function useAudioContext(options?: AudioContextOptions) {
   }
 
   audioElement.addEventListener('pause', () => {
+    playingRef.value = false
     pausedRef.value = true
+    endedRef.value = false
     onPausedEv.trigger(audioElement)
   }, {
     signal: controller.signal,
   })
 
   // ended
-  const endedRef = ref(false)
   audioElement.addEventListener('ended', () => {
+    playingRef.value = false
+    pausedRef.value = false
     endedRef.value = true
     onEndedEv.trigger(audioElement)
   }, {
