@@ -26,27 +26,27 @@ declare function useAudioContext(options?: AudioContextOptions): {
   analyserNode: AnalyserNode
   filters: BiquadFilterNode[]
   filterNode: BiquadFilterNode
-  volume: vue0.Ref<number, number>
+  volume: Readonly<vue31.Ref<number, number>>
   setVolume: (volume: number) => void
-  muted: Readonly<vue1595.Ref<boolean, boolean>>
-  mute: (muted?: boolean) => void
+  muted: Readonly<vue31.Ref<boolean, boolean>>
+  setMuted: (muted?: boolean) => void
   toggleMute: () => void
-  playbackRate: vue0.Ref<number, number>
+  playbackRate: Readonly<vue31.Ref<number, number>>
   setPlaybackRate: (playbackRate: number) => void
-  playing: Readonly<vue0.Ref<boolean, boolean>>
-  paused: vue0.Ref<boolean, boolean>
-  ended: Readonly<vue0.Ref<boolean, boolean>>
-  currentTime: vue0.Ref<number, number>
-  currentTimeText: vue0.ComputedRef<string>
+  playing: Readonly<vue31.Ref<boolean, boolean>>
+  paused: Readonly<vue31.Ref<boolean, boolean>>
+  ended: Readonly<vue31.Ref<boolean, boolean>>
+  currentTime: Readonly<vue31.Ref<number, number>>
+  currentTimeText: vue31.ComputedRef<string>
   setCurrentTime: (time: number) => void
-  duration: vue0.Ref<number, number>
-  durationText: vue0.ComputedRef<string>
-  progress: vue0.Ref<number, number>
+  duration: Readonly<vue31.Ref<number, number>>
+  durationText: vue31.ComputedRef<string>
+  progress: Readonly<vue31.Ref<number, number>>
   setProgress: (progress: number) => void
-  cachedDuration: vue0.Ref<number, number>
-  cachedDurationText: vue0.ComputedRef<string>
-  cachedProgress: vue0.Ref<number, number>
-  url: vue0.Ref<string | undefined, string | undefined>
+  cachedDuration: Readonly<vue31.Ref<number, number>>
+  cachedDurationText: vue31.ComputedRef<string>
+  cachedProgress: Readonly<vue31.Ref<number, number>>
+  url: Readonly<vue31.Ref<string | undefined, string | undefined>>
   play: (url: string) => Promise<void>
   pause: (options?: AudioContextFadeOptions) => void
   resume: (options?: AudioContextFadeOptions) => void
@@ -59,14 +59,14 @@ declare function useAudioContext(options?: AudioContextOptions): {
     frequency: number
     gain: number
   }[]
-  onVolumeUpdate: _vueuse_core6.EventHookOn<HTMLAudioElement>
-  onMuted: _vueuse_core6.EventHookOn<HTMLAudioElement>
-  onRateUpdate: _vueuse_core6.EventHookOn<HTMLAudioElement>
-  onTimeUpdate: _vueuse_core6.EventHookOn<HTMLAudioElement>
-  onDurationUpdate: _vueuse_core6.EventHookOn<HTMLAudioElement>
-  onPlaying: _vueuse_core6.EventHookOn<HTMLAudioElement>
-  onPaused: _vueuse_core6.EventHookOn<HTMLAudioElement>
-  onEnded: _vueuse_core6.EventHookOn<HTMLAudioElement>
+  onVolumeUpdate: _vueuse_core7.EventHookOn<HTMLAudioElement>
+  onMuted: _vueuse_core7.EventHookOn<HTMLAudioElement>
+  onRateUpdate: _vueuse_core7.EventHookOn<HTMLAudioElement>
+  onTimeUpdate: _vueuse_core7.EventHookOn<HTMLAudioElement>
+  onDurationUpdate: _vueuse_core7.EventHookOn<HTMLAudioElement>
+  onPlaying: _vueuse_core7.EventHookOn<HTMLAudioElement>
+  onPaused: _vueuse_core7.EventHookOn<HTMLAudioElement>
+  onEnded: _vueuse_core7.EventHookOn<HTMLAudioElement>
 }
 type UseAudioContextReturns = ReturnType<typeof useAudioContext>
 // #endregion

@@ -1,5 +1,5 @@
 import { createEventHook } from '@vueuse/core'
-import { computed, onUnmounted, readonly, ref, watch } from 'vue'
+import { computed, onUnmounted, readonly, ref } from 'vue'
 
 function formatTime(seconds: number) {
   const minutes = Math.floor(seconds / 60)
@@ -80,13 +80,10 @@ export function useAudioContext(options?: AudioContextOptions) {
     volumeRef.value = volume
     onVolumeUpdateEv.trigger(audioElement)
   }
-  watch(volumeRef, (volume) => {
-    setVolume(volume)
-  })
 
-  // mute
+  // setMuted
   let volumeCache: number = defaultVolume
-  function mute(muted = true) {
+  function setMuted(muted = true) {
     if (muted) {
       volumeCache = Math.max(0.1, volumeRef.value)
       onMutedEv.trigger(audioElement)
@@ -97,7 +94,7 @@ export function useAudioContext(options?: AudioContextOptions) {
     }
   }
   function toggleMute() {
-    mute(!muted.value)
+    setMuted(!muted.value)
   }
 
   // playbackRate
@@ -105,9 +102,6 @@ export function useAudioContext(options?: AudioContextOptions) {
   function setPlaybackRate(playbackRate: number) {
     audioElement.playbackRate = playbackRate
   }
-  watch(playbackRateRef, (playbackRate) => {
-    setPlaybackRate(playbackRate)
-  })
   audioElement.addEventListener('ratechange', () => {
     playbackRateRef.value = audioElement.playbackRate
     onRateUpdateEv.trigger(audioElement)
@@ -119,29 +113,20 @@ export function useAudioContext(options?: AudioContextOptions) {
   const playingRef = ref(false)
   const urlRef = ref<string>()
   async function play(url: string) {
+    stop()
     urlRef.value = url
     audioElement.src = url
     audioElement.load()
     if (audioContext.state === 'suspended') {
       await audioContext.resume()
     }
-    try {
-      await audioElement.play()
-    }
-    catch (error) {
-      console.error('useAudioContext:play error:', error)
-      throw error
-    }
+    await audioElement.play()
   }
-  watch(urlRef, (url) => {
-    if (url) {
-      play(url)
-    }
-  })
 
   function stop() {
-    audioElement.pause()
     audioElement.currentTime = 0
+    audioElement.pause()
+    audioElement.removeAttribute('src')
   }
   audioElement.addEventListener('playing', () => {
     playingRef.value = true
@@ -185,22 +170,7 @@ export function useAudioContext(options?: AudioContextOptions) {
   function toggle() {
     audioElement.paused ? resume() : pause({ fade: true })
   }
-  watch(playingRef, (playing) => {
-    if (playing) {
-      resume()
-    }
-    else {
-      pause()
-    }
-  })
-  watch(pausedRef, (paused) => {
-    if (paused) {
-      pause()
-    }
-    else {
-      resume()
-    }
-  })
+
   audioElement.addEventListener('pause', () => {
     pausedRef.value = true
     onPausedEv.trigger(audioElement)
@@ -222,20 +192,14 @@ export function useAudioContext(options?: AudioContextOptions) {
   function setCurrentTime(time: number) {
     audioElement.currentTime = time
   }
-  watch(currentTimeRef, (time) => {
-    setCurrentTime(time)
-  })
 
   const progressRef = ref(0)
   function setProgress(progress: number) {
-    audioElement.currentTime = Number(((progress / 100) * audioElement.duration).toFixed(2))
+    audioElement.currentTime = Number(((progress / 100) * (audioElement.duration ?? 0)).toFixed(2))
   }
-  watch(progressRef, (progress) => {
-    setProgress(progress)
-  })
   audioElement.addEventListener('timeupdate', () => {
-    currentTimeRef.value = audioElement.currentTime
-    progressRef.value = Number(((audioElement.currentTime / audioElement.duration) * 100).toFixed(2))
+    currentTimeRef.value = audioElement.currentTime ?? 0
+    progressRef.value = Number(((audioElement.currentTime / (audioElement.duration ?? 0)) * 100).toFixed(2))
     onTimeUpdateEv.trigger(audioElement)
   }, {
     signal: controller.signal,
@@ -300,27 +264,27 @@ export function useAudioContext(options?: AudioContextOptions) {
     analyserNode,
     filters,
     filterNode,
-    volume: volumeRef,
+    volume: readonly(volumeRef),
     setVolume,
     muted: readonly(muted),
-    mute,
+    setMuted,
     toggleMute,
-    playbackRate: playbackRateRef,
+    playbackRate: readonly(playbackRateRef),
     setPlaybackRate,
     playing: readonly(playingRef),
-    paused: pausedRef,
+    paused: readonly(pausedRef),
     ended: readonly(endedRef),
-    currentTime: currentTimeRef,
+    currentTime: readonly(currentTimeRef),
     currentTimeText,
     setCurrentTime,
-    duration: durationRef,
+    duration: readonly(durationRef),
     durationText,
-    progress: progressRef,
+    progress: readonly(progressRef),
     setProgress,
-    cachedDuration: cachedDurationRef,
+    cachedDuration: readonly(cachedDurationRef),
     cachedDurationText,
-    cachedProgress: cachedProgressRef,
-    url: urlRef,
+    cachedProgress: readonly(cachedProgressRef),
+    url: readonly(urlRef),
     play,
     pause,
     resume,

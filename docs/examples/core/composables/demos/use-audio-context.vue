@@ -4,15 +4,17 @@ import { useAudioContext, useSpectrum } from '@oiij/use'
 import { NButton, NFlex, NFormItem, NFormItemGi, NGrid, NInput, NProgress, NSlider, NTag } from 'naive-ui'
 import { ref, useTemplateRef } from 'vue'
 
-const url = ref('http://m801.music.126.net/20260102101650/cf983ff9153b3b6a80e54125b64fa7aa/jdymusic/obj/wo3DlMOGwrbDjj7DisKw/30767024375/8ea4/2076/bf6e/2dd19f362027169186dbfcafa9ee7844.mp3?vuutv=fY78tOf49HOb6BqRdATPRA13uLHNEZ5z3drLRtvbqNK/FHxts8wUG+SO+cKtzBFEZXnSdvYKi34pB0Fn/LY0h9D6+I0pQYEcVd9p/K0l0+k=')
-const { play, pause, resume, stop, toggleMute, setEQFrequency, getEQFrequencies, getFrequencyData, setProgress, playing, paused, ended, volume, muted, playbackRate, currentTimeText, durationText, progress, cachedDuration, cachedProgress } = useAudioContext()
+const url = ref('')
+const { play, pause, resume, stop, toggleMute, setEQFrequency, getEQFrequencies, getFrequencyData, setProgress, setVolume, setPlaybackRate, playing, paused, ended, volume, muted, playbackRate, currentTimeText, durationText, progress, cachedDuration, cachedProgress } = useAudioContext()
 const { pause: pauseSpectrum, resume: resumeSpectrum } = useSpectrum(useTemplateRef('canvas-ref'), getFrequencyData, {
   type: 'bar',
   color: ['#f43f5e', '#ffe4e6'],
   // color: '#333',
 })
 function handlePlay() {
-  play(url.value)
+  play(url.value).catch((err) => {
+    console.log(err)
+  })
 }
 function handleSetProgress(val: number) {
   setProgress(val)
@@ -46,10 +48,10 @@ function onEQFrequencyUpdate(index: number, val: number) {
       <NFlex vertical style="width: 100%;">
         <NGrid :cols="2" :x-gap="10">
           <NFormItemGi label="音量">
-            <NSlider v-model:value="volume" :step="0.1" :min="0" :max="1" />
+            <NSlider :value="volume" :step="0.1" :min="0" :max="1" @update:value="setVolume" />
           </NFormItemGi>
           <NFormItemGi label="速率">
-            <NSlider v-model:value="playbackRate" :step="0.1" :min="0" :max="2" />
+            <NSlider :value="playbackRate" :step="0.1" :min="0" :max="2" @update:value="setPlaybackRate" />
           </NFormItemGi>
         </NGrid>
         <NFlex>
