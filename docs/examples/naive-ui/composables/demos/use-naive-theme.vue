@@ -1,18 +1,28 @@
 <script setup lang='ts'>
 import { useNaiveTheme } from '@oiij/naive-ui'
-import { NButton, NCalendar, NCard, NColorPicker, NConfigProvider, NFlex, NInput, NRadio, NRadioGroup } from 'naive-ui'
+import { dateKoKR, koKR, NButton, NCalendar, NCard, NColorPicker, NConfigProvider, NFlex, NInput, NRadio, NRadioGroup } from 'naive-ui'
 import { ref } from 'vue'
 
 const darkMode = ref(false)
-const language = ref<'zh-CN' | 'en-US'>('zh-CN')
-const { theme, themeOverrides, locale, dateLocale, color } = useNaiveTheme({
+const language = ref<'zh-CN' | 'en-US' | 'ko-KR'>('zh-CN')
+const { theme, themeOverrides, locale, locales, colors, themeColors } = useNaiveTheme({
+  colors: {
+    primary: '#475569',
+  },
   language,
   darkMode,
+  locales: {
+    'ko-KR': {
+      name: '한국어',
+      dateLocale: dateKoKR,
+      locale: koKR,
+    },
+  },
 })
 </script>
 
 <template>
-  <NConfigProvider :theme="theme" :theme-overrides="themeOverrides" :locale="locale" :date-locale="dateLocale">
+  <NConfigProvider :theme="theme" :theme-overrides="themeOverrides" :locale="locale.locale" :date-locale="locale.dateLocale">
     <NCard>
       <NFlex vertical>
         <NFlex>
@@ -25,20 +35,37 @@ const { theme, themeOverrides, locale, dateLocale, color } = useNaiveTheme({
             </NRadio>
           </NRadioGroup>
           <NRadioGroup v-model:value="language">
-            <NRadio value="zh-CN">
-              中文
-            </NRadio>
-            <NRadio value="en-US">
-              English
+            <NRadio v-for="[key, item] in Object.entries(locales)" :key="key" :value="key">
+              {{ item.name }}
             </NRadio>
           </NRadioGroup>
-          <NColorPicker v-model:value="color.primary" />
+          <NColorPicker v-model:value="colors.primary" :actions="['clear']" />
         </NFlex>
-        <div>
+        <NFlex>
+          <NButton type="default">
+            Default
+          </NButton>
           <NButton type="primary">
             Primary
           </NButton>
+          <NButton type="info">
+            Info
+          </NButton>
+          <NButton type="success">
+            Success
+          </NButton>
+          <NButton type="warning">
+            Warning
+          </NButton>
+          <NButton type="error">
+            Error
+          </NButton>
+        </NFlex>
+        <div style="width: 100px;height: 40px;border: 1px solid #000;" :style="{ backgroundColor: `${themeColors.primary ?? ''}` }">
+          PrimaryColor
+          {{ themeColors.primary }}
         </div>
+
         <div>
           <NInput />
         </div>

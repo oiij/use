@@ -2,7 +2,7 @@ import type { BadgeProps, ButtonProps, DataTableColumns, ModalProps } from 'naiv
 import type { TableSelectionColumn } from 'naive-ui/es/data-table/src/interface'
 import type { Ref } from 'vue'
 import type { ComponentExposed } from 'vue-component-type-helpers'
-import type { DataObject } from '../../composables/useDataRequest'
+import type { DataObject } from '../../composables/use-data-request'
 import type { ClassStyle } from '../data-table-plus/index'
 import type PresetPicker from './PresetPicker.vue'
 

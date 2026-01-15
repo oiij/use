@@ -1,8 +1,8 @@
 <script setup lang='ts' generic="P extends DataObject, D extends DataObject, R extends DataObject">
-import type { DataObject } from '../../composables/useDataRequest'
+import type { DataObject } from '../../composables/use-data-request'
 import type { RemoteRequestEmits, RemoteRequestExpose, RemoteRequestProps } from './index'
 import { computed, toValue } from 'vue'
-import { useDataRequest } from '../../composables/useDataRequest'
+import { useDataRequest } from '../../composables/use-data-request'
 
 const { api, defaultParams, manual, fields, requestOptions, requestPlugins } = defineProps<RemoteRequestProps<P, D>>()
 const emit = defineEmits<RemoteRequestEmits<P, D>>()

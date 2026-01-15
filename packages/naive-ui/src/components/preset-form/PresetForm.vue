@@ -1,10 +1,10 @@
 <script setup lang='ts' generic=" V extends DataObject">
 import type { FormInst } from 'naive-ui'
-import type { DataObject } from '../../composables/useDataRequest'
+import type { DataObject } from '../../composables/use-data-request'
 import type { PresetFormExpose, PresetFormProps } from './index'
 import { NButton, NCollapseTransition, NDivider, NForm, NFormItem, NGi, NGrid } from 'naive-ui'
 import { computed, ref, toValue, useTemplateRef } from 'vue'
-import { useNaiveForm } from '../../composables/useNaiveForm'
+import { useNaiveForm } from '../../composables/use-naive-form'
 import { NPresetInput } from '../preset-input/index'
 import { mergeRule } from './_utils'
 

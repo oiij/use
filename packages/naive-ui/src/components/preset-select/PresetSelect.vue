@@ -1,11 +1,11 @@
 <script setup lang='ts' generic="V extends PresetSelectValue, P extends DataObject, D extends DataObject, R extends DataObject">
 import type { PaginationProps, SelectGroupOption, SelectInst, SelectOption } from 'naive-ui'
-import type { DataObject } from '../../composables/useDataRequest'
+import type { DataObject } from '../../composables/use-data-request'
 import type { PresetSelectEmits, PresetSelectExpose, PresetSelectProps, PresetSelectValue } from './index'
 import { useDebounceFn } from '@vueuse/core'
 import { NFlex, NPagination, NSelect } from 'naive-ui'
 import { computed, reactive, ref, toRaw, toValue, useTemplateRef } from 'vue'
-import { useDataRequest } from '../../composables/useDataRequest'
+import { useDataRequest } from '../../composables/use-data-request'
 
 const {
   api,

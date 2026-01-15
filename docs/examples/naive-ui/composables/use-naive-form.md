@@ -7,33 +7,36 @@
 ## Types
 
 ```ts
-type ClearRules = {
+// #region src/composables/use-naive-form.d.ts
+type NaiveFormClearRules = {
   string?: string | null
   number?: number | null
   boolean?: boolean | null
 }
-type FormType = Record<string, unknown>
-type NaiveFormRules<T extends FormType> = Partial<Record<keyof T, FormRules | FormItemRule | FormItemRule[]>> | undefined
-type NaiveFormOptions<T extends FormType> = {
-  rules?: NaiveFormRules<T>
-  clearRules?: ClearRules
+type NaiveFormRules<T extends DataObject> = Partial<Record<keyof T, FormRules | FormItemRule | FormItemRule[]>>
+type NaiveFormOptions<T extends DataObject> = {
+  rules?: NaiveFormRules<T> | Ref<NaiveFormRules<T>>
+  clearRules?: NaiveFormClearRules
 }
-declare function useNaiveForm<T extends FormType>(value: T, options?: NaiveFormOptions<T>): {
-  formRef: vue0.Ref<FormInst | undefined, FormInst | undefined>
-  formValue: vue0.Reactive<T> extends infer T_1 ? T_1 extends vue0.Reactive<T> ? T_1 extends (() => infer R) ? Readonly<vue0.Ref<R, R>> : T_1 extends vue0.Ref<any, any> ? T_1 : vue0.Ref<vue0.UnwrapRef<T_1>, vue0.UnwrapRef<T_1>> : never : never
-  rules: NaiveFormRules<T>
+declare function useNaiveForm<T extends DataObject = DataObject>(formRef: TemplateRef<FormInst>, value?: T | Ref<T>, options?: NaiveFormOptions<T>): {
+  formRef: Readonly<vue1743.ShallowRef<FormInst | null>>
+  formValue: Ref<T, T>
+  formRules: Ref<Partial<Record<keyof T, FormRules | FormItemRule | FormItemRule[]>>, Partial<Record<keyof T, FormRules | FormItemRule | FormItemRule[]>>>
   formProps: {
-    ref: vue0.Ref<FormInst | undefined, FormInst | undefined>
-    model: vue0.Reactive<T>
-    rules: NaiveFormRules<T>
+    model: vue1743.Reactive<T>
+    rules: vue1743.Reactive<Partial<Record<keyof T, FormRules | FormItemRule | FormItemRule[]>>>
   }
+  setValue: (_value: Partial<T>) => void
   validate: () => Promise<{
-    warnings: async_validator10.ValidateError[][] | undefined
-  }> | undefined
+    warnings?: ValidateError[][]
+  }>
   resetValidation: () => void
   resetForm: () => void
   reset: () => void
   clear: () => void
+  onValidated: _vueuse_core1323.EventHookOn<[T]>
 }
-type NaiveFormReturns = ReturnType<typeof useNaiveForm>
+type NaiveFormReturns<T extends DataObject = DataObject> = ReturnType<typeof useNaiveForm<T>>
+// #endregion
+export { NaiveFormClearRules, NaiveFormOptions, NaiveFormReturns, NaiveFormRules, useNaiveForm }
 ```

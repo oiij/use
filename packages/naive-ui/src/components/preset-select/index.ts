@@ -1,7 +1,7 @@
 import type { PaginationProps, SelectGroupOption, SelectInst, SelectOption, SelectProps } from 'naive-ui'
 import type { ShallowRef } from 'vue'
 import type { ComponentExposed } from 'vue-component-type-helpers'
-import type { DataObject, DataRequestFields, UseDataRequestReturns } from '../../composables/useDataRequest'
+import type { DataObject, DataRequestFields, UseDataRequestReturns } from '../../composables/use-data-request'
 import type { ClassStyle } from '../data-table-plus/index'
 import type { RemoteRequestEmits, RemoteRequestProps } from '../remote-request/index'
 import type PresetSelect from './PresetSelect.vue'

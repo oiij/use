@@ -1,7 +1,7 @@
 {
   "name": "@oiij/use",
   "type": "module",
-  "version": "0.0.36",
+  "version": "0.0.37",
   "description": "Som Composable Functions for Vue 3",
   "author": "oiij",
   "license": "MIT",
@@ -19,10 +19,6 @@
     ".": {
       "types": "./dist/index.d.mts",
       "import": "./dist/index.mjs"
-    },
-    "./class": {
-      "types": "./dist/class.d.mts",
-      "import": "./dist/class.mjs"
     }
   },
   "main": "./dist/index.mjs",

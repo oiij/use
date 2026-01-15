@@ -16,6 +16,9 @@ export type AudioContextOptions = {
   fade?: AudioContextFadeOptions | boolean
 }
 
+function nanAble(val: number) {
+  return Number.isNaN(val) ? 0 : val
+}
 export function useAudioContext(options?: AudioContextOptions) {
   const { volume: defaultVolume = 1, playbackRate: defaultPlaybackRate = 1, fade } = options ?? {}
   const eqFrequencies = [32, 64, 125, 250, 500, 1000, 2000, 4000, 8000, 16000]
@@ -171,8 +174,8 @@ export function useAudioContext(options?: AudioContextOptions) {
     audioElement.play()
   }
 
-  function toggle() {
-    audioElement.paused ? resume() : pause({ fade: true })
+  function toggle(options?: AudioContextFadeOptions) {
+    audioElement.paused ? resume(options) : pause(options)
   }
 
   audioElement.addEventListener('pause', () => {
@@ -202,11 +205,15 @@ export function useAudioContext(options?: AudioContextOptions) {
 
   const progressRef = ref(0)
   function setProgress(progress: number) {
-    audioElement.currentTime = Number(((progress / 100) * (audioElement.duration ?? 0)).toFixed(2))
+    const currentTime = Number(((progress / 100) * audioElement.duration).toFixed(2))
+    audioElement.currentTime = nanAble(currentTime)
   }
   audioElement.addEventListener('timeupdate', () => {
-    currentTimeRef.value = audioElement.currentTime ?? 0
-    progressRef.value = Number(((audioElement.currentTime / (audioElement.duration ?? 0)) * 100).toFixed(2))
+    const currentTime = audioElement.currentTime
+    currentTimeRef.value = nanAble(currentTime)
+
+    const progress = Number(((currentTime / audioElement.duration) * 100).toFixed(2))
+    progressRef.value = nanAble(progress)
     onTimeUpdateEv.trigger(audioElement)
   }, {
     signal: controller.signal,
@@ -215,7 +222,8 @@ export function useAudioContext(options?: AudioContextOptions) {
   const durationRef = ref(0)
   const durationText = computed(() => formatTime(durationRef.value))
   audioElement.addEventListener('durationchange', () => {
-    durationRef.value = audioElement.duration
+    const duration = audioElement.duration
+    durationRef.value = nanAble(duration)
     onDurationUpdateEv.trigger(audioElement)
   }, {
     signal: controller.signal,
@@ -226,8 +234,8 @@ export function useAudioContext(options?: AudioContextOptions) {
   const cachedProgressRef = ref(0)
   audioElement.addEventListener('canplay', () => {
     const duration = audioElement.buffered.end(Math.max(0, audioElement.buffered.length - 1))
-    cachedDurationRef.value = Number(duration.toFixed(2))
-    cachedProgressRef.value = Number((duration / audioElement.duration * 100).toFixed(2))
+    cachedDurationRef.value = nanAble(duration)
+    cachedProgressRef.value = nanAble(Number((duration / audioElement.duration * 100).toFixed(2)))
   }, {
     signal: controller.signal,
   })

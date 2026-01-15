@@ -1,10 +1,4 @@
-<script setup lang='ts'
-  generic="
-    P extends DataObject,
-    D extends DataObject,
-    R extends DataObject
-  "
->
+<script setup lang='ts' generic="P extends DataObject, D extends DataObject, R extends DataObject">
 import type { DataTableBaseColumn, DataTableColumns, DataTableFilterState, DataTableInst, DataTableSortState, PaginationProps } from 'naive-ui'
 
 import type { InternalRowData, RowKey } from 'naive-ui/es/data-table/src/interface'
@@ -12,7 +6,7 @@ import type { DataObject } from '../../composables/index'
 import type { DataTablePlusEmits, DataTablePlusExpose, DataTablePlusProps } from './index'
 import { NButton, NDataTable, NFlex, NPagination } from 'naive-ui'
 import { computed, reactive, ref, toRaw, toValue, useTemplateRef } from 'vue'
-import { useDataRequest } from '../../composables/useDataRequest'
+import { useDataRequest } from '../../composables/use-data-request'
 import MageArrowUp from '../icons/MageArrowUp.vue'
 import { NSearchInput } from '../search-input/index'
 

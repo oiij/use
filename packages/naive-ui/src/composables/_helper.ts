@@ -14,6 +14,14 @@ export type StatusColor = {
   suppl: string
 }
 
+export function getDarkColor(color: string) {
+  if (!color)
+    return undefined
+  const baseColor = colord(color)
+  if (!baseColor.isValid())
+    return undefined
+  return baseColor.lighten(0.2).toHex()
+}
 export function getStatusColor(color?: string): StatusColor | undefined {
   if (!color)
     return undefined

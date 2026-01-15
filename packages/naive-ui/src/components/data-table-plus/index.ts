@@ -2,7 +2,7 @@ import type { ButtonProps, DataTableColumns, DataTableFilterState, DataTableInst
 import type { FilterState, TableBaseColumn } from 'naive-ui/es/data-table/src/interface'
 import type { CSSProperties, Ref, ShallowRef } from 'vue'
 import type { ComponentExposed } from 'vue-component-type-helpers'
-import type { DataObject, DataRequestFields, UseDataRequestReturns } from '../../composables/useDataRequest'
+import type { DataObject, DataRequestFields, UseDataRequestReturns } from '../../composables/use-data-request'
 import type { RemoteRequestEmits, RemoteRequestProps } from '../remote-request/index'
 import type { SearchInputProps } from '../search-input/index'
 import type DataTablePlus from './DataTablePlus.vue'

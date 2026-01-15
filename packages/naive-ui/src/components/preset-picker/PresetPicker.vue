@@ -2,7 +2,7 @@
 import type { DataTableColumns } from 'naive-ui'
 import type { TableColumn } from 'naive-ui/lib/data-table/src/interface'
 import type { Ref } from 'vue'
-import type { DataObject } from '../../composables/useDataRequest'
+import type { DataObject } from '../../composables/use-data-request'
 import type { PresetPickerEmits, PresetPickerExpose, PresetPickerProps, PresetPickerValue } from './index'
 import { cloneDeep } from 'es-toolkit/object'
 import { NBadge, NButton, NButtonGroup, NModal, NTooltip } from 'naive-ui'

@@ -1,7 +1,7 @@
 import type { ValidateError } from 'async-validator'
 import type { FormInst, FormItemRule, FormRules } from 'naive-ui'
 import type { Ref, TemplateRef } from 'vue'
-import type { DataObject } from './useDataRequest'
+import type { DataObject } from './use-data-request'
 import { createEventHook } from '@vueuse/core'
 import { cloneDeep } from 'es-toolkit/object'
 import { reactive, ref, toRaw, toValue } from 'vue'
