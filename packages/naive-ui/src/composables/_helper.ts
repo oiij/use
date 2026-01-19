@@ -14,27 +14,36 @@ export type StatusColor = {
   suppl: string
 }
 
-export function getDarkColor(color: string) {
+export function getDarkColor(color?: string) {
   if (!color)
     return undefined
-  const baseColor = colord(color)
-  if (!baseColor.isValid())
+  const colorInst = colord(color)
+  if (!colorInst.isValid())
     return undefined
-  return baseColor.lighten(0.2).toHex()
+  return colorInst.lighten(0.1).toHex()
+}
+export function getDarkColors(colors: Colors) {
+  return {
+    primary: getDarkColor(colors.primary),
+    info: getDarkColor(colors.info),
+    success: getDarkColor(colors.success),
+    warning: getDarkColor(colors.warning),
+    error: getDarkColor(colors.error),
+  }
 }
 export function getStatusColor(color?: string): StatusColor | undefined {
   if (!color)
     return undefined
 
-  const baseColor = colord(color)
-  if (!baseColor.isValid())
+  const colorInst = colord(color)
+  if (!colorInst.isValid())
     return undefined
 
   return {
     color,
-    hover: baseColor.lighten(0.1).toHex(),
-    pressed: baseColor.darken(0.1).toHex(),
-    suppl: baseColor.lighten(0.1).toHex(),
+    hover: colorInst.lighten(0.1).toHex(),
+    pressed: colorInst.darken(0.1).toHex(),
+    suppl: colorInst.lighten(0.1).toHex(),
   }
 }
 export function getColors(colors?: Colors) {

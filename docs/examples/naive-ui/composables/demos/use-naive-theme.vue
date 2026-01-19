@@ -1,13 +1,29 @@
 <script setup lang='ts'>
 import { useNaiveTheme } from '@oiij/naive-ui'
+import { colord } from 'colord'
 import { dateKoKR, koKR, NButton, NCalendar, NCard, NColorPicker, NConfigProvider, NFlex, NInput, NRadio, NRadioGroup } from 'naive-ui'
 import { ref } from 'vue'
 
+function getDarkColor(color?: string) {
+  if (!color) {
+    return undefined
+  }
+  const colorInst = colord(color)
+  if (!colorInst.isValid()) {
+    return undefined
+  }
+  return colorInst.darken(0.1).toHex()
+}
 const darkMode = ref(false)
 const language = ref<'zh-CN' | 'en-US' | 'ko-KR'>('zh-CN')
 const { theme, themeOverrides, locale, locales, colors, themeColors } = useNaiveTheme({
   colors: {
-    primary: '#475569',
+    primary: '#ff2d51',
+  },
+  darkColors: (colors) => {
+    return {
+      primary: getDarkColor(colors.primary),
+    }
   },
   language,
   darkMode,

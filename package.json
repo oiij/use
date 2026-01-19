@@ -58,6 +58,7 @@
     "@oiij/utils": "workspace:*",
     "@oiij/v-charts": "workspace:*",
     "@oiij/xlsx": "workspace:*",
+    "colord": "catalog:z_dev",
     "naive-ui": "catalog:z_dev",
     "three": "catalog:z_dev",
     "vue": "catalog:z_dev"

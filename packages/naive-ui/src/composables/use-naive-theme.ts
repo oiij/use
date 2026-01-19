@@ -1,15 +1,9 @@
 import type { GlobalThemeOverrides, NDateLocale } from 'naive-ui'
 import type { ComputedRef, Ref } from 'vue'
 import type { Colors } from './_helper'
-import {
-  darkTheme,
-  dateEnUS,
-  dateZhCN,
-  enUS,
-  zhCN,
-} from 'naive-ui'
+import { darkTheme, dateEnUS, dateZhCN, enUS, zhCN } from 'naive-ui'
 import { computed, ref, toValue, watchEffect } from 'vue'
-import { getColors, getDarkColor } from './_helper'
+import { getColors, getDarkColors } from './_helper'
 
 type Locales<T extends string = string> = Record<T, {
   name: string
@@ -35,9 +29,10 @@ export type NaiveThemeOptions<T extends string> = {
   colors?: Colors
   globalThemeOverrides?: GlobalThemeOverrides
   locales?: Partial<Locales<T>>
+  darkColors?: Colors | ((colors: Colors) => Colors)
 }
 export function useNaiveTheme<T extends string>(options?: NaiveThemeOptions<T>) {
-  const { language = 'zh-CN', darkMode, colors, globalThemeOverrides, locales } = options ?? {}
+  const { language = 'zh-CN', darkMode, colors, globalThemeOverrides, locales, darkColors } = options ?? {}
   const languageRef = ref(toValue(language)) as Ref<T>
   watchEffect(() => {
     languageRef.value = toValue(language) as T
@@ -49,7 +44,23 @@ export function useNaiveTheme<T extends string>(options?: NaiveThemeOptions<T>) 
   const { common, ...extra } = globalThemeOverrides ?? {}
   const colorsRef = ref<Colors>({ ...colors })
   const themeColorsRef = computed(() => {
-    return darkModeRef.value ? Object.fromEntries(Object.entries(colorsRef.value).map(([k, v]) => [k, getDarkColor(v)])) : colorsRef.value
+    if (darkModeRef.value) {
+      if (typeof darkColors === 'function') {
+        const darkColorsResult = darkColors(colorsRef.value)
+        return {
+          ...colorsRef.value,
+          ...darkColorsResult,
+        }
+      }
+      if (typeof darkColors === 'object') {
+        return {
+          ...colorsRef.value,
+          ...darkColors,
+        }
+      }
+      return getDarkColors(colorsRef.value)
+    }
+    return colorsRef.value
   })
   function setColor(v: Partial<Colors>) {
     colorsRef.value = { ...colorsRef.value, ...v }
