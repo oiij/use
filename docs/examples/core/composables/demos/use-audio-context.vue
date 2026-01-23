@@ -7,6 +7,7 @@ import { ref, useTemplateRef } from 'vue'
 const url = ref('')
 const { play, pause, resume, stop, toggleMute, setEQFrequency, getEQFrequencies, getFrequencyData, setProgress, setVolume, setPlaybackRate, playing, paused, ended, volume, muted, playbackRate, currentTimeText, durationText, progress, cachedDuration, cachedProgress } = useAudioContext({
   fade: false,
+  timeUpdateFormat: (time: number) => Number(time.toFixed(0)),
 })
 const { pause: pauseSpectrum, resume: resumeSpectrum } = useSpectrum(useTemplateRef('canvas-ref'), getFrequencyData, {
   type: 'bar',

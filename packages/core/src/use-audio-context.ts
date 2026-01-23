@@ -1,4 +1,4 @@
-import { createEventHook } from '@vueuse/core'
+import { createEventHook, useRafFn } from '@vueuse/core'
 import { computed, onUnmounted, readonly, ref } from 'vue'
 
 function formatTime(seconds: number) {
@@ -14,13 +14,14 @@ export type AudioContextOptions = {
   volume?: number
   playbackRate?: number
   fade?: AudioContextFadeOptions | boolean
+  timeUpdateFormat?: (time: number) => number
 }
 
 function nanAble(val: number) {
   return Number.isNaN(val) ? 0 : val
 }
 export function useAudioContext(options?: AudioContextOptions) {
-  const { volume: defaultVolume = 1, playbackRate: defaultPlaybackRate = 1, fade } = options ?? {}
+  const { volume: defaultVolume = 1, playbackRate: defaultPlaybackRate = 1, fade, timeUpdateFormat = (time: number) => time } = options ?? {}
   const eqFrequencies = [32, 64, 125, 250, 500, 1000, 2000, 4000, 8000, 16000]
 
   const defaultFadeOptions = typeof fade === 'boolean' ? { fade: true, duration: 0.5 } : fade ?? { }
@@ -70,10 +71,12 @@ export function useAudioContext(options?: AudioContextOptions) {
   const onPausedEv = createEventHook<HTMLAudioElement>()
   const onEndedEv = createEventHook<HTMLAudioElement>()
   const onTimeUpdateEv = createEventHook<HTMLAudioElement>()
+  const onTimeUpdateRafEv = createEventHook<HTMLAudioElement>()
   const onDurationUpdateEv = createEventHook<HTMLAudioElement>()
 
   // volume
   const volumeRef = ref(defaultVolume)
+  let volumeCache: number = defaultVolume
   const muted = computed(() => volumeRef.value === 0)
   gainNode.gain.value = volumeRef.value
 
@@ -83,9 +86,6 @@ export function useAudioContext(options?: AudioContextOptions) {
     volumeRef.value = volume
     onVolumeUpdateEv.trigger(audioElement)
   }
-
-  // setMuted
-  let volumeCache: number = defaultVolume
   function setMuted(muted = true) {
     if (muted) {
       volumeCache = Math.max(0.1, volumeRef.value)
@@ -105,19 +105,21 @@ export function useAudioContext(options?: AudioContextOptions) {
   function setPlaybackRate(playbackRate: number) {
     audioElement.playbackRate = playbackRate
   }
-  audioElement.addEventListener('ratechange', () => {
-    playbackRateRef.value = audioElement.playbackRate
-    onRateUpdateEv.trigger(audioElement)
-  }, {
-    signal: controller.signal,
-  })
 
+  // refs
   const playingRef = ref(false)
   const pausedRef = ref(false)
   const endedRef = ref(false)
   const urlRef = ref<string>()
+  const currentTimeRef = ref(0)
+  const currentTimeText = computed(() => formatTime(currentTimeRef.value))
+  const progressRef = ref(0)
+  const durationRef = ref(0)
+  const durationText = computed(() => formatTime(durationRef.value))
+  const cachedDurationRef = ref(0)
+  const cachedDurationText = computed(() => formatTime(cachedDurationRef.value))
+  const cachedProgressRef = ref(0)
 
-  // play&stop
   async function play(url: string) {
     stop()
     urlRef.value = url
@@ -132,18 +134,7 @@ export function useAudioContext(options?: AudioContextOptions) {
   function stop() {
     audioElement.currentTime = 0
     audioElement.pause()
-    audioElement.removeAttribute('src')
   }
-
-  audioElement.addEventListener('playing', () => {
-    playingRef.value = true
-    pausedRef.value = false
-    endedRef.value = false
-    onPlayingEv.trigger(audioElement)
-  }, {
-    signal: controller.signal,
-  })
-
   // pause&resume
   function pause(options?: AudioContextFadeOptions) {
     const { fade = false, duration = 0.5 } = { ...defaultFadeOptions, ...options }
@@ -177,50 +168,63 @@ export function useAudioContext(options?: AudioContextOptions) {
   function toggle(options?: AudioContextFadeOptions) {
     audioElement.paused ? resume(options) : pause(options)
   }
-
-  audioElement.addEventListener('pause', () => {
-    playingRef.value = false
-    pausedRef.value = true
-    endedRef.value = false
-    onPausedEv.trigger(audioElement)
-  }, {
-    signal: controller.signal,
-  })
-
-  // ended
-  audioElement.addEventListener('ended', () => {
-    playingRef.value = false
-    pausedRef.value = false
-    endedRef.value = true
-    onEndedEv.trigger(audioElement)
-  }, {
-    signal: controller.signal,
-  })
-
-  const currentTimeRef = ref(0)
-  const currentTimeText = computed(() => formatTime(currentTimeRef.value))
   function setCurrentTime(time: number) {
     audioElement.currentTime = time
   }
 
-  const progressRef = ref(0)
   function setProgress(progress: number) {
     const currentTime = Number(((progress / 100) * audioElement.duration).toFixed(2))
     audioElement.currentTime = nanAble(currentTime)
   }
-  audioElement.addEventListener('timeupdate', () => {
-    const currentTime = audioElement.currentTime
-    currentTimeRef.value = nanAble(currentTime)
 
+  const { resume: rafResume, pause: rafPause } = useRafFn(() => {
+    const currentTime = timeUpdateFormat(audioElement.currentTime)
+    currentTimeRef.value = currentTime
     const progress = Number(((currentTime / audioElement.duration) * 100).toFixed(2))
     progressRef.value = nanAble(progress)
+    onTimeUpdateRafEv.trigger(audioElement)
+  }, { immediate: false })
+
+  // eventListener
+
+  audioElement.addEventListener('ratechange', () => {
+    playbackRateRef.value = audioElement.playbackRate
+    onRateUpdateEv.trigger(audioElement)
+  }, {
+    signal: controller.signal,
+  })
+  audioElement.addEventListener('playing', () => {
+    playingRef.value = true
+    pausedRef.value = false
+    endedRef.value = false
+    rafResume()
+    onPlayingEv.trigger(audioElement)
+  }, {
+    signal: controller.signal,
+  })
+  audioElement.addEventListener('pause', () => {
+    playingRef.value = false
+    pausedRef.value = true
+    endedRef.value = false
+    rafPause()
+    onPausedEv.trigger(audioElement)
+  }, {
+    signal: controller.signal,
+  })
+  audioElement.addEventListener('ended', () => {
+    playingRef.value = false
+    pausedRef.value = false
+    endedRef.value = true
+    rafPause()
+    onEndedEv.trigger(audioElement)
+  }, {
+    signal: controller.signal,
+  })
+  audioElement.addEventListener('timeupdate', () => {
     onTimeUpdateEv.trigger(audioElement)
   }, {
     signal: controller.signal,
   })
-
-  const durationRef = ref(0)
-  const durationText = computed(() => formatTime(durationRef.value))
   audioElement.addEventListener('durationchange', () => {
     const duration = audioElement.duration
     durationRef.value = nanAble(duration)
@@ -228,10 +232,6 @@ export function useAudioContext(options?: AudioContextOptions) {
   }, {
     signal: controller.signal,
   })
-
-  const cachedDurationRef = ref(0)
-  const cachedDurationText = computed(() => formatTime(cachedDurationRef.value))
-  const cachedProgressRef = ref(0)
   audioElement.addEventListener('canplay', () => {
     const duration = audioElement.buffered.end(Math.max(0, audioElement.buffered.length - 1))
     cachedDurationRef.value = nanAble(duration)
@@ -313,6 +313,7 @@ export function useAudioContext(options?: AudioContextOptions) {
     onMuted: onMutedEv.on,
     onRateUpdate: onRateUpdateEv.on,
     onTimeUpdate: onTimeUpdateEv.on,
+    onTimeUpdateRaf: onTimeUpdateRafEv.on,
     onDurationUpdate: onDurationUpdateEv.on,
     onPlaying: onPlayingEv.on,
     onPaused: onPausedEv.on,

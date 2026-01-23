@@ -7,7 +7,7 @@
 ## Types
 
 ```ts
-// #region src/composables/use-audio-context.d.ts
+// #region src/use-audio-context.d.ts
 type AudioContextFadeOptions = {
   fade?: boolean
   duration?: number
@@ -16,6 +16,7 @@ type AudioContextOptions = {
   volume?: number
   playbackRate?: number
   fade?: AudioContextFadeOptions | boolean
+  timeUpdateFormat?: (time: number) => number
 }
 declare function useAudioContext(options?: AudioContextOptions): {
   eqFrequencies: number[]
@@ -26,32 +27,32 @@ declare function useAudioContext(options?: AudioContextOptions): {
   analyserNode: AnalyserNode
   filters: BiquadFilterNode[]
   filterNode: BiquadFilterNode
-  volume: Readonly<vue31.Ref<number, number>>
+  volume: Readonly<vue30.Ref<number, number>>
   setVolume: (volume: number) => void
-  muted: Readonly<vue31.Ref<boolean, boolean>>
+  muted: Readonly<vue30.Ref<boolean, boolean>>
   setMuted: (muted?: boolean) => void
   toggleMute: () => void
-  playbackRate: Readonly<vue31.Ref<number, number>>
+  playbackRate: Readonly<vue30.Ref<number, number>>
   setPlaybackRate: (playbackRate: number) => void
-  playing: Readonly<vue31.Ref<boolean, boolean>>
-  paused: Readonly<vue31.Ref<boolean, boolean>>
-  ended: Readonly<vue31.Ref<boolean, boolean>>
-  currentTime: Readonly<vue31.Ref<number, number>>
-  currentTimeText: vue31.ComputedRef<string>
+  playing: Readonly<vue30.Ref<boolean, boolean>>
+  paused: Readonly<vue30.Ref<boolean, boolean>>
+  ended: Readonly<vue30.Ref<boolean, boolean>>
+  currentTime: Readonly<vue30.Ref<number, number>>
+  currentTimeText: vue30.ComputedRef<string>
   setCurrentTime: (time: number) => void
-  duration: Readonly<vue31.Ref<number, number>>
-  durationText: vue31.ComputedRef<string>
-  progress: Readonly<vue31.Ref<number, number>>
+  duration: Readonly<vue30.Ref<number, number>>
+  durationText: vue30.ComputedRef<string>
+  progress: Readonly<vue30.Ref<number, number>>
   setProgress: (progress: number) => void
-  cachedDuration: Readonly<vue31.Ref<number, number>>
-  cachedDurationText: vue31.ComputedRef<string>
-  cachedProgress: Readonly<vue31.Ref<number, number>>
-  url: Readonly<vue31.Ref<string | undefined, string | undefined>>
+  cachedDuration: Readonly<vue30.Ref<number, number>>
+  cachedDurationText: vue30.ComputedRef<string>
+  cachedProgress: Readonly<vue30.Ref<number, number>>
+  url: Readonly<vue30.Ref<string | undefined, string | undefined>>
   play: (url: string) => Promise<void>
   pause: (options?: AudioContextFadeOptions) => void
   resume: (options?: AudioContextFadeOptions) => void
   stop: () => void
-  toggle: () => void
+  toggle: (options?: AudioContextFadeOptions) => void
   getFrequencyData: () => Uint8Array<ArrayBuffer>
   setEQFrequency: (index: number, value: number) => void
   getEQFrequency: (index: number) => number
@@ -63,6 +64,7 @@ declare function useAudioContext(options?: AudioContextOptions): {
   onMuted: _vueuse_core7.EventHookOn<HTMLAudioElement>
   onRateUpdate: _vueuse_core7.EventHookOn<HTMLAudioElement>
   onTimeUpdate: _vueuse_core7.EventHookOn<HTMLAudioElement>
+  onTimeUpdateRaf: _vueuse_core7.EventHookOn<HTMLAudioElement>
   onDurationUpdate: _vueuse_core7.EventHookOn<HTMLAudioElement>
   onPlaying: _vueuse_core7.EventHookOn<HTMLAudioElement>
   onPaused: _vueuse_core7.EventHookOn<HTMLAudioElement>
