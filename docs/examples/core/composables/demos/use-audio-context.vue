@@ -6,7 +6,6 @@ import { ref, useTemplateRef } from 'vue'
 
 const url = ref('')
 const { play, pause, resume, stop, toggleMute, setEQFrequency, getEQFrequencies, getFrequencyData, setProgress, setVolume, setPlaybackRate, playing, paused, ended, volume, muted, playbackRate, currentTimeText, durationText, progress, cachedDuration, cachedProgress } = useAudioContext({
-  fade: false,
   timeUpdateFormat: (time: number) => Number(time.toFixed(0)),
 })
 const { pause: pauseSpectrum, resume: resumeSpectrum } = useSpectrum(useTemplateRef('canvas-ref'), getFrequencyData, {
@@ -84,7 +83,7 @@ function onEQFrequencyUpdate(index: number, val: number) {
     </NFormItem>
     <NFormItem label="进度">
       <NFlex vertical style="width: 100%;">
-        <NSlider :value="progress" :min="0" :max="100" @update:value="(val) => handleSetProgress(val)" />
+        <NSlider :value="progress" :min="0" :max="100" :format-tooltip="() => `${currentTimeText}/${durationText}`" @update:value="(val) => handleSetProgress(val)" />
         <NProgress type="line" :percentage="progress" />
         <NProgress type="line" :percentage="cachedProgress" />
       </NFlex>

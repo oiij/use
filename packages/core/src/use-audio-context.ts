@@ -24,7 +24,7 @@ export function useAudioContext(options?: AudioContextOptions) {
   const { volume: defaultVolume = 1, playbackRate: defaultPlaybackRate = 1, fade, timeUpdateFormat = (time: number) => time } = options ?? {}
   const eqFrequencies = [32, 64, 125, 250, 500, 1000, 2000, 4000, 8000, 16000]
 
-  const defaultFadeOptions = typeof fade === 'boolean' ? { fade: true, duration: 0.5 } : fade ?? { }
+  const defaultFadeOptions = typeof fade === 'boolean' && fade ? { fade: true, duration: 0.5 } : fade ?? { }
 
   const controller = new AbortController()
   const audioContext = new AudioContext()
@@ -138,13 +138,17 @@ export function useAudioContext(options?: AudioContextOptions) {
   // pause&resume
   function pause(options?: AudioContextFadeOptions) {
     const { fade = false, duration = 0.5 } = { ...defaultFadeOptions, ...options }
+    if (audioElement.paused) {
+      return
+    }
     if (fade) {
       const currentTime = audioContext.currentTime
       gainNode.gain.cancelScheduledValues(currentTime)
       gainNode.gain.setValueAtTime(gainNode.gain.value, currentTime)
-      gainNode.gain.linearRampToValueAtTime(0, currentTime + (duration))
+      gainNode.gain.linearRampToValueAtTime(0, currentTime + duration)
       setTimeout(() => {
         audioElement.pause()
+        gainNode.gain.setValueAtTime(volumeRef.value, currentTime + 10)
       }, duration * 1000)
       return
     }
@@ -152,11 +156,14 @@ export function useAudioContext(options?: AudioContextOptions) {
   }
   function resume(options?: AudioContextFadeOptions) {
     const { fade = false, duration = 0.5 } = { ...defaultFadeOptions, ...options }
+    if (!audioElement.paused) {
+      return
+    }
     if (fade) {
       const currentTime = audioContext.currentTime
       gainNode.gain.cancelScheduledValues(currentTime)
       gainNode.gain.setValueAtTime(0, currentTime)
-      gainNode.gain.linearRampToValueAtTime(gainNode.gain.value, currentTime + (duration))
+      gainNode.gain.linearRampToValueAtTime(volumeRef.value, currentTime + duration)
       setTimeout(() => {
         audioElement.play()
       }, duration * 1000)
