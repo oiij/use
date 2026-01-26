@@ -177,23 +177,27 @@ export function useAudioContext(options?: AudioContextOptions) {
   }
   function setCurrentTime(time: number) {
     audioElement.currentTime = time
+    currentTimeAndProgressEffect()
   }
 
   function setProgress(progress: number) {
     const currentTime = Number(((progress / 100) * audioElement.duration).toFixed(2))
     audioElement.currentTime = nanAble(currentTime)
+    currentTimeAndProgressEffect()
   }
 
-  const { resume: rafResume, pause: rafPause } = useRafFn(() => {
+  function currentTimeAndProgressEffect() {
     const currentTime = timeUpdateFormat(audioElement.currentTime)
     currentTimeRef.value = currentTime
     const progress = Number(((currentTime / audioElement.duration) * 100).toFixed(2))
     progressRef.value = nanAble(progress)
+  }
+  const { resume: rafResume, pause: rafPause } = useRafFn(() => {
+    currentTimeAndProgressEffect()
     onTimeUpdateRafEv.trigger(audioElement)
   }, { immediate: false })
 
   // eventListener
-
   audioElement.addEventListener('ratechange', () => {
     playbackRateRef.value = audioElement.playbackRate
     onRateUpdateEv.trigger(audioElement)
