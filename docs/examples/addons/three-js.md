@@ -15,9 +15,10 @@ pnpm add @oiij/three-js
 ## Types
 
 ```ts
+// #region src/index.d.ts
 type ThreeJsOptions = {
-  renderer?: WebGLRendererParameters
-  camera?: {
+  rendererOptions?: WebGLRendererParameters
+  cameraOptions?: {
     fov?: number
     aspect?: number
     near?: number
@@ -28,11 +29,18 @@ type ThreeJsOptions = {
   disableRender?: boolean
   lights?: Light[]
   helpers?: Object3D[]
+  manual?: boolean
 }
 type LoopEvent = {
   clock: Clock
   delta: number
   elapsed: number
+}
+type ResizeArguments = {
+  width: number
+  height: number
+  aspect: number
+  dpr: number
 }
 declare function useThreeJs(templateRef: TemplateRef<HTMLElement>, options?: ThreeJsOptions): {
   templateRef: Readonly<vue0.ShallowRef<HTMLElement | null>>
@@ -46,27 +54,17 @@ declare function useThreeJs(templateRef: TemplateRef<HTMLElement>, options?: Thr
   isActive: Readonly<vue0.ShallowRef<boolean>>
   dispose: () => void
   onIntersectObject: (obj: Object3D | Object3D[], event: PointerEvent | MouseEvent, callback?: (obj: Object3D[]) => void) => boolean
-  onRendered: _vueuse_core0.EventHookOn<WebGLRenderer>
-  onResize: _vueuse_core0.EventHookOn<{
-    width: number
-    height: number
-    aspect: number
-    pixelRatio: number
-  }>
+  onRendered: _vueuse_core0.EventHookOn<[WebGLRenderer]>
+  onResize: _vueuse_core0.EventHookOn<[ResizeArguments]>
   onDestroy: _vueuse_core0.EventHookOn<[]>
-  onBeforeLoop: _vueuse_core0.EventHookOn<LoopEvent>
-  onLoop: _vueuse_core0.EventHookOn<LoopEvent>
-  onAfterLoop: _vueuse_core0.EventHookOn<LoopEvent>
-  onPointerDown: _vueuse_core0.EventHookOn<[PointerEvent]>
-  onPointerUp: _vueuse_core0.EventHookOn<[PointerEvent]>
-  onPointerMove: _vueuse_core0.EventHookOn<[PointerEvent]>
-  onPointerEnter: _vueuse_core0.EventHookOn<[PointerEvent]>
-  onPointerLeave: _vueuse_core0.EventHookOn<[PointerEvent]>
-  onPointerOut: _vueuse_core0.EventHookOn<[PointerEvent]>
-  onPointerOver: _vueuse_core0.EventHookOn<[PointerEvent]>
+  onBeforeLoop: _vueuse_core0.EventHookOn<[WebGLRenderer, LoopEvent, UseRafFnCallbackArguments]>
+  onLoop: _vueuse_core0.EventHookOn<[WebGLRenderer, LoopEvent, UseRafFnCallbackArguments]>
+  onAfterLoop: _vueuse_core0.EventHookOn<[WebGLRenderer, LoopEvent, UseRafFnCallbackArguments]>
   onClick: _vueuse_core0.EventHookOn<[MouseEvent]>
   onDoubleClick: _vueuse_core0.EventHookOn<[MouseEvent]>
   onContextMenu: _vueuse_core0.EventHookOn<[MouseEvent]>
 }
 type UseThreeJsReturns = ReturnType<typeof useThreeJs>
+// #endregion
+export { ThreeJsOptions, useThreeJs, UseThreeJsReturns }
 ```

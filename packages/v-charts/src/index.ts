@@ -1,10 +1,11 @@
 import type { IInitOption, ISpec } from '@visactor/vchart'
-import type { ComputedRef, Ref, TemplateRef } from 'vue'
+import type { MaybeRefOrGetter, Ref, TemplateRef } from 'vue'
 import { registerAllMarks, registerAnimate, registerAreaChart, registerBarChart, registerBrush, registerCartesianBandAxis, registerCartesianCrossHair, registerCartesianLinearAxis, registerCartesianLogAxis, registerCartesianTimeAxis, registerContinuousLegend, registerCustomMark, registerDataZoom, registerDiscreteLegend, registerDomTooltipHandler, registerLineChart, registerMarkArea, registerMarkLine, registerMarkPoint, registerPieChart, registerPolarBandAxis, registerPolarCrossHair, registerPolarLinearAxis, registerScrollBar, registerTitle, registerTooltip, VChart } from '@visactor/vchart'
-import { createEventHook, useDebounceFn, useElementSize } from '@vueuse/core'
+import { createEventHook, useDebounceFn } from '@vueuse/core'
 import { onUnmounted, ref, shallowRef, toValue, watch, watchEffect } from 'vue'
+import { watchElementSize } from '../../_utils/custom-watch'
 
-export const registerBase = [
+export const REGISTER_BASE = [
   registerDiscreteLegend,
   registerContinuousLegend,
   registerCustomMark,
@@ -13,15 +14,15 @@ export const registerBase = [
   registerTooltip,
   registerDomTooltipHandler,
 ]
-export const registerPolar = [
+export const REGISTER_POLAR = [
   registerPolarLinearAxis,
   registerPolarBandAxis,
   registerPolarCrossHair,
   registerBrush,
   registerDataZoom,
-  ...registerBase,
+  ...REGISTER_BASE,
 ]
-export const registerCartesian = [
+export const REGISTER_CARTESIAN = [
   registerCartesianLinearAxis,
   registerCartesianBandAxis,
   registerCartesianTimeAxis,
@@ -33,107 +34,114 @@ export const registerCartesian = [
   registerMarkLine,
   registerMarkPoint,
   registerScrollBar,
-  ...registerBase,
+  ...REGISTER_BASE,
 ]
-export const baseChat = [
+export const BASE_CHARTS = [
   registerLineChart,
   registerAreaChart,
   registerBarChart,
   registerPieChart,
 ]
-VChart.useRegisters([...registerCartesian, ...baseChat, registerAnimate])
+VChart.useRegisters([...REGISTER_CARTESIAN, ...BASE_CHARTS, registerAnimate])
 
 export type {
   ISpec,
 }
+export {
+  VChart,
+}
 export function register(comps: (() => void)[]) {
   VChart.useRegisters(comps)
 }
-export function useVCharts(templateRef: TemplateRef<HTMLElement>, options?: Ref<ISpec> | ComputedRef<ISpec> | ISpec, darkMode?: Ref<boolean> | ComputedRef<boolean>, initOptions?: IInitOption & { treeShaking?: boolean }) {
-  const vChart = shallowRef<VChart | null>(null)
-  const optionsRef: Ref<ISpec | undefined> = ref(toValue(options)) as Ref<ISpec | undefined>
+export type UseVChartsOptions = {
+  chartOption?: MaybeRefOrGetter<ISpec>
+  darkMode?: MaybeRefOrGetter<boolean>
+  initOptions?: IInitOption
+  debug?: boolean
+}
 
-  watchEffect(() => {
-    optionsRef.value = toValue(options)
-  })
+export function useVCharts(templateRef: TemplateRef<HTMLElement>, options?: UseVChartsOptions) {
+  const { chartOption, darkMode, initOptions, debug } = options ?? {}
+  function debugLog(msg: string) {
+    if (debug) {
+      console.error(msg)
+    }
+  }
+  const vChartInst = shallowRef<VChart | null>(null)
 
-  const { width, height } = useElementSize(templateRef)
+  const chartOptionRef = ref(toValue(chartOption)) as Ref<ISpec | undefined>
+  watchEffect(() => chartOptionRef.value = toValue(chartOption) as ISpec | undefined)
+  watch(chartOptionRef, setOption)
 
-  const onRenderEvent = createEventHook<VChart>()
-  const onUpdateEvent = createEventHook<ISpec>()
-  const onResizeEvent = createEventHook<{ width: number, height: number }>()
+  const darkModeRef = ref(toValue(darkMode))
+  watchEffect(() => darkModeRef.value = toValue(darkMode))
+  watch(darkModeRef, updateTheme)
+
+  const onRenderEvent = createEventHook<[VChart]>()
+  const onUpdateEvent = createEventHook<[ISpec]>()
+  const onResizeEvent = createEventHook<[{ width: number, height: number }]>()
   const onDisposeEvent = createEventHook()
 
-  function setOption(spec: ISpec) {
-    if (vChart.value) {
-      vChart.value.updateSpec(spec)
-      onUpdateEvent.trigger(spec)
+  function setOption(option?: ISpec) {
+    if (option) {
+      chartOptionRef.value = option
     }
+    const chartOption = chartOptionRef.value ?? {} as ISpec
+    vChartInst.value?.updateSpec(chartOption)
+    onUpdateEvent.trigger(chartOption)
+    debugLog(`update: ${JSON.stringify(chartOption)}`)
+  }
+  function updateTheme(darkMode?: boolean) {
+    if (darkMode) {
+      darkModeRef.value = darkMode
+    }
+    const theme = darkModeRef.value ? 'dark' : 'light'
+    vChartInst.value?.setCurrentThemeSync(theme)
+    debugLog(`updateTheme: ${theme}`)
   }
 
   function render() {
     if (templateRef.value) {
-      if (vChart.value) {
-        resize()
+      if (vChartInst.value) {
         return
       }
-      const theme = darkMode?.value ? 'dark' : 'light'
-
-      if (optionsRef.value) {
-        vChart.value = new VChart(optionsRef.value, {
-          dom: templateRef.value,
-          theme,
-          ...initOptions,
-        })
-        vChart.value.renderSync()
-        onRenderEvent.trigger(vChart.value)
-      }
+      const theme = darkModeRef?.value ? 'dark' : 'light'
+      vChartInst.value = new VChart(chartOptionRef.value ?? {} as ISpec, {
+        dom: templateRef.value,
+        ...initOptions,
+      })
+      vChartInst.value.setCurrentThemeSync(theme)
+      vChartInst.value.renderSync()
+      onRenderEvent.trigger(vChartInst.value)
+      debugLog(`render: ${vChartInst.value}`)
     }
   }
-  const renderDebounce = useDebounceFn(render, 100)
 
-  function resize() {
-    vChart.value?.resizeSync(width.value, height.value)
-    onResizeEvent.trigger({ width: width.value, height: height.value })
+  function resize(width: number, height: number) {
+    vChartInst.value?.resizeSync(width, height)
+    onResizeEvent.trigger({ width, height })
+    debugLog(`resize: ${width} x ${height}`)
   }
-  const resizeDebounce = useDebounceFn(resize, 100)
-  function destroy() {
-    vChart.value?.release()
-    vChart.value = null
-    onDisposeEvent.trigger()
-  }
+  const debounceResize = useDebounceFn(resize, 100)
 
-  watch([width, height], ([width, height]) => {
-    if (width > 0 && height > 0) {
-      if (vChart.value) {
-        resizeDebounce()
-      }
-      else {
-        renderDebounce()
-      }
-    }
-  })
-  watch(optionsRef, (v) => {
-    if (v) {
-      if (vChart.value) {
-        setOption(v)
-      }
-      else {
-        render()
-      }
-    }
-  })
-  watchEffect(() => {
-    destroy()
+  watchElementSize(templateRef, ({ width, height }) => {
+    debounceResize(width, height)
     render()
   })
+  function destroy() {
+    vChartInst.value?.release()
+    vChartInst.value = null
+    onDisposeEvent.trigger()
+    debugLog(`dispose:  `)
+  }
   onUnmounted(() => {
     destroy()
   })
   return {
     templateRef,
-    vChart,
-    options: optionsRef,
+    vChartInst,
+    chartOptionRef,
+    darkModeRef,
     onRender: onRenderEvent.on,
     onUpdate: onUpdateEvent.on,
     onResize: onResizeEvent.on,

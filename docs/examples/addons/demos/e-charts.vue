@@ -1,10 +1,11 @@
 <script setup lang='ts'>
 import type { EChartsOption } from '@oiij/e-charts'
 import { useECharts } from '@oiij/e-charts'
-import { useData } from 'vitepress'
-import { computed, useTemplateRef } from 'vue'
+import { NButton, NFlex } from 'naive-ui'
+import { computed, ref, useTemplateRef } from 'vue'
 
-const { isDark } = useData()
+const darkMode = ref(false)
+const value = ref(200)
 const opt = computed(() => {
   return {
     tooltip: {
@@ -40,8 +41,8 @@ const opt = computed(() => {
           show: false,
         },
         data: [
-          { value: 1048, name: 'Search Engine' },
-          { value: 735, name: 'Direct' },
+          { value: value.value, name: 'Search Engine' },
+          { value: value.value + 20, name: 'Direct' },
           { value: 580, name: 'Email' },
           { value: 484, name: 'Union Ads' },
           { value: 300, name: 'Video Ads' },
@@ -51,11 +52,25 @@ const opt = computed(() => {
   } as EChartsOption
 })
 
-useECharts(useTemplateRef('dom-ref'), opt, isDark)
+useECharts(useTemplateRef('dom-ref'), {
+  chartOption: opt,
+  darkMode,
+  debug: true,
+})
 </script>
 
 <template>
-  <div ref="dom-ref" style="width:100%;height:400px" />
+  <NFlex vertical>
+    <NFlex>
+      <NButton @click="() => value += value">
+        Change Value
+      </NButton>
+      <NButton @click="() => darkMode = !darkMode">
+        Change Dark Mode
+      </NButton>
+    </NFlex>
+    <div ref="dom-ref" style="width:100%;height:400px" />
+  </NFlex>
 </template>
 
 <style scoped>

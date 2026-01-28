@@ -1,15 +1,16 @@
+import type { UseRafFnCallbackArguments } from '@vueuse/core'
 import type { Light, Object3D, WebGLRendererParameters } from 'three'
 import type { TemplateRef } from 'vue'
-import { createEventHook, useDebounceFn, useElementSize, useEventListener, useRafFn } from '@vueuse/core'
+import { createEventHook, useDebounceFn, useEventListener, useRafFn } from '@vueuse/core'
 import { Clock, PerspectiveCamera, Scene, VSMShadowMap, WebGLRenderer } from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
-import { computed, watch } from 'vue'
+import { watchElementSize } from '../../_utils/custom-watch'
 import { useDisposable } from './utils/_utils'
 import { onIntersectObject as _onIntersectObject } from './utils/utils'
 
 export type ThreeJsOptions = {
-  renderer?: WebGLRendererParameters
-  camera?: {
+  rendererOptions?: WebGLRendererParameters
+  cameraOptions?: {
     fov?: number
     aspect?: number
     near?: number
@@ -20,12 +21,18 @@ export type ThreeJsOptions = {
   disableRender?: boolean
   lights?: Light[]
   helpers?: Object3D []
-
+  manual?: boolean
 }
 type LoopEvent = {
   clock: Clock
   delta: number
   elapsed: number
+}
+type ResizeArguments = {
+  width: number
+  height: number
+  aspect: number
+  dpr: number
 }
 // 计算鼠标与模型对象相交
 function createRenderer(options?: WebGLRendererParameters) {
@@ -38,7 +45,7 @@ function createRenderer(options?: WebGLRendererParameters) {
     renderer,
   }
 }
-function createCamera(options?: ThreeJsOptions['camera']) {
+function createCamera(options?: ThreeJsOptions['cameraOptions']) {
   const { fov = 50, aspect = 1, near = 0.1, far = 2000, position = [0, 1, 3], lookAt = [0, 0, 0] } = options ?? {}
   const camera = new PerspectiveCamera(fov, aspect, near, far)
   camera.position.set(...position)
@@ -48,7 +55,7 @@ function createCamera(options?: ThreeJsOptions['camera']) {
   }
 }
 export function useThreeJs(templateRef: TemplateRef<HTMLElement>, options?: ThreeJsOptions) {
-  const { renderer: rendererOptions, camera: cameraOptions, disableRender = false, lights = [], helpers = [] } = options ?? {}
+  const { rendererOptions, cameraOptions, disableRender = false, lights = [], helpers = [], manual } = options ?? {}
   const { renderer } = createRenderer(rendererOptions)
   const scene = new Scene()
   scene.add(...[...lights, ...helpers])
@@ -56,60 +63,45 @@ export function useThreeJs(templateRef: TemplateRef<HTMLElement>, options?: Thre
   const controls = new OrbitControls(camera, renderer.domElement)
   controls.enableDamping = true
 
-  const { width, height } = useElementSize(templateRef, {
-    width: 0,
-    height: 0,
-  })
-  const aspect = computed(() => width.value / height.value)
-  const pixelRatio = window.devicePixelRatio
+  const onCreatedEvent = createEventHook<[WebGLRenderer]>()
+  const onResizedEvent = createEventHook<[ResizeArguments]>()
+  const onDisposedEvent = createEventHook<[]>()
+  const onLoopEvent = createEventHook<[WebGLRenderer, LoopEvent, UseRafFnCallbackArguments]>()
+  const onBeforeLoopEvent = createEventHook<[WebGLRenderer, LoopEvent, UseRafFnCallbackArguments]>()
+  const onAfterLoopEvent = createEventHook<[WebGLRenderer, LoopEvent, UseRafFnCallbackArguments]>()
 
-  const onCreatedEvent = createEventHook<WebGLRenderer>()
-  const onResizeEvent = createEventHook<{ width: number, height: number, aspect: number, pixelRatio: number }>()
-  const onDestroyEvent = createEventHook<[]>()
-  const onLoopEvent = createEventHook<LoopEvent>()
-  const onBeforeLoopEvent = createEventHook<LoopEvent>()
-  const onAfterLoopEvent = createEventHook<LoopEvent>()
-
-  const onPointerDownEvent = createEventHook<[PointerEvent]>()
-  const onPointerUpEvent = createEventHook<[PointerEvent]>()
-  const onPointerMoveEvent = createEventHook<[PointerEvent]>()
-
-  const onPointerEnterEvent = createEventHook<[PointerEvent]>()
-  const onPointerLeaveEvent = createEventHook<[PointerEvent]>()
-  const onPointerOutEvent = createEventHook<[PointerEvent]>()
-  const onPointerOverEvent = createEventHook<[PointerEvent]>()
   const onClickEvent = createEventHook<[MouseEvent]>()
   const onDoubleClickEvent = createEventHook<[MouseEvent]>()
   const onContextMenuEvent = createEventHook<[MouseEvent]>()
 
-  function resize() {
-    renderer.setPixelRatio(pixelRatio)
-    renderer.setSize(width.value, height.value)
-    camera.aspect = aspect.value
+  function resize(width: number, height: number) {
+    const aspect = width / height
+    const dpr = window.devicePixelRatio ?? 1
+    renderer.setPixelRatio(dpr)
+    renderer.setSize(width, height)
+    camera.aspect = aspect
     camera.updateProjectionMatrix()
-    onResizeEvent.trigger({ width: width.value, height: height.value, aspect: aspect.value, pixelRatio })
+    onResizedEvent.trigger({ width, height, aspect, dpr })
   }
+  const debounceResize = useDebounceFn(resize, 100)
   let renderDmm: HTMLCanvasElement | null = null
   function create() {
-    if (templateRef.value) {
-      resize()
-      if (!renderDmm) {
-        templateRef.value.appendChild(renderer.domElement)
-        renderDmm = renderer.domElement
-        onCreatedEvent.trigger(renderer)
-      }
+    if (!renderDmm) {
+      templateRef.value?.appendChild(renderer.domElement)
+      renderDmm = renderer.domElement
+      onCreatedEvent.trigger(renderer)
     }
   }
-  const createDebounce = useDebounceFn(create, 100)
   const clock = new Clock()
   let delta = 0
   let elapsed = 0
-  const { pause, resume, isActive } = useRafFn(() => {
-    onBeforeLoopEvent.trigger({ clock, delta, elapsed })
-    onLoopEvent.trigger({ clock, delta, elapsed })
-    onAfterLoopEvent.trigger({ clock, delta, elapsed })
+
+  const { pause, resume, isActive } = useRafFn((arg) => {
+    onBeforeLoopEvent.trigger(renderer, { clock, delta, elapsed }, arg)
+    onLoopEvent.trigger(renderer, { clock, delta, elapsed }, arg)
+    onAfterLoopEvent.trigger(renderer, { clock, delta, elapsed }, arg)
   }, {
-    immediate: true,
+    immediate: !manual,
   })
   onBeforeLoopEvent.on(() => {
     controls.update()
@@ -124,21 +116,22 @@ export function useThreeJs(templateRef: TemplateRef<HTMLElement>, options?: Thre
     elapsed = clock.getElapsedTime()
   })
 
-  watch([width, height], () => {
-    if (width.value > 0 && height.value > 0) {
-      createDebounce()
-    }
+  watchElementSize(templateRef, ({ width, height }) => {
+    debounceResize(width, height)
+    create()
   })
 
   const dispose = useDisposable(() => {
-    onDestroyEvent.trigger()
     controls.dispose()
     scene.clear()
     renderer.dispose()
     renderer.forceContextLoss()
     renderer.domElement.getContext('webgl')?.getExtension('WEBGL_lose_context')!.loseContext()
-    renderDmm?.parentElement?.removeChild(renderDmm)
-    renderDmm = null
+    if (renderDmm) {
+      templateRef.value?.removeChild(renderDmm)
+      renderDmm = null
+    }
+    onDisposedEvent.trigger()
   })
   function onIntersectObject(obj: Object3D | Object3D[], event: PointerEvent | MouseEvent, callback?: (obj: Object3D[]) => void) {
     const intersect = _onIntersectObject(renderer, camera, obj, event)
@@ -149,13 +142,6 @@ export function useThreeJs(templateRef: TemplateRef<HTMLElement>, options?: Thre
     }
     return intersect.length > 0
   }
-  useEventListener(renderer.domElement, 'pointerdown', onPointerDownEvent.trigger)
-  useEventListener(renderer.domElement, 'pointerup', onPointerUpEvent.trigger)
-  useEventListener(renderer.domElement, 'pointermove', onPointerMoveEvent.trigger)
-  useEventListener(renderer.domElement, 'pointerenter', onPointerEnterEvent.trigger)
-  useEventListener(renderer.domElement, 'pointerleave', onPointerLeaveEvent.trigger)
-  useEventListener(renderer.domElement, 'pointerout', onPointerOutEvent.trigger)
-  useEventListener(renderer.domElement, 'pointerover', onPointerOverEvent.trigger)
 
   useEventListener(renderer.domElement, 'click', onClickEvent.trigger)
   useEventListener(renderer.domElement, 'contextmenu', onContextMenuEvent.trigger)
@@ -174,18 +160,11 @@ export function useThreeJs(templateRef: TemplateRef<HTMLElement>, options?: Thre
     dispose,
     onIntersectObject,
     onRendered: onCreatedEvent.on,
-    onResize: onResizeEvent.on,
-    onDestroy: onDestroyEvent.on,
+    onResize: onResizedEvent.on,
+    onDestroy: onDisposedEvent.on,
     onBeforeLoop: onBeforeLoopEvent.on,
     onLoop: onLoopEvent.on,
     onAfterLoop: onAfterLoopEvent.on,
-    onPointerDown: onPointerDownEvent.on,
-    onPointerUp: onPointerUpEvent.on,
-    onPointerMove: onPointerMoveEvent.on,
-    onPointerEnter: onPointerEnterEvent.on,
-    onPointerLeave: onPointerLeaveEvent.on,
-    onPointerOut: onPointerOutEvent.on,
-    onPointerOver: onPointerOverEvent.on,
     onClick: onClickEvent.on,
     onDoubleClick: onDoubleClickEvent.on,
     onContextMenu: onContextMenuEvent.on,

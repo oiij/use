@@ -1,5 +1,5 @@
 import type { GlobalThemeOverrides, NDateLocale } from 'naive-ui'
-import type { ComputedRef, Ref } from 'vue'
+import type { ComputedRef, MaybeRefOrGetter, Ref } from 'vue'
 import type { Colors } from './_helper'
 import { darkTheme, dateEnUS, dateZhCN, enUS, zhCN } from 'naive-ui'
 import { computed, ref, toValue, watchEffect } from 'vue'
@@ -23,27 +23,26 @@ const naiveLocaleMap = {
   },
 } as Locales
 
-export type NaiveThemeOptions<T extends string> = {
-  language?: T | Ref<T>
-  darkMode?: boolean | Ref<boolean>
+export type UseNaiveThemeOptions<T extends string> = {
+  language?: MaybeRefOrGetter<T>
+  darkMode?: MaybeRefOrGetter<boolean>
   colors?: Colors
   globalThemeOverrides?: GlobalThemeOverrides
   locales?: Partial<Locales<T>>
   darkColors?: Colors | ((colors: Colors) => Colors)
 }
-export function useNaiveTheme<T extends string>(options?: NaiveThemeOptions<T>) {
-  const { language = 'zh-CN', darkMode, colors, globalThemeOverrides, locales, darkColors } = options ?? {}
-  const languageRef = ref(toValue(language)) as Ref<T>
-  watchEffect(() => {
-    languageRef.value = toValue(language) as T
-  })
+export function useNaiveTheme<T extends string>(options?: UseNaiveThemeOptions<T>) {
+  const { language, darkMode, colors, globalThemeOverrides, locales, darkColors } = options ?? {}
+
+  const languageRef = ref(toValue(language)) as Ref<T | undefined>
+  watchEffect(() => languageRef.value = toValue(language) as T | undefined)
+
   const darkModeRef = ref(toValue(darkMode))
-  watchEffect(() => {
-    darkModeRef.value = toValue(darkMode)
-  })
+  watchEffect(() => darkModeRef.value = toValue(darkMode))
+
   const { common, ...extra } = globalThemeOverrides ?? {}
   const colorsRef = ref<Colors>({ ...colors })
-  const themeColorsRef = computed(() => {
+  const themeColors = computed(() => {
     if (darkModeRef.value) {
       if (typeof darkColors === 'function') {
         const darkColorsResult = darkColors(colorsRef.value)
@@ -69,7 +68,7 @@ export function useNaiveTheme<T extends string>(options?: NaiveThemeOptions<T>) 
     return darkModeRef?.value ? darkTheme : undefined
   })
   const themeOverrides: ComputedRef<GlobalThemeOverrides> = computed(() => {
-    const { primary, info, success, warning, error } = getColors(themeColorsRef.value)
+    const { primary, info, success, warning, error } = getColors(themeColors.value)
 
     const commonColors = {
       primaryColor: primary?.color,
@@ -102,19 +101,19 @@ export function useNaiveTheme<T extends string>(options?: NaiveThemeOptions<T>) 
       ...extra,
     }
   })
-  const _locales = { ...naiveLocaleMap, ...locales } as Locales<T>
-  const locale = computed(() => _locales[languageRef.value] ?? naiveLocaleMap['zh-CN'])
+  const localesMerge = { ...naiveLocaleMap, ...locales } as Locales<T>
+  const locale = computed(() => localesMerge[languageRef.value ?? 'zh-CN' as T] ?? naiveLocaleMap['zh-CN'])
 
   return {
-    language: languageRef,
-    darkMode: darkModeRef,
+    languageRef,
+    darkModeRef,
     theme,
-    colors: colorsRef,
-    themeColors: themeColorsRef,
+    colorsRef,
+    themeColors,
     themeOverrides,
-    locales: _locales,
+    locales: localesMerge,
     locale,
     setColor,
   }
 }
-export type NaiveThemeReturns = ReturnType<typeof useNaiveTheme>
+export type UseNaiveThemeReturns = ReturnType<typeof useNaiveTheme>

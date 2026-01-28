@@ -1,12 +1,12 @@
 import type { ValidateError } from 'async-validator'
 import type { FormInst, FormItemRule, FormRules } from 'naive-ui'
-import type { Ref, TemplateRef } from 'vue'
+import type { MaybeRefOrGetter, Ref, TemplateRef } from 'vue'
 import type { DataObject } from './use-data-request'
 import { createEventHook } from '@vueuse/core'
 import { cloneDeep } from 'es-toolkit/object'
-import { reactive, ref, toRaw, toValue } from 'vue'
+import { reactive, ref, toRaw, toValue, watchEffect } from 'vue'
 
-export type NaiveFormClearRules = {
+export type UseNaiveFormClearRules = {
   string?: string | null
   number?: number | null
   boolean?: boolean | null
@@ -16,7 +16,7 @@ type JSONValue = string | number | boolean | null | { [x: string]: JSONValue } |
 function isObject(value: any): boolean {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
 }
-function clearObjectValues<T extends JSONValue>(obj: T, rules?: NaiveFormClearRules): T {
+function clearObjectValues<T extends JSONValue>(obj: T, rules?: UseNaiveFormClearRules): T {
   const { string: _string = '', number: _number = null, boolean: _boolean = false } = rules ?? {}
 
   if (Array.isArray(obj)) {
@@ -59,17 +59,24 @@ function deepMerge(target: DataObject = {}, source: DataObject = {}): DataObject
   }
   return target
 }
-export type NaiveFormRules<T extends DataObject> = Partial<Record<keyof T, FormRules | FormItemRule | FormItemRule[]>>
-export type NaiveFormOptions<T extends DataObject> = {
-  rules?: NaiveFormRules<T> | Ref<NaiveFormRules<T>>
-  clearRules?: NaiveFormClearRules
+export type UseNaiveFormRules<T extends DataObject> = Partial<Record<keyof T, FormRules | FormItemRule | FormItemRule[]>>
+export type UseNaiveFormOptions<T extends DataObject> = {
+  value?: MaybeRefOrGetter<T>
+  rules?: MaybeRefOrGetter<UseNaiveFormRules<T>>
+  clearRules?: UseNaiveFormClearRules
 }
 
-export function useNaiveForm<T extends DataObject = DataObject>(formRef: TemplateRef<FormInst>, value?: T | Ref<T>, options?: NaiveFormOptions<T>) {
-  const { rules, clearRules } = options ?? {}
-  const cacheValue = cloneDeep(toValue(value))
-  const formValue = ref(toValue(value ?? {})) as Ref<T>
-  const formRules = ref(toValue(rules) ?? {}) as Ref<NaiveFormRules<T>>
+export function useNaiveForm<T extends DataObject = DataObject>(formRef: TemplateRef<FormInst>, options?: UseNaiveFormOptions<T>) {
+  const { value, rules, clearRules } = options ?? {}
+  const cacheValue = cloneDeep(toValue(value) ?? {})
+
+  const formValue = ref(toValue(value) ?? {}) as Ref<T>
+  watchEffect(() => {
+    formValue.value = toValue(value) ?? {} as T
+  })
+  const formRules = ref(toValue(rules)) as Ref<UseNaiveFormRules<T>>
+  watchEffect(() => formRules.value = toValue(rules) ?? {} as UseNaiveFormRules<T>)
+
   const formProps = {
     model: reactive(formValue.value),
     rules: reactive(formRules.value),
@@ -120,4 +127,4 @@ export function useNaiveForm<T extends DataObject = DataObject>(formRef: Templat
     onValidated: onValidatedEvent.on,
   }
 }
-export type NaiveFormReturns<T extends DataObject = DataObject> = ReturnType<typeof useNaiveForm<T>>
+export type UseNaiveFormReturns<T extends DataObject = DataObject> = ReturnType<typeof useNaiveForm<T>>

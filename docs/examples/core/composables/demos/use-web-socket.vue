@@ -11,7 +11,7 @@ type HandlerEvent<T extends string = 'connect' | 'message'> = Record<T, {
 const url = ref('https://ws-test.liijs.xyz/ws')
 const inputValue = ref('')
 const { connect, close, sendRaw, dataRecord, status, registerHandler } = useWebSocket<HandlerEvent>(url, {
-  manual: true,
+  manual: false,
   parseMessage: true,
 })
 registerHandler('connect', (data) => {
@@ -28,6 +28,9 @@ registerHandler('message', (data) => {
       <div>
         <NButton :type="status === 'OPEN' ? 'warning' : 'default'" @click="() => status === 'OPEN' ? close() : connect()">
           {{ status === 'OPEN' ? 'Close' : 'Connect' }}
+        </NButton>
+        <NButton @click="() => url = 'wss://ws-test.liijs.xyz/wss'">
+          ChangeUrl
         </NButton>
       </div>
       <div>

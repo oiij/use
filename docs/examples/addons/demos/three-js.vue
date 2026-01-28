@@ -19,7 +19,7 @@ pane.addBinding(ambientLight, 'visible', { label: '环境光' })
 pane.addBinding(axesHelper, 'visible', { label: '坐标轴' })
 
 const { scene, controls, onBeforeLoop, onAfterLoop } = useThreeJs(useTemplateRef('dom-ref'), {
-  camera: {
+  cameraOptions: {
     position: [0, 2, 3],
   },
   helpers: [axesHelper, gridHelper],

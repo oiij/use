@@ -1,6 +1,6 @@
 import type { Ref, ShallowRef } from 'vue'
 import { createEventHook } from '@vueuse/core'
-import { onUnmounted, ref, shallowRef, toValue, watchEffect } from 'vue'
+import { onUnmounted, ref, shallowRef, toValue, watch, watchEffect } from 'vue'
 
 type State = 'CONNECTING' | 'OPEN' | 'CLOSING' | 'CLOSED' | 'PENDING'
 type AutoRetry = boolean | {
@@ -41,13 +41,10 @@ export function useWebSocket<T extends HandlerType = HandlerType, D extends Mess
   let retryCount = 0
 
   const urlRef: Ref<string | URL | undefined> = ref(toValue(url))
-
-  watchEffect(() => {
-    if (urlRef.value !== toValue(url)) {
-      urlRef.value = toValue(url)
-      if (!manual) {
-        connect()
-      }
+  watchEffect(() => urlRef.value = toValue(url))
+  watch(urlRef, () => {
+    if (!manual) {
+      connect()
     }
   })
   const handlerMap = new Map<keyof T, ((data: any) => void)[]>()
@@ -62,10 +59,10 @@ export function useWebSocket<T extends HandlerType = HandlerType, D extends Mess
 
   const controller: ShallowRef<AbortController> = shallowRef(new AbortController())
 
-  const onOpenEvent = createEventHook<WebSocketEventMap['open']> ()
-  const onMessageEvent = createEventHook<WebSocketEventMap['message']> ()
-  const onCloseEvent = createEventHook<WebSocketEventMap['close']> ()
-  const onErrorEvent = createEventHook<WebSocketEventMap['error']> ()
+  const onOpenEvent = createEventHook<[WebSocketEventMap['open']]> ()
+  const onMessageEvent = createEventHook<[WebSocketEventMap['message']]> ()
+  const onCloseEvent = createEventHook<[WebSocketEventMap['close']]> ()
+  const onErrorEvent = createEventHook<[WebSocketEventMap['error']]> ()
 
   function setStatus() {
     if (socket.value) {

@@ -1,14 +1,15 @@
 import type { BarSeriesOption, LineSeriesOption, PieSeriesOption } from 'echarts/charts'
 import type { DatasetComponentOption, GridComponentOption, LegendComponentOption, TitleComponentOption, ToolboxComponentOption, TooltipComponentOption } from 'echarts/components'
 import type { ComposeOption, ECharts, EChartsInitOpts } from 'echarts/core'
-import type { ComputedRef, Ref, TemplateRef } from 'vue'
-import { createEventHook, useDebounceFn, useElementSize } from '@vueuse/core'
+import type { MaybeRefOrGetter, Ref, TemplateRef } from 'vue'
+import { createEventHook, useDebounceFn } from '@vueuse/core'
 import { BarChart, LineChart, PieChart } from 'echarts/charts'
 import { DatasetComponent, GridComponent, LegendComponent, TitleComponent, ToolboxComponent, TooltipComponent, TransformComponent } from 'echarts/components'
 import { init, use } from 'echarts/core'
 import { LabelLayout, UniversalTransition } from 'echarts/features'
 import { CanvasRenderer } from 'echarts/renderers'
 import { onUnmounted, ref, shallowRef, toValue, watch, watchEffect } from 'vue'
+import { watchElementSize } from '../../_utils/custom-watch'
 
 export type EChartsOption = ComposeOption<
   | BarSeriesOption
@@ -21,7 +22,7 @@ export type EChartsOption = ComposeOption<
   | ToolboxComponentOption
   | DatasetComponentOption
 >
-export const baseChat = [
+export const BASE_CHARTS = [
   BarChart,
   LineChart,
   PieChart,
@@ -37,98 +38,99 @@ use([
   LabelLayout,
   UniversalTransition,
   CanvasRenderer,
-  ...baseChat,
+  ...BASE_CHARTS,
 
 ])
 export function register(ext: Parameters<typeof use>[0]) {
   use(ext)
 }
-export function useECharts(templateRef: TemplateRef<HTMLElement>, options?: Ref<EChartsOption> | ComputedRef<EChartsOption> | EChartsOption, darkMode?: ComputedRef<boolean> | Ref<boolean>, initOptions?: EChartsInitOpts) {
-  const eChart = shallowRef<ECharts | null>(null)
-  const optionsRef: Ref<EChartsOption | undefined> = ref(toValue(options))
+export type UseEChartsOptions = {
+  chartOption?: MaybeRefOrGetter<EChartsOption>
+  darkMode?: MaybeRefOrGetter<boolean>
+  initOptions?: EChartsInitOpts
+  debug?: boolean
+}
 
-  watchEffect(() => {
-    optionsRef.value = toValue(options)
-  })
+export function useECharts(templateRef: TemplateRef<HTMLElement>, options?: UseEChartsOptions) {
+  const { chartOption, darkMode, initOptions, debug } = options ?? {}
+  function debugLog(msg: string) {
+    if (debug) {
+      console.error(msg)
+    }
+  }
+  const eChartInst = shallowRef<ECharts | null>(null)
 
-  const { width, height } = useElementSize(templateRef)
+  const chartOptionRef = ref(toValue(chartOption)) as Ref<EChartsOption | undefined>
+  watchEffect(() => chartOptionRef.value = toValue(chartOption) as EChartsOption | undefined)
+  watch(chartOptionRef, setOption)
 
-  const onRenderEvent = createEventHook<ECharts>()
-  const onUpdateEvent = createEventHook<EChartsOption>()
-  const onResizeEvent = createEventHook<{ width: number, height: number }>()
+  const darkModeRef = ref(toValue(darkMode))
+  watchEffect(() => darkModeRef.value = toValue(darkMode))
+  watch(darkModeRef, updateTheme)
+
+  const onRenderEvent = createEventHook<[ECharts]>()
+  const onUpdateEvent = createEventHook<[EChartsOption]>()
+  const onResizeEvent = createEventHook<[{ width: number, height: number }]>()
   const onDisposeEvent = createEventHook()
 
-  function setOption(updateOptions: EChartsOption) {
-    if (eChart.value) {
-      eChart.value.setOption(updateOptions)
-      onUpdateEvent.trigger(updateOptions)
+  function setOption(option?: EChartsOption) {
+    if (option) {
+      chartOptionRef.value = option
     }
+    const chartOption = chartOptionRef.value ?? {} as EChartsOption
+    eChartInst.value?.setOption(chartOption)
+    onUpdateEvent.trigger(chartOption)
+    debugLog(`update: ${JSON.stringify(chartOption)}`)
+  }
+  function updateTheme(darkMode?: boolean) {
+    if (darkMode) {
+      darkModeRef.value = darkMode
+    }
+    const theme = darkModeRef.value ? 'dark' : 'default'
+    eChartInst.value?.setTheme(theme)
+    eChartInst.value?.setOption(chartOptionRef.value ?? {})
+    debugLog(`updateTheme: ${theme}`)
   }
 
   function render() {
     if (templateRef.value) {
-      if (eChart.value) {
-        resize()
+      if (eChartInst.value) {
         return
       }
-      const theme = darkMode?.value ? 'dark' : 'default'
-      if (optionsRef.value) {
-        eChart.value = init(templateRef.value, theme, { ...initOptions })
-        setOption(optionsRef.value)
-        onRenderEvent.trigger(eChart.value)
-      }
+      const theme = darkModeRef?.value ? 'dark' : 'default'
+      eChartInst.value = init(templateRef.value, theme, { ...initOptions })
+      setOption(chartOptionRef.value)
+      onRenderEvent.trigger(eChartInst.value)
+      debugLog(`render: ${eChartInst.value}`)
     }
   }
-  const renderDebounce = useDebounceFn(render, 100)
-  function resize() {
-    if (eChart.value) {
-      eChart.value.resize()
-      onResizeEvent.trigger({ width: width.value, height: height.value })
-    }
+  function resize(width: number, height: number) {
+    eChartInst.value?.resize()
+    onResizeEvent.trigger({ width, height })
+    debugLog(`resize: ${width} x ${height}`)
   }
-  const resizeDebounce = useDebounceFn(resize, 100)
+  const debounceResize = useDebounceFn(resize, 100)
 
-  function destroy() {
-    eChart.value?.dispose()
-    eChart.value = null
-    onDisposeEvent.trigger()
-  }
-
-  watch([width, height], ([width, height]) => {
-    if (width > 0 && height > 0) {
-      if (eChart.value) {
-        resizeDebounce()
-      }
-      else {
-        renderDebounce()
-      }
-    }
-  })
-
-  watch(optionsRef, (v) => {
-    if (v) {
-      if (eChart.value) {
-        setOption(v)
-      }
-      else {
-        render()
-      }
-    }
-  })
-
-  watchEffect(() => {
-    destroy()
+  watchElementSize(templateRef, ({ width, height }) => {
+    debounceResize(width, height)
     render()
   })
 
+  function destroy() {
+    eChartInst.value?.dispose()
+    eChartInst.value = null
+    onDisposeEvent.trigger()
+    debugLog(`dispose:  `)
+  }
   onUnmounted(() => {
     destroy()
   })
 
   return {
     templateRef,
-    eChart,
-    options: optionsRef,
+    eChartInst,
+    chartOptionRef,
+    darkModeRef,
     onRender: onRenderEvent.on,
     onUpdate: onUpdateEvent.on,
     onResize: onResizeEvent.on,

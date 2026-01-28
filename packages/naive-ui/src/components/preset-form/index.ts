@@ -2,16 +2,16 @@ import type { FormItemProps, FormItemRule, FormProps, FormRules, GridItemProps, 
 import type { VNode } from 'vue'
 import type { ComponentExposed } from 'vue-component-type-helpers'
 import type { DataObject } from '../../composables/use-data-request'
-import type { NaiveFormClearRules, NaiveFormReturns, NaiveFormRules } from '../../composables/use-naive-form'
+import type { UseNaiveFormClearRules, UseNaiveFormReturns, UseNaiveFormRules } from '../../composables/use-naive-form'
 import type { ClassStyle } from '../data-table-plus/index'
 import type { PresetInputOptions } from '../preset-input/index'
 import type PresetForm from './PresetForm.vue'
 
-export type { NaiveFormRules } from '../../composables/use-naive-form'
+export type { UseNaiveFormRules } from '../../composables/use-naive-form'
 
 export { default as NPresetForm } from './PresetForm.vue'
 
-export type PresetFormExpose<V extends DataObject = DataObject> = NaiveFormReturns<V>
+export type PresetFormExpose<V extends DataObject = DataObject> = UseNaiveFormReturns<V>
 
 export type PresetFormOptionItem<V extends DataObject = DataObject> = PresetInputOptions & {
   key?: keyof V
@@ -28,9 +28,9 @@ export type PresetFormOptions<V extends DataObject = DataObject> = PresetFormOpt
 
 export type PresetFormProps<V extends DataObject = DataObject> = {
   options?: PresetFormOptions<V>
-  values?: V
-  rules?: NaiveFormRules<V>
-  clearRules?: NaiveFormClearRules
+  value?: V
+  rules?: UseNaiveFormRules<V>
+  clearRules?: UseNaiveFormClearRules
   formProps?: FormProps & ClassStyle
   gridProps?: GridProps & ClassStyle
 }

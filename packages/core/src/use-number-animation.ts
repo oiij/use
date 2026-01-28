@@ -1,6 +1,6 @@
 import type { Ref } from 'vue'
 import { createEventHook, useRafFn } from '@vueuse/core'
-import { computed, readonly, ref, toValue, watchEffect } from 'vue'
+import { computed, readonly, ref, toValue, watch, watchEffect } from 'vue'
 
 type EasingFunction = 'linear' | 'easeIn' | 'easeOut' | 'easeInOut' | ((t: number) => number)
 type NumberAnimationOptions = {
@@ -25,24 +25,24 @@ export function useNumberAnimation(to: Ref<number> | number, options?: NumberAni
     : easingFns[easing] || easingFns.linear
   const currentValue = ref(from)
   const targetValue = ref(toValue(to))
-  watchEffect(() => {
-    if (targetValue.value !== toValue(to)) {
-      targetValue.value = toValue(to)
-      start()
+  watchEffect(() => targetValue.value = toValue(to))
+  watch(targetValue, () => {
+    if (!manual) {
+      run()
     }
   })
   const startTime = ref(0)
   const isFirst = ref(true)
 
-  const onStartHook = createEventHook<[]>()
-  const onEndHook = createEventHook<[]>()
-  const onProgressHook = createEventHook<[number]>()
+  const onStartEvent = createEventHook<[]>()
+  const onEndEvent = createEventHook<[]>()
+  const onProgressEvent = createEventHook<[number]>()
 
   const { pause, resume, isActive } = useRafFn(() => {
     const elapsed = performance.now() - startTime.value
     if (isFirst.value) {
       isFirst.value = false
-      onStartHook.trigger()
+      onStartEvent.trigger()
     }
     const progress = Math.min(elapsed / duration, 1)
     const easedProgress = easingFn(progress)
@@ -50,35 +50,38 @@ export function useNumberAnimation(to: Ref<number> | number, options?: NumberAni
     if (progress >= 1) {
       currentValue.value = targetValue.value
       pause()
-      onEndHook.trigger()
+      onEndEvent.trigger()
       return
     }
-    onProgressHook.trigger(currentValue.value)
+    onProgressEvent.trigger(currentValue.value)
   }, { immediate: false })
 
-  function start() {
+  function run(value?: number) {
+    if (value) {
+      targetValue.value = value
+    }
     startTime.value = performance.now()
     isFirst.value = true
     resume()
   }
   function stop() {
     pause()
-    onEndHook.trigger()
+    onEndEvent.trigger()
     currentValue.value = targetValue.value
   }
   if (!manual)
-    start()
+    run()
 
   return {
     value: readonly(computed(() => currentValue.value.toFixed(precision))),
     isActive,
-    start,
+    run,
     stop,
     pause,
     resume,
-    onStart: onStartHook.on,
-    onEnd: onEndHook.on,
-    onProgress: onProgressHook.on,
+    onStart: onStartEvent.on,
+    onEnd: onEndEvent.on,
+    onProgress: onProgressEvent.on,
   }
 }
 export type UseNumberAnimationReturns = ReturnType<typeof useNumberAnimation>

@@ -51,6 +51,7 @@
     "@oiij/js-pdf": "workspace:*",
     "@oiij/markdown-it": "workspace:*",
     "@oiij/naive-ui": "workspace:*",
+    "@oiij/ogl": "workspace:*",
     "@oiij/shiki": "workspace:*",
     "@oiij/three-js": "workspace:*",
     "@oiij/tiptap": "workspace:*",

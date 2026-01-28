@@ -1,6 +1,6 @@
 import type { Ref, ShallowRef } from 'vue'
 import { createEventHook } from '@vueuse/core'
-import { onUnmounted, ref, shallowRef, toValue, watchEffect } from 'vue'
+import { onUnmounted, ref, shallowRef, toValue, watch, watchEffect } from 'vue'
 
 type State = 'CONNECTING' | 'OPEN' | 'CLOSED'
 type AutoRetry = boolean | {
@@ -33,13 +33,10 @@ export function useEventSource<T extends HandlerType = HandlerType, D extends Me
   let retryCount = 0
 
   const urlRef: Ref<string | URL | undefined> = ref(toValue(url))
-
-  watchEffect(() => {
-    if (urlRef.value !== toValue(url)) {
-      urlRef.value = toValue(url)
-      if (!manual) {
-        connect()
-      }
+  watchEffect(() => urlRef.value = toValue(url))
+  watch(urlRef, () => {
+    if (!manual) {
+      connect()
     }
   })
   const handlerMap = new Map<keyof T, ((data: any) => void)[]>()
@@ -54,9 +51,9 @@ export function useEventSource<T extends HandlerType = HandlerType, D extends Me
 
   const controller: ShallowRef<AbortController> = shallowRef(new AbortController())
 
-  const onOpenEvent = createEventHook<EventSourceEventMap['open']>()
-  const onMessageEvent = createEventHook<EventSourceEventMap['message']>()
-  const onErrorEvent = createEventHook<EventSourceEventMap['error']>()
+  const onOpenEvent = createEventHook<[EventSourceEventMap['open']]>()
+  const onMessageEvent = createEventHook<[EventSourceEventMap['message']]>()
+  const onErrorEvent = createEventHook<[EventSourceEventMap['error']]>()
 
   function setStatus() {
     if (source.value) {

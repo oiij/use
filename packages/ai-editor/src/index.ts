@@ -1,74 +1,107 @@
 import type { AiEditorOptions } from 'aieditor'
-import type { ComputedRef, Ref, TemplateRef } from 'vue'
-import { createEventHook } from '@vueuse/core'
+import type { MaybeRefOrGetter, TemplateRef } from 'vue'
+import { createEventHook, watchOnce } from '@vueuse/core'
 import { AiEditor } from 'aieditor'
-import { onMounted, onUnmounted, ref, shallowRef, toValue, watch, watchEffect } from 'vue'
+import { onUnmounted, shallowRef } from 'vue'
+import { watchRefOrGetter } from '../../_utils/custom-watch'
 import 'aieditor/dist/style.css'
 
 export type {
   AiEditorOptions,
 }
-export function useAiEditor(templateRef: TemplateRef<HTMLElement>, defaultValue?: Ref<string> | string, darkMode?: ComputedRef<boolean> | Ref<boolean>, language?: ComputedRef<'zh' | 'en'> | Ref<'zh' | 'en'>, options?: Omit<AiEditorOptions, 'element'>) {
-  const value = ref(toValue(defaultValue))
-  watchEffect(() => {
-    value.value = toValue(defaultValue)
-  })
-  const aiEditor = shallowRef<AiEditor | null>(null)
-  const readonly = ref(false)
-  watch(value, (v) => {
-    aiEditor.value?.setContent(v ?? '')
-  })
-  watch(() => language?.value, (v) => {
-    aiEditor.value?.changeLang(v ?? 'zh')
-    if (value.value) {
-      aiEditor.value?.setContent(value.value)
-    }
-  })
-  watch(() => darkMode?.value, (v) => {
-    if (templateRef.value && aiEditor.value) {
-      aiEditor.value.options.theme = v ? 'dark' : 'light'
-      templateRef.value.classList.remove(v ? 'aie-theme-light' : 'aie-theme-dark')
-      templateRef.value.classList.add(v ? 'aie-theme-dark' : 'aie-theme-light')
-    }
-  })
-  watch(readonly, (v) => {
-    aiEditor.value?.setEditable(!v)
-  })
-  const onRenderEvent = createEventHook<[AiEditor ]>()
+export type UseAiEditorOptions = {
+  value?: MaybeRefOrGetter<string>
+  darkMode?: MaybeRefOrGetter<boolean>
+  language?: MaybeRefOrGetter<'zh' | 'en'>
+  readonly?: MaybeRefOrGetter<boolean>
+  aiEditorOptions?: Omit<AiEditorOptions, 'element'>
+}
+export function useAiEditor(templateRef: TemplateRef<HTMLElement>, options?: UseAiEditorOptions) {
+  const { value, darkMode, language, readonly, aiEditorOptions } = options ?? {}
+  const aiEditorInst = shallowRef<AiEditor | null>(null)
 
+  const valueRef = watchRefOrGetter(value, setContent)
+
+  const darkModeRef = watchRefOrGetter(darkMode, updateTheme)
+
+  const languageRef = watchRefOrGetter(language, updateLanguage)
+
+  const readonlyRef = watchRefOrGetter(readonly, setReadonly)
+
+  const onRenderEvent = createEventHook<[AiEditor]>()
+
+  function setContent(value?: string) {
+    if (value) {
+      valueRef.value = value
+    }
+    aiEditorInst.value?.setContent(value ?? '')
+  }
+  function updateTheme(darkMode?: boolean) {
+    if (darkMode) {
+      darkModeRef.value = darkMode
+    }
+    const theme = darkModeRef.value ? 'dark' : 'light'
+    if (templateRef.value && aiEditorInst.value) {
+      aiEditorInst.value.options.theme = theme
+      templateRef.value.classList.remove('aie-theme-light', 'aie-theme-dark')
+      templateRef.value.classList.add(`aie-theme-${theme}`)
+    }
+  }
+  function updateLanguage(language?: 'zh' | 'en') {
+    if (language) {
+      languageRef.value = language
+    }
+    aiEditorInst.value?.changeLang(languageRef.value ?? 'zh')
+  }
+  function setReadonly(readonly?: boolean) {
+    if (readonly) {
+      readonlyRef.value = readonly
+    }
+    aiEditorInst.value?.setEditable(!readonlyRef.value)
+  }
   function render() {
-    if (templateRef.value && !aiEditor.value) {
-      aiEditor.value = new AiEditor({
-        element: templateRef.value,
-        content: value.value,
-        lang: language?.value ?? 'zh',
-        theme: darkMode?.value ? 'dark' : 'light',
-        editable: !readonly.value,
-        ...options,
-        onChange(aiEditor) {
-          value.value = aiEditor.getHtml()
-          options?.onChange?.(aiEditor)
-        },
-      })
-      onRenderEvent.trigger(aiEditor.value)
+    if (templateRef.value) {
+      if (!aiEditorInst.value) {
+        aiEditorInst.value = new AiEditor({
+          element: templateRef.value,
+          content: valueRef.value,
+          lang: languageRef.value ?? 'zh',
+          theme: darkModeRef.value ? 'dark' : 'light',
+          editable: !readonlyRef.value,
+          ...aiEditorOptions,
+          onChange(aiEditorInst) {
+            valueRef.value = aiEditorInst.getHtml()
+            aiEditorOptions?.onChange?.(aiEditorInst)
+          },
+        })
+        onRenderEvent.trigger(aiEditorInst.value)
+      }
     }
   }
   function destroy() {
-    aiEditor.value?.destroy()
-    aiEditor.value = null
+    aiEditorInst.value?.destroy()
+    aiEditorInst.value = null
+    if (templateRef.value) {
+      templateRef.value.innerHTML = ''
+    }
   }
-  onMounted(() => {
-    render()
-  })
+
+  watchOnce(templateRef, render)
   onUnmounted(() => {
     destroy()
   })
   return {
-    value,
     templateRef,
-    aiEditor,
-    readonly,
+    valueRef,
+    darkModeRef,
+    languageRef,
+    readonlyRef,
+    aiEditorInst,
+    setContent,
+    updateTheme,
+    updateLanguage,
+    setReadonly,
     onRender: onRenderEvent.on,
   }
 }
-export type AiEditorReturns = ReturnType<typeof useAiEditor>
+export type UseAiEditorReturns = ReturnType<typeof useAiEditor>

@@ -1,8 +1,8 @@
 {
-  "name": "@oiij/xlsx",
+  "name": "@oiij/ogl",
   "type": "module",
-  "version": "0.0.13",
-  "description": "A Vue Composable for xlsx",
+  "version": "0.0.1",
+  "description": "A Vue Composable for OGL",
   "author": "oiij",
   "license": "MIT",
   "homepage": "https://github.com/oiij/use",
@@ -13,7 +13,7 @@
   "bugs": "https://github.com/oiij/use/issues",
   "keywords": [
     "@oiij/use",
-    "xlsx"
+    "ogl"
   ],
   "sideEffects": false,
   "main": "./dist/index.mjs",
@@ -32,17 +32,14 @@
     "prepublishOnly": "pnpm build"
   },
   "peerDependencies": {
-    "@vueuse/core": "catalog:xlsx",
-    "file-saver": "catalog:xlsx",
-    "vue": "catalog:xlsx",
-    "xlsx": "catalog:xlsx"
+    "@vueuse/core": "catalog:ogl",
+    "ogl": "catalog:ogl",
+    "vue": "catalog:ogl"
   },
   "devDependencies": {
-    "@types/file-saver": "catalog:xlsx",
-    "@vueuse/core": "catalog:xlsx",
-    "file-saver": "catalog:xlsx",
-    "vue": "catalog:xlsx",
-    "xlsx": "catalog:xlsx"
+    "@vueuse/core": "catalog:ogl",
+    "ogl": "catalog:ogl",
+    "vue": "catalog:ogl"
   },
   "publishConfig": {
     "access": "public"

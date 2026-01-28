@@ -8,12 +8,13 @@ import { useNaiveForm } from '../../composables/use-naive-form'
 import { NPresetInput } from '../preset-input/index'
 import { mergeRule } from './_utils'
 
-const { options, values, rules, clearRules, formProps, gridProps } = defineProps<PresetFormProps<V>>()
+const { options, value, rules, clearRules, formProps, gridProps } = defineProps<PresetFormProps<V>>()
 const emit = defineEmits<{
   (e: 'validated', val: V): void
 }>()
 
-const { formValue, formRules, formRef, formProps: _formProps, setValue, validate, resetValidation, resetForm, reset, clear, onValidated } = useNaiveForm(useTemplateRef<FormInst>('form-ref'), values, {
+const { formValue, formRules, formRef, formProps: _formProps, setValue, validate, resetValidation, resetForm, reset, clear, onValidated } = useNaiveForm(useTemplateRef<FormInst>('form-ref'), {
+  value,
   rules,
   clearRules,
 })

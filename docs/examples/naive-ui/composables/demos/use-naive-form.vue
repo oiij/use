@@ -18,7 +18,8 @@ const _formValue = ref({
     value: '一',
   }],
 })
-const { validate, formValue, formProps, resetValidation, resetForm, reset, clear } = useNaiveForm(useTemplateRef<FormInst>('form-ref'), _formValue.value, {
+const { validate, formValue, formProps, resetValidation, resetForm, reset, clear } = useNaiveForm(useTemplateRef<FormInst>('form-ref'), {
+  value: _formValue,
   rules: {
     foo: {
       bar: {

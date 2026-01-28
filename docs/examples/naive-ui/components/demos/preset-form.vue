@@ -1,6 +1,6 @@
 <!-- eslint-disable no-console -->
 <script setup lang='ts'>
-import type { NaiveFormRules, PresetFormOptions } from '@oiij/naive-ui/components'
+import type { PresetFormOptions, UseNaiveFormRules } from '@oiij/naive-ui/components'
 import { NPresetForm } from '@oiij/naive-ui/components'
 import { NButton, NFlex, NInput, NSwitch } from 'naive-ui'
 import { h, ref, useTemplateRef } from 'vue'
@@ -69,7 +69,7 @@ const options: PresetFormOptions<Values> = [
     }
   })),
 ]
-const rules: NaiveFormRules<Values> = {
+const rules: UseNaiveFormRules<Values> = {
   id: { required: true },
 }
 function handleValidate() {

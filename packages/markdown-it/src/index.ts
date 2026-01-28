@@ -1,47 +1,54 @@
 import type { Options } from 'markdown-it'
-import type { Ref, TemplateRef } from 'vue'
+import type { MaybeRefOrGetter, TemplateRef } from 'vue'
 import DOMPurify from 'dompurify'
 import markdownIt from 'markdown-it'
-import { isReactive, isRef, ref, toValue, watch, watchEffect } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
+import { watchRefOrGetter } from '../../_utils/custom-watch'
 
-export type MarkDownItOptions = Options & {
+export type UseMarkDownItOptions = {
+  value?: MaybeRefOrGetter<string>
   manual?: boolean
   domPurify?: boolean
+  markdownItOptions?: Options
 }
 
-export function useMarkdownIt(templateRef?: TemplateRef<HTMLElement>, defaultValue?: Ref<string> | string, options?: MarkDownItOptions) {
-  const { manual = false, domPurify = true, ..._options } = options ?? {}
-  const value = ref(isRef(defaultValue) ? toValue(defaultValue.value) : isReactive(defaultValue) ? toValue(defaultValue) : defaultValue)
-  if (isRef(defaultValue)) {
-    watchEffect(() => {
-      value.value = toValue(defaultValue.value)
-    })
-  }
-  const html = ref('')
-
-  const md = markdownIt({
-    ..._options,
-  })
-  function render(value: string) {
-    const mdValue = md.render(value)
-    html.value = domPurify ? DOMPurify.sanitize(mdValue) : mdValue
-    if (templateRef && templateRef.value) {
-      templateRef.value.innerHTML = html.value
+export function useMarkdownIt(templateRef?: TemplateRef<HTMLElement>, options?: UseMarkDownItOptions) {
+  const { value, manual = false, domPurify = true, markdownItOptions } = options ?? {}
+  const valueRef = watchRefOrGetter(value, () => {
+    if (!manual) {
+      render()
     }
-    return html.value
-  }
-  if (!manual) {
-    render(value.value ?? '')
-    watch(value, (v) => {
-      render(v ?? '')
-    })
-  }
+  })
+  const htmlRef = ref('')
 
+  const markdownItInst = markdownIt({ ...markdownItOptions })
+  function render(value?: string) {
+    if (value) {
+      valueRef.value = value
+    }
+    const mdValue = markdownItInst.render(valueRef.value ?? '')
+    htmlRef.value = domPurify ? DOMPurify.sanitize(mdValue) : mdValue
+    if (templateRef?.value) {
+      templateRef.value.innerHTML = htmlRef.value
+    }
+    return htmlRef.value
+  }
+  onMounted(() => {
+    if (!manual) {
+      render()
+    }
+  })
+
+  onUnmounted(() => {
+    if (templateRef?.value) {
+      templateRef.value.innerHTML = ''
+    }
+  })
   return {
-    value,
-    html,
     templateRef,
-    md,
+    valueRef,
+    htmlRef,
+    markdownItInst,
     render,
   }
 }

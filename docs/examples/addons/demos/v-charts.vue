@@ -1,10 +1,12 @@
 <script setup lang='ts'>
 import type { ISpec } from '@oiij/v-charts'
 import { useVCharts } from '@oiij/v-charts'
-import { useData } from 'vitepress'
-import { computed, useTemplateRef } from 'vue'
+import { NButton, NFlex } from 'naive-ui'
+import { computed, ref, useTemplateRef } from 'vue'
 
-const { isDark } = useData()
+const darkMode = ref(false)
+const value = ref(20)
+
 const options = computed(() => {
   return {
     type: 'pie',
@@ -12,8 +14,8 @@ const options = computed(() => {
       {
         id: 'id0',
         values: [
-          { type: 'oxygen', value: '46.60' },
-          { type: 'silicon', value: '27.72' },
+          { type: 'oxygen', value: value.value * 1.2 },
+          { type: 'silicon', value: value.value * 2 },
           { type: 'aluminum', value: '8.13' },
           { type: 'iron', value: '5' },
           { type: 'calcium', value: '3.63' },
@@ -68,11 +70,25 @@ const options = computed(() => {
     },
   } as ISpec
 })
-useVCharts(useTemplateRef('dom-ref'), options, isDark)
+useVCharts(useTemplateRef('dom-ref'), {
+  chartOption: options,
+  darkMode,
+  debug: true,
+})
 </script>
 
 <template>
-  <div ref="dom-ref" style="width:100%;height:400px" />
+  <NFlex vertical>
+    <NFlex>
+      <NButton @click="() => value += value">
+        Change Value
+      </NButton>
+      <NButton @click="() => darkMode = !darkMode">
+        Change Dark Mode
+      </NButton>
+    </NFlex>
+    <div ref="dom-ref" style="width:100%;height:400px" />
+  </NFlex>
 </template>
 
 <style scoped>

@@ -1,7 +1,9 @@
-import type { ComputedRef, TemplateRef } from 'vue'
+import type { MaybeRefOrGetter, TemplateRef } from 'vue'
 import data from '@emoji-mart/data'
+import { createEventHook, watchOnce } from '@vueuse/core'
 import { Picker } from 'emoji-mart'
-import { onMounted, onUnmounted, shallowRef, watch } from 'vue'
+import { onUnmounted, shallowRef } from 'vue'
+import { watchRefOrGetter } from '../../_utils/custom-watch'
 
 export type EmojiResult = {
   id: string
@@ -45,8 +47,18 @@ export type EmojiPickerOptions = {
   theme?: 'auto' | 'light' | 'dark'
   getSpritesheetURL?: string
 }
+export type UseEmojiPickerOptions = {
+  darkMode?: MaybeRefOrGetter<boolean>
+  language?: MaybeRefOrGetter<'zh' | 'en'>
+  emojiPickerOptions?: EmojiPickerOptions
+}
+export function useEmojiPicker(templateRef: TemplateRef<HTMLElement>, options?: UseEmojiPickerOptions) {
+  const { darkMode, language, emojiPickerOptions } = options ?? {}
 
-export function useEmojiPicker(templateRef: TemplateRef<HTMLElement>, darkMode?: ComputedRef<boolean>, language?: ComputedRef<'zh' | 'en'>, options?: EmojiPickerOptions) {
+  const darkModeRef = watchRefOrGetter(darkMode, updateTheme)
+
+  const languageRef = watchRefOrGetter(language, updateLanguage)
+
   const _options: EmojiPickerOptions = {
     data,
     emojiButtonRadius: '6px',
@@ -58,56 +70,61 @@ export function useEmojiPicker(templateRef: TemplateRef<HTMLElement>, darkMode?:
       'rgba(255,213,143,.7)',
       'rgba(211,209,255,.7)',
     ],
-    theme: darkMode?.value ? 'dark' : 'light',
-    locale: language?.value,
-    ...options,
+    theme: darkModeRef.value ? 'dark' : 'light',
+    locale: languageRef.value,
+    ...emojiPickerOptions,
   }
-  const emojiPicker = shallowRef<Picker | null>(null)
+  const emojiPickerInst = shallowRef<Picker | null>(null)
 
-  let onRender: ((editor: Picker) => void) | null = null
+  const onRenderEvent = createEventHook<[Picker]>()
 
+  function updateTheme(darkMode?: boolean) {
+    if (darkMode) {
+      darkModeRef.value = darkMode
+    }
+    const theme = darkModeRef.value ? 'dark' : 'light'
+    _options.theme = theme
+    destroy()
+    render()
+  }
+  function updateLanguage(language?: 'zh' | 'en') {
+    if (language) {
+      languageRef.value = language
+    }
+    _options.locale = languageRef.value ?? 'zh'
+    destroy()
+    render()
+  }
   function render() {
-    if (templateRef.value && !emojiPicker.value) {
-      emojiPicker.value = new Picker({
-        parent: templateRef.value,
-        ..._options,
-      })
-      if (typeof onRender === 'function') {
-        onRender(emojiPicker.value)
+    if (templateRef.value) {
+      if (!emojiPickerInst.value) {
+        emojiPickerInst.value = new Picker({
+          parent: templateRef.value,
+          ..._options,
+        })
+        onRenderEvent.trigger(emojiPickerInst.value)
       }
     }
   }
   function destroy() {
-    if (!templateRef.value)
-      return
-    templateRef.value.innerHTML = ''
-    emojiPicker.value = null
+    emojiPickerInst.value = null
+    if (templateRef.value) {
+      templateRef.value.innerHTML = ''
+    }
   }
-  watch(templateRef, () => {
-    render()
-  })
-  watch(() => darkMode?.value, (v) => {
-    destroy()
-    _options.theme = v ? 'dark' : 'light'
-    render()
-  })
-  watch(() => language?.value, (v) => {
-    destroy()
-    _options.locale = v ?? 'zh'
-    render()
-  })
-  onMounted(() => {
-    render()
-  })
+  watchOnce(templateRef, render)
+
   onUnmounted(() => {
     destroy()
   })
   return {
     templateRef,
-    emojiPicker,
-    onRender: (fn: (editor: Picker) => void) => {
-      onRender = fn
-    },
+    darkModeRef,
+    languageRef,
+    emojiPickerInst,
+    updateTheme,
+    updateLanguage,
+    onRender: onRenderEvent.on,
   }
 }
-export type EmojiPickerReturns = ReturnType<typeof useEmojiPicker>
+export type UseEmojiPickerReturns = ReturnType<typeof useEmojiPicker>

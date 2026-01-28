@@ -1,82 +1,72 @@
 import type { BundledLanguage, BundledTheme, CodeToHastOptions } from 'shiki'
-import type { ComputedRef, Ref, TemplateRef } from 'vue'
+import type { ComputedRef, MaybeRefOrGetter, TemplateRef } from 'vue'
 import { codeToHtml } from 'shiki'
-import { isReactive, isRef, onMounted, ref, toValue, watch, watchEffect } from 'vue'
+import { onMounted, onUnmounted, readonly, ref } from 'vue'
+import { watchRefOrGetter } from '../../_utils/custom-watch'
 
 export type {
   BundledLanguage,
   BundledTheme,
   CodeToHastOptions,
 }
-export function useShiki(templateRef: TemplateRef<HTMLElement>, defaultValue?: string | Ref<string>, darkMode?: ComputedRef<boolean>, options?: CodeToHastOptions<BundledLanguage, BundledTheme>) {
-  const _options = {
-    lang: 'javascript',
-    theme: `vitesse-${darkMode?.value ? 'dark' : 'light'}`,
-    ...options,
-  }
-  const value = ref(isRef(defaultValue) ? toValue(defaultValue.value) : isReactive(defaultValue) ? toValue(defaultValue) : defaultValue)
-  if (isRef(defaultValue)) {
-    watchEffect(() => {
-      value.value = toValue(defaultValue.value)
-    })
-  }
-  const html = ref('')
-  function format(value: string, options?: CodeToHastOptions<BundledLanguage, BundledTheme>) {
-    let isCancel = false
-    function cancel() {
-      isCancel = true
+export type UseShikiOptions = {
+  value?: MaybeRefOrGetter<string>
+  darkMode?: ComputedRef<boolean>
+  lang?: MaybeRefOrGetter<BundledLanguage>
+  manual?: boolean
+  shikiOptions?: CodeToHastOptions<BundledLanguage, BundledTheme>
+}
+export function useShiki(templateRef?: TemplateRef<HTMLElement>, options?: UseShikiOptions) {
+  const { value, darkMode, lang, manual, shikiOptions } = options ?? {}
+
+  const valueRef = watchRefOrGetter(value, format)
+  const darkModeRef = watchRefOrGetter(darkMode, updateTheme)
+  const langRef = watchRefOrGetter(lang, updateLang)
+
+  const htmlRef = ref('')
+
+  function updateTheme(darkMode?: boolean) {
+    if (darkMode) {
+      darkModeRef.value = true
     }
-    function promise() {
-      return new Promise<string>((resolve, reject) => {
-        codeToHtml(value, { ..._options, ...options }).then((result) => {
-          if (!isCancel) {
-            html.value = result
-            if (templateRef.value) {
-              templateRef.value.innerHTML = result
-            }
-            resolve(result)
-          }
-        }).catch((err) => {
-          if (!isCancel) {
-            reject(err)
-          }
-        })
-      })
+    format()
+  }
+  function updateLang(lang?: BundledLanguage) {
+    if (lang) {
+      langRef.value = lang
     }
-    return {
-      promise,
-      cancel,
+    format()
+  }
+  async function format(value?: string) {
+    if (value) {
+      valueRef.value = value
+    }
+    const lang = langRef.value ?? 'javascript'
+    const theme = `vitesse-${darkModeRef.value ? 'dark' : 'light'}`
+    const result = await codeToHtml(valueRef.value ?? '', { lang, theme, ...shikiOptions })
+    htmlRef.value = result
+    if (templateRef?.value) {
+      templateRef.value.innerHTML = htmlRef.value
     }
   }
+
   onMounted(() => {
-    if (value.value) {
-      const { promise } = format(value.value)
-      promise()
+    if (!manual) {
+      format()
     }
   })
-  let lastCancel: (() => void) | null = null
-  watch(value, (v) => {
-    if (typeof lastCancel === 'function') {
-      lastCancel()
-    }
-    const { promise, cancel } = format(v ?? '')
-    lastCancel = cancel
-    promise()
-  })
-  watch(() => darkMode?.value, () => {
-    const theme = _options.theme
-    if (typeof theme === 'string') {
-      _options.theme = theme.replace(/light|dark/, darkMode?.value ? 'dark' : 'light')
-    }
-    if (value.value) {
-      const { promise } = format(value.value)
-      promise()
+
+  onUnmounted(() => {
+    if (templateRef?.value) {
+      templateRef.value.innerHTML = ''
     }
   })
   return {
-    value,
-    html,
     templateRef,
+    valueRef,
+    htmlRef: readonly(htmlRef),
+    updateTheme,
+    updateLang,
     format,
   }
 }

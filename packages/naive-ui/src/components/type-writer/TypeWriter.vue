@@ -30,14 +30,17 @@ onUpdate((v) => {
 onStop((v) => {
   emit('stop', v)
 })
-const { html } = useMarkdownIt(undefined, typedValue, {
-  html: true,
-  linkify: true,
-  typographer: true,
-  breaks: true,
-  highlight,
+const { htmlRef } = useMarkdownIt(undefined, {
+  value: typedValue,
+  markdownItOptions: {
+    html: true,
+    linkify: true,
+    typographer: true,
+    breaks: true,
+    highlight,
+  },
 })
-const renderValue = computed(() => markdown ? html.value : typedValue.value)
+const renderValue = computed(() => markdown ? htmlRef.value : typedValue.value)
 </script>
 
 <template>

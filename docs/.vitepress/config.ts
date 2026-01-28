@@ -102,6 +102,7 @@ export default defineConfig({
           { text: 'emoji-picker', link: '/examples/addons/emoji-picker' },
           { text: 'js-pdf', link: '/examples/addons/js-pdf' },
           { text: 'markdown-it', link: '/examples/addons/markdown-it' },
+          { text: 'ogl', link: '/examples/addons/ogl' },
           { text: 'shiki', link: '/examples/addons/shiki' },
           { text: 'three-js', link: '/examples/addons/three-js' },
           { text: 'three-js-plugin-postprocessing', link: '/examples/addons/three-js-plugin-postprocessing' },

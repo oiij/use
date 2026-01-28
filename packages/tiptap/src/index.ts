@@ -1,64 +1,64 @@
 import type { EditorOptions } from '@tiptap/core'
-import type { Ref, TemplateRef } from 'vue'
+import type { MaybeRefOrGetter, TemplateRef } from 'vue'
 import { Editor } from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
-
-import { createEventHook } from '@vueuse/core'
-import { isRef, onMounted, onUnmounted, ref, shallowRef, toValue, watch, watchEffect } from 'vue'
+import { createEventHook, watchOnce } from '@vueuse/core'
+import { onUnmounted, shallowRef } from 'vue'
+import { watchRefOrGetter } from '../../_utils/custom-watch'
 
 export type { EditorOptions }
-export function useTipTap(templateRef: TemplateRef<HTMLElement>, defaultValue?: Ref<string> | string, options?: Partial<EditorOptions>) {
-  const value = ref(toValue(defaultValue))
-  if (isRef(defaultValue)) {
-    watchEffect(() => {
-      value.value = toValue(defaultValue.value)
-    })
-  }
-  const editor = shallowRef<Editor | null>(null)
-  const onRenderEvent = createEventHook<[Editor ]>()
+export type UseTipTapOptions = {
+  value?: MaybeRefOrGetter<string>
+  tiptapOptions?: Partial<EditorOptions>
+}
+export function useTipTap(templateRef: TemplateRef<HTMLElement>, options?: UseTipTapOptions) {
+  const { value, tiptapOptions } = options ?? {}
+
+  const valueRef = watchRefOrGetter(value, setContent)
+
+  const editorInst = shallowRef<Editor | null>(null)
+
+  const onRenderEvent = createEventHook<[Editor]>()
+
   function render() {
-    if (templateRef.value && !editor.value) {
-      editor.value = new Editor({
-        element: templateRef.value,
-        extensions: [StarterKit],
-        content: value.value,
-        ...options,
-      })
-      onRenderEvent.trigger(editor.value)
-      editor.value.on('update', (update) => {
-        value.value = update.editor.getHTML()
-      })
+    if (templateRef.value) {
+      if (!editorInst.value) {
+        editorInst.value = new Editor({
+          element: templateRef.value,
+          extensions: [StarterKit],
+          content: valueRef.value,
+          ...tiptapOptions,
+        })
+        onRenderEvent.trigger(editorInst.value)
+        editorInst.value.on('update', (update) => {
+          valueRef.value = update.editor.getHTML()
+        })
+      }
     }
   }
-  function setContent(value: string) {
-    editor.value?.setOptions({
-      content: value,
+  function setContent(value?: string) {
+    if (!value) {
+      valueRef.value = value
+    }
+    editorInst.value?.setOptions({
+      content: valueRef.value,
     })
   }
+  watchOnce(templateRef, render)
   function destroy() {
-    editor.value?.destroy()
-    editor.value = null
+    editorInst.value?.destroy()
+    editorInst.value = null
   }
-  onMounted(() => {
-    render()
-  })
   onUnmounted(() => {
     destroy()
   })
-  watch(value, (v) => {
-    if (editor.value) {
-      setContent(v ?? '')
-    }
-    else {
-      render()
-    }
-  })
 
   return {
-    value,
     templateRef,
-    editor,
+    valueRef,
+    editorInst,
+    setContent,
     onRender: onRenderEvent.on,
   }
 }
-export type TipTapReturns = ReturnType<typeof useTipTap>
+export type UseTipTapReturns = ReturnType<typeof useTipTap>

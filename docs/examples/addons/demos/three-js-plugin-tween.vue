@@ -20,7 +20,7 @@ const { gridHelper } = useGridHelper()
 const { axesHelper, show: showAxesHelper } = useAxesHelper()
 const { lookAtObject, update } = useTween()
 const { scene, camera, controls, onDoubleClick, onBeforeLoop, onIntersectObject } = useThreeJs(useTemplateRef('dom-ref'), {
-  camera: {
+  cameraOptions: {
     position: [-3, 2, 2],
   },
   lights: [ambientLight, directionalLight],

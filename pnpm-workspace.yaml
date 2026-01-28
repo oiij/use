@@ -12,57 +12,61 @@ catalogs:
   ai-editor:
     '@vueuse/core': ^14.1.0
     aieditor: ^1.4.2
-    vue: ^3.5.26
+    vue: ^3.5.27
   chrome-tab:
     colord: ^2.9.3
-    vue: ^3.5.26
+    vue: ^3.5.27
   core:
     '@vueuse/core': ^14.1.0
-    vue: ^3.5.26
+    vue: ^3.5.27
   css-render:
     '@css-render/plugin-bem': ^0.15.14
     '@css-render/vue3-ssr': ^0.15.14
     css-render: ^0.15.14
-    vue: ^3.5.26
+    vue: ^3.5.27
   directives:
-    vue: ^3.5.26
+    vue: ^3.5.27
   e-charts:
     '@vueuse/core': ^14.1.0
     echarts: ^6.0.0
-    vue: ^3.5.26
+    vue: ^3.5.27
   emoji-picker:
     '@emoji-mart/data': ^1.2.1
     '@vueuse/core': ^14.1.0
     emoji-mart: ^5.6.0
-    vue: ^3.5.26
+    vue: ^3.5.27
   js-pdf:
     '@types/file-saver': ^2.0.7
     file-saver: ^2.0.5
-    jspdf: ^3.0.4
+    jspdf: ^4.0.0
     jszip: ^3.10.1
     nanoid: ^5.1.6
-    pdfjs-dist: ^5.4.449
+    pdfjs-dist: ^5.4.530
   markdown-it:
     '@types/markdown-it': ^14.1.2
     '@vueuse/core': ^14.1.0
     dompurify: ^3.3.1
     markdown-it: ^14.1.0
-    vue: ^3.5.26
+    vue: ^3.5.27
   naive-ui:
     '@types/prismjs': ^1.26.5
     '@vueuse/core': ^14.1.0
     async-validator: ^4.2.5
     colord: ^2.9.3
-    es-toolkit: ^1.43.0
+    es-toolkit: ^1.44.0
     naive-ui: ^2.43.2
     prismjs: ^1.30.0
-    vue: ^3.5.26
-    vue-component-type-helpers: ^3.2.1
+    vue: ^3.5.27
+    vue-component-type-helpers: ^3.2.4
     vue-hooks-plus: ^2.4.1
+  ogl:
+    '@vueuse/core': ^14.1.0
+    ogl: ^1.0.11
+    vue: ^3.5.27
   shiki:
     '@vueuse/core': ^14.1.0
     shiki: ^3.20.0
-    vue: ^3.5.26
+    vue: ^3.5.27
   three-js:
     '@tweakpane/core': ^2.0.5
     '@tweakpane/plugin-essentials': ^0.2.1
@@ -70,34 +74,34 @@ catalogs:
     '@types/three': ^0.182.0
     '@vueuse/core': ^14.1.0
     cannon-es: ^0.20.0
-    postprocessing: ^6.38.1
+    postprocessing: ^6.38.2
     three: ^0.182.0
     tweakpane: ^4.0.5
-    vue: ^3.5.26
+    vue: ^3.5.27
   tiptap:
-    '@tiptap/core': ^3.14.0
-    '@tiptap/pm': ^3.14.0
-    '@tiptap/starter-kit': ^3.14.0
+    '@tiptap/core': ^3.17.1
+    '@tiptap/pm': ^3.17.1
+    '@tiptap/starter-kit': ^3.17.1
     '@vueuse/core': ^14.1.0
-    vue: ^3.5.26
+    vue: ^3.5.27
   v-charts:
-    '@visactor/vchart': ^2.0.11
+    '@visactor/vchart': ^2.0.14
     '@vueuse/core': ^14.1.0
-    vue: ^3.5.26
+    vue: ^3.5.27
   xlsx:
     '@types/file-saver': ^2.0.7
     '@vueuse/core': ^14.1.0
     file-saver: ^2.0.5
-    vue: ^3.5.26
+    vue: ^3.5.27
     xlsx: ^0.18.5
   z_dev:
-    '@antfu/eslint-config': ^6.7.3
+    '@antfu/eslint-config': ^7.2.0
     '@oiij/tsconfig': ^0.0.1
     '@types/three': ^0.182.0
-    '@vitest/ui': ^4.0.16
-    bumpp: ^10.3.2
+    '@vitest/ui': ^4.0.18
+    bumpp: ^10.4.0
     colord: ^2.9.3
-    commitlint: ^20.2.0
+    commitlint: ^20.3.1
     cz-git: ^1.12.0
     czg: ^1.12.0
     eslint: ^9.39.2
@@ -110,11 +114,11 @@ catalogs:
     simple-git-hooks: ^2.13.1
     taze: ^19.9.2
     three: ^0.182.0
-    tsdown: ^0.19.0
+    tsdown: ^0.20.1
     typescript: ^5.9.3
-    unplugin-vue: ^7.1.0
+    unplugin-vue: ^7.1.1
     vitepress: ^1.6.4
     vitepress-demo-plugin: ^1.5.1
-    vitest: ^4.0.16
-    vue: ^3.5.26
-    vue-tsc: ^3.2.1
+    vitest: ^4.0.18
+    vue: ^3.5.27
+    vue-tsc: ^3.2.4

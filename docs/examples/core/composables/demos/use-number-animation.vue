@@ -5,7 +5,7 @@ import { NButton, NFlex, NInputNumber, NProgress } from 'naive-ui'
 import { ref } from 'vue'
 
 const num = ref(100)
-const { value, start } = useNumberAnimation(num, {
+const { value, run } = useNumberAnimation(num, {
   manual: true,
   from: 0,
   duration: 1000 * 3,
@@ -16,7 +16,7 @@ const { value, start } = useNumberAnimation(num, {
 <template>
   <NFlex vertical>
     <NFlex>
-      <NButton @click="() => start()">
+      <NButton @click="() => run()">
         开始
       </NButton>
       <NInputNumber v-model:value="num" />
