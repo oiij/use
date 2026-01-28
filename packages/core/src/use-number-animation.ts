@@ -1,6 +1,7 @@
-import type { Ref } from 'vue'
+import type { MaybeRefOrGetter } from 'vue'
 import { createEventHook, useRafFn } from '@vueuse/core'
-import { computed, readonly, ref, toValue, watch, watchEffect } from 'vue'
+import { computed, readonly, ref } from 'vue'
+import { watchRefOrGetter } from '../../_utils/custom-watch'
 
 type EasingFunction = 'linear' | 'easeIn' | 'easeOut' | 'easeInOut' | ((t: number) => number)
 type NumberAnimationOptions = {
@@ -18,19 +19,20 @@ const easingFns: Record<string, (t: number) => number> = {
     ? 2 * t * t // 前半段加速
     : 1 - (-2 * t + 2) ** 2 / 2, // 后半段减速
 }
-export function useNumberAnimation(to: Ref<number> | number, options?: NumberAnimationOptions) {
+export function useNumberAnimation(to: MaybeRefOrGetter<number>, options?: NumberAnimationOptions) {
   const { from = 0, manual = false, duration = 1 * 1000, precision = 2, easing = 'linear' } = options ?? {}
   const easingFn = typeof easing === 'function'
     ? easing
     : easingFns[easing] || easingFns.linear
-  const currentValue = ref(from)
-  const targetValue = ref(toValue(to))
-  watchEffect(() => targetValue.value = toValue(to))
-  watch(targetValue, () => {
+
+  const currentValueRef = ref(from)
+
+  const targetValueRef = watchRefOrGetter(to, () => {
     if (!manual) {
       run()
     }
   })
+
   const startTime = ref(0)
   const isFirst = ref(true)
 
@@ -46,19 +48,19 @@ export function useNumberAnimation(to: Ref<number> | number, options?: NumberAni
     }
     const progress = Math.min(elapsed / duration, 1)
     const easedProgress = easingFn(progress)
-    currentValue.value = from + (targetValue.value - from) * easedProgress
+    currentValueRef.value = from + (targetValueRef.value - from) * easedProgress
     if (progress >= 1) {
-      currentValue.value = targetValue.value
+      currentValueRef.value = targetValueRef.value
       pause()
       onEndEvent.trigger()
       return
     }
-    onProgressEvent.trigger(currentValue.value)
+    onProgressEvent.trigger(currentValueRef.value)
   }, { immediate: false })
 
   function run(value?: number) {
     if (value) {
-      targetValue.value = value
+      targetValueRef.value = value
     }
     startTime.value = performance.now()
     isFirst.value = true
@@ -67,13 +69,14 @@ export function useNumberAnimation(to: Ref<number> | number, options?: NumberAni
   function stop() {
     pause()
     onEndEvent.trigger()
-    currentValue.value = targetValue.value
+    currentValueRef.value = targetValueRef.value
   }
   if (!manual)
     run()
 
   return {
-    value: readonly(computed(() => currentValue.value.toFixed(precision))),
+    value: readonly(computed(() => currentValueRef.value.toFixed(precision))),
+    targetValueRef,
     isActive,
     run,
     stop,

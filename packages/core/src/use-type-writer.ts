@@ -1,11 +1,13 @@
-import type { ComputedRef, Ref } from 'vue'
+import type { MaybeRefOrGetter } from 'vue'
 import { createEventHook } from '@vueuse/core'
 import { computed, nextTick, ref, watch } from 'vue'
+import { watchRefOrGetter } from '../../_utils/custom-watch'
 
 export type TypeWriterOptions = {
   step?: number
   interval?: number
   enabled?: boolean
+  manual?: boolean
 }
 type IEventType = {
   update: {
@@ -16,21 +18,22 @@ type IEventType = {
   stop: string
 }
 
-export function useTypeWriter(value: Ref<string> | ComputedRef<string>, options?: TypeWriterOptions) {
-  const { step = 1, interval = 50, enabled = true } = options ?? {}
+export function useTypeWriter(value: MaybeRefOrGetter<string>, options?: TypeWriterOptions) {
+  const { step = 1, interval = 50, enabled = true, manual } = options ?? {}
+  const valueRef = watchRefOrGetter(value)
   const typeIndex = ref(0)
   const paused = ref(false)
   const ended = ref(false)
   const isTyping = ref(false)
-  const typedValue = computed(() => enabled ? value.value.slice(0, typeIndex.value) : value.value)
-  const progress = computed(() => Number(Math.min((typeIndex.value / value.value.length) * 100, 100).toFixed(2)))
+  const typedValue = computed(() => enabled ? valueRef.value.slice(0, typeIndex.value) : valueRef.value)
+  const progress = computed(() => Number(Math.min((typeIndex.value / valueRef.value.length) * 100, 100).toFixed(2)))
   let timer: NodeJS.Timeout | null = null
 
   const onStatEvent = createEventHook<IEventType['start']>()
   const onStopEvent = createEventHook<IEventType['stop']>()
   const onUpdateEvent = createEventHook<IEventType['update']>()
 
-  watch(value, (newValue, oldValue) => {
+  watch(valueRef, (newValue, oldValue) => {
     if (!oldValue) {
       typeIndex.value = 0
       start()
@@ -44,14 +47,14 @@ export function useTypeWriter(value: Ref<string> | ComputedRef<string>, options?
       start()
     }
   }, {
-    immediate: true,
+    immediate: !manual,
   })
   function start() {
     if (timer) {
       clearTimeout(timer)
     }
     if (!enabled) {
-      typeIndex.value = value.value.length
+      typeIndex.value = valueRef.value.length
       ended.value = true
       isTyping.value = false
       paused.value = false
@@ -66,8 +69,8 @@ export function useTypeWriter(value: Ref<string> | ComputedRef<string>, options?
     function run() {
       typeIndex.value += step
       onUpdateEvent.trigger({ index: typeIndex.value, value: typedValue.value })
-      if (typeIndex.value >= value.value.length) {
-        typeIndex.value = value.value.length
+      if (typeIndex.value >= valueRef.value.length) {
+        typeIndex.value = valueRef.value.length
         ended.value = true
         isTyping.value = false
         onStopEvent.trigger(typedValue.value)
@@ -108,7 +111,7 @@ export function useTypeWriter(value: Ref<string> | ComputedRef<string>, options?
     isTyping.value = false
     paused.value = false
     ended.value = true
-    typeIndex.value = value.value.length
+    typeIndex.value = valueRef.value.length
     onStopEvent.trigger(typedValue.value)
   }
   function destroy() {
@@ -122,6 +125,7 @@ export function useTypeWriter(value: Ref<string> | ComputedRef<string>, options?
     typeIndex.value = 0
   }
   return {
+    valueRef,
     typeIndex,
     paused,
     ended,

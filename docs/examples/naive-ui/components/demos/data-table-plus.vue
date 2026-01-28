@@ -84,15 +84,15 @@ const filterOptions: PresetFormOptions<Params> = [
     itemProps: {
       suffix: true,
     },
-    render: ({ formValue, resetForm }) => {
+    render: ({ formValueRef, resetForm }) => {
       return h(NButtonGroup, {}, {
         default: () => [
           h(NButton, {
             onClick: () => {
-              console.log(formValue.value)
+              console.log(formValueRef.value)
 
               dataTableRef.value?.runParams({
-                ...formValue.value,
+                ...formValueRef.value,
               })
             },
           }, { default: () => '过滤' }),
@@ -100,7 +100,7 @@ const filterOptions: PresetFormOptions<Params> = [
             onClick: () => {
               resetForm()
               dataTableRef.value?.runParams({
-                ...formValue.value,
+                ...formValueRef.value,
               })
             },
           }, { default: () => '重置' }),

@@ -66,47 +66,47 @@ export type UseNaiveFormOptions<T extends DataObject> = {
   clearRules?: UseNaiveFormClearRules
 }
 
-export function useNaiveForm<T extends DataObject = DataObject>(formRef: TemplateRef<FormInst>, options?: UseNaiveFormOptions<T>) {
+export function useNaiveForm<T extends DataObject = DataObject>(formInstRef: TemplateRef<FormInst>, options?: UseNaiveFormOptions<T>) {
   const { value, rules, clearRules } = options ?? {}
   const cacheValue = cloneDeep(toValue(value) ?? {})
 
-  const formValue = ref(toValue(value) ?? {}) as Ref<T>
+  const formValueRef = ref(toValue(value) ?? {}) as Ref<T>
   watchEffect(() => {
-    formValue.value = toValue(value) ?? {} as T
+    formValueRef.value = toValue(value) ?? {} as T
   })
-  const formRules = ref(toValue(rules)) as Ref<UseNaiveFormRules<T>>
-  watchEffect(() => formRules.value = toValue(rules) ?? {} as UseNaiveFormRules<T>)
+  const formRulesRef = ref(toValue(rules)) as Ref<UseNaiveFormRules<T>>
+  watchEffect(() => formRulesRef.value = toValue(rules) ?? {} as UseNaiveFormRules<T>)
 
   const formProps = {
-    model: reactive(formValue.value),
-    rules: reactive(formRules.value),
+    model: reactive(formValueRef.value),
+    rules: reactive(formRulesRef.value),
   }
   const onValidatedEvent = createEventHook<[T]>()
 
   function setValue(_value: Partial<T>) {
-    Object.assign(formValue.value, _value)
+    Object.assign(formValueRef.value, _value)
   }
   function validate() {
     return new Promise<{ warnings?: ValidateError[][] }>((resolve, reject) => {
-      if (!formRef.value) {
-        return reject(new Error('useNaiveForm: formRef is not found.'))
+      if (!formInstRef.value) {
+        return reject(new Error('useNaiveForm: formInstRef is not found.'))
       }
-      formRef.value.validate().then((res) => {
-        onValidatedEvent.trigger(toRaw(toValue(formValue)))
+      formInstRef.value.validate().then((res) => {
+        onValidatedEvent.trigger(toRaw(toValue(formValueRef)))
         return resolve(res)
       }).catch(reject)
     })
   }
   function resetValidation() {
-    formRef.value?.restoreValidation()
+    formInstRef.value?.restoreValidation()
   }
   function clear() {
-    clearObjectValues(formValue.value, clearRules)
+    clearObjectValues(formValueRef.value, clearRules)
   }
   function resetForm() {
     clear()
     const _cacheValue = cloneDeep(cacheValue)
-    deepMerge(formValue.value, _cacheValue)
+    deepMerge(formValueRef.value, _cacheValue)
   }
   function reset() {
     resetValidation()
@@ -114,9 +114,9 @@ export function useNaiveForm<T extends DataObject = DataObject>(formRef: Templat
   }
 
   return {
-    formRef,
-    formValue,
-    formRules,
+    formInstRef,
+    formValueRef,
+    formRulesRef,
     formProps,
     setValue,
     validate,

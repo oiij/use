@@ -18,7 +18,7 @@ const _formValue = ref({
     value: '一',
   }],
 })
-const { validate, formValue, formProps, resetValidation, resetForm, reset, clear } = useNaiveForm(useTemplateRef<FormInst>('form-ref'), {
+const { validate, formValueRef, formProps, resetValidation, resetForm, reset, clear } = useNaiveForm(useTemplateRef<FormInst>('form-ref'), {
   value: _formValue,
   rules: {
     foo: {
@@ -43,19 +43,19 @@ const { validate, formValue, formProps, resetValidation, resetForm, reset, clear
   <NCard>
     <NForm v-bind="formProps" ref="form-ref">
       <NFormItem label="foo.bar" path="foo.bar">
-        <NInput v-model:value="formValue.foo.bar" placeholder="输入foo" />
+        <NInput v-model:value="formValueRef.foo.bar" placeholder="输入foo" />
       </NFormItem>
       <NFormItem label="bar" path="bar">
         <NInputNumber v-model:value="_formValue.bar" placeholder="输入bar" />
       </NFormItem>
       <NFormItem label="args" path="args">
-        <NDynamicTags v-model:value="formValue.args" />
+        <NDynamicTags v-model:value="formValueRef.args" />
       </NFormItem>
       <NFormItem label="boolean" path="boolean">
-        <NSwitch v-model:value="formValue.boolean" />
+        <NSwitch v-model:value="formValueRef.boolean" />
       </NFormItem>
       <NFormItem label="argObjs" path="argObjs">
-        <NDynamicInput v-model:value="formValue.argObjs" preset="pair" />
+        <NDynamicInput v-model:value="formValueRef.argObjs" preset="pair" />
       </NFormItem>
       <NFlex>
         <NButton @click="validate">
@@ -74,7 +74,7 @@ const { validate, formValue, formProps, resetValidation, resetForm, reset, clear
           清除表单
         </NButton>
       </NFlex>
-      <pre>{{ JSON.stringify(formValue, null, 2) }}   </pre>
+      <pre>{{ JSON.stringify(formValueRef, null, 2) }}   </pre>
       <pre>{{ JSON.stringify(_formValue, null, 2) }}   </pre>
     </NForm>
   </NCard>

@@ -1,8 +1,8 @@
 import { createEventHook, useEventListener } from '@vueuse/core'
-import { ref } from 'vue'
+import { readonly, ref } from 'vue'
 
 export function useScanCode() {
-  const value = ref('')
+  const valueRef = ref('')
   const pending = ref(true)
   let tempStr = ''
   let timer: NodeJS.Timeout
@@ -22,8 +22,8 @@ export function useScanCode() {
 
     if (key === 'Enter') {
       pending.value = true
-      value.value = tempStr
-      onScanEvent.trigger(value.value)
+      valueRef.value = tempStr
+      onScanEvent.trigger(valueRef.value)
       tempStr = ''
     }
 
@@ -34,8 +34,8 @@ export function useScanCode() {
   useEventListener(window, 'keydown', onKeyDown)
 
   return {
-    value,
-    pending,
+    valueRef: readonly(valueRef),
+    pending: readonly(pending),
     onScan: onScanEvent.on,
   }
 }

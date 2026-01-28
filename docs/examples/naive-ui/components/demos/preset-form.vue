@@ -11,7 +11,7 @@ type Values = {
   hidden?: boolean
 }
 const presetForm = useTemplateRef('preset-form')
-const values = ref<Values>({
+const valueRef = ref<Values>({
   id: '1',
   hidden: false,
 })
@@ -45,7 +45,7 @@ const options: PresetFormOptions<Values> = [
     label: 'Input',
     key: 'id',
     span: 12,
-    hidden: () => values.value.hidden ?? true,
+    hidden: () => valueRef.value.hidden ?? true,
   },
   {
     span: 24,
@@ -85,7 +85,7 @@ function onValidated(values: any) {
     <!-- @vue-generic {Values} -->
     <NPresetForm
       ref="preset-form"
-      :values="values"
+      :value="valueRef"
       :options="options"
       :rules="rules"
       :form-props="{ labelPlacement: 'top' }"
@@ -105,7 +105,7 @@ function onValidated(values: any) {
         </NFlex>
       </template>
     </NPresetForm>
-    <pre>值：{{ values }}</pre>
+    <pre>值：{{ valueRef }}</pre>
     <pre>{{ options }}</pre>
   </NFlex>
 </template>

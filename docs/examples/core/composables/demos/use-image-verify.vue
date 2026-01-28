@@ -4,15 +4,15 @@ import { useImageVerify } from '@oiij/use'
 import { NButton, NCard, NFlex, NInput, NInputGroup } from 'naive-ui'
 import { useTemplateRef } from 'vue'
 
-const { value, validate, passed } = useImageVerify(useTemplateRef('dom-ref'), { type: 'character' })
-const { value: value1, validate: validate1, passed: passed1 } = useImageVerify(useTemplateRef('dom-ref-1'), { type: 'operation', config: { arith: '+' } })
+const { valueRef, validate, passed } = useImageVerify(useTemplateRef('dom-ref'), { type: 'character' })
+const { valueRef: valueRef1, validate: validate1, passed: passed1 } = useImageVerify(useTemplateRef('dom-ref-1'), { type: 'operation', config: { arith: '+' } })
 </script>
 
 <template>
   <NFlex>
     <NCard title="图形" style="flex: 1;">
       <NInputGroup>
-        <NInput v-model:value="value" :status="passed ? 'success' : 'error'" />
+        <NInput v-model:value="valueRef" :status="passed ? 'success' : 'error'" />
         <NButton @click="validate">
           验证
         </NButton>
@@ -21,7 +21,7 @@ const { value: value1, validate: validate1, passed: passed1 } = useImageVerify(u
     </NCard>
     <NCard title="计算" style="flex: 1;">
       <NInputGroup>
-        <NInput v-model:value="value1" :status="passed1 ? 'success' : 'error'" />
+        <NInput v-model:value="valueRef1" :status="passed1 ? 'success' : 'error'" />
         <NButton @click="validate1">
           验证
         </NButton>

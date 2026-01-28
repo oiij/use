@@ -1,6 +1,6 @@
 import type { TemplateRef } from 'vue'
 import { useEventListener } from '@vueuse/core'
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, readonly, ref } from 'vue'
 
 type OperationConfig = {
   figure?: number
@@ -57,14 +57,14 @@ function drawPoint(ctx: CanvasRenderingContext2D, width: number, height: number,
 }
 export function useImageVerify(templateRef: TemplateRef<HTMLCanvasElement>, options: ImageVerifyOptions = { type: 'character' }) {
   const { width = 120, height = 40, refreshOnClick = true, disturbLine = 10, disturbPoint = 40 } = options ?? {}
-  const value = ref('')
-  const code = ref('')
-  const passed = computed(() => value.value.toUpperCase() === code.value.toUpperCase())
+  const valueRef = ref('')
+  const codeRef = ref('')
+  const passed = computed(() => valueRef.value.toUpperCase() === codeRef.value.toUpperCase())
   function validate() {
     return new Promise((resolve, reject) => passed.value ? resolve(true) : reject(new Error('Failed to verify.')))
   }
   function reset() {
-    value.value = ''
+    valueRef.value = ''
   }
   function refresh() {
     generate()
@@ -72,7 +72,7 @@ export function useImageVerify(templateRef: TemplateRef<HTMLCanvasElement>, opti
 
   function generate() {
     const _code = _draw()
-    code.value = _code
+    codeRef.value = _code
     return _code
   }
 
@@ -158,8 +158,8 @@ export function useImageVerify(templateRef: TemplateRef<HTMLCanvasElement>, opti
 
   return {
     templateRef,
-    value,
-    code,
+    valueRef,
+    code: readonly(codeRef),
     passed,
     validate,
     reset,

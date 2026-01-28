@@ -5,7 +5,9 @@ import { NButton, NFlex, NProgress } from 'naive-ui'
 import { ref } from 'vue'
 
 const value = ref('TypeWriter 打字组件TypeWriter 打字组件TypeWriter 打字组件TypeWriter 打字组件')
-const { typedValue, progress, restart, pause, resume, stop, onStat, onStop } = useTypeWriter(value)
+const { typedValue, progress, restart, pause, resume, stop, onStat, onStop } = useTypeWriter(value, {
+  manual: true,
+})
 onStat(() => {
   console.log('start')
 })
