@@ -34,7 +34,7 @@ export function useScanCode() {
   useEventListener(window, 'keydown', onKeyDown)
 
   return {
-    valueRef: readonly(valueRef),
+    value: readonly(valueRef),
     pending: readonly(pending),
     onScan: onScanEvent.on,
   }

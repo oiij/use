@@ -9,23 +9,7 @@ import { NBadge, NButton, NButtonGroup, NModal, NTooltip } from 'naive-ui'
 import { computed, reactive, ref, toRaw, toValue, watch } from 'vue'
 import MageMultiplyCircleFill from '../icons/MageMultiplyCircleFill.vue'
 
-const {
-  value,
-  fallbackLabel,
-  multiple,
-  disabled,
-  clearable,
-  tooltip = true,
-  placeholder = '请选择',
-  type,
-  columns,
-  selectionOptions,
-  fields,
-  buttonProps,
-  clearButtonProps,
-  badgeProps,
-  modalProps,
-} = defineProps<PresetPickerProps<V, R>>()
+const { value, fallbackLabel, multiple, disabled, clearable, tooltip = true, placeholder = '请选择', type, columns, selectionOptions, fields, buttonProps, clearButtonProps, badgeProps, modalProps } = defineProps<PresetPickerProps<V, R>>()
 
 const emit = defineEmits<PresetPickerEmits<V, R>>()
 

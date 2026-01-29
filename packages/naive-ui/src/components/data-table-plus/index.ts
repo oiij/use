@@ -16,7 +16,7 @@ export type ClassStyle = {
 export type DataTablePlusExpose<P extends DataObject = DataObject, D extends DataObject = DataObject, R extends DataObject = DataObject> = UseDataRequestReturns<P, D, R> & {
   filters: Ref<DataTableFilterState | undefined>
   sorters: Ref<Record<string, DataTableSortState> | undefined>
-  dataTableRef: Readonly<ShallowRef<DataTableInst | null>>
+  dataTableInst: Readonly<ShallowRef<DataTableInst | null>>
 }
 
 export type DataTablePlusFields = DataRequestFields & {

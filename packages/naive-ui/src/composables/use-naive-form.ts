@@ -114,9 +114,9 @@ export function useNaiveForm<T extends DataObject = DataObject>(formInstRef: Tem
   }
 
   return {
-    formInstRef,
-    formValueRef,
-    formRulesRef,
+    formInst: formInstRef,
+    formValue: formValueRef,
+    formRules: formRulesRef,
     formProps,
     setValue,
     validate,

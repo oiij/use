@@ -105,10 +105,10 @@ export function useNaiveTheme<T extends string>(options?: UseNaiveThemeOptions<T
   const locale = computed(() => localesMerge[languageRef.value ?? 'zh-CN' as T] ?? naiveLocaleMap['zh-CN'])
 
   return {
-    languageRef,
-    darkModeRef,
+    language: languageRef,
+    darkMode: darkModeRef,
     theme,
-    colorsRef,
+    colors: colorsRef,
     themeColors,
     themeOverrides,
     locales: localesMerge,

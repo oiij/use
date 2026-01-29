@@ -125,7 +125,7 @@ export function useTypeWriter(value: MaybeRefOrGetter<string>, options?: TypeWri
     typeIndex.value = 0
   }
   return {
-    valueRef,
+    value: valueRef,
     typeIndex,
     paused,
     ended,

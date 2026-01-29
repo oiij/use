@@ -16,7 +16,7 @@ function getDarkColor(color?: string) {
 }
 const darkMode = ref(false)
 const language = ref<'zh-CN' | 'en-US' | 'ko-KR'>('zh-CN')
-const { theme, themeOverrides, locale, locales, colorsRef, themeColors } = useNaiveTheme({
+const { theme, themeOverrides, locale, locales, colors, themeColors } = useNaiveTheme({
   colors: {
     primary: '#ff2d51',
   },
@@ -55,7 +55,7 @@ const { theme, themeOverrides, locale, locales, colorsRef, themeColors } = useNa
               {{ item.name }}
             </NRadio>
           </NRadioGroup>
-          <NColorPicker v-model:value="colorsRef.primary" :actions="['clear']" />
+          <NColorPicker v-model:value="colors.primary" :actions="['clear']" />
         </NFlex>
         <NFlex>
           <NButton type="default">

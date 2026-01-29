@@ -119,8 +119,8 @@ export function useEmojiPicker(templateRef: TemplateRef<HTMLElement>, options?: 
   })
   return {
     templateRef,
-    darkModeRef,
-    languageRef,
+    darkMode: darkModeRef,
+    language: languageRef,
     emojiPickerInst,
     updateTheme,
     updateLanguage,

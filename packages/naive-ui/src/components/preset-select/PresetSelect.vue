@@ -26,7 +26,7 @@ const {
 } = defineProps<PresetSelectProps<V, P, D, R>>()
 
 const emit = defineEmits<PresetSelectEmits<V, P, D, R>>()
-const selectRef = useTemplateRef<SelectInst>('select-ref')
+const selectInstRef = useTemplateRef<SelectInst>('select-ref')
 const _fields = { page: 'page', pageSize: 'pageSize', search: 'search', list: 'list', count: 'count', label: 'label', value: 'value', rowKey: 'id', children: 'children', ...fields }
 const paginationProps = reactive<PaginationProps>({
   ...(propsPagination && typeof propsPagination === 'boolean' ? {} : propsPagination),
@@ -177,7 +177,7 @@ const expose: PresetSelectExpose<P, D, R> = {
   onSuccess,
   onError,
   onFinally,
-  selectRef,
+  selectInst: selectInstRef,
 }
 const templateBind = computed(() => {
   return {
@@ -188,7 +188,7 @@ const templateBind = computed(() => {
     params: toValue(params),
     list: toValue(list),
     pagination: toValue(paginationRef),
-    selectRef: toValue(selectRef),
+    selectInst: toValue(selectInstRef),
   }
 })
 

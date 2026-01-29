@@ -158,7 +158,7 @@ export function useImageVerify(templateRef: TemplateRef<HTMLCanvasElement>, opti
 
   return {
     templateRef,
-    valueRef,
+    value: valueRef,
     code: readonly(codeRef),
     passed,
     validate,

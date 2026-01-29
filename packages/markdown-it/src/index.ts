@@ -46,8 +46,8 @@ export function useMarkdownIt(templateRef?: TemplateRef<HTMLElement>, options?: 
   })
   return {
     templateRef,
-    valueRef,
-    htmlRef,
+    value: valueRef,
+    html: htmlRef,
     markdownItInst,
     render,
   }

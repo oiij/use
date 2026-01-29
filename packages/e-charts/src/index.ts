@@ -129,8 +129,8 @@ export function useECharts(templateRef: TemplateRef<HTMLElement>, options?: UseE
   return {
     templateRef,
     eChartInst,
-    chartOptionRef,
-    darkModeRef,
+    chartOption: chartOptionRef,
+    darkMode: darkModeRef,
     onRender: onRenderEvent.on,
     onUpdate: onUpdateEvent.on,
     onResize: onResizeEvent.on,

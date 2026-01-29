@@ -55,7 +55,7 @@ export function useTipTap(templateRef: TemplateRef<HTMLElement>, options?: UseTi
 
   return {
     templateRef,
-    valueRef,
+    value: valueRef,
     editorInst,
     setContent,
     onRender: onRenderEvent.on,

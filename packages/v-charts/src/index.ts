@@ -140,8 +140,8 @@ export function useVCharts(templateRef: TemplateRef<HTMLElement>, options?: UseV
   return {
     templateRef,
     vChartInst,
-    chartOptionRef,
-    darkModeRef,
+    chartOption: chartOptionRef,
+    darkMode: darkModeRef,
     onRender: onRenderEvent.on,
     onUpdate: onUpdateEvent.on,
     onResize: onResizeEvent.on,

@@ -29,7 +29,7 @@ const {
 const emit = defineEmits<DataTablePlusEmits<P, D, R>>()
 
 const columnsReactive = reactive<DataTableColumns<R>>(columns ?? [])
-const dataTableRef = useTemplateRef<DataTableInst>('data-table-ref')
+const dataTableInst = useTemplateRef<DataTableInst>('data-table-ref')
 
 const _fields = { page: 'page', pageSize: 'pageSize', filter: 'filter', sorter: 'sorter', list: 'list', count: 'count', rowKey: 'id', search: 'search', children: 'children', ...fields }
 const searchProps = {
@@ -230,7 +230,7 @@ function onSearch(val: any) {
   } as P)
 }
 function handleScrollTop() {
-  dataTableRef.value?.scrollTo({
+  dataTableInst.value?.scrollTo({
     left: 0,
     top: 0,
     behavior: 'smooth',
@@ -258,7 +258,7 @@ const expose: DataTablePlusExpose<P, D, R> = {
   onFinally,
   filters: filtersRef,
   sorters: sortersRef,
-  dataTableRef,
+  dataTableInst,
 }
 const templateBind = computed(() => {
   return {
@@ -271,7 +271,7 @@ const templateBind = computed(() => {
     paginationRef: toValue(paginationRef),
     filters: toValue(filtersRef),
     sorters: toValue(sortersRef),
-    dataTableRef: toValue(dataTableRef),
+    dataTableInst: toValue(dataTableInst),
   }
 })
 

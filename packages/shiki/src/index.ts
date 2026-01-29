@@ -63,8 +63,8 @@ export function useShiki(templateRef?: TemplateRef<HTMLElement>, options?: UseSh
   })
   return {
     templateRef,
-    valueRef,
-    htmlRef: readonly(htmlRef),
+    value: valueRef,
+    html: readonly(htmlRef),
     updateTheme,
     updateLang,
     format,

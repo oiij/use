@@ -92,10 +92,10 @@ export function useAiEditor(templateRef: TemplateRef<HTMLElement>, options?: Use
   })
   return {
     templateRef,
-    valueRef,
-    darkModeRef,
-    languageRef,
-    readonlyRef,
+    value: valueRef,
+    darkMode: darkModeRef,
+    language: languageRef,
+    readonly: readonlyRef,
     aiEditorInst,
     setContent,
     updateTheme,

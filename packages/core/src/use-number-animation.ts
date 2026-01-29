@@ -76,7 +76,7 @@ export function useNumberAnimation(to: MaybeRefOrGetter<number>, options?: Numbe
 
   return {
     value: readonly(computed(() => currentValueRef.value.toFixed(precision))),
-    targetValueRef,
+    targetValue: targetValueRef,
     isActive,
     run,
     stop,

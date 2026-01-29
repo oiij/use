@@ -3,7 +3,7 @@ import { useShiki } from '@oiij/shiki'
 import { NFlex } from 'naive-ui'
 import { useTemplateRef } from 'vue'
 
-const { valueRef } = useShiki(useTemplateRef('dom-ref'), {
+const { value } = useShiki(useTemplateRef('dom-ref'), {
   value: `export const foo = 'foo'`,
 })
 </script>
@@ -11,7 +11,7 @@ const { valueRef } = useShiki(useTemplateRef('dom-ref'), {
 <template>
   <NFlex vertical>
     <div ref="dom-ref" />
-    <textarea v-model="valueRef" style="border: 1px solid #000;" />
+    <textarea v-model="value" style="border: 1px solid #000;" />
   </NFlex>
 </template>
 

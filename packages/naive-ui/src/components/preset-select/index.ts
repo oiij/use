@@ -22,7 +22,7 @@ export type PresetSelectFields = DataRequestFields & {
   children?: string
 }
 export type PresetSelectExpose<P extends DataObject = DataObject, D extends DataObject = DataObject, R extends DataObject = DataObject> = UseDataRequestReturns<P, D, R> & {
-  selectRef: Readonly<ShallowRef<SelectInst | null>>
+  selectInst: Readonly<ShallowRef<SelectInst | null>>
 }
 
 export type PresetSelectProps<V extends PresetSelectValue, P extends DataObject = DataObject, D extends DataObject = DataObject, R extends DataObject = DataObject> = RemoteRequestProps<P, D> & {

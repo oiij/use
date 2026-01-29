@@ -25,7 +25,7 @@ function mock() {
   })
   window.dispatchEvent(keydownEvent)
 }
-const { valueRef, pending } = useScanCode()
+const { value, pending } = useScanCode()
 </script>
 
 <template>
@@ -38,7 +38,7 @@ const { valueRef, pending } = useScanCode()
     </NInputGroup>
   </NFlex>
   <NCard>
-    <pre>code:{{ valueRef }}</pre>
+    <pre>code:{{ value }}</pre>
     <pre>pending:{{ pending }}</pre>
   </NCard>
 </template>
