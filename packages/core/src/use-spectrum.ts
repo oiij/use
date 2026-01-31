@@ -130,7 +130,7 @@ export function useSpectrum(canvasRef: TemplateRef<HTMLCanvasElement>, frequency
       throw new Error('canvasRef is not a valid canvas element')
     }
     ctx.scale(dpr, dpr)
-    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    ctx.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight)
     updateFrequencyData()
 
     switch (type) {
@@ -151,8 +151,8 @@ export function useSpectrum(canvasRef: TemplateRef<HTMLCanvasElement>, frequency
   function drawBarSpectrum(ctx: CanvasRenderingContext2D) {
     const { width = 8, minHeight = 8, spacing = 2, radius = 4, color = defaultColor, shadow = defaultShadow } = barOptions ?? {}
     const canvas = ctx.canvas
-    const canvasWidth = canvas.width
-    const canvasHeight = canvas.height
+    const canvasWidth = canvas.width / dpr
+    const canvasHeight = canvas.height / dpr
     // 设置阴影效果
     setupShadow(ctx, shadow)
 
@@ -219,8 +219,8 @@ export function useSpectrum(canvasRef: TemplateRef<HTMLCanvasElement>, frequency
   function drawLineSpectrum(ctx: CanvasRenderingContext2D) {
     const { width = 1, spacing = 20, color = defaultColor, smoothness = 0.5, fill = true, shadow = defaultShadow } = lineOptions ?? {}
     const canvas = ctx.canvas
-    const canvasWidth = canvas.width
-    const canvasHeight = canvas.height
+    const canvasWidth = canvas.width / dpr
+    const canvasHeight = canvas.height / dpr
 
     // 设置阴影效果
     setupShadow(ctx, shadow)
@@ -328,10 +328,12 @@ export function useSpectrum(canvasRef: TemplateRef<HTMLCanvasElement>, frequency
   }
   // 绘制圆环形式的柱状频谱
   function drawCircleBarSpectrum(ctx: CanvasRenderingContext2D) {
-    const { radius = Math.min(canvasRef.value!.width, canvasRef.value!.height) * 0.3, width = 8, minHeight = 8, barRadius = 4, spacing = 2, color = defaultColor, shadow = defaultShadow, startAngle = 0, endAngle = Math.PI * 2 } = circleBarOptions ?? {}
     const canvas = ctx.canvas
-    const centerX = canvas.width / 2
-    const centerY = canvas.height / 2
+    const canvasWidth = canvas.width / dpr
+    const canvasHeight = canvas.height / dpr
+    const { radius = Math.min(canvasWidth, canvasHeight) * 0.3, width = 8, minHeight = 8, barRadius = 4, spacing = 2, color = defaultColor, shadow = defaultShadow, startAngle = 0, endAngle = Math.PI * 2 } = circleBarOptions ?? {}
+    const centerX = canvasWidth / 2
+    const centerY = canvasHeight / 2
 
     // 设置阴影效果
     setupShadow(ctx, shadow)
@@ -413,10 +415,12 @@ export function useSpectrum(canvasRef: TemplateRef<HTMLCanvasElement>, frequency
   }
   // 绘制圆环形式的线性频谱
   function drawCircleLineSpectrum(ctx: CanvasRenderingContext2D) {
-    const { radius = Math.min(canvasRef.value!.width, canvasRef.value!.height) * 0.3, width = 1, spacing = 10, color = defaultColor, shadow = defaultShadow, smoothness = 0.5, fill = true, startAngle = 0, endAngle = Math.PI * 2 } = circleLineOptions ?? {}
     const canvas = ctx.canvas
-    const centerX = canvas.width / 2
-    const centerY = canvas.height / 2
+    const canvasWidth = canvas.width / dpr
+    const canvasHeight = canvas.height / dpr
+    const { radius = Math.min(canvasWidth, canvasHeight) * 0.3, width = 1, spacing = 10, color = defaultColor, shadow = defaultShadow, smoothness = 0.5, fill = true, startAngle = 0, endAngle = Math.PI * 2 } = circleLineOptions ?? {}
+    const centerX = canvasWidth / 2
+    const centerY = canvasHeight / 2
     // 设置阴影效果
     setupShadow(ctx, shadow)
 
