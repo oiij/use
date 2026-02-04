@@ -13,7 +13,7 @@ catalogs:
     '@vueuse/core': ^14.1.0
     aieditor: ^1.4.2
     vue: ^3.5.27
-  chrome-tab:
+  chrome-tabs:
     colord: ^2.9.3
     vue: ^3.5.27
   core:
