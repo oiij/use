@@ -1,4 +1,5 @@
 <script setup lang='ts'>
+import { NConfigProviders } from '@oiij/naive-ui/components'
 import { NButton, NFlex } from 'naive-ui'
 
 function showLoading() {
@@ -10,11 +11,13 @@ function showLoading() {
 </script>
 
 <template>
-  <NFlex>
-    <NButton @click="() => showLoading()">
-      加载
-    </NButton>
-  </NFlex>
+  <NConfigProviders>
+    <NFlex>
+      <NButton @click="() => showLoading()">
+        加载
+      </NButton>
+    </NFlex>
+  </NConfigProviders>
 </template>
 
 <style scoped lang='less'>

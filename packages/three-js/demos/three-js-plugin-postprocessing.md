@@ -1,24 +1,42 @@
 # UseThreeJs
 
-官方文档 [ThreeJs](https://threejs.org/) [postprocessing](https://github.com/pmndrs/postprocessing)
+## 功能描述
+
+**UseThreeJs** 是一个功能强大的 Three.js 集成库，提供了完整的后期处理能力，包括渲染通道管理、效果组合、抗锯齿、轮廓效果、 bloom 效果等特性。它基于 Three.js 和 postprocessing 库实现，为 Vue 应用提供了高质量的 3D 视觉效果。
 
 ## 安装
 
 ```bash
+# 使用 npm
+npm install @oiij/three-js
+
+# 使用 yarn
+yarn add @oiij/three-js
+
+# 使用 pnpm
 pnpm add @oiij/three-js
 ```
 
-## 示例
+## 基本使用
 
-### Base
+<demo vue="./three-js-plugin-postprocessing.vue" title="UseThreeJs Postprocessing" />
 
-<demo vue="./three-js-plugin-postprocessing.vue"  />
+## API
 
-## Types
+### 函数签名
 
 ```ts
-declare const RendererOptions: WebGLRendererParameters
-type EffectComposerOptions = {
+declare function usePostprocessing(renderer: WebGLRenderer, scene: Scene, camera: Camera, options?: EffectComposerOptions): UsePostprocessingReturns
+declare function useCopyPass(): UseCopyPassReturns
+declare function useSmaaEffectPass(camera: Camera, options?: SMAAEffectOptions): UseSmaaEffectPassReturns
+declare function useOutlinePass(scene: Scene, camera: Camera, options?: OutlineEffectOptions): UseOutlinePassReturns
+declare function useSelectiveBloomPass(scene: Scene, camera: Camera, options?: BloomEffectOptions): UseSelectiveBloomPassReturns
+```
+
+## 类型定义
+
+```ts
+export type EffectComposerOptions = {
   depthBuffer?: boolean
   stencilBuffer?: boolean
   alpha?: boolean
@@ -27,7 +45,8 @@ type EffectComposerOptions = {
   passes?: Pass[] | ((renderer: WebGLRenderer, scene: Scene, camera: Camera) => Pass)[]
   overrideMaterial?: Material
 }
-declare function usePostprocessing(renderer: WebGLRenderer, scene: Scene, camera: Camera, options?: EffectComposerOptions): {
+
+export type UsePostprocessingReturns = {
   composer: EffectComposer
   renderPass: RenderPass
   dispose: () => void
@@ -39,11 +58,13 @@ declare function usePostprocessing(renderer: WebGLRenderer, scene: Scene, camera
     height: number
   }) => void
 }
-declare function useCopyPass(): {
+
+export type UseCopyPassReturns = {
   copyPass: ShaderPass
   dispose: () => void
 }
-type SMAAEffectOptions = {
+
+export type SMAAEffectOptions = {
   smaa?: {
     preset?: SMAAPreset
     edgeDetectionMode?: EdgeDetectionMode
@@ -55,14 +76,16 @@ type SMAAEffectOptions = {
     aspectCorrection?: boolean
   }
 }
-declare function useSmaaEffectPass(camera: Camera, options?: SMAAEffectOptions): {
+
+export type UseSmaaEffectPassReturns = {
   smaaEffect: SMAAEffect
   edgesTextureEffect: TextureEffect
   weightsTextureEffect: TextureEffect
   smaaEffectPass: EffectPass
   dispose: () => void
 }
-type OutlineEffectOptions = {
+
+export type OutlineEffectOptions = {
   blendFunction?: BlendFunction
   patternTexture?: Texture
   patternScale?: number
@@ -80,13 +103,15 @@ type OutlineEffectOptions = {
   blur?: boolean
   xRay?: boolean
 }
-declare function useOutlinePass(scene: Scene, camera: Camera, options?: OutlineEffectOptions): {
+
+export type UseOutlinePassReturns = {
   outlineEffect: OutlineEffect
   outlinePass: EffectPass
   selection: postprocessing20.Selection
   dispose: () => void
 }
-declare function useSelectiveBloomPass(scene: Scene, camera: Camera, options?: BloomEffectOptions): {
+
+export type UseSelectiveBloomPassReturns = {
   selectiveBloomEffect: SelectiveBloomEffect
   selection: postprocessing20.Selection
   selectiveBloomEffectPass: EffectPass

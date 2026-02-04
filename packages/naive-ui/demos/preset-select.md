@@ -1,51 +1,29 @@
 # PresetSelect 配置选择器
 
-## Demo
+## 功能描述
+
+**PresetSelect** 是一个功能强大的配置选择器组件，提供了完整的选择器配置能力，包括远程数据请求、分页加载、防抖搜索、多选支持、自定义选项格式化等特性。它基于 Naive UI 的 Select 组件和 VueUse 的 useRequest 实现，为 Vue 应用提供了高效的选择器配置解决方案。
+
+## 安装
+
+```bash
+# 使用 npm
+npm install @oiij/naive-ui
+
+# 使用 yarn
+yarn add @oiij/naive-ui
+
+# 使用 pnpm
+pnpm add @oiij/naive-ui
+```
+
+## 基本使用
 
 <demo vue="./preset-select.vue" title="PresetSelect" />
 
-## Types
+## API
 
-```ts
-export type ArrayAwareType<V, T> = V extends null ? null : (V extends any[] ? T[] : T) | null
-export type OptionFormat<R extends DataObject = DataObject> = (row: R) => SelectOption | SelectGroupOption | false | undefined | null
-export type PresetSelectValue = string | number | (string | number)[] | null
-export type PresetSelectFields = DataRequestFields & {
-  label?: string
-  value?: string
-  rowKey?: string
-  search?: string
-  children?: string
-}
-export type PresetSelectExpose<P extends DataObject = DataObject, D extends DataObject = DataObject, R extends DataObject = DataObject> = UseDataRequestReturns<P, D, R> & {
-  selectRef: Readonly<ShallowRef<SelectInst | null>>
-}
-export type PresetSelectProps<V extends PresetSelectValue, P extends DataObject = DataObject, D extends DataObject = DataObject, R extends DataObject = DataObject> = RemoteRequestProps<P, D> & {
-  value?: V
-  fallbackLabel?: string | ((val: string | number) => SelectOption)
-  multiple?: boolean
-  disabled?: boolean
-  clearable?: boolean
-  debounce?: boolean | number
-  optionFormat?: OptionFormat<R>
-  fields?: PresetSelectFields
-  selectProps?: SelectProps & ClassStyle
-  pagination?: Omit<PaginationProps, 'page' | 'pageSize'> & ClassStyle | boolean
-}
-export type PresetSelectEmits<V extends PresetSelectValue, P extends DataObject = DataObject, D extends DataObject = DataObject, R extends DataObject = DataObject> = RemoteRequestEmits<P, D> & {
-  (e: 'blur', ev: FocusEvent): void
-  (e: 'clear'): void
-  (e: 'create', label: string): SelectOption
-  (e: 'focus', ev: FocusEvent): void
-  (e: 'scroll', ev: Event): void
-  (e: 'search', value: string): void
-  (e: 'update:value', val: V | null, option: SelectOption | SelectOption[] | null, raw: R | R[] | null): void
-  (e: 'update:page', page: number): void
-  (e: 'update:pageSize', pageSize: number): void
-}
-```
-
-## Props
+### Props
 
 | Name           | Type                       | Default | Description                    |
 | -------------- | -------------------------- | ------- | ------------------------------ |
@@ -64,7 +42,7 @@ export type PresetSelectEmits<V extends PresetSelectValue, P extends DataObject 
 | requestOptions | UseRequestOptions          | -       | VueHooks UseRequest 的请求配置 |
 | requestPlugins | UseRequestPlugin[]         | -       | VueHooks UseRequest 的插件配置 |
 
-## Emits
+### Emits
 
 | Name            | Type                                         | Description        |
 | --------------- | -------------------------------------------- | ------------------ |
@@ -75,3 +53,50 @@ export type PresetSelectEmits<V extends PresetSelectValue, P extends DataObject 
 | update:value    | (val: PresetSelectValue) => void             | 值更新时           |
 | update:page     | (page: number) => void                       | 页码更新时         |
 | update:pageSize | (pageSize: number) => void                   | 每页数量更新时     |
+
+## 类型定义
+
+```ts
+export type ArrayAwareType<V, T> = V extends null ? null : (V extends any[] ? T[] : T) | null
+
+export type OptionFormat<R extends DataObject = DataObject> = (row: R) => SelectOption | SelectGroupOption | false | undefined | null
+
+export type PresetSelectValue = string | number | (string | number)[] | null
+
+export type PresetSelectFields = DataRequestFields & {
+  label?: string
+  value?: string
+  rowKey?: string
+  search?: string
+  children?: string
+}
+
+export type PresetSelectExpose<P extends DataObject = DataObject, D extends DataObject = DataObject, R extends DataObject = DataObject> = UseDataRequestReturns<P, D, R> & {
+  selectRef: Readonly<ShallowRef<SelectInst | null>>
+}
+
+export type PresetSelectProps<V extends PresetSelectValue, P extends DataObject = DataObject, D extends DataObject = DataObject, R extends DataObject = DataObject> = RemoteRequestProps<P, D> & {
+  value?: V
+  fallbackLabel?: string | ((val: string | number) => SelectOption)
+  multiple?: boolean
+  disabled?: boolean
+  clearable?: boolean
+  debounce?: boolean | number
+  optionFormat?: OptionFormat<R>
+  fields?: PresetSelectFields
+  selectProps?: SelectProps & ClassStyle
+  pagination?: Omit<PaginationProps, 'page' | 'pageSize'> & ClassStyle | boolean
+}
+
+export type PresetSelectEmits<V extends PresetSelectValue, P extends DataObject = DataObject, D extends DataObject = DataObject, R extends DataObject = DataObject> = RemoteRequestEmits<P, D> & {
+  (e: 'blur', ev: FocusEvent): void
+  (e: 'clear'): void
+  (e: 'create', label: string): SelectOption
+  (e: 'focus', ev: FocusEvent): void
+  (e: 'scroll', ev: Event): void
+  (e: 'search', value: string): void
+  (e: 'update:value', val: V | null, option: SelectOption | SelectOption[] | null, raw: R | R[] | null): void
+  (e: 'update:page', page: number): void
+  (e: 'update:pageSize', pageSize: number): void
+}
+```

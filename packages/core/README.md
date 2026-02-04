@@ -1,7 +1,7 @@
 # Use Core 🚀
 
 [![NPM version](https://img.shields.io/npm/v/@oiij/use)](https://www.npmjs.com/package/@oiij/use)
-[![MIT-license](https://img.shields.io/npm/l/@oiij/use)](https://github.com/oiij/use/blob/main/LICENSE)
+[![MIT-license](https://img.shields.io/npm/l/@oiij/use)](https://github.com/oiij/use/blob/main/packages/core/LICENSE)
 
 ## 项目简介 📦
 

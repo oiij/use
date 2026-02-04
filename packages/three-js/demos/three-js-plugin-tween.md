@@ -1,27 +1,43 @@
 # UseThreeJs
 
-官方文档 [ThreeJs](https://threejs.org/) [Tween](https://tweenjs.github.io/tween.js/docs/user_guide_zh-CN.html)
+## 功能描述
+
+**UseThreeJs** 是一个功能强大的 Three.js 集成库，提供了完整的动画控制能力，包括属性补间、相机动画、对象跟踪等特性。它基于 Three.js 和 Tween.js 实现，为 Vue 应用提供了流畅的 3D 动画效果。
 
 ## 安装
 
 ```bash
+# 使用 npm
+npm install @oiij/three-js
+
+# 使用 yarn
+yarn add @oiij/three-js
+
+# 使用 pnpm
 pnpm add @oiij/three-js
 ```
 
-## 示例
+## 基本使用
 
-### Base
+<demo vue="./three-js-plugin-tween.vue" title="UseThreeJs Tween" />
 
-<demo vue="./three-js-plugin-tween.vue"  />
+## API
 
-## Types
+### 函数签名
 
 ```ts
-type CameraTweenOptions = {
+declare function useTween(): UseTweenReturns
+```
+
+## 类型定义
+
+```ts
+export type CameraTweenOptions = {
   duration?: number
   easing?: typeof Easing['Linear']['None']
 }
-declare function useTween(): {
+
+export type UseTweenReturns = {
   tweenGroup: Group$1
   update: (time?: number) => void
   createTween: <T extends Record<string, any>>(from: T) => Tween<T>

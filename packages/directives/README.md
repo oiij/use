@@ -1,12 +1,92 @@
-# Directives
+# Use Directives 🚀
 
-[![NPM version](https://img.shields.io/npm/v/@oiij/directives)](https://www.npmjs.com/package/@oiij/directives)
-[![MIT-license](https://img.shields.io/npm/l/@oiij/directives)](https://github.com/Eiog/@oiij/directives/blob/main/LICENSE)
+|[![NPM version](https://img.shields.io/npm/v/@oiij/directives)](https://www.npmjs.com/package/@oiij/directives)
+|[![MIT-license](https://img.shields.io/npm/l/@oiij/directives)](https://github.com/oiij/use/blob/main/packages/directives/LICENSE)
 
-## Usage
+## 项目简介 📦
+
+Use Directives 是一个丰富的 Vue 3 自定义指令集合，提供了一系列实用的指令，帮助开发者简化常见的 DOM 操作。
+
+## 功能特点 ✨
+
+### 丰富指令集 📚
+
+- 🎯 涵盖常用的 DOM 操作场景
+- 🔧 简化重复代码，提高开发效率
+- ⚡ 优化的性能表现，最小化运行时开销
+
+### 模块化设计 🧩
+
+- 📁 采用模块化架构，每个指令独立封装
+- 📦 支持按需导入，减小打包体积
+- 🔧 清晰的文件结构，易于维护和扩展
+
+### 类型安全 🔒
+
+- 📝 完整的 TypeScript 类型定义
+- 💡 提供准确的类型推断和代码提示
+- 🎯 支持 Vue 3 的 Composition API 类型系统
+
+### 轻量高效 ⚡
+
+- 🚀 核心代码精简，无额外依赖
+- 🏃 优化的性能表现，最小化运行时开销
+- 📦 支持 Tree Shaking，进一步减小打包体积
+
+## 安装 📥
+
+### 使用 pnpm 🐱
 
 ```bash
 pnpm add @oiij/directives
 ```
 
-[在线文档](https://oiij-use.vercel.app/examples/directives/started)
+### 使用 npm 📦
+
+```bash
+npm install @oiij/directives
+```
+
+### 使用 yarn 🧶
+
+```bash
+yarn add @oiij/directives
+```
+
+## 快速开始 🌟
+
+### 基础使用
+
+```vue
+<script setup>
+import { vClickOutside } from '@oiij/directives'
+</script>
+
+<template>
+  <div v-click-outside>
+    点击外部关闭
+  </div>
+</template>
+```
+
+## 在线文档 📚
+
+[在线文档](https://oiij-use.vercel.app/directives/directives) 📖
+
+## 贡献指南 🤝
+
+欢迎贡献代码、报告问题或提出新功能建议！
+
+1. Fork 本仓库 🍴
+2. 创建您的特性分支 (`git checkout -b feature/amazing-feature`) 🌿
+3. 提交您的更改 (`git commit -m 'Add some amazing feature'`) 💾
+4. 推送到分支 (`git push origin feature/amazing-feature`) 🚀
+5. 打开一个 Pull Request 📥
+
+## 许可证 📄
+
+本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情 📑
+
+## 联系方式 📞
+
+- GitHub: [https://github.com/Eiog/@oiij/directives](https://github.com/Eiog/@oiij/directives) 🌟

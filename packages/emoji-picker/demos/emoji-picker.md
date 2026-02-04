@@ -1,18 +1,35 @@
 # UseEmojiPicker
 
-[官方文档](https://github.com/missive/emoji-mart)
+## 功能描述
+
+**UseEmojiPicker** 是一个用于集成 emoji 选择器的 Vue 组合式函数，支持多种 emoji 集、皮肤色调选择、搜索功能和自定义配置，可用于在应用中添加 emoji 选择功能。
 
 ## 安装
 
 ```bash
+# 使用 npm
+npm install @oiij/emoji-picker
+
+# 使用 yarn
+yarn add @oiij/emoji-picker
+
+# 使用 pnpm
 pnpm add @oiij/emoji-picker
 ```
 
-## 示例
+## 基本使用
 
-<demo vue="./emoji-picker.vue" />
+<demo vue="./emoji-picker.vue" title="UseEmojiPicker" />
 
-## Types
+## API
+
+### 函数签名
+
+```ts
+declare function useEmojiPicker(templateRef: TemplateRef<HTMLElement>, darkMode?: ComputedRef<boolean>, language?: ComputedRef<'zh' | 'en'>, options?: EmojiPickerOptions): UseEmojiPickerReturns
+```
+
+## 类型定义
 
 ```ts
 type EmojiResult = {
@@ -57,11 +74,10 @@ type EmojiPickerOptions = {
   theme?: 'auto' | 'light' | 'dark'
   getSpritesheetURL?: string
 }
-declare function useEmojiPicker(templateRef: TemplateRef<HTMLElement>, darkMode?: ComputedRef<boolean>, language?: ComputedRef<'zh' | 'en'>, options?: EmojiPickerOptions): {
-  templateRef: Readonly<vue0.ShallowRef<HTMLElement | null>>
-  emojiPicker: vue0.ShallowRef<Picker | null, Picker | null>
+export type UseEmojiPickerReturns = {
+  templateRef: Readonly<ShallowRef<HTMLElement | null>>
+  emojiPicker: ShallowRef<Picker | null>
   onRender: (fn: (editor: Picker) => void) => void
 }
-
-type EmojiPickerReturns = ReturnType<typeof useEmojiPicker>
+declare function useEmojiPicker(templateRef: TemplateRef<HTMLElement>, darkMode?: ComputedRef<boolean>, language?: ComputedRef<'zh' | 'en'>, options?: EmojiPickerOptions): UseEmojiPickerReturns
 ```

@@ -36,44 +36,53 @@ export default defineConfig({
     ],
     sidebar: [
       {
+        text: 'Install',
+        link: '/install',
+      },
+      {
+        text: 'Examples',
+        link: '/examples',
+
+      },
+      {
         text: 'Core',
         items: [
-          ...conversionPath('packages/core/demos', 'core'),
+          ...conversionPath('packages/core/demos', '/core'),
         ],
       },
       {
         text: 'NaiveUI',
         items: [
-          ...conversionPath('packages/naive-ui/demos', 'naive-ui'),
+          ...conversionPath('packages/naive-ui/demos', '/naive-ui'),
         ],
       },
       {
         text: 'ChromeTabs',
         items: [
-          ...conversionPath('packages/chrome-tabs/demos', 'chrome-tabs'),
+          ...conversionPath('packages/chrome-tabs/demos', '/chrome-tabs'),
         ],
       },
       {
         text: 'directives',
         items: [
-          ...conversionPath('packages/directives/demos', 'directives'),
+          ...conversionPath('packages/directives/demos', '/directives'),
         ],
       },
       {
         text: 'addons',
         items: [
-          ...conversionPath('packages/ai-editor/demos', 'ai-editor'),
-          ...conversionPath('packages/css-render/demos', 'css-render'),
-          ...conversionPath('packages/e-charts/demos', 'e-charts'),
-          ...conversionPath('packages/emoji-picker/demos', 'emoji-picker'),
-          ...conversionPath('packages/js-pdf/demos', 'js-pdf'),
-          ...conversionPath('packages/markdown-it/demos', 'markdown-it'),
-          ...conversionPath('packages/ogl/demos', 'ogl'),
-          ...conversionPath('packages/shiki/demos', 'shiki'),
-          ...conversionPath('packages/three-js/demos', 'three-js'),
-          ...conversionPath('packages/tiptap/demos', 'tiptap'),
-          ...conversionPath('packages/v-charts/demos', 'v-charts'),
-          ...conversionPath('packages/xlsx/demos', 'xlsx'),
+          ...conversionPath('packages/ai-editor/demos', '/ai-editor'),
+          ...conversionPath('packages/css-render/demos', '/css-render'),
+          ...conversionPath('packages/e-charts/demos', '/e-charts'),
+          ...conversionPath('packages/emoji-picker/demos', '/emoji-picker'),
+          ...conversionPath('packages/js-pdf/demos', '/js-pdf'),
+          ...conversionPath('packages/markdown-it/demos', '/markdown-it'),
+          ...conversionPath('packages/ogl/demos', '/ogl'),
+          ...conversionPath('packages/shiki/demos', '/shiki'),
+          ...conversionPath('packages/three-js/demos', '/three-js'),
+          ...conversionPath('packages/tiptap/demos', '/tiptap'),
+          ...conversionPath('packages/v-charts/demos', '/v-charts'),
+          ...conversionPath('packages/xlsx/demos', '/xlsx'),
         ],
       },
 

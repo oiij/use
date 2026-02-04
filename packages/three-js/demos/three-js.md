@@ -1,22 +1,38 @@
 # UseThreeJs
 
-官方文档 [ThreeJs](https://threejs.org/) [Tweakpane](https://tweakpane.github.io/docs/v3/)
+## 功能描述
+
+**UseThreeJs** 是一个功能强大的 Three.js 集成库，提供了完整的 3D 场景管理能力，包括渲染器设置、相机控制、场景管理、动画循环、事件系统等特性。它基于 Three.js 和 OrbitControls 实现，为 Vue 应用提供了流畅的 3D 交互体验。
 
 ## 安装
 
 ```bash
+# 使用 npm
+npm install @oiij/three-js
+
+# 使用 yarn
+yarn add @oiij/three-js
+
+# 使用 pnpm
 pnpm add @oiij/three-js
 ```
 
-## 示例
+## 基本使用
 
-<demo vue="./three-js.vue"  />
+<demo vue="./three-js.vue" title="UseThreeJs" />
 
-## Types
+## API
+
+### 函数签名
 
 ```ts
-// #region src/index.d.ts
-type ThreeJsOptions = {
+declare function useThreeJs(templateRef: TemplateRef<HTMLElement>, options?: ThreeJsOptions): UseThreeJsReturns
+```
+
+## 类型定义
+
+```ts
+export type ThreeJsOptions = {
   rendererOptions?: WebGLRendererParameters
   cameraOptions?: {
     fov?: number
@@ -31,18 +47,21 @@ type ThreeJsOptions = {
   helpers?: Object3D[]
   manual?: boolean
 }
-type LoopEvent = {
+
+export type LoopEvent = {
   clock: Clock
   delta: number
   elapsed: number
 }
-type ResizeArguments = {
+
+export type ResizeArguments = {
   width: number
   height: number
   aspect: number
   dpr: number
 }
-declare function useThreeJs(templateRef: TemplateRef<HTMLElement>, options?: ThreeJsOptions): {
+
+export type UseThreeJsReturns = {
   templateRef: Readonly<vue0.ShallowRef<HTMLElement | null>>
   renderer: WebGLRenderer
   scene: Scene<three0.Object3DEventMap>
@@ -64,7 +83,4 @@ declare function useThreeJs(templateRef: TemplateRef<HTMLElement>, options?: Thr
   onDoubleClick: _vueuse_core0.EventHookOn<[MouseEvent]>
   onContextMenu: _vueuse_core0.EventHookOn<[MouseEvent]>
 }
-type UseThreeJsReturns = ReturnType<typeof useThreeJs>
-// #endregion
-export { ThreeJsOptions, useThreeJs, UseThreeJsReturns }
 ```

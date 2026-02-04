@@ -1,33 +1,59 @@
-# Chrome-Tabs Chrome 风格标签页
+# Chrome-Tabs
 
-## Demo
+## 功能描述
+
+**Chrome-Tabs** 是一个类似 Chrome 浏览器标签页风格的 Vue 组件，支持标签页的添加、删除、点击切换、下拉菜单等功能，可自定义颜色主题和图标大小。
+
+## 安装
+
+```bash
+# 使用 npm
+npm install @oiij/chrome-tabs
+
+# 使用 yarn
+yarn add @oiij/chrome-tabs
+
+# 使用 pnpm
+pnpm add @oiij/chrome-tabs
+```
+
+## 基本使用
 
 <demo vue="./chrome-tabs.vue" title="Chrome-Tabs Base" />
 
-## Types
+## API
+
+### 函数签名
 
 ```ts
-import type { VNode } from 'vue'
+import { CTabs } from '@oiij/chrome-tabs'
+```
+
+## 类型定义
+
+```ts
+import type { CSSProperties, VNode } from 'vue'
 
 type VNodeChild = VNode | string | number | undefined | void | null | boolean
+type TabItemKey = string | number
 
-export type TabsOptions = {
-  key: string
-  label: string | (() => VNodeChild)
-  icon?: () => VNodeChild
-  closable?: boolean
-  disabled?: boolean
-  loading?: boolean
-  loadingIcon?: () => VNodeChild
-  onClick?: (ev: MouseEvent) => void
-  onContextMenu?: (ev: MouseEvent) => void
-  onClose?: () => void
+export type TabsOption = {
+  key: TabItemKey
+  label: string | ((key: TabItemKey, index: number) => VNodeChild)
+  icon?: (key: TabItemKey, index: number) => VNodeChild
+  closable?: boolean | ((key: TabItemKey, index: number) => boolean)
+  disabled?: boolean | ((key: TabItemKey, index: number) => boolean)
+  loading?: boolean | ((key: TabItemKey, index: number) => boolean)
+  loadingIcon?: (key: TabItemKey, index: number) => VNodeChild
+  onClick?: (key: TabItemKey, index: number, ev: MouseEvent) => void
+  onContextMenu?: (key: TabItemKey, index: number, ev: MouseEvent) => void
+  onClose?: (key: TabItemKey, index: number, ev: MouseEvent) => void
+  class?: string
+  style?: CSSProperties | string
 }
-export type TabsItemProps = Omit<TabsOptions, 'key'> & {
-  activeIndex?: number
-  index: number
-}
+
 export type TabsProps = {
+  value?: TabItemKey
   colors?: {
     active?: string
     primary?: string
@@ -35,6 +61,10 @@ export type TabsProps = {
   }
   dropdown?: boolean
   addable?: boolean
-  options?: TabsOptions[]
+  options?: TabsOption[]
+  loadingValue?: TabItemKey
+  iconSize?: number
+  contentClass?: string
+  contentStyle?: CSSProperties | string
 }
 ```

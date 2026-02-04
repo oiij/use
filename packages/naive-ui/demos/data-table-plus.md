@@ -1,21 +1,71 @@
 # DataTablePlus 数据表格增强
 
-## Demo
+## 功能描述
+
+**DataTablePlus** 是一个功能强大的数据表格增强组件，提供了完整的数据管理能力，包括远程数据请求、搜索、分页、排序、筛选、行点击事件等特性。它基于 Naive UI 的 DataTable 组件和 VueUse 的 useRequest 实现，为 Vue 应用提供了高效的数据表格解决方案。
+
+## 安装
+
+```bash
+# 使用 npm
+npm install @oiij/naive-ui
+
+# 使用 yarn
+yarn add @oiij/naive-ui
+
+# 使用 pnpm
+pnpm add @oiij/naive-ui
+```
+
+## 基本使用
 
 <demo vue="./data-table-plus.vue" title="DataTablePlus" />
 
-## Types
+## API
+
+### Props
+
+| Name           | Type                        | Default | Description                    |
+| -------------- | --------------------------- | ------- | ------------------------------ |
+| api            | (params:Object)=>Promise    | -       | 异步接口返回的数据的方法       |
+| defaultParams  | Object                      | -       | 默认的参数                     |
+| manual         | boolean                     | -       | 是否手动触发请求               |
+| title          | String                      | -       | 标题                           |
+| columns        | DataTableColumns            | -       | 数据表格的列                   |
+| fields         | Object                      | -       | 内置参数的字段                 |
+| search         | SearchInputProps or Boolean | -       | 搜索框配置                     |
+| pagination     | PaginationProps or Boolean  | -       | 数据表格的分页配置             |
+| dataTableProps | DataTableProps              | -       | 数据表格的配置                 |
+| requestOptions | UseRequestOptions           | -       | VueHooks UseRequest 的请求配置 |
+| requestPlugins | UseRequestPlugin[]          | -       | VueHooks UseRequest 的插件配置 |
+
+### Emits
+
+| Name                | Type                                                                              | Description        |
+| ------------------- | --------------------------------------------------------------------------------- | ------------------ |
+| before              | (params: D[]) => void                                                             | 数据加载前         |
+| success             | (data: D, params: P[]) => void                                                    | 数据加载完成       |
+| error               | (error: Error, params: P[]) => void                                               | 数据加载失败       |
+| finally             | params: (P[], data?: D, err?: Error) => void                                      | 数据加载完成或失败 |
+| click-row           | (data: DataTablePlusClickRowType) => void                                         | 行点击事件         |
+| context-menu-row    | (data: DataTablePlusClickRowType) => void                                         | 上下文菜单点击事件 |
+| context-menu-select | (data: ContextMenuSelectType) => void                                             | 上下文菜单选择事件 |
+| n-data-table-emits  | [link](https://www.naiveui.com/zh-CN/light/components/data-table#DataTable-Props) |                    |
+
+## 类型定义
 
 ```ts
 export type ClassStyle = {
   class?: string
   style?: CSSProperties | string
 }
+
 export type DataTablePlusExpose<P extends DataObject = DataObject, D extends DataObject = DataObject, R extends DataObject = DataObject> = UseDataRequestReturns<P, D, R> & {
   filters: Ref<DataTableFilterState | undefined>
   sorters: Ref<Record<string, DataTableSortState> | undefined>
   dataTableRef: Readonly<ShallowRef<DataTableInst | null>>
 }
+
 export type DataTablePlusFields = DataRequestFields & {
   filter?: string
   sorter?: string
@@ -23,6 +73,7 @@ export type DataTablePlusFields = DataRequestFields & {
   search?: string
   children?: string
 }
+
 export type DataTablePlusProps<P extends DataObject = DataObject, D extends DataObject = DataObject, R extends DataObject = DataObject> = RemoteRequestProps<P, D> & {
   title?: string
   columns?: DataTableColumns<R>
@@ -33,6 +84,7 @@ export type DataTablePlusProps<P extends DataObject = DataObject, D extends Data
   columnsSorterOptions?: (sorters: Record<string, DataTableSortState>) => Record<string, any>
   dataTableProps?: DataTableProps & ClassStyle
 }
+
 export type DataTablePlusEmits<P extends DataObject = DataObject, D extends DataObject = DataObject, R extends DataObject = DataObject> = RemoteRequestEmits<P, D> & {
   (e: 'clickRow', row: R, index: number, event: MouseEvent, currentData: R[]): void
   (e: 'contextMenuRow', row: R, index: number, event: MouseEvent, currentData: R[]): void
@@ -50,32 +102,3 @@ export type DataTablePlusEmits<P extends DataObject = DataObject, D extends Data
   (e: 'update:pageSize', pageSize: number): void
 }
 ```
-
-## Props
-
-| Name           | Type                        | Default | Description                    |
-| -------------- | --------------------------- | ------- | ------------------------------ |
-| api            | (params:Object)=>Promise    | -       | 异步接口返回的数据的方法       |
-| defaultParams  | Object                      | -       | 默认的参数                     |
-| manual         | boolean                     | -       | 是否手动触发请求               |
-| title          | String                      | -       | 标题                           |
-| columns        | DataTableColumns            | -       | 数据表格的列                   |
-| fields         | Object                      | -       | 内置参数的字段                 |
-| search         | SearchInputProps or Boolean | -       | 搜索框配置                     |
-| pagination     | PaginationProps or Boolean  | -       | 数据表格的分页配置             |
-| dataTableProps | DataTableProps              | -       | 数据表格的配置                 |
-| requestOptions | UseRequestOptions           | -       | VueHooks UseRequest 的请求配置 |
-| requestPlugins | UseRequestPlugin[]          | -       | VueHooks UseRequest 的插件配置 |
-
-## Emits
-
-| Name                | Type                                                                              | Description        |
-| ------------------- | --------------------------------------------------------------------------------- | ------------------ |
-| before              | (params: D[]) => void                                                             | 数据加载前         |
-| success             | (data: D, params: P[]) => void                                                    | 数据加载完成       |
-| error               | (error: Error, params: P[]) => void                                               | 数据加载失败       |
-| finally             | params: (P[], data?: D, err?: Error) => void                                      | 数据加载完成或失败 |
-| click-row           | (data: DataTablePlusClickRowType) => void                                         | 行点击事件         |
-| context-menu-row    | (data: DataTablePlusClickRowType) => void                                         | 上下文菜单点击事件 |
-| context-menu-select | (data: ContextMenuSelectType) => void                                             | 上下文菜单选择事件 |
-| n-data-table-emits  | [link](https://www.naiveui.com/zh-CN/light/components/data-table#DataTable-Props) |                    |

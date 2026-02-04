@@ -1,21 +1,37 @@
 # UseOGL
 
-[官方文档](https://github.com/oframe/ogl)
+## 功能描述
+
+**UseOGL** 是一个用于 OGL 3D 渲染的 Vue 组合式函数，支持自定义渲染器配置、相机设置和事件监听，可用于创建交互式 3D 图形应用。
 
 ## 安装
 
 ```bash
+# 使用 npm
+npm install @oiij/ogl
+
+# 使用 yarn
+yarn add @oiij/ogl
+
+# 使用 pnpm
 pnpm add @oiij/ogl
 ```
 
-## 示例
+## 基本使用
 
-<demo vue="./ogl.vue" />
+<demo vue="./ogl.vue" title="UseOGL" />
 
-## Types
+## API
+
+### 函数签名
 
 ```ts
-// #region src/index.d.ts
+declare function useOGL(templateRef: TemplateRef<HTMLElement>, options?: OGLOptions): UseOGLReturns
+```
+
+## 类型定义
+
+```ts
 type OGLOptions = {
   rendererOptions?: RendererOptions
   cameraOptions?: CameraOptions & {
@@ -30,21 +46,20 @@ type ResizeArguments = {
   aspect: number
   dpr: number
 }
-declare function useOGL(templateRef: TemplateRef<HTMLElement>, options?: OGLOptions): {
-  templateRef: Readonly<vue0.ShallowRef<HTMLElement | null>>
+export type UseOGLReturns = {
+  templateRef: Readonly<ShallowRef<HTMLElement | null>>
   renderer: Renderer
-  gl: ogl0.OGLRenderingContext
+  gl: OGLRenderingContext
   camera: Camera
   scene: Transform
-  onCreated: _vueuse_core0.EventHookOn<[Renderer]>
-  onResize: _vueuse_core0.EventHookOn<[ResizeArguments]>
-  onDisposed: _vueuse_core0.EventHookOn<[]>
-  onLoop: _vueuse_core0.EventHookOn<[Renderer, UseRafFnCallbackArguments]>
-  resume: _vueuse_core0.Fn
-  pause: _vueuse_core0.Fn
+  onCreated: EventHookOn<[Renderer]>
+  onResize: EventHookOn<[ResizeArguments]>
+  onDisposed: EventHookOn<[]>
+  onLoop: EventHookOn<[Renderer, UseRafFnCallbackArguments]>
+  resume: Fn
+  pause: Fn
   dispose: () => void
-  isActive: Readonly<vue0.ShallowRef<boolean>>
+  isActive: Readonly<ShallowRef<boolean>>
 }
-// #endregion
-export { OGLOptions, useOGL }
+declare function useOGL(templateRef: TemplateRef<HTMLElement>, options?: OGLOptions): UseOGLReturns
 ```

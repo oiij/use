@@ -1,18 +1,43 @@
 # UseWebRTC
 
-[官方文档](https://developer.mozilla.org/zh-CN/docs/Web/API/WebRTC_API)
+## 功能描述
 
-## Demo
+**UseWebRTC** 是一个用于实现 WebRTC 实时通信的 Vue 组合式函数，支持建立点对点连接、数据传输和媒体流共享，可用于创建视频通话、语音通话和实时数据共享应用。
 
-<demo vue="./use-web-rtc.vue" />
+## 安装
 
-## Types
+```bash
+# 使用 npm
+npm install @use/core
+
+# 使用 yarn
+yarn add @use/core
+
+# 使用 pnpm
+pnpm add @use/core
+```
+
+## 基本使用
+
+<demo vue="./use-web-rtc.vue" title="UseWebRTC" />
+
+## API
+
+### 函数签名
+
+```ts
+declare function useWebRTC(url: string | URL, options?: WebRTCOptions): UseWebRTCReturns
+```
+
+## 类型定义
 
 ```ts
 type WebRTCOptions = RTCConfiguration & {
   protocols?: string[]
 }
+
 type Status = 'pending' | 'ready' | 'connected' | 'closed'
+
 type HandleEvent = {
   'register': {
     key: string
@@ -32,17 +57,20 @@ type HandleEvent = {
     candidate: RTCIceCandidate
   }
 }
-declare function useWebRTC(url: string | URL, options?: WebRTCOptions): {
-  id: vue62.Ref<string | undefined, string | undefined>
-  connected: vue62.Ref<string[], string[]>
-  status: vue62.Ref<Status, Status>
+
+export type UseWebRTCReturns = {
+  id: Ref<string | undefined>
+  connected: Ref<string[]>
+  status: Ref<Status>
   peer: RTCPeerConnection
-  signalingState: vue62.Ref<RTCSignalingState, RTCSignalingState>
-  connectionState: vue62.Ref<RTCPeerConnectionState, RTCPeerConnectionState>
+  signalingState: Ref<RTCSignalingState>
+  connectionState: Ref<RTCPeerConnectionState>
   connect: (id: string, label?: string) => Promise<RTCDataChannel>
   connectStream: (id: string, stream: MediaStream) => Promise<RTCPeerConnection>
-  onReady: _vueuse_core67.EventHookOn<void>
-  onConnection: _vueuse_core67.EventHookOn<RTCDataChannelEvent>
-  onConnectionStream: _vueuse_core67.EventHookOn<RTCTrackEvent>
+  onReady: EventHookOn<void>
+  onConnection: EventHookOn<RTCDataChannelEvent>
+  onConnectionStream: EventHookOn<RTCTrackEvent>
 }
+
+export function useWebRTC(url: string | URL, options?: WebRTCOptions): UseWebRTCReturns
 ```
