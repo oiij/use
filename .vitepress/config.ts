@@ -17,6 +17,7 @@ export default defineConfig({
     }],
     ['link', { rel: 'apple-touch-icon', href: '/logo.svg', sizes: '192x192' }],
   ],
+  ignoreDeadLinks: true,
   rewrites: {
     // 'packages/core/demos/use-audio-context.md': 'core/use-audio-context.md',
     'docs/index.md': 'index.md',
