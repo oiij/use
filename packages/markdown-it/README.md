@@ -1,7 +1,7 @@
 # Use Markdown-it 🚀
 
-|[![NPM version](https://img.shields.io/npm/v/@oiij/markdown-it)](https://www.npmjs.com/package/@oiij/markdown-it)
-|[![MIT-license](https://img.shields.io/npm/l/@oiij/markdown-it)](https://github.com/oiij/use/blob/main/packages/markdown-it/LICENSE)
+[![NPM version](https://img.shields.io/npm/v/@oiij/markdown-it)](https://www.npmjs.com/package/@oiij/markdown-it)
+[![MIT-license](https://img.shields.io/npm/l/@oiij/markdown-it)](https://github.com/oiij/use/blob/main/packages/markdown-it/LICENSE)
 
 ## 项目简介 📦
 

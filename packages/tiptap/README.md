@@ -1,7 +1,7 @@
 # Use TipTap 🚀
 
-|[![NPM version](https://img.shields.io/npm/v/@oiij/tiptap)](https://www.npmjs.com/package/@oiij/tiptap)
-|[![MIT-license](https://img.shields.io/npm/l/@oiij/tiptap)](https://github.com/oiij/use/blob/main/packages/tiptap/LICENSE)
+[![NPM version](https://img.shields.io/npm/v/@oiij/tiptap)](https://www.npmjs.com/package/@oiij/tiptap)
+[![MIT-license](https://img.shields.io/npm/l/@oiij/tiptap)](https://github.com/oiij/use/blob/main/packages/tiptap/LICENSE)
 
 ## 项目简介 📦
 

@@ -1,0 +1,61 @@
+{
+  "name": "@oiij/auto-router",
+  "type": "module",
+  "version": "0.0.1",
+  "description": "Vue Router utilities and composables for Vue 3",
+  "author": "oiij",
+  "license": "MIT",
+  "homepage": "https://github.com/oiij/use",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:oiij/use.git"
+  },
+  "bugs": "https://github.com/oiij/use/issues",
+  "keywords": [
+    "@oiij/auto-router",
+    "vue-routes",
+    "vue3",
+    "composables"
+  ],
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs"
+    },
+    "./unplugin": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs"
+    }
+  },
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "files": [
+    "LICENSE",
+    "README.md",
+    "dist",
+    "package.json",
+    "shims.auto-router.d.ts"
+  ],
+  "scripts": {
+    "dev": "tsdown --watch",
+    "build": "tsc --noEmit && tsdown",
+    "bumpp": "bumpp --no-push",
+    "prepublishOnly": "pnpm build"
+  },
+  "peerDependencies": {
+    "vue": "catalog:auto-router",
+    "vue-router": "catalog:auto-router"
+  },
+  "dependencies": {
+    "es-toolkit": "catalog:naive-ui"
+  },
+  "devDependencies": {
+    "vue": "catalog:auto-router",
+    "vue-router": "catalog:auto-router"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

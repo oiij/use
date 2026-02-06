@@ -1,7 +1,7 @@
 # Use 工具库 🚀
 
-|[![NPM version](https://img.shields.io/npm/v/@oiij/use)](https://www.npmjs.com/package/@oiij/use)
-|[![MIT-license](https://img.shields.io/npm/l/@oiij/use)](https://github.com/oiij/use/blob/main/LICENSE)
+[![NPM version](https://img.shields.io/npm/v/@oiij/use)](https://www.npmjs.com/package/@oiij/use)
+[![MIT-license](https://img.shields.io/npm/l/@oiij/use)](https://github.com/oiij/use/blob/main/LICENSE)
 
 一个功能丰富的 Vue 3 工具库集合，提供了一系列实用的 composables、组件和工具，帮助开发者更高效地构建 Vue 应用。
 
@@ -55,8 +55,8 @@ yarn add @oiij/use
 
 ### Core 📦
 
-|[![NPM version](https://img.shields.io/npm/v/@oiij/use)](https://www.npmjs.com/package/@oiij/use)
-|[![MIT-license](https://img.shields.io/npm/l/@oiij/use)](https://github.com/oiij/use/blob/main/LICENSE)|
+[![NPM version](https://img.shields.io/npm/v/@oiij/use)](https://www.npmjs.com/package/@oiij/use)
+[![MIT-license](https://img.shields.io/npm/l/@oiij/use)](https://github.com/oiij/use/blob/main/LICENSE)
 
 **项目简介**：Use Core 是一个功能丰富的 Vue 3 组合式 API 工具库，提供了一系列实用的 composables，帮助开发者更高效地构建 Vue 应用。
 
@@ -72,8 +72,8 @@ pnpm add @oiij/use
 
 ### AI Editor 🤖
 
-|[![NPM version](https://img.shields.io/npm/v/@oiij/ai-editor)](https://www.npmjs.com/package/@oiij/ai-editor)
-|[![MIT-license](https://img.shields.io/npm/l/@oiij/ai-editor)](https://github.com/oiij/use/blob/main/packages/ai-editor/LICENSE)|
+[![NPM version](https://img.shields.io/npm/v/@oiij/ai-editor)](https://www.npmjs.com/package/@oiij/ai-editor)
+[![MIT-license](https://img.shields.io/npm/l/@oiij/ai-editor)](https://github.com/oiij/use/blob/main/packages/ai-editor/LICENSE)
 
 **项目简介**：Use AiEditor 是一个功能强大的 AI 编辑器组件，为 Vue 3 应用提供智能编辑能力，帮助开发者构建具有 AI 辅助功能的编辑器应用。
 
@@ -89,8 +89,8 @@ pnpm add @oiij/ai-editor
 
 ### Chrome Tabs 📑
 
-|[![NPM version](https://img.shields.io/npm/v/@oiij/chrome-tabs)](https://www.npmjs.com/package/@oiij/chrome-tabs)
-|[![MIT-license](https://img.shields.io/npm/l/@oiij/chrome-tabs)](https://github.com/oiij/use/blob/main/packages/chrome-tabs/LICENSE)|
+[![NPM version](https://img.shields.io/npm/v/@oiij/chrome-tabs)](https://www.npmjs.com/package/@oiij/chrome-tabs)
+[![MIT-license](https://img.shields.io/npm/l/@oiij/chrome-tabs)](https://github.com/oiij/use/blob/main/packages/chrome-tabs/LICENSE)
 
 **项目简介**：Use Chrome-Tabs 是一个仿 Chrome 风格的标签页组件，为 Vue 3 应用提供流畅的标签页管理体验，帮助开发者构建具有类似浏览器标签页功能的应用。
 
@@ -106,8 +106,8 @@ pnpm add @oiij/chrome-tabs
 
 ### CSS Render 🎨
 
-|[![NPM version](https://img.shields.io/npm/v/@oiij/css-render)](https://www.npmjs.com/package/@oiij/css-render)
-|[![MIT-license](https://img.shields.io/npm/l/@oiij/css-render)](https://github.com/oiij/use/blob/main/packages/css-render/LICENSE)|
+[![NPM version](https://img.shields.io/npm/v/@oiij/css-render)](https://www.npmjs.com/package/@oiij/css-render)
+[![MIT-license](https://img.shields.io/npm/l/@oiij/css-render)](https://github.com/oiij/use/blob/main/packages/css-render/LICENSE)
 
 **项目简介**：Use CssRender 是一个强大的 CSS 渲染工具，为 Vue 3 应用提供动态样式渲染能力，帮助开发者更灵活地管理组件样式。
 
@@ -123,8 +123,8 @@ pnpm add @oiij/css-render
 
 ### Directives 📋
 
-|[![NPM version](https://img.shields.io/npm/v/@oiij/directives)](https://www.npmjs.com/package/@oiij/directives)
-|[![MIT-license](https://img.shields.io/npm/l/@oiij/directives)](https://github.com/oiij/use/blob/main/packages/directives/LICENSE)|
+[![NPM version](https://img.shields.io/npm/v/@oiij/directives)](https://www.npmjs.com/package/@oiij/directives)
+[![MIT-license](https://img.shields.io/npm/l/@oiij/directives)](https://github.com/oiij/use/blob/main/packages/directives/LICENSE)
 
 **项目简介**：Use Directives 是一个丰富的 Vue 3 自定义指令集合，提供了一系列实用的指令，帮助开发者简化常见的 DOM 操作。
 
@@ -140,8 +140,8 @@ pnpm add @oiij/directives
 
 ### ECharts 📊
 
-|[![NPM version](https://img.shields.io/npm/v/@oiij/e-charts)](https://www.npmjs.com/package/@oiij/e-charts)
-|[![MIT-license](https://img.shields.io/npm/l/@oiij/e-charts)](https://github.com/oiij/use/blob/main/packages/e-charts/LICENSE)|
+[![NPM version](https://img.shields.io/npm/v/@oiij/e-charts)](https://www.npmjs.com/package/@oiij/e-charts)
+[![MIT-license](https://img.shields.io/npm/l/@oiij/e-charts)](https://github.com/oiij/use/blob/main/packages/e-charts/LICENSE)
 
 **项目简介**：Use ECharts 是基于 Apache ECharts 的 Vue 3 组件封装，提供了一系列便捷的图表组件，帮助开发者快速构建数据可视化应用。
 
@@ -157,8 +157,8 @@ pnpm add @oiij/e-charts
 
 ### Emoji Picker 😊
 
-|[![NPM version](https://img.shields.io/npm/v/@oiij/emoji-picker)](https://www.npmjs.com/package/@oiij/emoji-picker)
-|[![MIT-license](https://img.shields.io/npm/l/@oiij/emoji-picker)](https://github.com/oiij/use/blob/main/packages/emoji-picker/LICENSE)|
+[![NPM version](https://img.shields.io/npm/v/@oiij/emoji-picker)](https://www.npmjs.com/package/@oiij/emoji-picker)
+[![MIT-license](https://img.shields.io/npm/l/@oiij/emoji-picker)](https://github.com/oiij/use/blob/main/packages/emoji-picker/LICENSE)
 
 **项目简介**：Use EmojiPicker 是一个功能完善的表情选择器组件，为 Vue 3 应用提供丰富的表情符号选择功能，帮助用户快速选择和插入表情。
 
@@ -174,8 +174,8 @@ pnpm add @oiij/emoji-picker
 
 ### JS PDF 📄
 
-|[![NPM version](https://img.shields.io/npm/v/@oiij/js-pdf)](https://www.npmjs.com/package/@oiij/js-pdf)
-|[![MIT-license](https://img.shields.io/npm/l/@oiij/js-pdf)](https://github.com/oiij/use/blob/main/packages/js-pdf/LICENSE)|
+[![NPM version](https://img.shields.io/npm/v/@oiij/js-pdf)](https://www.npmjs.com/package/@oiij/js-pdf)
+[![MIT-license](https://img.shields.io/npm/l/@oiij/js-pdf)](https://github.com/oiij/use/blob/main/packages/js-pdf/LICENSE)
 
 **项目简介**：Use JS-PDF 是基于 jsPDF 的 Vue 3 封装，提供便捷的 PDF 生成功能，帮助开发者在浏览器端快速生成和下载 PDF 文档。
 
@@ -191,8 +191,8 @@ pnpm add @oiij/js-pdf
 
 ### Markdown It 📝
 
-|[![NPM version](https://img.shields.io/npm/v/@oiij/markdown-it)](https://www.npmjs.com/package/@oiij/markdown-it)
-|[![MIT-license](https://img.shields.io/npm/l/@oiij/markdown-it)](https://github.com/oiij/use/blob/main/packages/markdown-it/LICENSE)|
+[![NPM version](https://img.shields.io/npm/v/@oiij/markdown-it)](https://www.npmjs.com/package/@oiij/markdown-it)
+[![MIT-license](https://img.shields.io/npm/l/@oiij/markdown-it)](https://github.com/oiij/use/blob/main/packages/markdown-it/LICENSE)
 
 **项目简介**：Use Markdown-it 是基于 markdown-it 的 Vue 3 封装，提供便捷的 Markdown 渲染功能，帮助开发者在应用中快速渲染 Markdown 内容。
 
@@ -208,8 +208,8 @@ pnpm add @oiij/markdown-it
 
 ### Naive UI 🎨
 
-|[![NPM version](https://img.shields.io/npm/v/@oiij/naive-ui)](https://www.npmjs.com/package/@oiij/naive-ui)
-|[![MIT-license](https://img.shields.io/npm/l/@oiij/naive-ui)](https://github.com/oiij/use/blob/main/packages/naive-ui/LICENSE)|
+[![NPM version](https://img.shields.io/npm/v/@oiij/naive-ui)](https://www.npmjs.com/package/@oiij/naive-ui)
+[![MIT-license](https://img.shields.io/npm/l/@oiij/naive-ui)](https://github.com/oiij/use/blob/main/packages/naive-ui/LICENSE)
 
 **项目简介**：Use NaiveUI 是基于 Naive UI 的 Vue 3 组件库封装，提供了一套丰富的 UI 组件，帮助开发者快速构建现代化的 Web 应用。
 
@@ -225,8 +225,8 @@ pnpm add @oiij/naive-ui
 
 ### OGL 🎮
 
-|[![NPM version](https://img.shields.io/npm/v/@oiij/ogl)](https://www.npmjs.com/package/@oiij/ogl)
-|[![MIT-license](https://img.shields.io/npm/l/@oiij/ogl)](https://github.com/oiij/use/blob/main/packages/ogl/LICENSE)|
+[![NPM version](https://img.shields.io/npm/v/@oiij/ogl)](https://www.npmjs.com/package/@oiij/ogl)
+[![MIT-license](https://img.shields.io/npm/l/@oiij/ogl)](https://github.com/oiij/use/blob/main/packages/ogl/LICENSE)
 
 **项目简介**：Use OGL 是基于 OGL 的 Vue 3 封装，提供便捷的 WebGL 渲染功能，帮助开发者在应用中创建高性能的 3D 图形和动画效果。
 
@@ -242,8 +242,8 @@ pnpm add @oiij/ogl
 
 ### Shiki 🌈
 
-|[![NPM version](https://img.shields.io/npm/v/@oiij/shiki)](https://www.npmjs.com/package/@oiij/shiki)
-|[![MIT-license](https://img.shields.io/npm/l/@oiij/shiki)](https://github.com/oiij/use/blob/main/packages/shiki/LICENSE)|
+[![NPM version](https://img.shields.io/npm/v/@oiij/shiki)](https://www.npmjs.com/package/@oiij/shiki)
+[![MIT-license](https://img.shields.io/npm/l/@oiij/shiki)](https://github.com/oiij/use/blob/main/packages/shiki/LICENSE)
 
 **项目简介**：Use Shiki 是基于 Shiki 的 Vue 3 封装，提供便捷的代码高亮功能，帮助开发者在应用中实现精美的代码语法高亮效果。
 
@@ -259,8 +259,8 @@ pnpm add @oiij/shiki
 
 ### Three JS 🎨
 
-|[![NPM version](https://img.shields.io/npm/v/@oiij/three-js)](https://www.npmjs.com/package/@oiij/three-js)
-|[![MIT-license](https://img.shields.io/npm/l/@oiij/three-js)](https://github.com/oiij/use/blob/main/packages/three-js/LICENSE)|
+[![NPM version](https://img.shields.io/npm/v/@oiij/three-js)](https://www.npmjs.com/package/@oiij/three-js)
+[![MIT-license](https://img.shields.io/npm/l/@oiij/three-js)](https://github.com/oiij/use/blob/main/packages/three-js/LICENSE)
 
 **项目简介**：Use ThreeJs 是基于 Three.js 的 Vue 3 封装，提供便捷的 3D 图形渲染功能，帮助开发者在应用中创建炫酷的 3D 场景和动画效果。
 
@@ -276,8 +276,8 @@ pnpm add @oiij/three-js
 
 ### TipTap ✍️
 
-|[![NPM version](https://img.shields.io/npm/v/@oiij/tiptap)](https://www.npmjs.com/package/@oiij/tiptap)
-|[![MIT-license](https://img.shields.io/npm/l/@oiij/tiptap)](https://github.com/oiij/use/blob/main/packages/tiptap/LICENSE)|
+[![NPM version](https://img.shields.io/npm/v/@oiij/tiptap)](https://www.npmjs.com/package/@oiij/tiptap)
+[![MIT-license](https://img.shields.io/npm/l/@oiij/tiptap)](https://github.com/oiij/use/blob/main/packages/tiptap/LICENSE)
 
 **项目简介**：Use TipTap 是基于 TipTap 的 Vue 3 封装，提供功能强大的富文本编辑器，帮助开发者构建现代化的内容编辑应用。
 
@@ -293,8 +293,8 @@ pnpm add @oiij/tiptap
 
 ### VCharts 📈
 
-|[![NPM version](https://img.shields.io/npm/v/@oiij/v-charts)](https://www.npmjs.com/package/@oiij/v-charts)
-|[![MIT-license](https://img.shields.io/npm/l/@oiij/v-charts)](https://github.com/oiij/use/blob/main/packages/v-charts/LICENSE)|
+[![NPM version](https://img.shields.io/npm/v/@oiij/v-charts)](https://www.npmjs.com/package/@oiij/v-charts)
+[![MIT-license](https://img.shields.io/npm/l/@oiij/v-charts)](https://github.com/oiij/use/blob/main/packages/v-charts/LICENSE)
 
 **项目简介**：Use VCharts 是基于 ECharts 的 Vue 3 封装，提供了一系列便捷的图表组件，帮助开发者快速构建数据可视化应用。
 
@@ -310,8 +310,8 @@ pnpm add @oiij/v-charts
 
 ### XLSX 📊
 
-|[![NPM version](https://img.shields.io/npm/v/@oiij/xlsx)](https://www.npmjs.com/package/@oiij/xlsx)
-|[![MIT-license](https://img.shields.io/npm/l/@oiij/xlsx)](https://github.com/oiij/use/blob/main/packages/xlsx/LICENSE)|
+[![NPM version](https://img.shields.io/npm/v/@oiij/xlsx)](https://www.npmjs.com/package/@oiij/xlsx)
+[![MIT-license](https://img.shields.io/npm/l/@oiij/xlsx)](https://github.com/oiij/use/blob/main/packages/xlsx/LICENSE)
 
 **项目简介**：Use XLSX 是基于 SheetJS 的 Vue 3 封装，提供便捷的 Excel 文件处理功能，帮助开发者在应用中轻松导入、导出和操作 Excel 数据。
 
@@ -327,8 +327,8 @@ pnpm add @oiij/xlsx
 
 ### Utils 🛠️
 
-|[![NPM version](https://img.shields.io/npm/v/@oiij/utils)](https://www.npmjs.com/package/@oiij/utils)
-|[![MIT-license](https://img.shields.io/npm/l/@oiij/utils)](https://github.com/oiij/use/blob/main/packages/utils/LICENSE)|
+[![NPM version](https://img.shields.io/npm/v/@oiij/utils)](https://www.npmjs.com/package/@oiij/utils)
+[![MIT-license](https://img.shields.io/npm/l/@oiij/utils)](https://github.com/oiij/use/blob/main/packages/utils/LICENSE)
 
 **项目简介**：Use Utils 是一个实用的工具函数库，提供了一系列常用的工具函数，帮助开发者简化日常开发工作。
 
@@ -339,6 +339,23 @@ pnpm add @oiij/utils
 ```
 
 **在线文档**：[https://oiij-use.vercel.app/utils/utils](https://oiij-use.vercel.app/utils/utils) 📖
+
+---
+
+### Vue Router 🛣️
+
+[![NPM version](https://img.shields.io/npm/v/@oiij/vue-router)](https://www.npmjs.com/package/@oiij/vue-router)
+[![MIT-license](https://img.shields.io/npm/l/@oiij/vue-router)](https://github.com/oiij/use/blob/main/packages/vue-router/LICENSE)
+
+**项目简介**：Use Vue-Router 是一个 Vue Router 工具库，为 Vue 3 应用提供自动路由管理、权限控制、Keep-Alive 管理等实用功能，帮助开发者更高效地管理应用路由。
+
+**安装**：
+
+```bash
+pnpm add @oiij/vue-router
+```
+
+**在线文档**：[https://oiij-use.vercel.app/vue-router/vue-router](https://oiij-use.vercel.app/vue-router/vue-router) 📖
 
 ---
 

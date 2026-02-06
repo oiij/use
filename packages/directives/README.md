@@ -1,7 +1,7 @@
 # Use Directives 🚀
 
-|[![NPM version](https://img.shields.io/npm/v/@oiij/directives)](https://www.npmjs.com/package/@oiij/directives)
-|[![MIT-license](https://img.shields.io/npm/l/@oiij/directives)](https://github.com/oiij/use/blob/main/packages/directives/LICENSE)
+[![NPM version](https://img.shields.io/npm/v/@oiij/directives)](https://www.npmjs.com/package/@oiij/directives)
+[![MIT-license](https://img.shields.io/npm/l/@oiij/directives)](https://github.com/oiij/use/blob/main/packages/directives/LICENSE)
 
 ## 项目简介 📦
 

@@ -1,7 +1,7 @@
 # Use CssRender 🚀
 
-|[![NPM version](https://img.shields.io/npm/v/@oiij/css-render)](https://www.npmjs.com/package/@oiij/css-render)
-|[![MIT-license](https://img.shields.io/npm/l/@oiij/css-render)](https://github.com/oiij/use/blob/main/packages/css-render/LICENSE)
+[![NPM version](https://img.shields.io/npm/v/@oiij/css-render)](https://www.npmjs.com/package/@oiij/css-render)
+[![MIT-license](https://img.shields.io/npm/l/@oiij/css-render)](https://github.com/oiij/use/blob/main/packages/css-render/LICENSE)
 
 ## 项目简介 📦
 

@@ -1,7 +1,7 @@
 # Use JS-PDF 🚀
 
-|[![NPM version](https://img.shields.io/npm/v/@oiij/js-pdf)](https://www.npmjs.com/package/@oiij/js-pdf)
-|[![MIT-license](https://img.shields.io/npm/l/@oiij/js-pdf)](https://github.com/oiij/use/blob/main/packages/js-pdf/LICENSE)
+[![NPM version](https://img.shields.io/npm/v/@oiij/js-pdf)](https://www.npmjs.com/package/@oiij/js-pdf)
+[![MIT-license](https://img.shields.io/npm/l/@oiij/js-pdf)](https://github.com/oiij/use/blob/main/packages/js-pdf/LICENSE)
 
 ## 项目简介 📦
 

@@ -13,6 +13,9 @@ catalogs:
     '@vueuse/core': ^14.1.0
     aieditor: ^1.4.2
     vue: ^3.5.27
+  auto-router:
+    vue: ^3.5.27
+    vue-router: ^5.0.2
   chrome-tabs:
     colord: ^2.9.3
     vue: ^3.5.27

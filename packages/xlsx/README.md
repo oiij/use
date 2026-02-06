@@ -1,7 +1,7 @@
 # Use XLSX 🚀
 
-|[![NPM version](https://img.shields.io/npm/v/@oiij/xlsx)](https://www.npmjs.com/package/@oiij/xlsx)
-|[![MIT-license](https://img.shields.io/npm/l/@oiij/xlsx)](https://github.com/oiij/use/blob/main/packages/xlsx/LICENSE)
+[![NPM version](https://img.shields.io/npm/v/@oiij/xlsx)](https://www.npmjs.com/package/@oiij/xlsx)
+[![MIT-license](https://img.shields.io/npm/l/@oiij/xlsx)](https://github.com/oiij/use/blob/main/packages/xlsx/LICENSE)
 
 ## 项目简介 📦
 

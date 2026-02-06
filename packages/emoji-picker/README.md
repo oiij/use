@@ -1,7 +1,7 @@
 # Use EmojiPicker 🚀
 
-|[![NPM version](https://img.shields.io/npm/v/@oiij/emoji-picker)](https://www.npmjs.com/package/@oiij/emoji-picker)
-|[![MIT-license](https://img.shields.io/npm/l/@oiij/emoji-picker)](https://github.com/oiij/use/blob/main/packages/emoji-picker/LICENSE)
+[![NPM version](https://img.shields.io/npm/v/@oiij/emoji-picker)](https://www.npmjs.com/package/@oiij/emoji-picker)
+[![MIT-license](https://img.shields.io/npm/l/@oiij/emoji-picker)](https://github.com/oiij/use/blob/main/packages/emoji-picker/LICENSE)
 
 ## 项目简介 📦
 

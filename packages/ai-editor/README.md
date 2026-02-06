@@ -1,7 +1,7 @@
 # Use AiEditor 🚀
 
-|[![NPM version](https://img.shields.io/npm/v/@oiij/ai-editor)](https://www.npmjs.com/package/@oiij/ai-editor)
-|[![MIT-license](https://img.shields.io/npm/l/@oiij/ai-editor)](https://github.com/oiij/use/blob/main/packages/ai-editor/LICENSE)
+[![NPM version](https://img.shields.io/npm/v/@oiij/ai-editor)](https://www.npmjs.com/package/@oiij/ai-editor)
+[![MIT-license](https://img.shields.io/npm/l/@oiij/ai-editor)](https://github.com/oiij/use/blob/main/packages/ai-editor/LICENSE)
 
 ## 项目简介 📦
 

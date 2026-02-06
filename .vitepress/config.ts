@@ -83,6 +83,7 @@ export default defineConfig({
           ...conversionPath('packages/three-js/demos', '/three-js'),
           ...conversionPath('packages/tiptap/demos', '/tiptap'),
           ...conversionPath('packages/v-charts/demos', '/v-charts'),
+          ...conversionPath('packages/vue-router/demos', '/vue-router'),
           ...conversionPath('packages/xlsx/demos', '/xlsx'),
         ],
       },

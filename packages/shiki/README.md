@@ -1,7 +1,7 @@
 # Use Shiki 🚀
 
-|[![NPM version](https://img.shields.io/npm/v/@oiij/shiki)](https://www.npmjs.com/package/@oiij/shiki)
-|[![MIT-license](https://img.shields.io/npm/l/@oiij/shiki)](https://github.com/oiij/use/blob/main/packages/shiki/LICENSE)
+[![NPM version](https://img.shields.io/npm/v/@oiij/shiki)](https://www.npmjs.com/package/@oiij/shiki)
+[![MIT-license](https://img.shields.io/npm/l/@oiij/shiki)](https://github.com/oiij/use/blob/main/packages/shiki/LICENSE)
 
 ## 项目简介 📦
 

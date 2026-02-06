@@ -1,7 +1,7 @@
 # Use Chrome-Tabs 🚀
 
-|[![NPM version](https://img.shields.io/npm/v/@oiij/chrome-tabs)](https://www.npmjs.com/package/@oiij/chrome-tabs)
-|[![MIT-license](https://img.shields.io/npm/l/@oiij/chrome-tabs)](https://github.com/oiij/use/blob/main/packages/chrome-tabs/LICENSE)
+[![NPM version](https://img.shields.io/npm/v/@oiij/chrome-tabs)](https://www.npmjs.com/package/@oiij/chrome-tabs)
+[![MIT-license](https://img.shields.io/npm/l/@oiij/chrome-tabs)](https://github.com/oiij/use/blob/main/packages/chrome-tabs/LICENSE)
 
 ## 项目简介 📦
 

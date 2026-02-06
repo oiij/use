@@ -1,7 +1,7 @@
 # Use VCharts 🚀
 
-|[![NPM version](https://img.shields.io/npm/v/@oiij/v-charts)](https://www.npmjs.com/package/@oiij/v-charts)
-|[![MIT-license](https://img.shields.io/npm/l/@oiij/v-charts)](https://github.com/oiij/use/blob/main/packages/v-charts/LICENSE)
+[![NPM version](https://img.shields.io/npm/v/@oiij/v-charts)](https://www.npmjs.com/package/@oiij/v-charts)
+[![MIT-license](https://img.shields.io/npm/l/@oiij/v-charts)](https://github.com/oiij/use/blob/main/packages/v-charts/LICENSE)
 
 ## 项目简介 📦
 

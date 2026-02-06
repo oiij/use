@@ -43,6 +43,7 @@
   },
   "dependencies": {
     "@oiij/ai-editor": "workspace:*",
+    "@oiij/auto-router": "workspace:*",
     "@oiij/chrome-tabs": "workspace:*",
     "@oiij/css-render": "workspace:*",
     "@oiij/directives": "workspace:*",

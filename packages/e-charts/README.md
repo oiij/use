@@ -1,7 +1,7 @@
 # Use ECharts 🚀
 
-|[![NPM version](https://img.shields.io/npm/v/@oiij/e-charts)](https://www.npmjs.com/package/@oiij/e-charts)
-|[![MIT-license](https://img.shields.io/npm/l/@oiij/e-charts)](https://github.com/oiij/use/blob/main/packages/e-charts/LICENSE)
+[![NPM version](https://img.shields.io/npm/v/@oiij/e-charts)](https://www.npmjs.com/package/@oiij/e-charts)
+[![MIT-license](https://img.shields.io/npm/l/@oiij/e-charts)](https://github.com/oiij/use/blob/main/packages/e-charts/LICENSE)
 
 ## 项目简介 📦
 

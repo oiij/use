@@ -1,7 +1,7 @@
 # Use OGL 🚀
 
-|[![NPM version](https://img.shields.io/npm/v/@oiij/ogl)](https://www.npmjs.com/package/@oiij/ogl)
-|[![MIT-license](https://img.shields.io/npm/l/@oiij/ogl)](https://github.com/oiij/use/blob/main/packages/ogl/LICENSE)
+[![NPM version](https://img.shields.io/npm/v/@oiij/ogl)](https://www.npmjs.com/package/@oiij/ogl)
+[![MIT-license](https://img.shields.io/npm/l/@oiij/ogl)](https://github.com/oiij/use/blob/main/packages/ogl/LICENSE)
 
 ## 项目简介 📦
 

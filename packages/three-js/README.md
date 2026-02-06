@@ -1,7 +1,7 @@
 # Use ThreeJs 🚀
 
-|[![NPM version](https://img.shields.io/npm/v/@oiij/three-js)](https://www.npmjs.com/package/@oiij/three-js)
-|[![MIT-license](https://img.shields.io/npm/l/@oiij/three-js)](https://github.com/oiij/use/blob/main/packages/three-js/LICENSE)
+[![NPM version](https://img.shields.io/npm/v/@oiij/three-js)](https://www.npmjs.com/package/@oiij/three-js)
+[![MIT-license](https://img.shields.io/npm/l/@oiij/three-js)](https://github.com/oiij/use/blob/main/packages/three-js/LICENSE)
 
 ## 项目简介 📦
 
