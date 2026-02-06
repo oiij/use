@@ -107,10 +107,10 @@ src/pages/
 ### 函数签名
 
 ```ts
-declare function createAutoRouter(): Plugin
+declare function createAutoRouter(router: Router, routes: readonly RouteRecordRaw[]): Plugin
 declare function useAutoRouter(): AutoRouterInstance
 declare function appendRouterMeta(route: EditableTreeNode): void
-declare function setupAutoRouter(router: Router): AutoRouterInstance
+declare function setupAutoRouter(router: Router, routes: readonly RouteRecordRaw[]): AutoRouterInstance
 ```
 
 ## 类型定义

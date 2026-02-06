@@ -1,5 +1,5 @@
 import type { App } from 'vue'
-import type { RouteRecordRaw } from 'vue-router'
+import type { Router, RouteRecordRaw } from 'vue-router'
 import type { AutoRouterInstance } from './setup-auto-router'
 import { inject } from 'vue'
 import { setupAutoRouter } from './setup-auto-router'
@@ -33,34 +33,34 @@ export function useAutoRouter() {
  *
  * 必须在 Vue Router 之后安装
  *
+ * @param router Vue Router 实例
+ * @param routes 路由配置数组
  * @returns Vue 插件对象
  *
  * @example
  * ```ts
  * import { createApp } from 'vue'
  * import { createRouter } from 'vue-router'
+ * import { routes } from 'vue-router/auto-routes'
+
  * import { createAutoRouter } from '@oiij/auto-router'
  *
  * const app = createApp(App)
  * const router = createRouter({ ... })
  *
  * app.use(router)
- * app.use(createAutoRouter())
+ * app.use(createAutoRouter(router, routes))
  * app.mount('#app')
  * ```
  */
-export function createAutoRouter(routes: readonly RouteRecordRaw[]) {
+export function createAutoRouter(router: Router, routes: readonly RouteRecordRaw[]) {
+  const autoRouter = setupAutoRouter(router, routes)
   return {
     install(app: App) {
-      const router = app.config.globalProperties.$router
-      if (!router) {
-        throw new Error(
-          'Router instance is not found on this Vue app. This plugin should be installed after Vue Router.',
-        )
-      }
-      const autoRouter = setupAutoRouter(router, routes)
+      app.config.globalProperties.$autoRouter = autoRouter
       app.provide(__INJECTION_KEY__, autoRouter)
     },
+    ...autoRouter,
   }
 }
 
