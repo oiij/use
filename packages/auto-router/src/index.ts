@@ -1,4 +1,5 @@
 import type { App } from 'vue'
+import type { RouteRecordRaw } from 'vue-router'
 import type { AutoRouterInstance } from './setup-auto-router'
 import { inject } from 'vue'
 import { setupAutoRouter } from './setup-auto-router'
@@ -48,7 +49,7 @@ export function useAutoRouter() {
  * app.mount('#app')
  * ```
  */
-export function createAutoRouter() {
+export function createAutoRouter(routes: readonly RouteRecordRaw[]) {
   return {
     install(app: App) {
       const router = app.config.globalProperties.$router
@@ -57,7 +58,7 @@ export function createAutoRouter() {
           'Router instance is not found on this Vue app. This plugin should be installed after Vue Router.',
         )
       }
-      const autoRouter = setupAutoRouter(router)
+      const autoRouter = setupAutoRouter(router, routes)
       app.provide(__INJECTION_KEY__, autoRouter)
     },
   }

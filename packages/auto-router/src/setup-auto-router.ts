@@ -2,7 +2,6 @@ import type { ComputedRef } from 'vue'
 import type { RouteLocationNormalizedLoaded, Router, RouteRecordRaw } from 'vue-router'
 import { cloneDeep } from 'es-toolkit'
 import { computed, ref } from 'vue'
-import { routes as routesRaw } from 'vue-router/auto-routes'
 
 /**
  * 自动路由实例接口
@@ -104,7 +103,7 @@ function flattenRoutes(routes: RouteRecordRaw[]): RouteRecordRaw[] {
  * console.log(autoRouter.flattenRoutes) // 扁平化路由
  * ```
  */
-export function setupAutoRouter(router: Router): AutoRouterInstance {
+export function setupAutoRouter(router: Router, routesRaw: readonly RouteRecordRaw[]): AutoRouterInstance {
   const loading = ref(false)
   router.beforeEach((to, from, next) => {
     loading.value = true
