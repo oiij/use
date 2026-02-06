@@ -3,7 +3,6 @@ import type { RouteLocationNormalizedLoaded, Router, RouteRecordRaw } from 'vue-
 import { cloneDeep } from 'es-toolkit'
 import { computed, ref } from 'vue'
 import { routes as routesRaw } from 'vue-router/auto-routes'
-import '../shims.auto-router.js'
 
 /**
  * 自动路由实例接口
@@ -97,7 +96,7 @@ function flattenRoutes(routes: RouteRecordRaw[]): RouteRecordRaw[] {
  *
  * @example
  * ```ts
- * import { setupAutoRouter } from '@oiij/vue-router'
+ * import { setupAutoRouter } from '@oiij/auto-router'
  * import { router } from './router'
  *
  * const autoRouter = setupAutoRouter(router)

@@ -68,6 +68,12 @@ A Vue Composable for AI Editor
 
 访问 [AI Editor 示例](/ai-editor/ai-editor) 查看完整示例列表
 
+### [@oiij/auto-router](https://www.npmjs.com/package/@oiij/auto-router)
+
+Vue Router utilities and composables for Vue 3
+
+访问 [Auto Router 示例](/auto-router/auto-router) 查看完整示例列表
+
 ### [@oiij/css-render](https://www.npmjs.com/package/@oiij/css-render)
 
 A Vue Composable for CssRender

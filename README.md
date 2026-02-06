@@ -342,20 +342,20 @@ pnpm add @oiij/utils
 
 ---
 
-### Vue Router 🛣️
+### Auto Router 🚀
 
-[![NPM version](https://img.shields.io/npm/v/@oiij/vue-router)](https://www.npmjs.com/package/@oiij/vue-router)
-[![MIT-license](https://img.shields.io/npm/l/@oiij/vue-router)](https://github.com/oiij/use/blob/main/packages/vue-router/LICENSE)
+[![NPM version](https://img.shields.io/npm/v/@oiij/auto-router)](https://www.npmjs.com/package/@oiij/auto-router)
+[![MIT-license](https://img.shields.io/npm/l/@oiij/auto-router)](https://github.com/oiij/use/blob/main/packages/auto-router/LICENSE)
 
-**项目简介**：Use Vue-Router 是一个 Vue Router 工具库，为 Vue 3 应用提供自动路由管理、权限控制、Keep-Alive 管理等实用功能，帮助开发者更高效地管理应用路由。
+**项目简介**：Use auto-Router 是一个 Vue Router 工具库，为 Vue 3 应用提供自动路由管理、Keep-Alive 管理等实用功能，帮助开发者更高效地管理应用路由。
 
 **安装**：
 
 ```bash
-pnpm add @oiij/vue-router
+pnpm add @oiij/auto-router
 ```
 
-**在线文档**：[https://oiij-use.vercel.app/vue-router/vue-router](https://oiij-use.vercel.app/vue-router/vue-router) 📖
+**在线文档**：[https://oiij-use.vercel.app/auto-router/auto-router](https://oiij-use.vercel.app/auto-router/auto-router) 📖
 
 ---
 

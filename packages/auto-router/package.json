@@ -23,9 +23,12 @@
       "types": "./dist/index.d.mts",
       "import": "./dist/index.mjs"
     },
-    "./unplugin": {
-      "types": "./dist/index.d.mts",
-      "import": "./dist/index.mjs"
+    "./plugin": {
+      "types": "./dist/plugin.d.mts",
+      "import": "./dist/plugin.mjs"
+    },
+    "./auto-router": {
+      "types": "./auto-router.d.ts"
     }
   },
   "main": "./dist/index.mjs",
@@ -34,9 +37,9 @@
   "files": [
     "LICENSE",
     "README.md",
+    "auto-router.d.ts",
     "dist",
-    "package.json",
-    "shims.auto-router.d.ts"
+    "package.json"
   ],
   "scripts": {
     "dev": "tsdown --watch",

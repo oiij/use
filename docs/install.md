@@ -21,6 +21,7 @@ pnpm add @oiij/three-js
 
 # 安装其他包
 pnpm add @oiij/ai-editor
+pnpm add @oiij/auto-router
 pnpm add @oiij/chrome-tabs
 pnpm add @oiij/css-render
 pnpm add @oiij/directives
@@ -319,6 +320,20 @@ pnpm add @oiij/emoji-picker
 - `emoji-mart`
 - `@emoji-mart/data`
 - `@vueuse/core`
+
+### @oiij/auto-router
+
+Vue Router 自动路由管理工具。
+
+```bash
+pnpm add @oiij/auto-router
+```
+
+**依赖：**
+
+- `vue`
+- `vue-router`
+- `es-toolkit`
 
 ## Vue 项目配置
 

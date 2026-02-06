@@ -73,6 +73,7 @@ export default defineConfig({
         text: 'addons',
         items: [
           ...conversionPath('packages/ai-editor/demos', '/ai-editor'),
+          ...conversionPath('packages/auto-router/demos', '/auto-router'),
           ...conversionPath('packages/css-render/demos', '/css-render'),
           ...conversionPath('packages/e-charts/demos', '/e-charts'),
           ...conversionPath('packages/emoji-picker/demos', '/emoji-picker'),
@@ -83,7 +84,6 @@ export default defineConfig({
           ...conversionPath('packages/three-js/demos', '/three-js'),
           ...conversionPath('packages/tiptap/demos', '/tiptap'),
           ...conversionPath('packages/v-charts/demos', '/v-charts'),
-          ...conversionPath('packages/vue-router/demos', '/vue-router'),
           ...conversionPath('packages/xlsx/demos', '/xlsx'),
         ],
       },

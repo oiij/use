@@ -15,6 +15,13 @@ catalogs:
     vue:
       specifier: ^3.5.27
       version: 3.5.27
+  auto-router:
+    vue:
+      specifier: ^3.5.27
+      version: 3.5.27
+    vue-router:
+      specifier: ^5.0.2
+      version: 5.0.2
   chrome-tabs:
     colord:
       specifier: ^2.9.3
@@ -212,13 +219,6 @@ catalogs:
     vue:
       specifier: ^3.5.27
       version: 3.5.27
-  vue-router:
-    vue:
-      specifier: ^3.5.27
-      version: 3.5.27
-    vue-router:
-      specifier: ^5.0.2
-      version: 5.0.2
   xlsx:
     '@types/file-saver':
       specifier: ^2.0.7
@@ -325,6 +325,9 @@ importers:
       '@oiij/ai-editor':
         specifier: workspace:*
         version: link:packages/ai-editor
+      '@oiij/auto-router':
+        specifier: workspace:*
+        version: link:packages/auto-router
       '@oiij/chrome-tabs':
         specifier: workspace:*
         version: link:packages/chrome-tabs
@@ -467,6 +470,19 @@ importers:
       vue:
         specifier: catalog:ai-editor
         version: 3.5.27(typescript@5.9.3)
+
+  packages/auto-router:
+    dependencies:
+      es-toolkit:
+        specifier: catalog:naive-ui
+        version: 1.44.0
+    devDependencies:
+      vue:
+        specifier: catalog:auto-router
+        version: 3.5.27(typescript@5.9.3)
+      vue-router:
+        specifier: catalog:auto-router
+        version: 5.0.2(@vue/compiler-sfc@3.5.27)(vue@3.5.27(typescript@5.9.3))
 
   packages/chrome-tabs:
     devDependencies:
@@ -712,19 +728,6 @@ importers:
       vue:
         specifier: catalog:v-charts
         version: 3.5.27(typescript@5.9.3)
-
-  packages/vue-router:
-    dependencies:
-      es-toolkit:
-        specifier: ^1.31.0
-        version: 1.44.0
-    devDependencies:
-      vue:
-        specifier: catalog:vue-router
-        version: 3.5.27(typescript@5.9.3)
-      vue-router:
-        specifier: catalog:vue-router
-        version: 5.0.2(@vue/compiler-sfc@3.5.27)(vue@3.5.27(typescript@5.9.3))
 
   packages/xlsx:
     devDependencies:
@@ -7487,7 +7490,7 @@ snapshots:
 
   ast-kit@2.2.0:
     dependencies:
-      '@babel/parser': 7.28.5
+      '@babel/parser': 7.29.0
       pathe: 2.0.3
 
   ast-kit@3.0.0-beta.1:
@@ -7498,7 +7501,7 @@ snapshots:
 
   ast-walker-scope@0.8.3:
     dependencies:
-      '@babel/parser': 7.28.5
+      '@babel/parser': 7.29.0
       ast-kit: 2.2.0
 
   async-validator@4.2.5: {}

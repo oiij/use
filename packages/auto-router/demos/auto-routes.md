@@ -61,7 +61,6 @@ const { loading, routes, currentRoutePath } = useAutoRouter()
     "iconColor": "#409eff",
     "sort": 1,
     "keepAlive": true,
-    "requireAuth": true,
     "layout": "default",
     "transitionName": "fade",
     "group": {
