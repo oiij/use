@@ -12,7 +12,7 @@ type Options = {
    * - 如果是函数，返回 true 时路由将不显示在菜单中
    * - 如果是字符串，则从 route.meta 中获取对应属性的值
    */
-  hide?: ((route: RouteRecordRaw) => boolean | string) | string
+  hidden?: ((route: RouteRecordRaw) => boolean | string) | string
   /**
    * 根路由判断，可以是函数或字符串
    * - 如果是函数，返回 true 时路由将作为顶级菜单
@@ -35,6 +35,7 @@ type Options = {
    * 图标渲染函数，用于自定义路由图标
    */
   icon?: (route: RouteRecordRaw) => VNode | string | undefined | null
+  parent?: ((route: RouteRecordRaw) => object) | string
 }
 
 /**
@@ -57,7 +58,8 @@ function getConfigValue<T>(
     return config(route)
   }
 
-  return route.meta?.[config] as T ?? defaultValue
+  // 首先尝试从 route 本身获取值，如果不存在再从 route.meta 中获取
+  return (route[config as keyof RouteRecordRaw] as T) ?? route.meta?.[config] as T ?? defaultValue
 }
 
 /**
@@ -80,15 +82,15 @@ function createMenuOption(route: RouteRecordRaw, options?: Options): MenuOption 
 /**
  * 判断路由是否应该隐藏
  * @param route 路由配置
- * @param hide 隐藏条件
+ * @param hidden 隐藏条件
  * @returns 是否隐藏
  */
-function shouldHide(route: RouteRecordRaw, hide?: ((route: RouteRecordRaw) => boolean | string) | string): boolean {
-  if (!hide) {
+function shouldHide(route: RouteRecordRaw, hidden?: ((route: RouteRecordRaw) => boolean | string) | string): boolean {
+  if (!hidden) {
     return false
   }
 
-  const result = getConfigValue(route, hide)
+  const result = getConfigValue(route, hidden)
   return typeof result === 'boolean' ? result : !!result
 }
 
@@ -113,12 +115,12 @@ function isRoot(route: RouteRecordRaw, root?: ((route: RouteRecordRaw) => boolea
  * @param options 配置选项
  * @returns 菜单配置数组
  */
-function routes2menu(routes: RouteRecordRaw[], options?: Options): MenuOption[] {
-  const { hide, root } = options ?? {}
+function routes2menu(routes: RouteRecordRaw[], options?: Omit<Options, 'parent'>): MenuOption[] {
+  const { hidden, root } = options ?? {}
   const menuOptions: MenuOption[] = []
 
   for (const route of routes ?? []) {
-    if (shouldHide(route, hide)) {
+    if (shouldHide(route, hidden)) {
       continue
     }
 
@@ -137,7 +139,7 @@ function routes2menu(routes: RouteRecordRaw[], options?: Options): MenuOption[] 
       // 处理 root 子路由作为顶级菜单
       if (rootChildren.length) {
         const rootMenuOptions = rootChildren
-          .filter(child => !shouldHide(child, hide))
+          .filter(child => !shouldHide(child, hidden))
           .map(child => createMenuOption(child, options))
 
         menuOptions.push(...rootMenuOptions)
@@ -155,26 +157,34 @@ function routes2menu(routes: RouteRecordRaw[], options?: Options): MenuOption[] 
  * @param menuOptions 菜单选项数组
  * @returns 扁平化的菜单选项数组
  */
-function flattenMenuOptions(menuOptions: MenuOption[]): MenuOption[] {
-  const flattened: MenuOption[] = []
-
-  function processMenu(menu: MenuOption) {
+function flattenDeepMenuOptions(menuOptions: MenuOption[]): MenuOption[] {
+  return menuOptions.reduce<MenuOption[]>((flattened, menu) => {
     flattened.push(menu)
-
     if (menu.children?.length) {
-      for (const child of menu.children) {
-        processMenu(child)
+      flattened.push(...flattenDeepMenuOptions(menu.children))
+    }
+    return flattened
+  }, [])
+}
+function deepUpRouteParentMeta(routes: RouteRecordRaw[], parent: ((route: RouteRecordRaw) => object) | string) {
+  return routes.map((route) => {
+    const emptyPathChild = route.children?.find(f => f.path === '')
+    if (emptyPathChild) {
+      if (typeof parent === 'function') {
+        const parentMeta = parent(route)
+        Object.assign(route.meta ?? {}, parentMeta ?? {})
+      }
+      else {
+        const parentMeta = emptyPathChild.meta?.[parent]
+        Object.assign(route.meta ?? {}, parentMeta ?? {})
       }
     }
-  }
-
-  for (const menu of menuOptions) {
-    processMenu(menu)
-  }
-
-  return flattened
+    if (route.children?.length) {
+      route.children = deepUpRouteParentMeta(route.children, parent)
+    }
+    return route
+  })
 }
-
 /**
  * 自动菜单组合函数
  * @param routes 路由配置数组
@@ -187,7 +197,7 @@ function flattenMenuOptions(menuOptions: MenuOption[]): MenuOption[] {
  *
  * // 带配置选项（使用函数）
  * const { menuOptions, flattenedMenuOptions } = useAutoMenu(routes, {
- *   hide: (route) => route.meta?.hidden,
+ *   hidden: (route) => route.meta?.hidden,
  *   root: (route) => route.meta?.root,
  *   label: (route) => route.meta?.title ?? route.name,
  *   key: (route) => route.path,
@@ -196,7 +206,7 @@ function flattenMenuOptions(menuOptions: MenuOption[]): MenuOption[] {
  *
  * // 带配置选项（使用字符串）
  * const { menuOptions, flattenedMenuOptions } = useAutoMenu(routes, {
- *   hide: 'hidden',
+ *   hidden: 'hidden',
  *   root: 'root',
  *   label: 'title',
  *   key: 'path',
@@ -204,8 +214,15 @@ function flattenMenuOptions(menuOptions: MenuOption[]): MenuOption[] {
  * })
  */
 export function useAutoMenu(routes: MaybeRefOrGetter<RouteRecordRaw[]>, options?: Options) {
-  const menuOptions = computed(() => routes2menu(toValue(routes), options))
-  const flattenedMenuOptions = computed(() => flattenMenuOptions(menuOptions.value))
+  const { hidden = 'hidden', root = 'root', label = 'title', key = 'name', parent = 'parent' } = options ?? {}
+
+  const menuOptions = computed(() => routes2menu(deepUpRouteParentMeta(toValue(routes), parent), {
+    hidden,
+    root,
+    label,
+    key,
+  }))
+  const flattenedMenuOptions = computed(() => flattenDeepMenuOptions(menuOptions.value))
 
   return {
     menuOptions,
