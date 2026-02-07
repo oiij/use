@@ -1,7 +1,7 @@
 {
   "name": "@oiij/naive-ui",
   "type": "module",
-  "version": "0.0.74",
+  "version": "0.0.75",
   "description": "Some Composable Functions And Components for Vue 3",
   "author": "oiij",
   "license": "MIT",
@@ -53,7 +53,8 @@
     "prismjs": "catalog:naive-ui",
     "vue": "catalog:naive-ui",
     "vue-component-type-helpers": "catalog:naive-ui",
-    "vue-hooks-plus": "catalog:naive-ui"
+    "vue-hooks-plus": "catalog:naive-ui",
+    "vue-router": "catalog:naive-ui"
   },
   "devDependencies": {
     "@oiij/css-render": "workspace:*",
@@ -68,7 +69,8 @@
     "prismjs": "catalog:naive-ui",
     "vue": "catalog:naive-ui",
     "vue-component-type-helpers": "catalog:naive-ui",
-    "vue-hooks-plus": "catalog:naive-ui"
+    "vue-hooks-plus": "catalog:naive-ui",
+    "vue-router": "catalog:naive-ui"
   },
   "publishConfig": {
     "access": "public"

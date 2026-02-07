@@ -78,7 +78,7 @@ const { x, y } = useMouse()
 
 ### UI 组件
 
-- **@oiij/naive-ui** - 基于 Naive UI 的组合式函数和组件扩展
+- **@oiij/naive-ui** - 基于 Naive UI 的组合式函数和组件扩展，包含 useAutoMenu 自动菜单生成等功能
 - **@oiij/chrome-tabs** - Chrome 风格的标签页组件
 - **@oiij/directives** - Vue 3 自定义指令集合
 
@@ -106,6 +106,7 @@ const { x, y } = useMouse()
 - **@oiij/js-pdf** - PDF 生成和处理的 Vue 3 工具
 - **@oiij/xlsx** - Excel 文件处理的 Vue 3 工具
 - **@oiij/emoji-picker** - 表情选择器的 Vue 3 组合式封装
+- **@oiij/auto-router** - Vue Router 自动路由管理工具
 
 ## 为什么选择 @OIIJ/USE？
 

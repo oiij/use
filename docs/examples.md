@@ -41,6 +41,7 @@ Some Composable Functions And Components for Vue 3
 - [tooltip-button](/naive-ui/tooltip-button) - 工具提示按钮
 - [transition](/naive-ui/transition) - 过渡效果
 - [type-writer](/naive-ui/type-writer) - 打字机效果
+- [use-auto-menu](/naive-ui/use-auto-menu) - 自动菜单生成组合式函数
 - [use-naive-form](/naive-ui/use-naive-form) - Naive UI 表单组合式函数
 - [use-naive-theme](/naive-ui/use-naive-theme) - Naive UI 主题组合式函数
 

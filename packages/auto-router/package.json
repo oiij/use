@@ -1,7 +1,7 @@
 {
   "name": "@oiij/auto-router",
   "type": "module",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Vue Router utilities and composables for Vue 3",
   "author": "oiij",
   "license": "MIT",
@@ -26,9 +26,6 @@
     "./plugin": {
       "types": "./dist/plugin.d.mts",
       "import": "./dist/plugin.mjs"
-    },
-    "./auto-router": {
-      "types": "./auto-router.d.ts"
     }
   },
   "main": "./dist/index.mjs",
@@ -37,7 +34,6 @@
   "files": [
     "LICENSE",
     "README.md",
-    "auto-router.d.ts",
     "dist",
     "package.json"
   ],

@@ -19,11 +19,41 @@ pnpm add @oiij/auto-router
 
 ## 基本使用
 
+### 1. 安装插件
+
+在 Vue 应用中安装 `createAutoRouter` 插件：
+
+```ts
+import { createAutoRouter } from '@oiij/auto-router'
+import { createApp } from 'vue'
+import { createRouter, createWebHistory } from 'vue-router'
+
+import { routes } from 'vue-router/auto-routes'
+import App from './App.vue'
+
+const app = createApp(App)
+const router = createRouter({
+  history: createWebHistory(),
+  routes
+})
+
+// 必须先安装 Vue Router
+app.use(router)
+// 然后安装自动路由插件
+app.use(createAutoRouter(router, routes))
+
+app.mount('#app')
+```
+
+### 2. 在组件中使用
+
+在 Vue 组件中使用 `useAutoRouter` 获取路由实例：
+
 ```vue
 <script setup>
 import { useAutoRouter } from '@oiij/auto-router'
 
-const { loading, routes, currentRoutePath } = useAutoRouter()
+const { loading, routes, flattenRoutes } = useAutoRouter()
 </script>
 
 <template>
@@ -32,49 +62,26 @@ const { loading, routes, currentRoutePath } = useAutoRouter()
       加载中...
     </div>
     <div v-else>
-      <p>当前路由: {{ currentRoutePath }}</p>
+      <h2>排序后的路由</h2>
       <nav>
         <router-link
           v-for="route in routes"
           :key="route.path"
           :to="route.path"
         >
-          {{ route.meta?.title }}
+          {{ route.meta?.title || route.path }}
         </router-link>
       </nav>
+
+      <h2>扁平化路由</h2>
+      <ul>
+        <li v-for="route in flattenRoutes" :key="route.path">
+          {{ route.path }} - {{ route.meta?.title }}
+        </li>
+      </ul>
     </div>
   </div>
 </template>
-```
-
-## 路由元数据配置
-
-在路由组件中定义元数据：
-
-```vue
-<route lang="json">
-{
-  "meta": {
-    "title": "首页",
-    "description": "应用首页",
-    "icon": "home",
-    "iconColor": "#409eff",
-    "sort": 1,
-    "keepAlive": true,
-    "layout": "default",
-    "transitionName": "fade",
-    "group": {
-      "title": "主要功能",
-      "icon": "star",
-      "sort": 1
-    }
-  }
-}
-</route>
-
-<script setup>
-// 组件代码
-</script>
 ```
 
 ## 排序路由文件解构
@@ -107,23 +114,69 @@ src/pages/
 ### 函数签名
 
 ```ts
-declare function createAutoRouter(router: Router, routes: readonly RouteRecordRaw[]): Plugin
+/**
+ * 获取自动路由实例
+ *
+ * @returns 自动路由实例，包含路由配置和工具方法
+ */
 declare function useAutoRouter(): AutoRouterInstance
-declare function appendRouterMeta(route: EditableTreeNode): void
-declare function setupAutoRouter(router: Router, routes: readonly RouteRecordRaw[]): AutoRouterInstance
+
+/**
+ * 创建自动路由插件
+ *
+ * 必须在 Vue Router 之后安装
+ *
+ * @param router Vue Router 实例
+ * @param routes 路由配置数组
+ * @returns Vue 插件对象
+ */
+declare function createAutoRouter(router: Router, routes: readonly RouteRecordRaw[]): Plugin
+
+/**
+ * 设置自动路由
+ *
+ * 解析路由配置，提供路由工具方法和状态管理
+ *
+ * @param router Vue Router 实例
+ * @param routesRaw 原始路由配置数组
+ * @returns 自动路由实例，包含路由配置和工具方法
+ */
+declare function setupAutoRouter(router: Router, routesRaw: readonly RouteRecordRaw[]): AutoRouterInstance
 ```
 
 ## 类型定义
 
 ```ts
+/**
+ * 自动路由实例类型
+ *
+ * 由 setupAutoRouter 函数返回的对象类型
+ */
 type AutoRouterInstance = {
+  /**
+   * 路由加载状态
+   *
+   * 通过导航守卫自动管理，在路由切换时设置为 true，切换完成后设置为 false
+   */
   loading: ComputedRef<boolean>
+
+  /**
+   * 原始路由配置
+   */
   routesRaw: readonly RouteRecordRaw[]
+
+  /**
+   * 解析并排序后的路由配置
+   *
+   * 使用 deepSortRoutes 对路由进行深度排序
+   */
   routes: RouteRecordRaw[]
+
+  /**
+   * 扁平化的路由配置
+   *
+   * 使用 flattenDeepRoutes 将嵌套的路由结构展平为一维数组，方便后续处理
+   */
   flattenRoutes: RouteRecordRaw[]
-  keepAlivePath: ComputedRef<string[]>
-  currentRoute: ComputedRef<RouteLocationNormalizedLoaded>
-  currentRoutePath: ComputedRef<string>
-  filterRoutesByPermission: (permissions: string[]) => RouteRecordRaw[]
 }
 ```

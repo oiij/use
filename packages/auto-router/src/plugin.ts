@@ -15,23 +15,13 @@ import type { EditableTreeNode } from 'vue-router/unplugin'
  * ```
  */
 export function appendRouterMeta(route: EditableTreeNode) {
-  // 从路径中提取数字前缀作为排序值
-  const sortMatch = route.path.match(/(\d+)_/)
-  const sortNum = sortMatch ? Number(sortMatch[1]) : null
-
-  // 只在有效时添加 sort 元数据
-  if (sortNum !== null && !Number.isNaN(sortNum)) {
-    route.addToMeta({ sort: sortNum })
+  const reg = /(\d+)[_-]/g
+  const sort = route.path.match(/(\d+)[_-]/)?.[1]
+  if (sort) {
+    route.addToMeta({ sort: Number(sort) })
   }
-
-  // 规范化路由名称
+  route.path = route.path.replace(reg, '')
   if (route.name) {
-    const newName = route.name.replace(/\d+_/g, '')
-    route.name = newName.startsWith('/') ? newName : `/${newName}`
-
-    // 同步更新路径（除了根路径）
-    if (route.path !== '') {
-      route.path = route.name
-    }
+    route.name = route.name.replace(reg, '')
   }
 }

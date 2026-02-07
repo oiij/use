@@ -211,7 +211,16 @@ pnpm add @oiij/markdown-it
 [![NPM version](https://img.shields.io/npm/v/@oiij/naive-ui)](https://www.npmjs.com/package/@oiij/naive-ui)
 [![MIT-license](https://img.shields.io/npm/l/@oiij/naive-ui)](https://github.com/oiij/use/blob/main/packages/naive-ui/LICENSE)
 
-**项目简介**：Use NaiveUI 是基于 Naive UI 的 Vue 3 组件库封装，提供了一套丰富的 UI 组件，帮助开发者快速构建现代化的 Web 应用。
+**项目简介**：Use NaiveUI 是基于 Naive UI 的 Vue 3 组件库封装，提供了一套丰富的 UI 组件和组合式 API，帮助开发者快速构建现代化的 Web 应用。
+
+**主要功能**：
+
+- **useAutoMenu** - 自动菜单生成，将路由配置转换为菜单选项
+- **useDataRequest** - 数据请求管理
+- **useLoading** - 加载状态管理
+- **useNaiveForm** - 表单管理
+- **useNaiveTheme** - 主题管理
+- 丰富的预设组件和工具
 
 **安装**：
 

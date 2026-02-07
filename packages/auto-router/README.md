@@ -13,13 +13,11 @@ Use auto-Router 是一个 Vue Router 工具库，为 Vue 3 应用提供自动路
 
 - 🔄 自动解析和排序路由（支持数字前缀排序）
 - 📊 路由扁平化处理
-- 🎯 支持嵌套路由元数据继承
 - 📝 自动规范化路由名称
 
 ### Keep-Alive 管理 💾
 
 - 🚀 自动管理页面缓存
-- 📦 基于路由元数据的缓存配置
 - 🎨 支持动态缓存控制
 
 ### 加载状态管理 ⏳
@@ -56,13 +54,41 @@ yarn add @oiij/auto-router
 
 ## 快速开始 🌟
 
-### 基础使用
+### 1. 安装插件
+
+在 Vue 应用中安装 `createAutoRouter` 插件，必须在 Vue Router 之后安装：
+
+```ts
+import { createAutoRouter } from '@oiij/auto-router'
+import { createApp } from 'vue'
+import { createRouter, createWebHistory } from 'vue-router'
+
+import { routes } from 'vue-router/auto-routes' // 自动生成的路由
+import App from './App.vue'
+
+const app = createApp(App)
+const router = createRouter({
+  history: createWebHistory(),
+  routes
+})
+
+// 必须先安装 Vue Router
+app.use(router)
+// 然后安装自动路由插件
+app.use(createAutoRouter(router, routes))
+
+app.mount('#app')
+```
+
+### 2. 在组件中使用
+
+在 Vue 组件中使用 `useAutoRouter` 获取路由实例：
 
 ```vue
 <script setup>
 import { useAutoRouter } from '@oiij/auto-router'
 
-const { loading, routes, currentRoutePath } = useAutoRouter()
+const { loading, routes, flattenRoutes } = useAutoRouter()
 </script>
 
 <template>
@@ -71,14 +97,14 @@ const { loading, routes, currentRoutePath } = useAutoRouter()
       加载中...
     </div>
     <div v-else>
-      <p>当前路由: {{ currentRoutePath }}</p>
+      <h2>路由列表</h2>
       <nav>
         <router-link
           v-for="route in routes"
           :key="route.path"
           :to="route.path"
         >
-          {{ route.meta?.title }}
+          {{ route.path }}
         </router-link>
       </nav>
     </div>
