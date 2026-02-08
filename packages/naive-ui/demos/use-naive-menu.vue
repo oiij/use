@@ -2,7 +2,24 @@
 import type { RouteRecordRaw } from 'vue-router'
 import { NFlex, NInput, NMenu } from 'naive-ui'
 import { computed, ref } from 'vue'
-import { useAutoMenu } from '../src'
+import { useNaiveMenu } from '../src'
+
+declare module 'vue-router' {
+  // eslint-disable-next-line ts/consistent-type-definitions
+  interface RouteMeta {
+    title?: string
+    icon?: string
+    sort?: number
+    root?: boolean
+    hidden?: boolean
+    parent?: {
+      title?: string
+      icon?: string
+      hidden?: boolean
+      sort?: number
+    }
+  }
+}
 
 // 模拟路由配置
 const routes: RouteRecordRaw[] = [
@@ -53,7 +70,6 @@ const routes: RouteRecordRaw[] = [
     name: 'Admin',
     meta: {
       title: '管理中心',
-      hidden: true, // 标记为隐藏
     },
     children: [
       {
@@ -62,37 +78,35 @@ const routes: RouteRecordRaw[] = [
         redirect: '/admin/dashboard',
         meta: {
           title: '仪表盘',
+          hidden: true, // 标记为隐藏
         },
       },
     ],
   },
 ]
 
-// 使用 useAutoMenu
-const { menuOptions, flattenedMenuOptions } = useAutoMenu(routes, {
+// 使用 useNaiveMenu
+const { menuOptions, flattenedMenuOptions } = useNaiveMenu(routes, {
   // 自定义隐藏逻辑（使用函数）
-  hide: route => route.meta?.hidden,
+  hidden: route => !!route.meta?.hidden,
   // 自定义隐藏逻辑（使用字符串）
-  // hide: 'hidden',
+  // hidden: 'hidden',
 
   // 自定义根路由判断（使用函数）
-  root: route => route.meta?.root,
+  root: route => !!route.meta?.root,
   // 自定义根路由判断（使用字符串）
   // root: 'root',
 
-  // 自定义标签（使用函数）
-  label: route => route.meta?.title ?? route.name,
-  // 自定义标签（使用字符串）
-  // label: 'title',
-
-  // 自定义键（使用函数）
-  key: route => route.path,
-  // 自定义键（使用字符串）
-  // key: 'path',
+  // 自定义标签字段（使用字符串）
+  labelField: 'title',
+  // 自定义键字段（使用字符串）
+  keyField: 'name',
+  // 自定义图标字段（使用字符串）
+  iconField: 'icon',
 
   // 自定义图标渲染（可选）
-  icon: () => {
-    // 这里可以根据路由元信息返回不同的图标
+  renderIcon: () => {
+    // 这里可以根据图标字符串返回不同的图标组件
     return null
   },
 })

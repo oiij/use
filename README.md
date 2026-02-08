@@ -215,7 +215,7 @@ pnpm add @oiij/markdown-it
 
 **主要功能**：
 
-- **useAutoMenu** - 自动菜单生成，将路由配置转换为菜单选项
+- **useNaiveMenu** - 自动菜单生成，将路由配置转换为菜单选项
 - **useDataRequest** - 数据请求管理
 - **useLoading** - 加载状态管理
 - **useNaiveForm** - 表单管理

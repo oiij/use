@@ -60,7 +60,7 @@ yarn add @oiij/naive-ui
 ```vue
 <script setup>
 import type { RouteRecordRaw } from 'vue-router'
-import { useAutoMenu } from '@oiij/naive-ui'
+import { useNaiveMenu } from '@oiij/naive-ui'
 
 // 模拟路由配置
 const routes: RouteRecordRaw[] = [
@@ -80,7 +80,7 @@ const routes: RouteRecordRaw[] = [
   }
 ]
 
-const { menuOptions } = useAutoMenu(routes)
+const { menuOptions } = useNaiveMenu(routes)
 </script>
 
 <template>
@@ -94,7 +94,7 @@ const { menuOptions } = useAutoMenu(routes)
 
 ### 组合式 API
 
-- **use-auto-menu** 📋: 自动菜单生成
+- **use-naive-menu** 📋: 自动菜单生成
 - **use-data-request** 📡: 数据请求管理
 - **use-loading** ⏳: 加载状态管理
 - **use-naive-form** 📝: 表单管理

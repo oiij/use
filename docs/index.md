@@ -78,7 +78,7 @@ const { x, y } = useMouse()
 
 ### UI 组件
 
-- **@oiij/naive-ui** - 基于 Naive UI 的组合式函数和组件扩展，包含 useAutoMenu 自动菜单生成等功能
+- **@oiij/naive-ui** - 基于 Naive UI 的组合式函数和组件扩展，包含 useNaiveMenu 自动菜单生成等功能
 - **@oiij/chrome-tabs** - Chrome 风格的标签页组件
 - **@oiij/directives** - Vue 3 自定义指令集合
 
