@@ -1,6 +1,5 @@
 import type { ViewTransitionOptions } from './use-view-transition'
 import { useColorMode, useDark, usePreferredDark } from '@vueuse/core'
-import { readonly } from 'vue'
 import { useViewTransition } from './use-view-transition'
 
 /**
@@ -140,10 +139,10 @@ export function useTheme(options?: UseThemeOptions) {
   }
 
   return {
-    isDark: readonly(isDark),
-    preferredDark: readonly(preferredDark),
-    colorMode: readonly(colorMode),
-    systemColorMode: readonly(systemColorMode),
+    isDark,
+    preferredDark,
+    colorMode,
+    systemColorMode,
     setDarkMode,
     setDark,
     setLight,

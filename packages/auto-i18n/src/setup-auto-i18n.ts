@@ -1,7 +1,7 @@
 import type { I18n } from 'vue-i18n'
 import { useLocalStorage, useNavigatorLanguage } from '@vueuse/core'
 
-import { computed, watch } from 'vue'
+import { computed, watchEffect } from 'vue'
 
 /**
  * 从 I18n 实例中提取 locale 类型
@@ -74,13 +74,11 @@ export function setupAutoI18n<T extends I18n>(i18n: T) {
   function setLanguage(lang: Language) {
     language.value = lang
   }
-
-  // 监听语言设置变化，更新语言环境
-  _locale.value && (i18n.global.locale = _locale.value as Locale)
-
-  // 监听 _locale 变化，自动更新 i18n.global.locale
-  watch(_locale, (newLocale) => {
-    i18n.global.locale = newLocale as Locale
+  /**
+   * 监听 _locale 变化，自动更新 i18n.global.locale
+   */
+  watchEffect(() => {
+    i18n.global.locale = _locale.value as Locale
   })
 
   return {
@@ -99,11 +97,11 @@ export function setupAutoI18n<T extends I18n>(i18n: T) {
     navigatorLanguage,
 
     /**
-     * 计算当前实际使用的语言环境
+     * 当前实际使用的语言环境
      *
-     * @type {import('vue').ComputedRef<string>}
+     * @type {import('vue').WritableComputedRef<Locale>}
      */
-    _locale,
+    locale: i18n.global.locale,
 
     /**
      * 设置语言环境
