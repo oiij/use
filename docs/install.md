@@ -21,6 +21,7 @@ pnpm add @oiij/three-js
 
 # 安装其他包
 pnpm add @oiij/ai-editor
+pnpm add @oiij/auto-i18n
 pnpm add @oiij/auto-router
 pnpm add @oiij/chrome-tabs
 pnpm add @oiij/css-render
@@ -319,6 +320,20 @@ pnpm add @oiij/emoji-picker
 
 - `emoji-mart`
 - `@emoji-mart/data`
+- `@vueuse/core`
+
+### @oiij/auto-i18n
+
+Vue I18n 自动国际化管理工具。
+
+```bash
+pnpm add @oiij/auto-i18n
+```
+
+**依赖：**
+
+- `vue`
+- `vue-i18n`
 - `@vueuse/core`
 
 ### @oiij/auto-router

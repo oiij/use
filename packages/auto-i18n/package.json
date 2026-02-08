@@ -1,8 +1,8 @@
 {
-  "name": "@oiij/use",
+  "name": "@oiij/auto-i18n",
   "type": "module",
-  "version": "0.0.45",
-  "description": "Som Composable Functions for Vue 3",
+  "version": "0.0.1",
+  "description": "Vue I18n utilities and composables for Vue 3",
   "author": "oiij",
   "license": "MIT",
   "homepage": "https://github.com/oiij/use",
@@ -12,15 +12,12 @@
   },
   "bugs": "https://github.com/oiij/use/issues",
   "keywords": [
-    "@oiij/use"
+    "@oiij/auto-i18n",
+    "vue-i18n",
+    "vue3",
+    "composables"
   ],
   "sideEffects": false,
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.mts",
-      "import": "./dist/index.mjs"
-    }
-  },
   "main": "./dist/index.mjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.mts",
@@ -37,12 +34,17 @@
     "prepublishOnly": "pnpm build"
   },
   "peerDependencies": {
-    "@vueuse/core": "catalog:core",
-    "vue": "catalog:core"
+    "@vueuse/core": "catalog:auto-i18n",
+    "vue": "catalog:auto-i18n",
+    "vue-i18n": "catalog:auto-i18n"
+  },
+  "dependencies": {
+
   },
   "devDependencies": {
-    "@vueuse/core": "catalog:core",
-    "vue": "catalog:core"
+    "@vueuse/core": "catalog:auto-i18n",
+    "vue": "catalog:auto-i18n",
+    "vue-i18n": "catalog:auto-i18n"
   },
   "publishConfig": {
     "access": "public"

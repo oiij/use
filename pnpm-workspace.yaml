@@ -13,6 +13,10 @@ catalogs:
     '@vueuse/core': ^14.1.0
     aieditor: ^1.4.2
     vue: ^3.5.27
+  auto-i18n:
+    '@vueuse/core': ^14.1.0
+    vue: ^3.5.27
+    vue-i18n: ^11.2.8
   auto-router:
     vue: ^3.5.27
     vue-router: ^5.0.2

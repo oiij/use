@@ -92,6 +92,7 @@ const message = computed(() => isVisible.value ? 'Hello, Use Core!' : 'Goodbye, 
 - **use-scan-code** 📱: 扫码功能
 - **use-scroll-view** 📜: 滚动视图管理
 - **use-spectrum** 🌈: 频谱分析
+- **use-theme** 🎨: 主题管理
 - **use-type-writer** ⌨️: 打字机效果
 - **use-view-transition** 🔄: 视图过渡效果
 - **use-web-rtc** 📹: WebRTC 封装

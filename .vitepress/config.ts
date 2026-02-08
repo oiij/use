@@ -73,6 +73,7 @@ export default defineConfig({
         text: 'addons',
         items: [
           ...conversionPath('packages/ai-editor/demos', '/ai-editor'),
+          ...conversionPath('packages/auto-i18n/demos', '/auto-i18n'),
           ...conversionPath('packages/auto-router/demos', '/auto-router'),
           ...conversionPath('packages/css-render/demos', '/css-render'),
           ...conversionPath('packages/e-charts/demos', '/e-charts'),

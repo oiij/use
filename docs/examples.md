@@ -16,6 +16,7 @@ Som Composable Functions for Vue 3
 - [use-number-animation](/core/use-number-animation) - 数字动画
 - [use-scan-code](/core/use-scan-code) - 扫码工具
 - [use-scroll-view](/core/use-scroll-view) - 滚动视图
+- [use-theme](/core/use-theme) - 主题管理
 - [use-type-writer](/core/use-type-writer) - 打字机效果
 - [use-view-transition](/core/use-view-transition) - 视图过渡
 - [use-web-rtc](/core/use-web-rtc) - WebRTC 通信

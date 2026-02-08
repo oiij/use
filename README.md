@@ -351,6 +351,23 @@ pnpm add @oiij/utils
 
 ---
 
+### Auto I18n 🌍
+
+[![NPM version](https://img.shields.io/npm/v/@oiij/auto-i18n)](https://www.npmjs.com/package/@oiij/auto-i18n)
+[![MIT-license](https://img.shields.io/npm/l/@oiij/auto-i18n)](https://github.com/oiij/use/blob/main/packages/auto-i18n/LICENSE)
+
+**项目简介**：Use auto-I18n 是一个 Vue I18n 工具库，为 Vue 3 应用提供自动国际化管理、语言持久化存储等实用功能，帮助开发者更高效地管理应用国际化。
+
+**安装**：
+
+```bash
+pnpm add @oiij/auto-i18n
+```
+
+**在线文档**：[https://oiij-use.vercel.app/auto-i18n/auto-i18n](https://oiij-use.vercel.app/auto-i18n/auto-i18n) 📖
+
+---
+
 ### Auto Router 🚀
 
 [![NPM version](https://img.shields.io/npm/v/@oiij/auto-router)](https://www.npmjs.com/package/@oiij/auto-router)
