@@ -6,9 +6,9 @@ import { computed, onMounted, readonly, ref, shallowRef } from 'vue'
  * 算术运算验证码配置
  */
 type OperationConfig = {
-  /** 运算数字范围（0到figure-1） */
+  /** 运算数字范围（0到figure-1），默认值为 10 */
   figure?: number
-  /** 运算符类型，不指定则随机选择 */
+  /** 运算符类型，不指定则随机选择，可选值为 '+' | '-' | '*' */
   arith?: '+' | '-' | '*'
 }
 
@@ -16,25 +16,25 @@ type OperationConfig = {
  * 字符验证码配置
  */
 type CharacterConfig = {
-  /** 验证码长度 */
+  /** 验证码长度，默认值为 4 */
   length?: number
-  /** 字符池，从中随机选择字符 */
+  /** 字符池，从中随机选择字符，默认值为 '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ' */
   characterPool?: string
 }
 
 /**
  * 图片验证码基础配置选项
  */
-type ImageVerifyOptionsBase = {
-  /** 画布宽度（像素） */
+export type ImageVerifyOptionsBase = {
+  /** 画布宽度（像素），默认值为 120 */
   width?: number
-  /** 画布高度（像素） */
+  /** 画布高度（像素），默认值为 40 */
   height?: number
-  /** 点击画布时是否刷新验证码 */
+  /** 点击画布时是否刷新验证码，默认值为 true */
   refreshOnClick?: boolean
-  /** 干扰线数量 */
+  /** 干扰线数量，默认值为 10 */
   disturbLine?: number
-  /** 干扰点数量 */
+  /** 干扰点数量，默认值为 40 */
   disturbPoint?: number
 }
 
@@ -49,35 +49,11 @@ export type ImageVerifyOptions = (ImageVerifyOptionsBase & {
   config?: CharacterConfig
 })
 
-/**
- * 生成指定范围内的随机整数
- * @param min 最小值（包含）
- * @param max 最大值（不包含）
- * @returns 随机整数
- *
- * @example
- * ```ts
- * randomNum(0, 10) // 返回 0-9 之间的随机整数
- * randomNum(5, 15) // 返回 5-14 之间的随机整数
- * ```
- */
 function randomNum(min: number, max: number) {
   const num = Math.floor(Math.random() * (max - min) + min)
   return num
 }
 
-/**
- * 生成指定范围内的随机RGB颜色
- * @param min 最小值（包含）
- * @param max 最大值（不包含）
- * @returns RGB颜色字符串，格式为 "rgb(r,g,b)"
- *
- * @example
- * ```ts
- * randomColor(180, 230) // 返回如 "rgb(200,210,190)" 的浅色
- * randomColor(50, 160)  // 返回如 "rgb(80,120,100)" 的深色
- * ```
- */
 function randomColor(min: number, max: number) {
   const r = randomNum(min, max)
   const g = randomNum(min, max)
@@ -85,13 +61,6 @@ function randomColor(min: number, max: number) {
   return `rgb(${r},${g},${b})`
 }
 
-/**
- * 在画布上绘制干扰线
- * @param ctx Canvas 2D 渲染上下文
- * @param width 画布宽度
- * @param height 画布高度
- * @param length 干扰线数量
- */
 function drawLine(ctx: CanvasRenderingContext2D, width: number, height: number, length: number) {
   for (let i = 0; i < length; i += 1) {
     ctx.beginPath()
@@ -103,13 +72,6 @@ function drawLine(ctx: CanvasRenderingContext2D, width: number, height: number, 
   }
 }
 
-/**
- * 在画布上绘制干扰点
- * @param ctx Canvas 2D 渲染上下文
- * @param width 画布宽度
- * @param height 画布高度
- * @param length 干扰点数量
- */
 function drawPoint(ctx: CanvasRenderingContext2D, width: number, height: number, length: number) {
   for (let i = 0; i < length; i += 1) {
     ctx.beginPath()
@@ -120,15 +82,6 @@ function drawPoint(ctx: CanvasRenderingContext2D, width: number, height: number,
   }
 }
 
-/**
- * 绘制单个字符到画布
- * @param ctx Canvas 2D 渲染上下文
- * @param text 要绘制的字符
- * @param index 字符索引，用于计算位置
- * @param total 总字符数，用于计算位置
- * @param width 画布宽度
- * @param height 画布高度
- */
 function drawCharacter(ctx: CanvasRenderingContext2D, text: string, index: number, total: number, width: number, height: number) {
   ctx.fillStyle = randomColor(50, 160)
   ctx.font = `${randomNum((height * 2) / 4, (height * 3) / 4)}px SimHei`
@@ -138,11 +91,6 @@ function drawCharacter(ctx: CanvasRenderingContext2D, text: string, index: numbe
   ctx.fillText(text, x + 5, y)
 }
 
-/**
- * 生成算术运算验证码
- * @param config 运算配置
- * @returns 包含验证码答案和显示文本的对象
- */
 function generateOperationCode(config: OperationConfig) {
   const { figure = 10, arith } = config
   let num1 = Math.floor(Math.random() * figure)
@@ -175,11 +123,6 @@ function generateOperationCode(config: OperationConfig) {
   return { answer, display }
 }
 
-/**
- * 生成字符验证码
- * @param config 字符配置
- * @returns 包含验证码答案和显示文本的对象
- */
 function generateCharacterCode(config: CharacterConfig) {
   const { length = 4, characterPool = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ' } = config
   let answer = ''
@@ -197,7 +140,7 @@ function generateCharacterCode(config: CharacterConfig) {
 /**
  * 图片验证码 Composable
  *
- * 用于创建和管理图片验证码，支持字符验证码和算术运算验证码两种类型。
+ * 用于创建和管理图片验证码，支持字符验证码和算术运算验证码两种类型
  *
  * @param templateRef Canvas 元素的模板引用
  * @param options 验证码配置选项
@@ -287,20 +230,12 @@ export function useImageVerify(templateRef: TemplateRef<HTMLCanvasElement>, opti
     generate()
   }
 
-  /**
-   * 生成新的验证码
-   * @returns 验证码答案
-   */
   function generate() {
     const _code = _draw()
     codeRef.value = _code
     return _code
   }
 
-  /**
-   * 在画布上绘制验证码
-   * @returns 验证码答案
-   */
   function _draw() {
     let answer = ''
 

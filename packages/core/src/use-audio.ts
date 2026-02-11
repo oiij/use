@@ -2,52 +2,49 @@ import type { UseRafFnCallbackArguments } from '@vueuse/core'
 import { createEventHook, useEventListener, useRafFn } from '@vueuse/core'
 import { computed, onUnmounted, readonly, ref } from 'vue'
 
-/**
- * 格式化时间为 MM:SS 格式
- * @param seconds 秒数
- * @returns 格式化后的时间字符串
- */
 function formatTime(seconds: number) {
   const minutes = Math.floor(seconds / 60)
   seconds = Math.floor(seconds % 60)
   return `${minutes}:${seconds.toString().padStart(2, '0')}`
 }
 
-/**
- * 处理可能为 NaN 的数值，将其转换为 0
- * @param val 数值
- * @returns 处理后的值
- */
 function nanAble(val: number) {
   return Number.isNaN(val) ? 0 : val
 }
 
 /**
  * 音频配置选项
+ * @example
+ * const options: UseAudioOptions = {
+ *   volume: 0.7,
+ *   playbackRate: 1.0,
+ *   autoPlay: false,
+ *   loop: true,
+ *   timeUpdateFormat: (time) => Math.floor(time)
+ * }
  */
-type Options = {
-  /** 音量，默认值为 1 */
+export type UseAudioOptions = {
+  /** 音量（0-1），默认为 1 */
   volume?: number
-  /** 播放速率，默认值为 1 */
+  /** 播放速率，默认为 1 */
   playbackRate?: number
-  /** 是否自动播放，默认值为 true */
+  /** 是否自动播放，默认为 true */
   autoPlay?: boolean
-  /** 是否循环播放，默认值为 true */
+  /** 是否循环播放，默认为 true */
   loop?: boolean
-  /** 时间更新格式化函数，默认返回原始时间 */
+  /** 时间更新格式化函数，默认为 (time) => time */
   timeUpdateFormat?: (time: number) => number
 }
 
 /**
  * 音频控制组合式函数
+ * 提供音频播放控制、音量管理、进度控制等功能
+ *
  * @param src 音频源地址
  * @param options 配置选项
  * @returns 音频控制对象
  *
  * @example
- * ```ts
- * import { useAudio } from '@/use-audio'
- *
  * // 基本用法
  * const audio = useAudio('https://example.com/audio.mp3', {
  *   volume: 0.7,
@@ -55,23 +52,19 @@ type Options = {
  *   loop: true
  * })
  *
- * // 播放音频
  * audio.play('https://example.com/audio.mp3')
- *
- * // 暂停音频
  * audio.pause()
- *
- * // 调整音量
  * audio.setVolume(0.5)
  *
+ * @example
  * // 监听事件
- * audio.onPlaying(() => {
+ * const { onPlaying, onPaused, onEnded } = useAudio()
+ *
+ * onPlaying(() => {
  *   console.log('音频开始播放')
  * })
- * ```
  */
-export function useAudio(src?: string, options?: Options) {
-  // 默认配置
+export function useAudio(src?: string, options?: UseAudioOptions) {
   const {
     volume: defaultVolume = 1,
     playbackRate: defaultPlaybackRate = 1,
@@ -80,19 +73,16 @@ export function useAudio(src?: string, options?: Options) {
     timeUpdateFormat = (time: number) => time,
   } = options ?? {}
 
-  // 创建音频元素
   const audioElement = new Audio()
   audioElement.crossOrigin = 'anonymous'
   audioElement.autoplay = autoPlay
   audioElement.loop = loop
 
-  // 如果提供了 src，则设置并加载
   if (src) {
     audioElement.src = src
     audioElement.load()
   }
 
-  // 事件钩子
   const onVolumeUpdateEv = createEventHook<[HTMLAudioElement, number]>()
   const onMutedEv = createEventHook<[HTMLAudioElement]>()
   const onRateUpdateEv = createEventHook<[HTMLAudioElement]>()
@@ -103,14 +93,16 @@ export function useAudio(src?: string, options?: Options) {
   const onTimeUpdateRafEv = createEventHook<[HTMLAudioElement, { currentTime: number, progress: number }, UseRafFnCallbackArguments]>()
   const onDurationUpdateEv = createEventHook<[HTMLAudioElement, number]>()
 
-  // 音量控制
   const volumeRef = ref(defaultVolume)
   let volumeCache: number = defaultVolume
   const muted = computed(() => volumeRef.value === 0)
 
   /**
    * 设置音量
-   * @param volume 音量值，范围 0-1
+   * 设置音频播放音量，范围在 0-1 之间
+   * @param volume 音量值（0-1）
+   * @example
+   * setVolume(0.5) // 设置音量为 50%
    */
   function setVolume(volume: number) {
     audioElement.volume = volume
@@ -120,40 +112,47 @@ export function useAudio(src?: string, options?: Options) {
 
   /**
    * 设置静音状态
-   * @param muted 是否静音
+   * 静音时缓存当前音量，取消静音时恢复
+   * @param muted 是否静音，默认为 true
+   * @example
+   * setMuted(true)  // 静音
+   * setMuted(false) // 取消静音
    */
   function setMuted(muted = true) {
     if (muted) {
-      // 缓存当前音量，最小为 0.1
       volumeCache = Math.max(0.1, volumeRef.value)
       onMutedEv.trigger(audioElement)
       setVolume(0)
     }
     else {
-      // 恢复缓存的音量
       setVolume(volumeCache)
     }
   }
 
   /**
    * 切换静音状态
+   * 在静音和非静音之间切换
+   * @example
+   * toggleMute() // 切换静音状态
    */
   function toggleMute() {
     setMuted(!muted.value)
   }
 
-  // 播放速率控制
   const playbackRateRef = ref(defaultPlaybackRate)
 
   /**
    * 设置播放速率
+   * 设置音频播放速度，1.0 为正常速度
    * @param playbackRate 播放速率
+   * @example
+   * setPlaybackRate(1.5) // 1.5 倍速播放
+   * setPlaybackRate(0.5) // 0.5 倍速播放
    */
   function setPlaybackRate(playbackRate: number) {
     audioElement.playbackRate = playbackRate
   }
 
-  // 状态引用
   const playingRef = ref(false)
   const pausedRef = ref(false)
   const endedRef = ref(false)
@@ -169,7 +168,10 @@ export function useAudio(src?: string, options?: Options) {
 
   /**
    * 播放音频
+   * 加载并播放指定 URL 的音频文件
    * @param url 音频地址
+   * @example
+   * play('https://example.com/audio.mp3')
    */
   async function play(url: string) {
     stop()
@@ -181,6 +183,9 @@ export function useAudio(src?: string, options?: Options) {
 
   /**
    * 停止音频
+   * 停止播放并重置到开始位置
+   * @example
+   * stop() // 停止播放
    */
   function stop() {
     audioElement.currentTime = 0
@@ -189,6 +194,9 @@ export function useAudio(src?: string, options?: Options) {
 
   /**
    * 暂停音频
+   * 暂停当前播放
+   * @example
+   * pause() // 暂停播放
    */
   function pause() {
     if (audioElement.paused) {
@@ -199,6 +207,9 @@ export function useAudio(src?: string, options?: Options) {
 
   /**
    * 恢复播放
+   * 从暂停位置恢复播放
+   * @example
+   * resume() // 恢复播放
    */
   function resume() {
     if (!audioElement.paused) {
@@ -210,6 +221,9 @@ export function useAudio(src?: string, options?: Options) {
 
   /**
    * 切换播放/暂停状态
+   * 根据当前状态切换播放或暂停
+   * @example
+   * toggle() // 切换播放/暂停
    */
   function toggle() {
     audioElement.paused ? resume() : pause()
@@ -217,7 +231,10 @@ export function useAudio(src?: string, options?: Options) {
 
   /**
    * 设置当前播放时间
+   * 跳转到指定时间位置
    * @param time 时间（秒）
+   * @example
+   * setCurrentTime(30) // 跳转到 30 秒处
    */
   function setCurrentTime(time: number) {
     audioElement.currentTime = time
@@ -226,7 +243,10 @@ export function useAudio(src?: string, options?: Options) {
 
   /**
    * 设置播放进度
-   * @param progress 进度（百分比）
+   * 根据百分比设置播放位置
+   * @param progress 进度（0-100）
+   * @example
+   * setProgress(50) // 跳转到 50% 位置
    */
   function setProgress(progress: number) {
     const currentTime = Number(((progress / 100) * audioElement.duration).toFixed(2))
@@ -234,10 +254,6 @@ export function useAudio(src?: string, options?: Options) {
     currentTimeAndProgressEffect()
   }
 
-  /**
-   * 更新当前时间和进度
-   * 内部函数，用于同步音频元素的时间和进度到响应式引用
-   */
   function currentTimeAndProgressEffect() {
     const currentTime = timeUpdateFormat(audioElement.currentTime)
     currentTimeRef.value = currentTime
@@ -245,7 +261,6 @@ export function useAudio(src?: string, options?: Options) {
     progressRef.value = nanAble(progress)
   }
 
-  // RAF 计时器，用于平滑更新时间和进度
   const { resume: rafResume, pause: rafPause } = useRafFn((arg) => {
     onTimeUpdateRafEv.trigger(audioElement, {
       currentTime: currentTimeRef.value,
@@ -253,23 +268,15 @@ export function useAudio(src?: string, options?: Options) {
     }, arg)
   }, { immediate: false })
 
-  // 监听 RAF 事件，更新时间和进度
   onTimeUpdateRafEv.on(() => {
     currentTimeAndProgressEffect()
   })
 
-  // 事件监听器
-  /**
-   * 播放速率变化事件处理
-   */
   function onRateChange() {
     playbackRateRef.value = audioElement.playbackRate
     onRateUpdateEv.trigger(audioElement)
   }
 
-  /**
-   * 开始播放事件处理
-   */
   function onPlaying() {
     playingRef.value = true
     pausedRef.value = false
@@ -278,9 +285,6 @@ export function useAudio(src?: string, options?: Options) {
     onPlayingEv.trigger(audioElement)
   }
 
-  /**
-   * 暂停事件处理
-   */
   function onPause() {
     playingRef.value = false
     pausedRef.value = true
@@ -289,9 +293,6 @@ export function useAudio(src?: string, options?: Options) {
     onPausedEv.trigger(audioElement)
   }
 
-  /**
-   * 播放结束事件处理
-   */
   function onEnded() {
     playingRef.value = false
     pausedRef.value = false
@@ -300,32 +301,22 @@ export function useAudio(src?: string, options?: Options) {
     onEndedEv.trigger(audioElement)
   }
 
-  /**
-   * 时间更新事件处理
-   */
   function onTimeUpdate() {
     onTimeUpdateEv.trigger(audioElement, currentTimeRef.value)
   }
 
-  /**
-   * 时长变化事件处理
-   */
   function onDurationChange() {
     const duration = audioElement.duration
     durationRef.value = nanAble(duration)
     onDurationUpdateEv.trigger(audioElement, durationRef.value)
   }
 
-  /**
-   * 可播放事件处理，更新缓存时长和进度
-   */
   function onCanplay() {
     const duration = audioElement.buffered.end(Math.max(0, audioElement.buffered.length - 1))
     cachedDurationRef.value = nanAble(duration)
     cachedProgressRef.value = nanAble(Number((duration / audioElement.duration * 100).toFixed(2)))
   }
 
-  // 注册事件监听器
   useEventListener(audioElement, 'ratechange', onRateChange)
   useEventListener(audioElement, 'playing', onPlaying)
   useEventListener(audioElement, 'pause', onPause)
@@ -336,34 +327,29 @@ export function useAudio(src?: string, options?: Options) {
 
   /**
    * 销毁音频元素
+   * 清理音频资源
+   * @example
+   * destroy() // 销毁音频元素
    */
   function destroy() {
     audioElement.remove()
   }
 
-  // 组件卸载时销毁音频元素
   onUnmounted(() => {
     destroy()
   })
 
   return {
-    // 音量控制
     volume: readonly(volumeRef),
     setVolume,
     muted: readonly(muted),
     setMuted,
     toggleMute,
-
-    // 播放速率控制
     playbackRate: readonly(playbackRateRef),
     setPlaybackRate,
-
-    // 状态
     playing: readonly(playingRef),
     paused: readonly(pausedRef),
     ended: readonly(endedRef),
-
-    // 时间和进度
     currentTime: readonly(currentTimeRef),
     currentTimeText,
     setCurrentTime,
@@ -371,21 +357,15 @@ export function useAudio(src?: string, options?: Options) {
     durationText,
     progress: readonly(progressRef),
     setProgress,
-
-    // 缓存信息
     cachedDuration: readonly(cachedDurationRef),
     cachedDurationText,
     cachedProgress: readonly(cachedProgressRef),
-
-    // 其他
     url: readonly(urlRef),
     play,
     pause,
     resume,
     stop,
     toggle,
-
-    // 事件
     onVolumeUpdate: onVolumeUpdateEv.on,
     onMuted: onMutedEv.on,
     onRateUpdate: onRateUpdateEv.on,
@@ -400,5 +380,8 @@ export function useAudio(src?: string, options?: Options) {
 
 /**
  * useAudio 函数的返回类型
+ * 包含音频元素、状态、方法和事件钩子
+ * @example
+ * const audio: UseAudioReturns = useAudio('https://example.com/audio.mp3')
  */
 export type UseAudioReturns = ReturnType<typeof useAudio>

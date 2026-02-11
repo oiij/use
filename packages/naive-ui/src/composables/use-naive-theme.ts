@@ -9,22 +9,12 @@ import { darkTheme, dateEnUS, dateZhCN, enUS, zhCN } from 'naive-ui'
 import { computed, ref, toValue, watchEffect } from 'vue'
 import { getColors, getDarkColors } from './_helper'
 
-/**
- * 语言包类型
- * @template T 语言代码类型
- */
 type Locales<T extends string = string> = Record<T, {
-  /** 语言名称 */
   name: string
-  /** 日期本地化配置 */
   dateLocale: NDateLocale
-  /** 语言包配置 */
   locale: typeof zhCN
 }>
 
-/**
- * 默认语言包映射
- */
 const naiveLocaleMap = {
   'zh-CN': {
     name: '简体中文',
@@ -62,29 +52,39 @@ export type UseNaiveThemeOptions<T extends string> = {
  * @template T 语言代码类型
  * @param options 配置选项
  * @returns 主题管理对象
+ * @example
+ * ```ts
+ * const {
+ *   language,
+ *   darkMode,
+ *   theme,
+ *   themeColors,
+ *   themeOverrides,
+ *   locale,
+ *   setColor
+ * } = useNaiveTheme({
+ *   language: 'zh-CN',
+ *   darkMode: false,
+ *   colors: { primary: '#1890ff' },
+ *   globalThemeOverrides: { common: { fontSize: '14px' } }
+ * })
+ * ```
  */
 export function useNaiveTheme<T extends string>(options?: UseNaiveThemeOptions<T>) {
   const { language, darkMode, colors, globalThemeOverrides, locales, darkColors } = options ?? {}
 
-  // 语言引用
   const languageRef = ref(toValue(language)) as Ref<T | undefined>
 
-  // 监听语言变化，保持响应式
   watchEffect(() => languageRef.value = toValue(language) as T | undefined)
 
-  // 暗黑模式引用
   const darkModeRef = ref(toValue(darkMode))
 
-  // 监听暗黑模式变化，保持响应式
   watchEffect(() => darkModeRef.value = toValue(darkMode))
 
-  // 分离全局主题覆盖的公共部分和其他部分
   const { common, ...extra } = globalThemeOverrides ?? {}
 
-  // 颜色引用
   const colorsRef = ref<Colors>({ ...colors })
 
-  // 计算主题颜色，根据暗黑模式状态调整
   const themeColors = computed(() => {
     if (darkModeRef.value) {
       if (typeof darkColors === 'function') {
@@ -107,18 +107,20 @@ export function useNaiveTheme<T extends string>(options?: UseNaiveThemeOptions<T
 
   /**
    * 设置主题颜色
-   * @param v 颜色配置
+   * @param v - 颜色配置
+   * @example
+   * ```ts
+   * setColor({ primary: '#1890ff' })
+   * ```
    */
   function setColor(v: Partial<Colors>) {
     colorsRef.value = { ...colorsRef.value, ...v }
   }
 
-  // 计算当前主题
   const theme = computed(() => {
     return darkModeRef?.value ? darkTheme : undefined
   })
 
-  // 计算主题覆盖配置
   const themeOverrides: ComputedRef<GlobalThemeOverrides> = computed(() => {
     const { primary, info, success, warning, error } = getColors(themeColors.value)
 
@@ -154,30 +156,19 @@ export function useNaiveTheme<T extends string>(options?: UseNaiveThemeOptions<T
     }
   })
 
-  // 合并默认语言包和自定义语言包
   const localesMerge = { ...naiveLocaleMap, ...locales } as Locales<T>
 
-  // 计算当前语言包
   const locale = computed(() => localesMerge[languageRef.value ?? 'zh-CN' as T] ?? naiveLocaleMap['zh-CN'])
 
   return {
-    /** 语言代码引用 */
     language: languageRef,
-    /** 暗黑模式引用 */
     darkMode: darkModeRef,
-    /** 当前主题 */
     theme,
-    /** 颜色配置引用 */
     colors: colorsRef,
-    /** 计算后的主题颜色 */
     themeColors,
-    /** 主题覆盖配置 */
     themeOverrides,
-    /** 合并后的语言包 */
     locales: localesMerge,
-    /** 当前语言包 */
     locale,
-    /** 设置主题颜色 */
     setColor,
   }
 }

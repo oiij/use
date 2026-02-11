@@ -43,7 +43,6 @@
   },
   "peerDependencies": {
     "@oiij/css-render": "workspace:*",
-    "@oiij/markdown-it": "workspace:*",
     "@oiij/use": "workspace:*",
     "@vueuse/core": "catalog:naive-ui",
     "async-validator": "catalog:naive-ui",
@@ -58,7 +57,6 @@
   },
   "devDependencies": {
     "@oiij/css-render": "workspace:*",
-    "@oiij/markdown-it": "workspace:*",
     "@oiij/use": "workspace:*",
     "@types/prismjs": "catalog:naive-ui",
     "@vueuse/core": "catalog:naive-ui",

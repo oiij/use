@@ -5,17 +5,33 @@ import { useRafFn } from '@vueuse/core'
  * 柱状频谱选项
  */
 export type SpectrumBarOptions = {
-  /** 柱形宽度，默认值：8 */
+  /**
+   * 柱形宽度
+   * @default 8
+   */
   width?: number
-  /** 柱形最小高度，默认值：8 */
+  /**
+   * 柱形最小高度
+   * @default 8
+   */
   minHeight?: number
-  /** 柱形间距，默认值：2 */
+  /**
+   * 柱形间距
+   * @default 2
+   */
   spacing?: number
-  /** 柱形圆角半径，默认值：4 */
+  /**
+   * 柱形圆角半径
+   * @default 4
+   */
   radius?: number
-  /** 颜色，可以是单个颜色字符串或渐变色数组，默认值：继承自 SpectrumOptions */
+  /**
+   * 颜色，可以是单个颜色字符串或渐变色数组
+   */
   color?: [string, string] | string
-  /** 是否显示阴影，默认值：继承自 SpectrumOptions */
+  /**
+   * 是否显示阴影
+   */
   shadow?: boolean
 }
 
@@ -23,17 +39,33 @@ export type SpectrumBarOptions = {
  * 线性频谱选项
  */
 export type SpectrumLineOptions = {
-  /** 线条宽度，默认值：1 */
+  /**
+   * 线条宽度
+   * @default 1
+   */
   width?: number
-  /** 采样点间距，默认值：20 */
+  /**
+   * 采样点间距
+   * @default 20
+   */
   spacing?: number
-  /** 颜色，可以是单个颜色字符串或渐变色数组，默认值：继承自 SpectrumOptions */
+  /**
+   * 颜色，可以是单个颜色字符串或渐变色数组
+   */
   color?: [string, string] | string
-  /** 平滑度，取值范围 0-1，默认值：0.5 */
+  /**
+   * 平滑度，取值范围 0-1
+   * @default 0.5
+   */
   smoothness?: number
-  /** 是否填充线条下方区域，默认值：true */
+  /**
+   * 是否填充线条下方区域
+   * @default true
+   */
   fill?: boolean
-  /** 是否显示阴影，默认值：继承自 SpectrumOptions */
+  /**
+   * 是否显示阴影
+   */
   shadow?: boolean
 }
 
@@ -41,23 +73,47 @@ export type SpectrumLineOptions = {
  * 环形柱状频谱选项
  */
 export type SpectrumCircleBarOptions = {
-  /** 柱形宽度，默认值：8 */
+  /**
+   * 柱形宽度
+   * @default 8
+   */
   width?: number
-  /** 柱形最小高度，默认值：8 */
+  /**
+   * 柱形最小高度
+   * @default 8
+   */
   minHeight?: number
-  /** 柱形间距，默认值：2 */
+  /**
+   * 柱形间距
+   * @default 2
+   */
   spacing?: number
-  /** 基础圆环半径，默认值：画布最小边的 30% */
+  /**
+   * 基础圆环半径，默认为画布最小边的 30%
+   */
   radius?: number
-  /** 柱形圆角半径，默认值：4 */
+  /**
+   * 柱形圆角半径
+   * @default 4
+   */
   barRadius?: number
-  /** 颜色，可以是单个颜色字符串或渐变色数组，默认值：继承自 SpectrumOptions */
+  /**
+   * 颜色，可以是单个颜色字符串或渐变色数组
+   */
   color?: [string, string] | string
-  /** 起始角度，默认值：0 */
+  /**
+   * 起始角度
+   * @default 0
+   */
   startAngle?: number
-  /** 结束角度，默认值：Math.PI * 2 */
+  /**
+   * 结束角度
+   * @default Math.PI * 2
+   */
   endAngle?: number
-  /** 是否显示阴影，默认值：继承自 SpectrumOptions */
+  /**
+   * 是否显示阴影
+   */
   shadow?: boolean
 }
 
@@ -65,23 +121,47 @@ export type SpectrumCircleBarOptions = {
  * 环形线性频谱选项
  */
 export type SpectrumCircleLineOptions = {
-  /** 线条宽度，默认值：1 */
+  /**
+   * 线条宽度
+   * @default 1
+   */
   width?: number
-  /** 采样点间距，默认值：10 */
+  /**
+   * 采样点间距
+   * @default 10
+   */
   spacing?: number
-  /** 基础圆环半径，默认值：画布最小边的 30% */
+  /**
+   * 基础圆环半径，默认为画布最小边的 30%
+   */
   radius?: number
-  /** 颜色，可以是单个颜色字符串或渐变色数组，默认值：继承自 SpectrumOptions */
+  /**
+   * 颜色，可以是单个颜色字符串或渐变色数组
+   */
   color?: [string, string] | string
-  /** 平滑度，取值范围 0-1，默认值：0.5 */
+  /**
+   * 平滑度，取值范围 0-1
+   * @default 0.5
+   */
   smoothness?: number
-  /** 是否填充线条下方区域，默认值：true */
+  /**
+   * 是否填充线条下方区域
+   * @default true
+   */
   fill?: boolean
-  /** 起始角度，默认值：0 */
+  /**
+   * 起始角度
+   * @default 0
+   */
   startAngle?: number
-  /** 结束角度，默认值：Math.PI * 2 */
+  /**
+   * 结束角度
+   * @default Math.PI * 2
+   */
   endAngle?: number
-  /** 是否显示阴影，默认值：继承自 SpectrumOptions */
+  /**
+   * 是否显示阴影
+   */
   shadow?: boolean
 }
 
@@ -89,90 +169,69 @@ export type SpectrumCircleLineOptions = {
  * 频谱配置选项
  */
 export type SpectrumOptions = {
-  /** 频谱类型，可选值：'bar' | 'line' | 'circle-bar' | 'circle-line'，默认值：'bar' */
+  /**
+   * 频谱类型
+   * @default 'bar'
+   */
   type?: 'bar' | 'line' | 'circle-bar' | 'circle-line'
-  /** 默认颜色，可以是单个颜色字符串或渐变色数组，默认值：'#00FFAA' */
+  /**
+   * 默认颜色，可以是单个颜色字符串或渐变色数组
+   * @default '#00FFAA'
+   */
   color?: [string, string] | string
-  /** 是否显示阴影，默认值：true */
+  /**
+   * 是否显示阴影
+   * @default true
+   */
   shadow?: boolean
-  /** 柱状频谱选项 */
+  /**
+   * 柱状频谱选项
+   */
   barOptions?: SpectrumBarOptions
-  /** 线性频谱选项 */
+  /**
+   * 线性频谱选项
+   */
   lineOptions?: SpectrumLineOptions
-  /** 环形柱状频谱选项 */
+  /**
+   * 环形柱状频谱选项
+   */
   circleBarOptions?: SpectrumCircleBarOptions
-  /** 环形线性频谱选项 */
+  /**
+   * 环形线性频谱选项
+   */
   circleLineOptions?: SpectrumCircleLineOptions
-  /** 动画速度，取值范围 0-1，默认值：0.5 */
+  /**
+   * 动画速度，取值范围 0-1
+   * @default 0.5
+   */
   animationSpeed?: number
-  /** 是否手动控制绘制，默认值：false */
+  /**
+   * 是否手动控制绘制
+   * @default false
+   */
   manual?: boolean
 }
-/**
- * 三次方缓动函数，用于平滑动画效果
- * @param {number} t - 时间参数，取值范围 0-1
- * @returns {number} - 缓动后的值，取值范围 0-1
- * @example
- * // 使用缓动函数处理值
- * const easedValue = easeInOutCubic(0.5); // 返回 0.5
- */
+
 function easeInOutCubic(t: number): number {
   return t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2
 }
 
-/**
- * 绘制圆角矩形
- * @param {CanvasRenderingContext2D} ctx - Canvas 2D 上下文
- * @param {number} x - 矩形左上角 x 坐标
- * @param {number} y - 矩形左上角 y 坐标
- * @param {number} width - 矩形宽度
- * @param {number} height - 矩形高度
- * @param {number} radius - 圆角半径
- * @example
- * // 绘制一个圆角矩形
- * drawRoundedRect(ctx, 10, 10, 100, 50, 8);
- */
 function drawRoundedRect(ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, radius: number) {
-  // 确保半径不会超过宽高的一半
   const r = Math.min(radius, width / 2, height / 2)
-
-  // 开始绘制圆角矩形路径
   ctx.beginPath()
-
-  // 左上角
   ctx.moveTo(x + r, y)
   ctx.lineTo(x + width - r, y)
   ctx.quadraticCurveTo(x + width, y, x + width, y + r)
-
-  // 右上角
   ctx.lineTo(x + width, y + height - r)
   ctx.quadraticCurveTo(x + width, y + height, x + width - r, y + height)
-
-  // 右下角
   ctx.lineTo(x + r, y + height)
   ctx.quadraticCurveTo(x, y + height, x, y + height - r)
-
-  // 左下角
   ctx.lineTo(x, y + r)
   ctx.quadraticCurveTo(x, y, x + r, y)
-
-  // 关闭路径并填充
   ctx.closePath()
   ctx.fill()
 }
 
-/**
- * 将极坐标转换为笛卡尔坐标
- * @param {number} centerX - 中心点 x 坐标
- * @param {number} centerY - 中心点 y 坐标
- * @param {number} radius - 半径
- * @param {number} angleInRadians - 角度（弧度）
- * @returns {{ x: number, y: number }} - 笛卡尔坐标
- * @example
- * // 将极坐标转换为笛卡尔坐标
- * const point = polarToCartesian(100, 100, 50, Math.PI / 4);
- * // 返回 { x: 135.35533905932738, y: 135.35533905932738 }
- */
 function polarToCartesian(centerX: number, centerY: number, radius: number, angleInRadians: number) {
   return {
     x: centerX + (radius * Math.cos(angleInRadians)),
@@ -180,16 +239,6 @@ function polarToCartesian(centerX: number, centerY: number, radius: number, angl
   }
 }
 
-/**
- * 设置 Canvas 阴影效果
- * @param {CanvasRenderingContext2D} ctx - Canvas 2D 上下文
- * @param {boolean} shadow - 是否启用阴影
- * @example
- * // 启用阴影效果
- * setupShadow(ctx, true);
- * // 禁用阴影效果
- * setupShadow(ctx, false);
- */
 function setupShadow(ctx: CanvasRenderingContext2D, shadow: boolean) {
   if (shadow) {
     ctx.shadowColor = 'rgba(0, 0, 0, 0.3)'
@@ -199,10 +248,6 @@ function setupShadow(ctx: CanvasRenderingContext2D, shadow: boolean) {
   }
 }
 
-/**
- * 重置 Canvas 阴影效果
- * @param {CanvasRenderingContext2D} ctx - Canvas 2D 上下文
- */
 function resetShadow(ctx: CanvasRenderingContext2D) {
   ctx.shadowColor = 'transparent'
   ctx.shadowBlur = 0
@@ -210,17 +255,6 @@ function resetShadow(ctx: CanvasRenderingContext2D) {
   ctx.shadowOffsetY = 0
 }
 
-/**
- * 创建线性渐变或纯色样式
- * @param {CanvasRenderingContext2D} ctx - Canvas 2D 上下文
- * @param {[string, string] | string} color - 颜色配置，可以是渐变色数组或纯色字符串
- * @param {number} x0 - 渐变起点 x 坐标
- * @param {number} y0 - 渐变起点 y 坐标
- * @param {number} x1 - 渐变终点 x 坐标
- * @param {number} y1 - 渐变终点 y 坐标
- * @param {boolean} [withAlpha] - 是否为填充样式添加透明度
- * @returns {CanvasGradient | string} - 渐变或纯色样式
- */
 function createColorStyle(ctx: CanvasRenderingContext2D, color: [string, string] | string, x0: number, y0: number, x1: number, y1: number, withAlpha = false): CanvasGradient | string {
   if (Array.isArray(color)) {
     const gradient = ctx.createLinearGradient(x0, y0, x1, y1)
@@ -230,61 +264,31 @@ function createColorStyle(ctx: CanvasRenderingContext2D, color: [string, string]
   }
   return withAlpha ? `${color}40` : color
 }
+
 /**
  * 音频频谱可视化钩子函数
- * @param {TemplateRef<HTMLCanvasElement>} canvasRef - Canvas 元素的模板引用
- * @param {() => Uint8Array<ArrayBuffer>} frequencyDataGetter - 获取频率数据的函数
- * @param {SpectrumOptions} [options] - 频谱配置选项
- * @returns {{ canvasRef: TemplateRef<HTMLCanvasElement>, pause: () => void, resume: () => void, isActive: boolean }} - 返回值包含画布引用、暂停/恢复函数和活动状态
- * @example
- * // 基本使用示例
- * <template>
- *   <canvas ref="canvasRef" width="400" height="200"></canvas>
- * </template>
  *
- * <script setup lang="ts">
- * import { ref, onMounted } from 'vue';
- * import { useSpectrum } from '@use/core';
- * import { useAudioContext } from '@vueuse/core';
+ * 基于 Canvas 的音频频率数据可视化，支持多种频谱类型（柱状、线性、环形柱状、环形线性）
  *
- * const canvasRef = ref<HTMLCanvasElement | null>(null);
- * let frequencyData: Uint8Array;
- *
- * // 初始化音频上下文和分析器
- * onMounted(async () => {
- *   const { audioContext, mediaElementSource } = useAudioContext();
- *   const audioElement = document.createElement('audio');
- *   audioElement.src = 'your-audio-file.mp3';
- *
- *   const analyser = audioContext.createAnalyser();
- *   analyser.fftSize = 256;
- *   frequencyData = new Uint8Array(analyser.frequencyBinCount);
- *
- *   mediaElementSource.connect(analyser);
- *   analyser.connect(audioContext.destination);
- *
- *   // 使用频谱
- *   const { resume } = useSpectrum(canvasRef, () => {
- *     analyser.getByteFrequencyData(frequencyData);
- *     return frequencyData;
- *   }, {
- *     type: 'bar',
- *     color: ['#00FFAA', '#0088FF'],
- *     animationSpeed: 0.3
- *   });
- *
- *   // 开始播放音频
- *   audioElement.play();
- *   resume();
- * });
- * </script>
+ * @param canvasRef Canvas 元素的模板引用
+ * @param frequencyDataGetter 获取频率数据的函数
+ * @param options 频谱配置选项
+ * @returns 返回画布引用、暂停/恢复函数和活动状态
  *
  * @example
- * // 使用环形线性频谱
- * const { resume } = useSpectrum(canvasRef, () => {
- *   analyser.getByteFrequencyData(frequencyData);
- *   return frequencyData;
- * }, {
+ * ```ts
+ * const canvasRef = ref<HTMLCanvasElement>()
+ * const { pause, resume, isActive } = useSpectrum(canvasRef, () => frequencyData, {
+ *   type: 'bar',
+ *   color: ['#00FFAA', '#0088FF'],
+ *   animationSpeed: 0.3
+ * })
+ * ```
+ *
+ * @example
+ * ```ts
+ * // 环形线性频谱
+ * const { resume } = useSpectrum(canvasRef, () => frequencyData, {
  *   type: 'circle-line',
  *   color: '#FF6B6B',
  *   circleLineOptions: {
@@ -292,39 +296,31 @@ function createColorStyle(ctx: CanvasRenderingContext2D, color: [string, string]
  *     smoothness: 0.7,
  *     fill: true
  *   }
- * });
+ * })
+ * ```
  */
 export function useSpectrum(canvasRef: TemplateRef<HTMLCanvasElement>, frequencyDataGetter: () => Uint8Array<ArrayBuffer>, options?: SpectrumOptions) {
   const { type = 'bar', color: defaultColor = '#00FFAA', shadow: defaultShadow = true, barOptions, lineOptions, circleBarOptions, circleLineOptions, animationSpeed = 0.5, manual } = options ?? {}
   const dpr = window.devicePixelRatio || 1
   let smoothedData: number[] = []
-  /**
-   * 更新频率数据并应用平滑处理
-   */
+
   function updateFrequencyData() {
     const frequencyData = frequencyDataGetter()
-    // 如果 smoothedData 为空，初始化它
     if (smoothedData.length !== frequencyData.length) {
       smoothedData = Array.from<number>({ length: frequencyData.length }).fill(0)
     }
-    // 计算平滑因子，确保在 0 到 1 之间
     const smoothingFactor = Math.max(0, Math.min(1, animationSpeed))
-
-    // 应用指数平滑
     for (let i = 0; i < frequencyData.length; i++) {
       const currentValue = frequencyData[i]
       smoothedData[i] = smoothedData[i] + smoothingFactor * (currentValue - smoothedData[i])
     }
   }
-  /**
-   * 主绘制函数
-   */
+
   function draw() {
     const canvas = canvasRef.value
     if (!canvas) {
       throw new Error('canvasRef is not a valid canvas element')
     }
-    // 设置画布尺寸，考虑设备像素比
     canvas.width = canvasRef.value.clientWidth * dpr
     canvas.height = canvasRef.value.clientHeight * dpr
 
@@ -332,14 +328,10 @@ export function useSpectrum(canvasRef: TemplateRef<HTMLCanvasElement>, frequency
     if (!ctx) {
       throw new Error('canvasRef is not a valid canvas element')
     }
-    // 缩放上下文以匹配设备像素比
     ctx.scale(dpr, dpr)
-    // 清空画布
     ctx.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight)
-    // 更新频率数据
     updateFrequencyData()
 
-    // 根据频谱类型调用相应的绘制函数
     switch (type) {
       case 'bar':
         drawBarSpectrum(ctx)
@@ -355,10 +347,7 @@ export function useSpectrum(canvasRef: TemplateRef<HTMLCanvasElement>, frequency
         break
     }
   }
-  /**
-   * 绘制柱状频谱
-   * @param {CanvasRenderingContext2D} ctx - Canvas 2D 上下文
-   */
+
   function drawBarSpectrum(ctx: CanvasRenderingContext2D) {
     const { width = 8, minHeight = 8, spacing = 2, radius = 4, color = defaultColor, shadow = defaultShadow } = barOptions ?? {}
     const canvas = ctx.canvas
@@ -399,10 +388,7 @@ export function useSpectrum(canvasRef: TemplateRef<HTMLCanvasElement>, frequency
 
     resetShadow(ctx)
   }
-  /**
-   * 绘制线性频谱
-   * @param {CanvasRenderingContext2D} ctx - Canvas 2D 上下文
-   */
+
   function drawLineSpectrum(ctx: CanvasRenderingContext2D) {
     const { width = 1, spacing = 20, color = defaultColor, smoothness = 0.5, fill = true, shadow = defaultShadow } = lineOptions ?? {}
     const canvas = ctx.canvas
@@ -465,10 +451,7 @@ export function useSpectrum(canvasRef: TemplateRef<HTMLCanvasElement>, frequency
 
     resetShadow(ctx)
   }
-  /**
-   * 绘制环形柱状频谱
-   * @param {CanvasRenderingContext2D} ctx - Canvas 2D 上下文
-   */
+
   function drawCircleBarSpectrum(ctx: CanvasRenderingContext2D) {
     const canvas = ctx.canvas
     const canvasWidth = canvas.width / dpr
@@ -517,10 +500,7 @@ export function useSpectrum(canvasRef: TemplateRef<HTMLCanvasElement>, frequency
 
     resetShadow(ctx)
   }
-  /**
-   * 绘制环形线性频谱
-   * @param {CanvasRenderingContext2D} ctx - Canvas 2D 上下文
-   */
+
   function drawCircleLineSpectrum(ctx: CanvasRenderingContext2D) {
     const canvas = ctx.canvas
     const canvasWidth = canvas.width / dpr
@@ -647,6 +627,7 @@ export function useSpectrum(canvasRef: TemplateRef<HTMLCanvasElement>, frequency
   const { pause, resume, isActive } = useRafFn(() => {
     draw()
   }, { immediate: !manual })
+
   return {
     canvasRef,
     pause,
@@ -654,3 +635,8 @@ export function useSpectrum(canvasRef: TemplateRef<HTMLCanvasElement>, frequency
     isActive,
   }
 }
+
+/**
+ * useSpectrum 函数的返回类型
+ */
+export type UseSpectrumReturns = ReturnType<typeof useSpectrum>

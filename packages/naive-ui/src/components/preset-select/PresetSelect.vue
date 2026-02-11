@@ -7,23 +7,7 @@ import { NFlex, NPagination, NSelect } from 'naive-ui'
 import { computed, reactive, ref, toRaw, toValue, useTemplateRef } from 'vue'
 import { useDataRequest } from '../../composables/use-data-request'
 
-const {
-  api,
-  value,
-  fallbackLabel,
-  defaultParams,
-  manual = true,
-  multiple = false,
-  disabled,
-  clearable,
-  debounce = true,
-  optionFormat,
-  fields,
-  selectProps,
-  pagination: propsPagination,
-  requestOptions,
-  requestPlugins,
-} = defineProps<PresetSelectProps<V, P, D, R>>()
+const { api, value, fallbackLabel, defaultParams, manual = true, multiple = false, disabled, clearable, debounce = true, optionFormat, fields, selectProps, pagination: propsPagination, requestOptions, requestPlugins } = defineProps<PresetSelectProps<V, P, D, R>>()
 
 const emit = defineEmits<PresetSelectEmits<V, P, D, R>>()
 const selectInstRef = useTemplateRef<SelectInst>('select-ref')

@@ -3,7 +3,9 @@ import { useDebounceFn, useElementSize, useEventListener } from '@vueuse/core'
 import { computed, nextTick, toValue, watch } from 'vue'
 
 /**
- * 滚动方向枚举
+ * 滚动方向
+ * - horizontal: 水平滚动
+ * - vertical: 垂直滚动
  */
 export type ScrollDirection = 'horizontal' | 'vertical'
 
@@ -11,19 +13,38 @@ export type ScrollDirection = 'horizontal' | 'vertical'
  * 滚动视图配置选项
  */
 export type ScrollViewOptions = {
-  /** 激活元素的 CSS 选择器，默认为 '.active' */
+  /**
+   * 激活元素的 CSS 选择器
+   * @default '.active'
+   */
   activeClassName?: MaybeRefOrGetter<string>
-  /** 是否启用滚轮滚动，默认为 true */
+  /**
+   * 是否启用滚轮滚动
+   * @default true
+   */
   enableWheel?: MaybeRefOrGetter<boolean>
-  /** 滚动方向，默认为 'vertical' */
+  /**
+   * 滚动方向
+   * @default 'vertical'
+   */
   direction?: MaybeRefOrGetter<ScrollDirection>
-  /** 滚轮滚动时的滚动偏移量，默认为容器尺寸 */
+  /**
+   * 滚轮滚动时的滚动偏移量，默认为容器尺寸
+   */
   scrollOffset?: MaybeRefOrGetter<number>
-  /** 滚动防抖延迟时间（毫秒），默认为 500 */
+  /**
+   * 滚动防抖延迟时间（毫秒）
+   * @default 500
+   */
   debounceDelay?: MaybeRefOrGetter<number>
-  /** 是否在容器尺寸变化时自动滚动到激活元素，默认为 true */
+  /**
+   * 是否在容器尺寸变化时自动滚动到激活元素
+   * @default true
+   */
   autoScrollOnResize?: MaybeRefOrGetter<boolean>
-  /** scrollIntoView 的默认配置选项 */
+  /**
+   * scrollIntoView 的默认配置选项
+   */
   scrollIntoViewOptions?: MaybeRefOrGetter<ScrollIntoViewOptions>
 }
 
@@ -31,31 +52,18 @@ export type ScrollViewOptions = {
  * 滚动视图 Composable
  * 提供平滑滚动到激活元素的功能，支持滚轮滚动和自动调整
  *
- * @param templateRef - 目标滚动容器的模板引用
- * @param options - 配置选项
+ * @param templateRef 目标滚动容器的模板引用
+ * @param options 配置选项
  * @returns 返回包含滚动方法和状态的对象
  *
  * @example
- * ```vue
- * <script setup lang="ts">
- * import { ref } from 'vue'
- * import { useScrollView } from './use-scroll-view'
- *
+ * ```ts
  * const containerRef = ref<HTMLElement>()
  * const { scrollToView, scrollToNext, scrollToPrevious } = useScrollView(containerRef, {
  *   activeClassName: '.active',
  *   enableWheel: true,
  *   direction: 'vertical'
  * })
- * </script>
- *
- * <template>
- *   <div ref="containerRef" class="scroll-container">
- *     <div class="item">Item 1</div>
- *     <div class="item active">Item 2</div>
- *     <div class="item">Item 3</div>
- *   </div>
- * </template>
  * ```
  */
 export function useScrollView(templateRef: MaybeRefOrGetter<HTMLElement | undefined>, options: ScrollViewOptions = {}) {
@@ -71,10 +79,6 @@ export function useScrollView(templateRef: MaybeRefOrGetter<HTMLElement | undefi
 
   const { width, height } = useElementSize(templateRef)
 
-  /**
-   * 获取滚动偏移量
-   * 如果未指定 scrollOffset，则根据滚动方向使用容器尺寸
-   */
   const getScrollOffset = computed(() => {
     const offset = toValue(scrollOffset)
     if (offset > 0)
@@ -82,9 +86,6 @@ export function useScrollView(templateRef: MaybeRefOrGetter<HTMLElement | undefi
     return toValue(direction) === 'vertical' ? height.value : width.value
   })
 
-  /**
-   * 获取激活元素
-   */
   function getActiveElement(): Element | null {
     const container = toValue(templateRef)
     if (!container)
@@ -92,9 +93,6 @@ export function useScrollView(templateRef: MaybeRefOrGetter<HTMLElement | undefi
     return container.querySelector(toValue(activeClassName))
   }
 
-  /**
-   * 获取所有可滚动元素
-   */
   function getScrollableElements(): Element[] {
     const container = toValue(templateRef)
     if (!container)
@@ -106,7 +104,14 @@ export function useScrollView(templateRef: MaybeRefOrGetter<HTMLElement | undefi
    * 滚动到激活元素
    * 使用 scrollIntoView API 实现平滑滚动
    *
-   * @param customOptions - 自定义 ScrollIntoView 配置选项
+   * @param customOptions 自定义 ScrollIntoView 配置选项
+   *
+   * @example
+   * ```ts
+   * const { scrollToView } = useScrollView(containerRef)
+   * scrollToView()
+   * scrollToView({ behavior: 'auto', block: 'center' })
+   * ```
    */
   async function scrollToView(customOptions?: ScrollIntoViewOptions) {
     await nextTick()
@@ -127,8 +132,15 @@ export function useScrollView(templateRef: MaybeRefOrGetter<HTMLElement | undefi
   /**
    * 滚动到指定元素
    *
-   * @param element - 目标元素
-   * @param customOptions - 自定义 ScrollIntoView 配置选项
+   * @param element 目标元素
+   * @param customOptions 自定义 ScrollIntoView 配置选项
+   *
+   * @example
+   * ```ts
+   * const { scrollToElement } = useScrollView(containerRef)
+   * const element = document.querySelector('.item')
+   * if (element) scrollToElement(element)
+   * ```
    */
   async function scrollToElement(element: Element, customOptions?: ScrollIntoViewOptions) {
     await nextTick()
@@ -146,6 +158,12 @@ export function useScrollView(templateRef: MaybeRefOrGetter<HTMLElement | undefi
 
   /**
    * 滚动到下一个元素
+   *
+   * @example
+   * ```ts
+   * const { scrollToNext } = useScrollView(containerRef)
+   * scrollToNext()
+   * ```
    */
   async function scrollToNext() {
     const activeEl = getActiveElement()
@@ -163,6 +181,12 @@ export function useScrollView(templateRef: MaybeRefOrGetter<HTMLElement | undefi
 
   /**
    * 滚动到上一个元素
+   *
+   * @example
+   * ```ts
+   * const { scrollToPrevious } = useScrollView(containerRef)
+   * scrollToPrevious()
+   * ```
    */
   async function scrollToPrevious() {
     const activeEl = getActiveElement()
@@ -178,12 +202,6 @@ export function useScrollView(templateRef: MaybeRefOrGetter<HTMLElement | undefi
     }
   }
 
-  /**
-   * 滚轮事件处理函数
-   * 根据滚动方向和滚轮增量执行平滑滚动
-   *
-   * @param e - 滚轮事件对象
-   */
   function wheelEvent(e: WheelEvent) {
     if (!toValue(enableWheel))
       return
@@ -234,6 +252,6 @@ export function useScrollView(templateRef: MaybeRefOrGetter<HTMLElement | undefi
 }
 
 /**
- * useScrollView 返回值类型
+ * useScrollView 函数的返回类型
  */
 export type UseScrollViewReturns = ReturnType<typeof useScrollView>

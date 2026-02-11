@@ -10,22 +10,7 @@ import { useDataRequest } from '../../composables/use-data-request'
 import MageArrowUp from '../icons/MageArrowUp.vue'
 import { NSearchInput } from '../search-input/index'
 
-const {
-  api,
-  defaultParams,
-  title,
-  scrollTop,
-  manual,
-  columns,
-  fields,
-  search,
-  pagination: propsPagination,
-  columnsFilterOptions,
-  columnsSorterOptions,
-  requestOptions,
-  requestPlugins,
-  dataTableProps,
-} = defineProps<DataTablePlusProps<P, D, R>>()
+const { api, defaultParams, title, scrollTop, manual, columns, fields, search, pagination: propsPagination, columnsFilterOptions, columnsSorterOptions, requestOptions, requestPlugins, dataTableProps } = defineProps<DataTablePlusProps<P, D, R>>()
 const emit = defineEmits<DataTablePlusEmits<P, D, R>>()
 
 const columnsReactive = reactive<DataTableColumns<R>>(columns ?? [])

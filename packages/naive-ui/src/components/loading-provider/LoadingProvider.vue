@@ -4,7 +4,7 @@ import { useStyle } from '@oiij/css-render'
 import { NEl, NSpin } from 'naive-ui'
 import { provide, ref, watchEffect } from 'vue'
 import { NTransition } from '../transition/index'
-import { loadingProviderInjectionKey } from './index'
+import { LOADING_PROVIDER_INJECTION_KEY } from './index'
 import { cName, loadingProviderCssr } from './loading-provider.cssr'
 
 const { show, appendTo = 'body', mask = true, blur = true, duration, spinProps } = defineProps<LoadingProviderProps>()
@@ -33,7 +33,7 @@ function showLoading(options?: {
     hide: hideLoading,
   }
 }
-provide(loadingProviderInjectionKey, {
+provide(LOADING_PROVIDER_INJECTION_KEY, {
   show: showLoading,
   hide: hideLoading,
 })
