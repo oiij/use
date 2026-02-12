@@ -6,25 +6,44 @@ export function mergeRule<D extends DataObject = DataObject>(option?: {
   label?: string | (() => string)
   required?: boolean | (() => boolean)
   rule?: FormItemRule | FormItemRule[]
-}) {
+}): FormItemRule | FormItemRule[] | undefined {
   const { key, label, required, rule } = option ?? {}
-  let _rule: FormItemRule | FormItemRule[] | undefined
   const _required = typeof required === 'function' ? required() : required
+
+  if (!_required && !rule) {
+    return undefined
+  }
+
+  const getLabelText = (): string => {
+    if (typeof label === 'string')
+      return label
+    if (typeof label === 'function')
+      return label()
+    if (typeof key === 'string')
+      return key
+    return '字段'
+  }
+
   if (_required) {
-    const message = `${typeof label === 'string' ? label : typeof label === 'function' ? label() : typeof key === 'string' ? key : '字段'}不能为空`
-    _rule = {
+    const message = `${getLabelText()}不能为空`
+    const requiredRule: FormItemRule = {
       required: true,
       message,
       trigger: ['input', 'blur'],
     }
-  }
-  if (rule) {
-    if (_rule) {
-      Object.assign(_rule, rule)
+
+    if (rule) {
+      if (Array.isArray(rule)) {
+        return [requiredRule, ...rule]
+      }
+      return {
+        ...requiredRule,
+        ...rule,
+      }
     }
-    else {
-      _rule = rule
-    }
+
+    return requiredRule
   }
-  return _rule
+
+  return rule
 }

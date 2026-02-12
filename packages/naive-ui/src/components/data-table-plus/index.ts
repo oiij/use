@@ -1,5 +1,5 @@
-import type { ButtonProps, DataTableColumns, DataTableFilterState, DataTableInst, DataTableProps, DataTableSortState, PaginationProps } from 'naive-ui'
-import type { FilterState, TableBaseColumn } from 'naive-ui/es/data-table/src/interface'
+import type { DataTableColumns, DataTableFilterState, DataTableInst, DataTableProps, DataTableSortState, PaginationProps } from 'naive-ui'
+import type { FilterState, RowKey, TableBaseColumn } from 'naive-ui/es/data-table/src/interface'
 import type { CSSProperties, Ref, ShallowRef } from 'vue'
 import type { ComponentExposed } from 'vue-component-type-helpers'
 import type { DataObject, DataRequestFields, UseDataRequestReturns } from '../../composables/use-data-request'
@@ -59,8 +59,6 @@ export type DataTablePlusFields = DataRequestFields & {
 export type DataTablePlusProps<P extends DataObject = DataObject, D extends DataObject = DataObject, R extends DataObject = DataObject> = RemoteRequestProps<P, D> & {
   /** 标题 */
   title?: string
-  /** 滚动到顶部配置 */
-  scrollTop?: number | boolean | { top?: number, buttonProps?: ButtonProps & ClassStyle }
   /** 表格列配置 */
   columns?: DataTableColumns<R>
   /** 字段配置 */
@@ -88,21 +86,13 @@ export type DataTablePlusEmits<P extends DataObject = DataObject, D extends Data
   (e: 'clickRow', row: R, index: number, event: MouseEvent, currentData: R[]): void
   /** 右键点击行事件 */
   (e: 'contextMenuRow', row: R, index: number, event: MouseEvent, currentData: R[]): void
-  /** 加载事件 */
-  (e: 'load', row: R): Promise<void>
-  /** 滚动事件 */
-  (e: 'scroll', ev: Event): void
-  /** 滚动到底部事件 */
-  (e: 'scrollBottom', ev: Event): void
   /** 更新选中行键事件 */
   (e: 'update:checkedRowKeys',
-    keys: (string | number)[],
-    rows: (R | undefined)[],
+    keys: RowKey[],
+    rows: R[],
     meta: { row: R | undefined, action: 'check' | 'uncheck' | 'checkAll' | 'uncheckAll' },
     currentData: R[]
   ): void
-  /** 更新展开行键事件 */
-  (e: 'update:expandedRowKeys', keys: (string | number)[], currentData: R[]): void
   /** 更新筛选事件 */
   (e: 'update:filters', filterState: FilterState, sourceColumn: TableBaseColumn): void
   /** 更新排序事件 */
@@ -111,6 +101,8 @@ export type DataTablePlusEmits<P extends DataObject = DataObject, D extends Data
   (e: 'update:page', page: number): void
   /** 更新每页大小事件 */
   (e: 'update:pageSize', pageSize: number): void
+  /** 成功事件 */
+  (e: 'loadedRows', data: R[]): void
 }
 
 /**

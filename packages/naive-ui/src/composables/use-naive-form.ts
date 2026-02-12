@@ -3,7 +3,7 @@ import type { FormInst, FormItemRule, FormRules } from 'naive-ui'
 import type { MaybeRefOrGetter, Ref, TemplateRef } from 'vue'
 import type { DataObject } from './use-data-request'
 import { createEventHook } from '@vueuse/core'
-import { cloneDeep, merge } from 'es-toolkit/object'
+import { cloneDeep } from 'es-toolkit/object'
 import { isPlainObject } from 'es-toolkit/predicate'
 import { reactive, ref, toRaw, toValue, watchEffect } from 'vue'
 
@@ -89,14 +89,14 @@ export function useNaiveForm<T extends DataObject = DataObject>(formInstRef: Tem
   const cacheValue = cloneDeep(toValue(value) ?? {})
 
   const formValueRef = ref(toValue(value) ?? {}) as Ref<T>
-
   watchEffect(() => {
     formValueRef.value = toValue(value) ?? {} as T
   })
 
   const formRulesRef = ref(toValue(rules)) as Ref<UseNaiveFormRules<T>>
-
-  watchEffect(() => formRulesRef.value = toValue(rules) ?? {} as UseNaiveFormRules<T>)
+  watchEffect(() => {
+    formRulesRef.value = toValue(rules) ?? {} as UseNaiveFormRules<T>
+  })
 
   const formProps = {
     model: reactive(formValueRef.value),
@@ -107,14 +107,14 @@ export function useNaiveForm<T extends DataObject = DataObject>(formInstRef: Tem
 
   /**
    * 设置表单值
-   * @param _value - 要设置的值
+   * @param value - 要设置的值
    * @example
    * ```ts
    * setValue({ name: '张三' })
    * ```
    */
-  function setValue(_value: Partial<T>) {
-    Object.assign(formValueRef.value, _value)
+  function setValue(value: Partial<T>) {
+    Object.assign(formValueRef.value, value)
   }
 
   /**
@@ -130,11 +130,11 @@ export function useNaiveForm<T extends DataObject = DataObject>(formInstRef: Tem
    * ```
    */
   function validate() {
+    if (!formInstRef.value) {
+      throw new Error('useNaiveForm: formInstRef is not found.')
+    }
     return new Promise<{ warnings?: ValidateError[][] }>((resolve, reject) => {
-      if (!formInstRef.value) {
-        return reject(new Error('useNaiveForm: formInstRef is not found.'))
-      }
-      formInstRef.value.validate().then((res) => {
+      formInstRef.value?.validate().then((res) => {
         onValidatedEvent.trigger(toRaw(toValue(formValueRef)))
         return resolve(res)
       }).catch(reject)
@@ -172,8 +172,7 @@ export function useNaiveForm<T extends DataObject = DataObject>(formInstRef: Tem
    */
   function resetForm() {
     clear()
-    const _cacheValue = cloneDeep(cacheValue)
-    merge(formValueRef.value, _cacheValue)
+    Object.assign(formValueRef.value, cloneDeep(cacheValue))
   }
 
   /**

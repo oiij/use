@@ -18,7 +18,7 @@ watch(copied, () => {
     emit('copied', value)
   }
 })
-function onClick(ev: MouseEvent) {
+function handleClick(ev: MouseEvent) {
   ev.preventDefault()
   copy()
 }
@@ -27,7 +27,7 @@ function onClick(ev: MouseEvent) {
 <template>
   <NTooltip v-bind="tooltipProps">
     <template #trigger>
-      <div :style="{ cursor: 'pointer' }" @click="onClick">
+      <div :style="{ cursor: 'pointer' }" @click="handleClick">
         <slot>
           <NButton quaternary size="tiny" v-bind="buttonProps">
             <template #icon>

@@ -187,9 +187,6 @@ function onContextMenuRow(data: any) {
 function onUpdateCheckedRowKeys(key: any, rows: any, meta: any) {
   console.log(key, rows, meta)
 }
-function onScrollBottom() {
-  console.log('bottom')
-}
 </script>
 
 <template>
@@ -199,23 +196,15 @@ function onScrollBottom() {
       ref="data-table-ref"
       pagination
       search
-      scroll-top
-      infinite-scroll
       title="数据表格"
       :style="{ width: '100%', height: '500px' }"
       :api="api"
-      :filter-options="filterOptions"
-      filter-collapsed-type="modal"
-      filter-modal-trigger="manual"
-      :filter-modal-props="{ contentStyle: { width: '600px' } }"
-      :clearable="true"
       :columns="columns"
       :columns-filter-options="(filters) => ({ filterPage: filters.page, filters })"
       @click-row="onClickRow"
       @context-menu-row="onContextMenuRow"
       @success="onLoaded"
       @update:checked-row-keys="onUpdateCheckedRowKeys"
-      @scroll-bottom="onScrollBottom"
     >
       <template #filter>
         <NPresetForm ref="preset-form-ref" :options="filterOptions" :form-props="{ labelPlacement: 'top', showFeedback: true }" :grid-props="{ xGap: 10, collapsed }" />

@@ -91,18 +91,10 @@ export type PresetSelectProps<V extends PresetSelectValue, P extends DataObject 
  * @template R 列表项类型
  */
 export type PresetSelectEmits<V extends PresetSelectValue, P extends DataObject = DataObject, D extends DataObject = DataObject, R extends DataObject = DataObject> = RemoteRequestEmits<P, D> & {
-  /** 失去焦点事件 */
-  (e: 'blur', ev: FocusEvent): void
-  /** 清空事件 */
-  (e: 'clear'): void
-  /** 创建选项事件 */
-  (e: 'create', label: string): SelectOption
-  /** 获得焦点事件 */
-  (e: 'focus', ev: FocusEvent): void
-  /** 滚动事件 */
-  (e: 'scroll', ev: Event): void
   /** 搜索事件 */
-  (e: 'search', value: string): void
+  (e: 'search', val: string): void
+  /** 更新显示事件 */
+  (e: 'update:show', show: boolean): void
   /** 更新值事件 */
   (e: 'update:value', val: V | null, option: SelectOption | SelectOption[] | null, raw: R | R[] | null): void
   /** 更新页码事件 */

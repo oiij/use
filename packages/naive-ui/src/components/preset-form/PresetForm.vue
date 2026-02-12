@@ -1,9 +1,9 @@
 <script setup lang='ts' generic=" V extends DataObject">
 import type { FormInst, FormRules } from 'naive-ui'
 import type { DataObject } from '../../composables/use-data-request'
-import type { PresetFormExpose, PresetFormProps } from './index'
+import type { PresetFormExpose, PresetFormOptionItem, PresetFormProps } from './index'
 import { NButton, NCollapseTransition, NDivider, NForm, NFormItem, NGi, NGrid } from 'naive-ui'
-import { computed, ref, toValue, useTemplateRef } from 'vue'
+import { computed, ref, useTemplateRef } from 'vue'
 import { useNaiveForm } from '../../composables/use-naive-form'
 import { NPresetInput } from '../preset-input/index'
 import { mergeRule } from './_utils'
@@ -23,13 +23,16 @@ onValidated((value) => {
 })
 const filterCollapsed = ref(false)
 
-const _options = computed(() => {
-  return options?.filter(f => typeof f.hidden === 'function' ? !f.hidden() : !f.hidden)
-    .filter(f => typeof f.collapsed === 'function' ? !f.collapsed() : !f.collapsed)
+const visibleOptions = computed(() => {
+  return options?.filter(f => typeof f.hidden === 'function' ? !f.hidden() : !f.hidden) || []
 })
+
+const _options = computed(() => {
+  return visibleOptions.value.filter(f => typeof f.collapsed === 'function' ? !f.collapsed() : !f.collapsed)
+})
+
 const _collapsedOptions = computed(() => {
-  return options?.filter(f => typeof f.hidden === 'function' ? !f.hidden() : !f.hidden)
-    .filter(f => typeof f.collapsed === 'function' ? !f.collapsed() : f.collapsed)
+  return visibleOptions.value.filter(f => typeof f.collapsed === 'function' ? f.collapsed() : f.collapsed)
 })
 
 function onPresetInputUpdate(val: any, key?: keyof V) {
@@ -37,7 +40,24 @@ function onPresetInputUpdate(val: any, key?: keyof V) {
     setValue({ [key]: val } as V)
   }
 }
-
+function presetFormProps(options: PresetFormOptionItem<V>[]) {
+  return options.map((option) => {
+    const { key, label, required, span, rule, itemProps, render, ...inputOption } = option
+    const { offset, suffix, ...extraItemProps } = itemProps ?? {}
+    return {
+      key: typeof key === 'string' ? key : undefined,
+      label: typeof label === 'function' ? label() : label,
+      span: typeof span === 'function' ? span() : span ?? itemProps?.span,
+      required,
+      rule,
+      offset,
+      suffix,
+      itemProps: extraItemProps,
+      render,
+      inputOption,
+    }
+  })
+}
 const expose: PresetFormExpose<V> = {
   formInst,
   formValue,
@@ -55,10 +75,10 @@ const expose: PresetFormExpose<V> = {
 const templateBind = computed(() => {
   return {
     ...expose,
-    formInst: toValue(formInst),
-    formValue: toValue(formValue),
-    formRules: toValue(formRules),
-    formProps: toValue(_formProps),
+    formInst: formInst.value,
+    formValue: formValue.value,
+    formRules: formRules.value,
+    formProps: _formProps,
   }
 })
 
@@ -72,20 +92,20 @@ defineExpose(expose)
       <template v-if="_options && _options.length > 0">
         <NGrid v-bind="gridProps">
           <NGi
-            v-for="({ key, label, required, span, rule, itemProps: { offset, span: _span, suffix, ..._itemProps } = {}, render, ...opt }, _index) in _options"
-            :key="_index"
-            :span="typeof span === 'function' ? span() : span ?? _span"
+            v-for="({ span, offset, suffix, label, key, required, rule, itemProps, render, inputOption }, index) in presetFormProps(_options)"
+            :key="index"
+            :span="span"
             v-bind="{ offset, suffix }"
           >
             <template #default="{ overflow }">
               <NFormItem
-                :label="typeof label === 'function' ? label() : label"
-                :path="typeof key === 'string' ? key : undefined"
+                :label=" label"
+                :path="key"
                 :rule="mergeRule({ key, label, required, rule })"
-                v-bind="_itemProps"
+                v-bind="itemProps"
               >
                 <component :is="render({ ...expose, overflow })" v-if="render" />
-                <NPresetInput v-else :options="opt" :value="key ? formValue[key] : undefined" @update:value="(val?:V[keyof V]) => onPresetInputUpdate(val, key)" />
+                <NPresetInput v-else :options="inputOption" :value="key ? formValue[key] : undefined" @update:value="(val?:V[keyof V]) => onPresetInputUpdate(val, key)" />
               </NFormItem>
             </template>
           </NGi>
@@ -100,20 +120,20 @@ defineExpose(expose)
         <NCollapseTransition :show="filterCollapsed">
           <NGrid v-bind="gridProps">
             <NGi
-              v-for="({ key, label, required, span, rule, itemProps: { offset, span: _span, suffix, ..._itemProps } = {}, render, ...opt }, _index) in _collapsedOptions"
-              :key="_index"
-              :span="typeof span === 'function' ? span() : span ?? _span"
+              v-for="({ span, offset, suffix, label, key, required, rule, itemProps, render, inputOption }, index) in presetFormProps(_collapsedOptions)"
+              :key="index"
+              :span="span"
               v-bind="{ offset, suffix }"
             >
               <template #default="{ overflow }">
                 <NFormItem
-                  :label="typeof label === 'function' ? label() : label"
-                  :path="typeof key === 'string' ? key : undefined"
+                  :label=" label"
+                  :path="key"
                   :rule="mergeRule({ key, label, required, rule })"
-                  v-bind="_itemProps"
+                  v-bind="itemProps"
                 >
                   <component :is="render({ ...expose, overflow })" v-if="render" />
-                  <NPresetInput v-else :options="opt" :value="key ? formValue[key] : undefined" @update:value="(val?:V[keyof V]) => onPresetInputUpdate(val, key)" />
+                  <NPresetInput v-else :options="inputOption" :value="key ? formValue[key] : undefined" @update:value="(val?:V[keyof V]) => onPresetInputUpdate(val, key)" />
                 </NFormItem>
               </template>
             </NGi>

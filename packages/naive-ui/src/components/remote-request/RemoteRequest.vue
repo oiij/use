@@ -1,7 +1,7 @@
 <script setup lang='ts' generic="P extends DataObject, D extends DataObject, R extends DataObject">
 import type { DataObject } from '../../composables/use-data-request'
 import type { RemoteRequestEmits, RemoteRequestExpose, RemoteRequestProps } from './index'
-import { computed, toValue } from 'vue'
+import { computed } from 'vue'
 import { useDataRequest } from '../../composables/use-data-request'
 
 const { api, defaultParams, manual, fields, requestOptions, requestPlugins } = defineProps<RemoteRequestProps<P, D>>()
@@ -50,12 +50,12 @@ const expose: RemoteRequestExpose<P, D, R> = {
 const templateBind = computed(() => {
   return {
     ...expose,
-    loading: toValue(loading),
-    data: toValue(data),
-    error: toValue(error),
-    params: toValue(params),
-    list: toValue(list),
-    pagination: toValue(pagination),
+    loading: loading.value,
+    data: data.value,
+    error: error.value,
+    params: params.value,
+    list: list.value,
+    pagination: pagination.value,
   }
 })
 defineExpose(expose)

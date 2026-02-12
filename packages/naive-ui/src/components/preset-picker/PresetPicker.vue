@@ -17,6 +17,7 @@ const _fields = { label: 'label', value: 'value', ...fields }
 
 const checkedRowKeys = ref<(string | number)[]>([])
 const checkedRows: Ref<R[]> = ref([])
+
 const selectionColumn: TableColumn<any> = reactive({
   type: 'selection',
   multiple,
@@ -37,18 +38,20 @@ function showModal() {
   showModalFlag.value = true
 }
 function clickRowEffect(row: R) {
+  const rowValue = row?.[_fields.value]
   if (multiple) {
-    if (checkedRowKeys.value.includes(row?.[_fields.value])) {
-      checkedRowKeys.value = checkedRowKeys.value.filter(f => f !== row?.[_fields.value])
-      checkedRows.value = checkedRows.value.filter(f => f?.[_fields.value] !== row?.[_fields.value])
+    const index = checkedRowKeys.value.indexOf(rowValue)
+    if (index > -1) {
+      checkedRowKeys.value.splice(index, 1)
+      checkedRows.value = checkedRows.value.filter(f => f?.[_fields.value] !== rowValue)
     }
     else {
-      checkedRowKeys.value.push(row?.[_fields.value])
-      checkedRows.value.push(row as R)
+      checkedRowKeys.value.push(rowValue)
+      checkedRows.value.push(row)
     }
   }
   else {
-    checkedRowKeys.value = [row?.[_fields.value]]
+    checkedRowKeys.value = [rowValue]
     checkedRows.value = [row]
   }
 }
@@ -94,17 +97,19 @@ function clearValue() {
   emit('update:value', null, null)
 }
 const _label = computed(() => {
-  if (Array.isArray(value) && value.length > 0) {
-    return typeof fallbackLabel === 'string'
-      ? fallbackLabel
-      : value.map((m) => {
-          const item = checkedRows.value.find(f => f?.[_fields.value] === m)
-          return item && item?.[_fields.label] ? item[_fields.label] : typeof fallbackLabel === 'function' ? fallbackLabel(m) : m
-        }).join(',')
+  if (Array.isArray(value)) {
+    if (value.length === 0)
+      return placeholder
+    if (typeof fallbackLabel === 'string')
+      return fallbackLabel
+    return value.map((m) => {
+      const item = checkedRows.value.find(f => f?.[_fields.value] === m)
+      return item?.[_fields.label] ?? (typeof fallbackLabel === 'function' ? fallbackLabel(m) : m)
+    }).join(',')
   }
-  if (value && !Array.isArray(value)) {
+  if (value !== undefined && value !== null) {
     const item = checkedRows.value.find(f => f?.[_fields.value] === value)
-    return item && item?.[_fields.label] ? item?.[_fields.label] : typeof fallbackLabel === 'function' ? fallbackLabel(value) : (fallbackLabel ?? value)
+    return item?.[_fields.label] ?? (typeof fallbackLabel === 'function' ? fallbackLabel(value) : (fallbackLabel ?? value))
   }
   return placeholder
 })
@@ -113,6 +118,12 @@ const showClearButton = computed(() => {
 })
 const checkedCount = computed(() => Array.isArray(value) ? value.length : undefined)
 
+function handleLoadedRows(rows: R[]) {
+  const newRows = rows.filter((f) => {
+    return checkedRowKeys.value.includes(f?.[_fields.value]) && !checkedRows.value.some(s => s?.[_fields.value] === f?.[_fields.value])
+  })
+  checkedRows.value.push(...newRows)
+}
 const expose: PresetPickerExpose<R> = {
   showModalFlag,
   checkedRowKeys,
@@ -132,10 +143,10 @@ const expose: PresetPickerExpose<R> = {
 const templateBind = computed(() => {
   return {
     ...expose,
-    showModalFlag: toValue(showModalFlag),
-    checkedRowKeys: toValue(checkedRowKeys),
-    checkedRows: toValue(checkedRows),
-    columns: toValue(_columns),
+    showModalFlag: showModalFlag.value,
+    checkedRowKeys: checkedRowKeys.value,
+    checkedRows: checkedRows.value,
+    columns: _columns,
   }
 })
 
@@ -177,14 +188,8 @@ defineExpose(expose)
         v-bind="modalProps"
         @positive-click="onPositiveClick"
         @negative-click="onNegativeClick"
-        @close="emit('close')"
-        @after-enter="emit('afterEnter')"
-        @after-leave="emit('afterLeave')"
-        @esc="emit('esc')"
-        @mask-click="emit('maskClick')"
-        @update:show="(val:boolean) => emit('update:show', val)"
       >
-        <slot v-bind="templateBind" />
+        <slot v-bind="templateBind" @loaded-rows="handleLoadedRows" />
         <template #action>
           <slot name="modal-action" />
         </template>

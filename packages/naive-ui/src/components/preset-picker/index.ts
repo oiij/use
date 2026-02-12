@@ -86,18 +86,6 @@ export type PresetPickerProps<V extends PresetPickerValue, R extends DataObject 
 export type PresetPickerEmits<V extends PresetPickerValue, R extends DataObject = DataObject> = {
   /** 更新值事件 */
   (e: 'update:value', val: V | null, raw: R | R[] | null): void
-  /** 进入后事件 */
-  (e: 'afterEnter'): void
-  /** 离开后事件 */
-  (e: 'afterLeave'): void
-  /** 按下 Esc 键事件 */
-  (e: 'esc'): void
-  /** 点击遮罩层事件 */
-  (e: 'maskClick'): void
-  /** 更新显示状态事件 */
-  (e: 'update:show', value: boolean): void
-  /** 关闭事件 */
-  (e: 'close'): void
   /** 点击取消按钮事件 */
   (e: 'negativeClick'): void
   /** 点击确认按钮事件 */
