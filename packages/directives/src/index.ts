@@ -9,6 +9,9 @@ import { longPress } from './long-press'
 import { throttle } from './throttle'
 import { watermark } from './watermark'
 
+/**
+ * 指令集合
+ */
 const directives = {
   arrayBufferSrc,
   clickOutside,
@@ -21,7 +24,26 @@ const directives = {
   watermark,
 } as Record<'arrayBufferSrc' | 'clickOutside' | 'copy' | 'debounce' | 'intoView' | 'lazyLoad' | 'longPress' | 'throttle' | 'watermark', Directive>
 
-const setupDirective = {
+/**
+ * 指令安装对象
+ *
+ * @example
+ * ```ts
+ * import { createApp } from 'vue'
+ * import { setupDirective } from '@oiij/directives'
+ * import App from './App.vue'
+ *
+ * const app = createApp(App)
+ * app.use(setupDirective)
+ * app.mount('#app')
+ * ```
+ */
+export const setupDirective = {
+  /**
+   * 安装指令
+   *
+   * @param app - Vue 应用实例
+   */
   install(app: App) {
     Object.entries(directives).forEach(([key, directive]) => {
       app.directive(key, directive)
@@ -42,6 +64,10 @@ declare module 'vue' {
     vWatermark: typeof watermark
   }
 }
+
+/**
+ * 导出指令
+ */
 export {
   arrayBufferSrc,
   clickOutside,
@@ -51,7 +77,6 @@ export {
   intoView,
   lazyLoad,
   longPress,
-  setupDirective,
   throttle,
   watermark,
 }

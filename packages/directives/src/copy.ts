@@ -1,16 +1,33 @@
 import type { Directive } from 'vue'
 
+/**
+ * 绑定值类型
+ */
 type BindingValue = {
+  /**
+   * 要复制的内容
+   */
   value: string
+  /**
+   * 复制成功回调
+   */
   success?: (value: string) => void
+  /**
+   * 复制失败回调
+   */
   error?: (value: string) => void
 } | string
+
+/**
+ * 目标元素类型
+ */
 type TargetElement = HTMLElement & {
   _copy_value?: string
   _copy_success?: (value: string) => void
   _copy_error?: (value: string) => void
   _copy_controller?: AbortController
 }
+
 function setValue(target: TargetElement, value: BindingValue) {
   if (typeof value === 'object') {
     target._copy_value = value.value
@@ -21,6 +38,33 @@ function setValue(target: TargetElement, value: BindingValue) {
     target._copy_value = value
   }
 }
+
+/**
+ * 复制指令
+ *
+ * 点击元素时复制指定内容到剪贴板
+ *
+ * @example
+ * ```vue
+ * <template>
+ *   <!-- 基本用法 -->
+ *   <button v-copy="copyText">复制文本</button>
+ *
+ *   <!-- 带回调 -->
+ *   <button v-copy="{
+ *     value: copyText,
+ *     success: () => console.log('复制成功'),
+ *     error: () => console.log('复制失败')
+ *   }">复制文本</button>
+ * </template>
+ *
+ * <script setup>
+ * import { ref } from 'vue'
+ *
+ * const copyText = ref('要复制的文本')
+ * </script>
+ * ```
+ */
 export const copy: Directive<TargetElement, BindingValue> = {
   mounted(target, binding) {
     setValue(target, binding.value)

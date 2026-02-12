@@ -1,7 +1,7 @@
 {
   "name": "@oiij/three-js",
   "type": "module",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "description": "A Vue Composable for Three.js",
   "author": "oiij",
   "license": "MIT",

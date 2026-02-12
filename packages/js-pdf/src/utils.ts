@@ -19,6 +19,7 @@ function file2Buffer(file: File): Promise<ArrayBuffer> {
     reader.readAsArrayBuffer(file)
   })
 }
+
 function createCanvas(width: number, height: number, id: string) {
   const canvas = document.createElement('canvas')
   const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
@@ -30,6 +31,7 @@ function createCanvas(width: number, height: number, id: string) {
     ctx,
   }
 }
+
 function page2Canvas(page: PDFPageProxy, id: string): Promise<HTMLCanvasElement> {
   return new Promise((resolve, reject) => {
     const pixelRatio = Math.max(window.devicePixelRatio, 2)
@@ -45,6 +47,7 @@ function page2Canvas(page: PDFPageProxy, id: string): Promise<HTMLCanvasElement>
     }).promise.then(() => resolve(canvas)).catch(e => reject(e))
   })
 }
+
 async function pdf2Canvases(pdf: PDFDocumentProxy) {
   try {
     const pages = await Promise.all(Array.from({ length: pdf.numPages }).map((_, i) => pdf.getPage(i + 1)))
@@ -61,6 +64,25 @@ async function pdf2Canvases(pdf: PDFDocumentProxy) {
     return Promise.reject(error)
   }
 }
+
+/**
+ * 打开 PDF 文件
+ *
+ * @param url - PDF 文件的 URL 或 File 对象
+ * @returns PDF 文档、页面、ID 和画布
+ *
+ * @example
+ * ```ts
+ * import { openPdf } from '@oiij/js-pdf'
+ *
+ * // 从 URL 打开
+ * const { pdf, canvases } = await openPdf('https://example.com/file.pdf')
+ *
+ * // 从 File 对象打开
+ * const file = document.querySelector('input[type="file"]').files[0]
+ * const { pdf, canvases } = await openPdf(file)
+ * ```
+ */
 export async function openPdf(url?: string | URL | File) {
   try {
     if (url && (typeof url === 'string' || url instanceof URL)) {
@@ -90,6 +112,7 @@ export async function openPdf(url?: string | URL | File) {
     return Promise.reject(error)
   }
 }
+
 function canvas2Blob(canvas: HTMLCanvasElement): Promise<Blob> {
   return new Promise((resolve, reject) => {
     try {
@@ -105,6 +128,21 @@ function canvas2Blob(canvas: HTMLCanvasElement): Promise<Blob> {
     }
   })
 }
+
+/**
+ * 将画布转换为 PDF
+ *
+ * @param canvases - 画布数组
+ * @param fileName - 文件名
+ *
+ * @example
+ * ```ts
+ * import { canvas2Pdf } from '@oiij/js-pdf'
+ *
+ * // 将画布数组转换为 PDF 并保存
+ * canvas2Pdf(canvases, 'output.pdf')
+ * ```
+ */
 export function canvas2Pdf(canvases: HTMLCanvasElement[], fileName: string) {
   let doc: JsPDF | null = null
 
@@ -132,6 +170,21 @@ export function canvas2Pdf(canvases: HTMLCanvasElement[], fileName: string) {
   })
 }
 
+/**
+ * 将画布转换为 ZIP 文件
+ *
+ * @param canvases - 画布数组
+ * @param fileName - 文件名
+ * @returns Promise<Blob[]>
+ *
+ * @example
+ * ```ts
+ * import { canvas2Zip } from '@oiij/js-pdf'
+ *
+ * // 将画布数组转换为 ZIP 并保存
+ * await canvas2Zip(canvases, 'output')
+ * ```
+ */
 export function canvas2Zip(canvases: HTMLCanvasElement[], fileName: string) {
   return new Promise((resolve, reject) => {
     const zip = new JsZip()
@@ -146,6 +199,22 @@ export function canvas2Zip(canvases: HTMLCanvasElement[], fileName: string) {
     }).catch(error => reject(error))
   })
 }
+
+/**
+ * 读取 PDF 文件
+ *
+ * @param buffer - PDF 文件的 ArrayBuffer
+ * @returns PDF 文档、页面、ID 和画布
+ *
+ * @example
+ * ```ts
+ * import { readPdfFile } from '@oiij/js-pdf'
+ *
+ * // 读取 PDF 文件缓冲区
+ * const buffer = await file.arrayBuffer()
+ * const { pdf, canvases } = await readPdfFile(buffer)
+ * ```
+ */
 export async function readPdfFile(buffer: ArrayBuffer) {
   const pdf = await getDocument(buffer).promise
   const { pages, id, canvases } = await pdf2Canvases(pdf)

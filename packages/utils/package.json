@@ -1,7 +1,7 @@
 {
   "name": "@oiij/utils",
   "type": "module",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": " A collection of utility functions for JavaScript and TypeScript.",
   "author": "oiij",
   "license": "MIT",

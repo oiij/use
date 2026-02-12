@@ -23,7 +23,7 @@
     "docs:build": "vitepress build",
     "docs:preview": "vitepress preview",
     "pkg:dev": "pnpm -r --parallel run dev",
-    "pkg:build": "pnpm -F @oiij/use -F @oiij/css-render -F @oiij/markdown-it build && pnpm -F !@oiij/use -F !@oiij/css-render -F !@oiij/markdown-it build",
+    "pkg:build": "pnpm -F @oiij/use -F @oiij/css-render  build && pnpm -F !@oiij/use -F !@oiij/css-render  build",
     "publish:all": "pnpm -r run publish",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",

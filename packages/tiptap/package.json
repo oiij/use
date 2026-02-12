@@ -1,7 +1,7 @@
 {
   "name": "@oiij/tiptap",
   "type": "module",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "description": "A Vue Composable for Tiptap",
   "author": "oiij",
   "license": "MIT",

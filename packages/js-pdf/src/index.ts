@@ -2,50 +2,163 @@ import type { HTMLFontFace, ImageOptions, jsPDFOptions, TextOptions } from 'jspd
 import { jsPDF as JsPDF } from 'jspdf'
 
 export * from './utils'
-type Color = string | [number, number, number, number]
-type TextStyle = {
-  fontSize?: number
-  fontName?: string
-  fontStyle?: HTMLFontFace['style']
-  fontWeight?: HTMLFontFace['weight']
-  textColor?: Color
 
+/**
+ * 颜色类型
+ */
+type Color = string | [number, number, number, number]
+
+/**
+ * 文本样式类型
+ */
+type TextStyle = {
+  /**
+   * 字体大小
+   */
+  fontSize?: number
+  /**
+   * 字体名称
+   */
+  fontName?: string
+  /**
+   * 字体样式
+   */
+  fontStyle?: HTMLFontFace['style']
+  /**
+   * 字体粗细
+   */
+  fontWeight?: HTMLFontFace['weight']
+  /**
+   * 文本颜色
+   */
+  textColor?: Color
 }
+
+/**
+ * 绘制样式类型
+ */
 type DrawStyle = {
+  /**
+   * 绘制颜色
+   */
   drawColor?: Color
+  /**
+   * 填充颜色
+   */
   fillColor?: Color
+  /**
+   * 字符间距
+   */
   charSpace?: number
+  /**
+   * 线宽
+   */
   lineWidth?: number
+  /**
+   * 样式
+   */
   style?: 'S' | 'F' | 'FD' | 'DF' | null
 }
-type PDFStyle = TextStyle & DrawStyle & {
 
+/**
+ * PDF 样式类型
+ */
+type PDFStyle = TextStyle & DrawStyle & {
 }
+
+/**
+ * PDF 数据类型
+ */
 type PDFDataType = 'text' | 'image' | 'circle' | 'line' | 'lines'
 
+/**
+ * 文本选项类型
+ */
 type OTextOptions = TextOptions & TextStyle
+
+/**
+ * 图片选项类型
+ */
 type OImageOptions = Omit<ImageOptions, 'imageData'> & {
+  /**
+   * 图片数据
+   */
   imageData: ImageOptions['imageData'] | (() => ImageOptions['imageData']) | (() => Promise<ImageOptions['imageData']>)
 }
+
+/**
+ * 圆形选项类型
+ */
 type OCircleOptions = DrawStyle & {
+  /**
+   * x 坐标
+   */
   x: number
+  /**
+   * y 坐标
+   */
   y: number
+  /**
+   * 半径
+   */
   r: number
 }
+
+/**
+ * 线段选项类型
+ */
 type OLineOptions = DrawStyle & {
+  /**
+   * 起点 x 坐标
+   */
   x1: number
+  /**
+   * 起点 y 坐标
+   */
   y1: number
+  /**
+   * 终点 x 坐标
+   */
   x2: number
+  /**
+   * 终点 y 坐标
+   */
   y2: number
 }
+
+/**
+ * 多线段选项类型
+ */
 type OLinesOptions = DrawStyle & {
+  /**
+   * 线段数组
+   */
   lines: number[][]
+  /**
+   * x 坐标
+   */
   x: number
+  /**
+   * y 坐标
+   */
   y: number
+  /**
+   * 缩放比例
+   */
   scale?: [number, number]
+  /**
+   * 是否闭合
+   */
   closed?: boolean
 }
+
+/**
+ * PDF 数据行类型
+ */
 export type PDFDataRow<T extends PDFDataType = PDFDataType> = {
+  /**
+   * 数据类型
+   */
   type: T
 } & (
   T extends 'text' ? OTextOptions
@@ -71,6 +184,32 @@ function setDrawStyle(pdf: JsPDF, data: { fillColor: Color, drawColor: Color, li
   }
   pdf.setLineWidth(lineWidth)
 }
+
+/**
+ * 生成 PDF
+ *
+ * @param data - PDF 数据行数组
+ * @param options - jsPDF 选项
+ * @param globalStyle - 全局样式
+ * @returns PDF 实例
+ *
+ * @example
+ * ```ts
+ * import { generatePDF } from '@oiij/js-pdf'
+ *
+ * const { pdf } = await generatePDF([
+ *   {
+ *     type: 'text',
+ *     text: 'Hello World',
+ *     x: 10,
+ *     y: 10
+ *   }
+ * ])
+ *
+ * // 保存 PDF
+ * pdf.save('example.pdf')
+ * ```
+ */
 export async function generatePDF(data: PDFDataRow[], options?: jsPDFOptions, globalStyle?: PDFStyle) {
   const pdf = new JsPDF(options)
   const font = pdf.getFont()
