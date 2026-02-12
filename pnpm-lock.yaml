@@ -628,9 +628,6 @@ importers:
       '@oiij/css-render':
         specifier: workspace:*
         version: link:../css-render
-      '@oiij/markdown-it':
-        specifier: workspace:*
-        version: link:../markdown-it
       '@oiij/use':
         specifier: workspace:*
         version: link:../core

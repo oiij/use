@@ -20,7 +20,7 @@ const __INJECTION_KEY__ = Symbol('auto-i18n')
  * </script>
  * ```
  */
-export function useAutoI18n<T extends I18n = I18n>() {
+export function useAutoI18n<T extends Record<string, unknown>>() {
   const i18n = inject<AutoI18nInstance<T>>(__INJECTION_KEY__)
   if (!i18n) {
     throw new Error('Auto i18n is not provided. Make sure to install createAutoI18n plugin.')
@@ -57,7 +57,7 @@ export function useAutoI18n<T extends I18n = I18n>() {
  * app.mount('#app')
  * ```
  */
-export function createAutoI18n<T extends I18n>(i18n: T) {
+export function createAutoI18n<T extends Record<string, unknown>>(i18n: I18n<T>) {
   const autoI18n = setupAutoI18n(i18n)
   return {
     install(app: App) {
@@ -69,4 +69,4 @@ export function createAutoI18n<T extends I18n>(i18n: T) {
 }
 
 // 导出类型
-export type { AutoI18nInstance, Language } from './setup-auto-i18n'
+export type { AutoI18nInstance } from './setup-auto-i18n'

@@ -1,7 +1,7 @@
 {
   "name": "@oiij/auto-i18n",
   "type": "module",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Vue I18n utilities and composables for Vue 3",
   "author": "oiij",
   "license": "MIT",

@@ -4,16 +4,6 @@ import { useLocalStorage, useNavigatorLanguage } from '@vueuse/core'
 import { computed, watchEffect } from 'vue'
 
 /**
- * 从 I18n 实例中提取 locale 类型
- */
-type ExtractLocale<T extends I18n> = T['global']['locale']
-
-/**
- * 语言设置类型
- */
-export type Language = 'auto' | string
-
-/**
  * 设置自动国际化
  *
  * 提供国际化相关的工具方法和状态管理
@@ -31,19 +21,19 @@ export type Language = 'auto' | string
  * console.log(autoI18n.language.value) // 当前语言设置
  * ```
  */
-export function setupAutoI18n<T extends I18n>(i18n: T) {
-  type Locale = ExtractLocale<T>
-  const language = useLocalStorage<Language>('__LANGUAGE__PERSIST__', 'auto')
+export function setupAutoI18n<T extends Record<string, unknown>>(i18n: I18n<T, any, any, string, false>) {
+  const language = useLocalStorage<keyof T | 'auto'>('__LANGUAGE__PERSIST__', 'auto')
   const { language: navigatorLanguage } = useNavigatorLanguage()
   const _locale = computed(() => language.value === 'auto' ? navigatorLanguage.value : language.value)
+  const { locale } = i18n.global
 
   /**
    * 设置语言环境
    *
    * @param lang - 要设置的语言环境
    */
-  function setLocale(lang: Locale) {
-    i18n.global.locale = lang
+  function setLocale(lang: keyof T) {
+    language.value = lang
   }
 
   /**
@@ -51,17 +41,19 @@ export function setupAutoI18n<T extends I18n>(i18n: T) {
    *
    * @param lang - 要设置的语言，可以是 'auto' 或具体的语言环境
    */
-  function setLanguage(lang: Language) {
+  function setLanguage(lang: keyof T | 'auto') {
     language.value = lang
   }
   watchEffect(() => {
-    i18n.global.locale = _locale.value as Locale
+    locale.value = _locale.value as any
   })
-
+  watchEffect(() => {
+    language.value = _locale.value as any
+  })
   return {
     language,
     navigatorLanguage,
-    locale: i18n.global.locale,
+    locale: locale as unknown as keyof T,
     setLocale,
     setLanguage,
   }
@@ -73,4 +65,4 @@ export function setupAutoI18n<T extends I18n>(i18n: T) {
  * @remarks
  * 由 setupAutoI18n 函数返回的对象类型
  */
-export type AutoI18nInstance<T extends I18n = I18n> = ReturnType<typeof setupAutoI18n<T>>
+export type AutoI18nInstance<T extends Record<string, unknown>> = ReturnType<typeof setupAutoI18n<T>>
