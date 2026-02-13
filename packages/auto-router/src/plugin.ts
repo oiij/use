@@ -20,8 +20,8 @@ export function appendRouterMeta(route: EditableTreeNode) {
   if (sort) {
     route.addToMeta({ sort: Number(sort) })
   }
-  route.path = route.path.replace(reg, '')
+  route.path = route.path.replace(reg, '').replaceAll('index', '')
   if (route.name) {
-    route.name = route.name.replace(reg, '')
+    route.name = route.name.replace(reg, '').replaceAll('index', '')
   }
 }
