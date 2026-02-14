@@ -54,6 +54,7 @@
     "@oiij/naive-ui": "workspace:*",
     "@oiij/ogl": "workspace:*",
     "@oiij/shiki": "workspace:*",
+    "@oiij/spline": "workspace:*",
     "@oiij/three-js": "workspace:*",
     "@oiij/tiptap": "workspace:*",
     "@oiij/use": "workspace:*",

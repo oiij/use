@@ -82,6 +82,7 @@ export default defineConfig({
           ...conversionPath('packages/markdown-it/demos', '/markdown-it'),
           ...conversionPath('packages/ogl/demos', '/ogl'),
           ...conversionPath('packages/shiki/demos', '/shiki'),
+          ...conversionPath('packages/spline/demos', '/spline'),
           ...conversionPath('packages/three-js/demos', '/three-js'),
           ...conversionPath('packages/tiptap/demos', '/tiptap'),
           ...conversionPath('packages/v-charts/demos', '/v-charts'),

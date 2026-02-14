@@ -75,6 +75,10 @@ catalogs:
     '@vueuse/core': ^14.1.0
     shiki: ^3.20.0
     vue: ^3.5.27
+  spline:
+    '@splinetool/runtime': ^1.12.56
+    '@vueuse/core': ^14.1.0
+    vue: ^3.5.27
   three-js:
     '@tweakpane/core': ^2.0.5
     '@tweakpane/plugin-essentials': ^0.2.1

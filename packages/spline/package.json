@@ -1,0 +1,52 @@
+{
+  "name": "@oiij/spline",
+  "type": "module",
+  "version": "0.0.3",
+  "description": "Spline 3D model loading composable for Vue 3",
+  "author": "oiij",
+  "license": "MIT",
+  "homepage": "https://github.com/oiij/use",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:oiij/use.git"
+  },
+  "bugs": "https://github.com/oiij/use/issues",
+  "keywords": [
+    "@oiij/spline",
+    "vue-i18n",
+    "vue3",
+    "composables"
+  ],
+  "sideEffects": false,
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "files": [
+    "LICENSE",
+    "README.md",
+    "dist",
+    "package.json"
+  ],
+  "scripts": {
+    "dev": "tsdown --watch",
+    "build": "tsc --noEmit && tsdown",
+    "bumpp": "bumpp --no-push",
+    "prepublishOnly": "pnpm build"
+  },
+  "peerDependencies": {
+    "@splinetool/runtime": "catalog:spline",
+    "@vueuse/core": "catalog:spline",
+    "vue": "catalog:spline"
+  },
+  "dependencies": {
+
+  },
+  "devDependencies": {
+    "@splinetool/runtime": "catalog:spline",
+    "@vueuse/core": "catalog:spline",
+    "vue": "catalog:spline"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
