@@ -8,7 +8,7 @@ import { useViewTransition } from './use-view-transition'
 export type UseThemeOptions = {
   /**
    * 存储在 localStorage 中的键名
-   * @default '__COLOR_MODE__'
+   * @default '__COLOR_MODE_PERSIST__'
    */
   storageKey?: string
   /**
@@ -41,7 +41,7 @@ export type UseThemeOptions = {
  * ```
  */
 export function useTheme(options?: UseThemeOptions) {
-  const { storageKey = '__COLOR_MODE__', viewTransitionOptions } = options ?? {}
+  const { storageKey = '__COLOR_MODE_PERSIST__', viewTransitionOptions } = options ?? {}
 
   const isDark = useDark({ storageKey })
   const preferredDark = usePreferredDark()

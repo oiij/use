@@ -6,6 +6,14 @@ import { setupAutoI18n } from './setup-auto-i18n'
 
 const __INJECTION_KEY__ = Symbol('auto-i18n')
 
+export type AutoI18nOptions = {
+  /**
+   * 存储语言的键名
+   * @default '__LANGUAGE_MODE_PERSIST__'
+   */
+  storageKey?: string
+}
+
 /**
  * 获取自动国际化实例
  *
@@ -34,6 +42,7 @@ export function useAutoI18n<T extends Record<string, unknown>>() {
  * 必须在 Vue I18n 之后安装
  *
  * @param i18n Vue I18n 实例
+ * @param options 自动国际化选项
  * @returns Vue 插件对象
  *
  * @example
@@ -53,12 +62,14 @@ export function useAutoI18n<T extends Record<string, unknown>>() {
  * })
  *
  * app.use(i18n)
- * app.use(createAutoI18n(i18n))
+ * app.use(createAutoI18n(i18n, {
+ *   storageKey: '__LANGUAGE_MODE_PERSIST__'
+ * }))
  * app.mount('#app')
  * ```
  */
-export function createAutoI18n<T extends Record<string, unknown>>(i18n: I18n<T>) {
-  const autoI18n = setupAutoI18n(i18n)
+export function createAutoI18n<T extends Record<string, unknown>>(i18n: I18n<T>, options?: AutoI18nOptions) {
+  const autoI18n = setupAutoI18n(i18n, options)
   return {
     install(app: App) {
       app.config.globalProperties.$autoI18n = autoI18n

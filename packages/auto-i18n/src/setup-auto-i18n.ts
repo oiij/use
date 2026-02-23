@@ -1,6 +1,7 @@
 import type { I18n } from 'vue-i18n'
-import { useLocalStorage, useNavigatorLanguage } from '@vueuse/core'
+import type { AutoI18nOptions } from './index'
 
+import { useLocalStorage, useNavigatorLanguage } from '@vueuse/core'
 import { computed, watchEffect } from 'vue'
 
 /**
@@ -9,6 +10,7 @@ import { computed, watchEffect } from 'vue'
  * 提供国际化相关的工具方法和状态管理
  *
  * @param i18n - Vue I18n 实例
+ * @param options - 自动国际化选项
  * @returns 自动国际化实例，包含语言管理工具方法
  *
  * @example
@@ -16,13 +18,16 @@ import { computed, watchEffect } from 'vue'
  * import { setupAutoI18n } from '@oiij/auto-i18n'
  * import { i18n } from './i18n'
  *
- * const autoI18n = setupAutoI18n(i18n)
+ * const autoI18n = setupAutoI18n(i18n, {
+ *   storageKey: '__LANGUAGE_MODE_PERSIST__'
+ * })
  * console.log(autoI18n.locale.value) // 当前语言环境
  * console.log(autoI18n.language.value) // 当前语言设置
  * ```
  */
-export function setupAutoI18n<T extends Record<string, unknown>>(i18n: I18n<T, any, any, string, false>) {
-  const language = useLocalStorage<keyof T | 'auto'>('__LANGUAGE__PERSIST__', 'auto')
+export function setupAutoI18n<T extends Record<string, unknown>>(i18n: I18n<T, any, any, string, false>, options?: AutoI18nOptions) {
+  const { storageKey = '__LANGUAGE_MODE_PERSIST__' } = options ?? {}
+  const language = useLocalStorage<keyof T | 'auto'>(storageKey, 'auto')
   const { language: navigatorLanguage } = useNavigatorLanguage()
   const _locale = computed(() => language.value === 'auto' ? navigatorLanguage.value : language.value)
   const { locale } = i18n.global
