@@ -49,17 +49,8 @@ export type UseContextMenuOptions = {
  * //   </div>
  * // </div>
  */
-export function useContextMenu(
-  templateRef?: TemplateRef<HTMLElement>,
-  options: UseContextMenuOptions = {},
-) {
-  const defaultOptions: Required<UseContextMenuOptions> = {
-    closeOnClickOutside: true,
-    closeOnEscape: true,
-    offset: { x: 0, y: 0 },
-  }
-
-  const config = { ...defaultOptions, ...options }
+export function useContextMenu(templateRef?: TemplateRef<HTMLElement>, options?: UseContextMenuOptions) {
+  const { closeOnClickOutside = true, closeOnEscape = true, offset = { x: 0, y: 0 } } = options ?? {}
 
   const x = ref(0)
   const y = ref(0)
@@ -78,8 +69,8 @@ export function useContextMenu(
     hide()
     nextTick(() => {
       show.value = true
-      x.value = e.clientX + config.offset.x
-      y.value = e.clientY + config.offset.y
+      x.value = e.clientX + offset.x
+      y.value = e.clientY + offset.y
     })
   }
 
@@ -94,13 +85,13 @@ export function useContextMenu(
   }
 
   function handleClickOutside() {
-    if (config.closeOnClickOutside && show.value) {
+    if (closeOnClickOutside && show.value) {
       hide()
     }
   }
 
   function handleKeydown(e: KeyboardEvent) {
-    if (config.closeOnEscape && show.value && e.key === 'Escape') {
+    if (closeOnEscape && show.value && e.key === 'Escape') {
       hide()
     }
   }

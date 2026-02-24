@@ -17,35 +17,35 @@ export type ScrollViewOptions = {
    * 激活元素的 CSS 选择器
    * @default '.active'
    */
-  activeClassName?: MaybeRefOrGetter<string>
+  activeClassName?: string
   /**
    * 是否启用滚轮滚动
    * @default true
    */
-  enableWheel?: MaybeRefOrGetter<boolean>
+  enableWheel?: boolean
   /**
    * 滚动方向
    * @default 'vertical'
    */
-  direction?: MaybeRefOrGetter<ScrollDirection>
+  direction?: ScrollDirection
   /**
    * 滚轮滚动时的滚动偏移量，默认为容器尺寸
    */
-  scrollOffset?: MaybeRefOrGetter<number>
+  scrollOffset?: number
   /**
    * 滚动防抖延迟时间（毫秒）
    * @default 500
    */
-  debounceDelay?: MaybeRefOrGetter<number>
+  debounceDelay?: number
   /**
    * 是否在容器尺寸变化时自动滚动到激活元素
    * @default true
    */
-  autoScrollOnResize?: MaybeRefOrGetter<boolean>
+  autoScrollOnResize?: boolean
   /**
    * scrollIntoView 的默认配置选项
    */
-  scrollIntoViewOptions?: MaybeRefOrGetter<ScrollIntoViewOptions>
+  scrollIntoViewOptions?: ScrollIntoViewOptions
 }
 
 /**
@@ -66,7 +66,7 @@ export type ScrollViewOptions = {
  * })
  * ```
  */
-export function useScrollView(templateRef: MaybeRefOrGetter<HTMLElement | undefined>, options: ScrollViewOptions = {}) {
+export function useScrollView(templateRef: MaybeRefOrGetter<HTMLElement | undefined>, options?: ScrollViewOptions) {
   const {
     activeClassName = '.active',
     enableWheel = true,
@@ -75,22 +75,21 @@ export function useScrollView(templateRef: MaybeRefOrGetter<HTMLElement | undefi
     debounceDelay = 500,
     autoScrollOnResize = true,
     scrollIntoViewOptions = {},
-  } = options
+  } = options ?? {}
 
   const { width, height } = useElementSize(templateRef)
 
   const getScrollOffset = computed(() => {
-    const offset = toValue(scrollOffset)
-    if (offset > 0)
-      return offset
-    return toValue(direction) === 'vertical' ? height.value : width.value
+    if (scrollOffset && scrollOffset > 0)
+      return scrollOffset
+    return direction === 'vertical' ? height.value : width.value
   })
 
   function getActiveElement(): Element | null {
     const container = toValue(templateRef)
     if (!container)
       return null
-    return container.querySelector(toValue(activeClassName))
+    return container.querySelector(activeClassName)
   }
 
   function getScrollableElements(): Element[] {
@@ -124,7 +123,7 @@ export function useScrollView(templateRef: MaybeRefOrGetter<HTMLElement | undefi
       behavior: 'smooth',
       block: 'nearest',
       inline: 'nearest',
-      ...toValue(scrollIntoViewOptions),
+      ...scrollIntoViewOptions,
       ...customOptions,
     })
   }
@@ -151,7 +150,7 @@ export function useScrollView(templateRef: MaybeRefOrGetter<HTMLElement | undefi
       behavior: 'smooth',
       block: 'nearest',
       inline: 'nearest',
-      ...toValue(scrollIntoViewOptions),
+      ...scrollIntoViewOptions,
       ...customOptions,
     })
   }
@@ -203,7 +202,7 @@ export function useScrollView(templateRef: MaybeRefOrGetter<HTMLElement | undefi
   }
 
   function wheelEvent(e: WheelEvent) {
-    if (!toValue(enableWheel))
+    if (!enableWheel)
       return
 
     const container = toValue(templateRef)
@@ -212,10 +211,9 @@ export function useScrollView(templateRef: MaybeRefOrGetter<HTMLElement | undefi
 
     e.preventDefault()
     const { deltaY } = e
-    const currentDirection = toValue(direction)
     const offset = getScrollOffset.value
 
-    switch (currentDirection) {
+    switch (direction) {
       case 'vertical':
         container.scrollBy({
           top: deltaY > 0 ? offset : -offset,
@@ -235,8 +233,8 @@ export function useScrollView(templateRef: MaybeRefOrGetter<HTMLElement | undefi
 
   const debouncedScrollToView = useDebounceFn(scrollToView, debounceDelay)
 
-  watch([width, height, autoScrollOnResize], () => {
-    if (toValue(autoScrollOnResize)) {
+  watch([width, height], () => {
+    if (autoScrollOnResize) {
       debouncedScrollToView()
     }
   })

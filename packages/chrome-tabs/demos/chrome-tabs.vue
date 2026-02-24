@@ -1,7 +1,7 @@
 <!-- eslint-disable no-alert -->
 <script setup lang='ts'>
 import type { TabsOption } from '@oiij/chrome-tabs'
-import { CTabs } from '@oiij/chrome-tabs'
+import { ChromeTabs } from '@oiij/chrome-tabs'
 import { h, reactive, ref } from 'vue'
 import CustomLoadingIcon from './icons/CustomLoadingIcon.vue'
 import DogIcon from './icons/DogIcon.vue'
@@ -76,7 +76,7 @@ function handleClick(key: string | number) {
 </script>
 
 <template>
-  <CTabs v-model:value="value" :options="options" addable @close="onClose" @add="handleAdd" @click="handleClick" />
+  <ChromeTabs v-model:value="value" :options="options" addable @close="onClose" @add="handleAdd" @click="handleClick" />
 </template>
 
 <style scoped>

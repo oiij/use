@@ -26,7 +26,7 @@ pnpm add @oiij/chrome-tabs
 ### 函数签名
 
 ```ts
-import { CTabs } from '@oiij/chrome-tabs'
+import { ChromeTabs } from '@oiij/chrome-tabs'
 ```
 
 ## 类型定义

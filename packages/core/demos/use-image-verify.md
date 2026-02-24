@@ -45,21 +45,16 @@ type CharacterConfig = {
   characterPool?: string
 }
 
-type ImageVerifyOptionsBase = {
+type ImageVerifyOptions = {
   width?: number
   height?: number
   refreshOnClick?: boolean
   disturbLine?: number
   disturbPoint?: number
+  type: 'operation' | 'character'
+  operationOptions?: OperationConfig
+  characterOptions?: CharacterConfig
 }
-
-export type ImageVerifyOptions = (ImageVerifyOptionsBase & {
-  type: 'operation'
-  config?: OperationConfig
-}) | (ImageVerifyOptionsBase & {
-  type: 'character'
-  config?: CharacterConfig
-})
 
 export type UseImageVerifyReturns = {
   templateRef: TemplateRef<HTMLCanvasElement>

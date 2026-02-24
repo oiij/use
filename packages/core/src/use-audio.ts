@@ -65,13 +65,7 @@ export type UseAudioOptions = {
  * })
  */
 export function useAudio(src?: string, options?: UseAudioOptions) {
-  const {
-    volume: defaultVolume = 1,
-    playbackRate: defaultPlaybackRate = 1,
-    autoPlay = true,
-    loop = true,
-    timeUpdateFormat = (time: number) => time,
-  } = options ?? {}
+  const { volume: defaultVolume = 1, playbackRate: defaultPlaybackRate = 1, autoPlay = true, loop = true, timeUpdateFormat = (time: number) => time } = options ?? {}
 
   const audioElement = new Audio()
   audioElement.crossOrigin = 'anonymous'

@@ -5,7 +5,7 @@ import { NButton, NCard, NFlex, NInput, NInputGroup } from 'naive-ui'
 import { useTemplateRef } from 'vue'
 
 const { value, validate, passed } = useImageVerify(useTemplateRef('dom-ref'), { type: 'character' })
-const { value: value1, validate: validate1, passed: passed1 } = useImageVerify(useTemplateRef('dom-ref-1'), { type: 'operation', config: { arith: '+' } })
+const { value: value1, validate: validate1, passed: passed1 } = useImageVerify(useTemplateRef('dom-ref-1'), { type: 'operation', operationOptions: { arith: '+' } })
 </script>
 
 <template>

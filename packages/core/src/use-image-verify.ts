@@ -25,7 +25,7 @@ type CharacterConfig = {
 /**
  * 图片验证码基础配置选项
  */
-export type ImageVerifyOptionsBase = {
+export type ImageVerifyOptions = {
   /** 画布宽度（像素），默认值为 120 */
   width?: number
   /** 画布高度（像素），默认值为 40 */
@@ -36,18 +36,10 @@ export type ImageVerifyOptionsBase = {
   disturbLine?: number
   /** 干扰点数量，默认值为 40 */
   disturbPoint?: number
+  type: 'operation' | 'character'
+  operationOptions?: OperationConfig
+  characterOptions?: CharacterConfig
 }
-
-/**
- * 图片验证码配置选项
- */
-export type ImageVerifyOptions = (ImageVerifyOptionsBase & {
-  type: 'operation'
-  config?: OperationConfig
-}) | (ImageVerifyOptionsBase & {
-  type: 'character'
-  config?: CharacterConfig
-})
 
 function randomNum(min: number, max: number) {
   const num = Math.floor(Math.random() * (max - min) + min)
@@ -154,7 +146,7 @@ function generateCharacterCode(config: CharacterConfig) {
  *   type: 'character',
  *   width: 120,
  *   height: 40,
- *   config: {
+ *   characterOptions: {
  *     length: 4,
  *     characterPool: '0123456789'
  *   }
@@ -163,7 +155,7 @@ function generateCharacterCode(config: CharacterConfig) {
  * // 算术运算验证码
  * const { value, code, passed, validate } = useImageVerify(canvasRef, {
  *   type: 'operation',
- *   config: {
+ *   operationOptions: {
  *     figure: 10,
  *     arith: '+'
  *   }
@@ -180,8 +172,8 @@ function generateCharacterCode(config: CharacterConfig) {
  * refresh()
  * ```
  */
-export function useImageVerify(templateRef: TemplateRef<HTMLCanvasElement>, options: ImageVerifyOptions = { type: 'character' }) {
-  const { width = 120, height = 40, refreshOnClick = true, disturbLine = 10, disturbPoint = 40 } = options ?? {}
+export function useImageVerify(templateRef: TemplateRef<HTMLCanvasElement>, options?: ImageVerifyOptions) {
+  const { width = 120, height = 40, refreshOnClick = true, disturbLine = 10, disturbPoint = 40, type = 'character', operationOptions = {}, characterOptions = {} } = options ?? {}
 
   const valueRef = ref('')
   const codeRef = shallowRef('')
@@ -246,8 +238,8 @@ export function useImageVerify(templateRef: TemplateRef<HTMLCanvasElement>, opti
     ctx.fillStyle = randomColor(180, 230)
     ctx.fillRect(0, 0, width, height)
 
-    if (options?.type === 'character') {
-      const { answer: charAnswer, display } = generateCharacterCode(options?.config ?? {})
+    if (type === 'character') {
+      const { answer: charAnswer, display } = generateCharacterCode(characterOptions)
       answer = charAnswer
 
       for (let i = 0; i < display.length; i += 1) {
@@ -255,8 +247,8 @@ export function useImageVerify(templateRef: TemplateRef<HTMLCanvasElement>, opti
       }
     }
 
-    if (options?.type === 'operation') {
-      const { answer: opAnswer, display } = generateOperationCode(options?.config ?? {})
+    if (type === 'operation') {
+      const { answer: opAnswer, display } = generateOperationCode(operationOptions)
       answer = opAnswer
 
       for (let i = 0; i < display.length; i += 1) {

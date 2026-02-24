@@ -1,7 +1,7 @@
 {
   "name": "@oiij/auto-router",
   "type": "module",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Vue Router utilities and composables for Vue 3",
   "author": "oiij",
   "license": "MIT",

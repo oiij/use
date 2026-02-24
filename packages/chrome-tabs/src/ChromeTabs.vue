@@ -5,10 +5,10 @@ import { useStyle } from '@oiij/css-render'
 import { useScrollView } from '@oiij/use'
 import { colord } from 'colord'
 import { computed, useTemplateRef, watch } from 'vue'
+import ChromeTabItem from './ChromeTabItem.vue'
 import { tabsCssName, tabsCssr, tabsItemCssName } from './cssr'
 import RiAddLine from './icons/RiAddLine.vue'
 import RiArrowDropDownLine from './icons/RiArrowDropDownLine.vue'
-import TabItem from './TabItem.vue'
 
 const { value, colors, dropdown, addable, options, loadingValue, iconSize, contentClass, contentStyle } = defineProps<TabsProps>()
 
@@ -75,7 +75,7 @@ function onItemClose(key: TabItemKey, index: number) {
     <slot name="prefix" />
     <div ref="scroll-ref" :class="[`${tabsCssName}__content`, contentClass]" :style="contentStyle">
       <transition-group name="group" tag="div" :class="[`${tabsCssName}__scroll`]">
-        <TabItem
+        <ChromeTabItem
           v-for="({ key, ...item }, index) in options"
           :key="key"
           :loading="loadingValue === key"

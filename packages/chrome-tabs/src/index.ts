@@ -7,44 +7,8 @@ type VNodeChild = VNode | string | number | undefined | void | null | boolean
  */
 export type TabItemKey = string | number
 
-/**
- * 标签页组件
- *
- * @example
- * ```vue
- * <template>
- *   <CTabs
- *     v-model="activeKey"
- *     :options="options"
- *     :addable="true"
- *     @add="handleAdd"
- *   />
- * </template>
- *
- * <script setup lang="ts">
- * import { ref } from 'vue'
- * import { CTabs, type TabsOption } from '@oiij/chrome-tabs'
- *
- * const activeKey = ref('1')
- * const options = ref<TabsOption[]>([
- *   { key: '1', label: '标签页 1' },
- *   { key: '2', label: '标签页 2' },
- *   { key: '3', label: '标签页 3', closable: true }
- * ])
- *
- * const handleAdd = () => {
- *   const newKey = String(options.value.length + 1)
- *   options.value.push({
- *     key: newKey,
- *     label: `标签页 ${newKey}`,
- *     closable: true
- *   })
- *   activeKey.value = newKey
- * }
- * </script>
- * ```
- */
-export { default as CTabs } from './Tabs.vue'
+export { default as ChromeTabItem } from './ChromeTabItem.vue'
+export { default as ChromeTabs } from './ChromeTabs.vue'
 
 /**
  * 标签页选项配置

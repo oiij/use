@@ -101,12 +101,7 @@ function nanAble(val: number) {
  * const frequencyData = getFrequencyData()
  */
 export function useAudioContext(options?: AudioContextOptions) {
-  const {
-    volume: defaultVolume = 1,
-    playbackRate: defaultPlaybackRate = 1,
-    fade,
-    timeUpdateFormat = (time: number) => time,
-  } = options ?? {}
+  const { volume: defaultVolume = 1, playbackRate: defaultPlaybackRate = 1, fade, timeUpdateFormat = (time: number) => time } = options ?? {}
 
   const defaultFadeOptions = typeof fade === 'boolean' && fade
     ? { fade: true, duration: DEFAULT_FADE_DURATION }
