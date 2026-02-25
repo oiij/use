@@ -31,7 +31,7 @@ export function setupAutoI18n<T extends Record<string, unknown>>(i18n: I18n<T, a
   const { language: navigatorLanguage } = useNavigatorLanguage(useNavigatorLanguageOptions)
   const computedLocale = computed(() => language.value === 'auto' ? navigatorLanguage.value : language.value)
   const { locale } = i18n.global
-  let isAutoSyncing = false
+  let expectedLocale: any = null
 
   /**
    * 设置语言环境
@@ -51,14 +51,14 @@ export function setupAutoI18n<T extends Record<string, unknown>>(i18n: I18n<T, a
     language.value = lang
   }
   watchEffect(() => {
-    isAutoSyncing = true
+    expectedLocale = computedLocale.value
     locale.value = computedLocale.value as any
-    isAutoSyncing = false
   })
   watch(locale, (newLocale) => {
-    if (!isAutoSyncing) {
+    if (newLocale !== expectedLocale) {
       language.value = newLocale
     }
+    expectedLocale = null
   })
   return {
     language,
