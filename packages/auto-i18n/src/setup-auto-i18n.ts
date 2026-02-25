@@ -2,7 +2,7 @@ import type { I18n } from 'vue-i18n'
 import type { AutoI18nOptions } from './index'
 
 import { useLocalStorage, useNavigatorLanguage } from '@vueuse/core'
-import { computed, watchEffect } from 'vue'
+import { computed, watch, watchEffect } from 'vue'
 
 /**
  * 设置自动国际化
@@ -25,12 +25,13 @@ import { computed, watchEffect } from 'vue'
  * console.log(autoI18n.language.value) // 当前语言设置
  * ```
  */
-export function setupAutoI18n<T extends Record<string, unknown>>(i18n: I18n<T, any, any, string, false>, options?: AutoI18nOptions) {
-  const { storageKey = '__LANGUAGE_MODE_PERSIST__' } = options ?? {}
-  const language = useLocalStorage<keyof T | 'auto'>(storageKey, 'auto')
-  const { language: navigatorLanguage } = useNavigatorLanguage()
-  const _locale = computed(() => language.value === 'auto' ? navigatorLanguage.value : language.value)
+export function setupAutoI18n<T extends Record<string, unknown>>(i18n: I18n<T, any, any, string, false>, options?: AutoI18nOptions<T>) {
+  const { storageKey = '__LANGUAGE_MODE_PERSIST__', useStorageOptions, useNavigatorLanguageOptions } = options ?? {}
+  const language = useLocalStorage<keyof T | 'auto'>(storageKey, 'auto', useStorageOptions)
+  const { language: navigatorLanguage } = useNavigatorLanguage(useNavigatorLanguageOptions)
+  const computedLocale = computed(() => language.value === 'auto' ? navigatorLanguage.value : language.value)
   const { locale } = i18n.global
+  let isAutoSyncing = false
 
   /**
    * 设置语言环境
@@ -50,10 +51,14 @@ export function setupAutoI18n<T extends Record<string, unknown>>(i18n: I18n<T, a
     language.value = lang
   }
   watchEffect(() => {
-    locale.value = _locale.value as any
+    isAutoSyncing = true
+    locale.value = computedLocale.value as any
+    isAutoSyncing = false
   })
-  watchEffect(() => {
-    language.value = _locale.value as any
+  watch(locale, (newLocale) => {
+    if (!isAutoSyncing) {
+      language.value = newLocale
+    }
   })
   return {
     language,

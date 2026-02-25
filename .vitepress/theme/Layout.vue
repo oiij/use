@@ -9,7 +9,10 @@ import DefaultTheme from 'vitepress/theme'
 import { provide } from 'vue'
 
 const { isDark } = useData()
-const { run } = useViewTransition()
+const { run } = useViewTransition({
+  duration: 800,
+  easing: 'ease-in-out',
+})
 
 provide('toggle-appearance', async ({ clientX: x, clientY: y }: MouseEvent) => {
   run(() => {

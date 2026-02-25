@@ -1,3 +1,4 @@
+import type { ConfigurableWindow, UseStorageOptions } from '@vueuse/core'
 import type { App } from 'vue'
 import type { I18n } from 'vue-i18n'
 import type { AutoI18nInstance } from './setup-auto-i18n'
@@ -6,12 +7,20 @@ import { setupAutoI18n } from './setup-auto-i18n'
 
 const __INJECTION_KEY__ = Symbol('auto-i18n')
 
-export type AutoI18nOptions = {
+export type AutoI18nOptions<T extends Record<string, unknown>> = {
   /**
    * 存储语言的键名
    * @default '__LANGUAGE_MODE_PERSIST__'
    */
   storageKey?: string
+  /**
+   * 配置 useLocalStorage 选项
+   */
+  useStorageOptions?: UseStorageOptions<keyof T | 'auto'>
+  /**
+   * 配置 useNavigatorLanguage 选项
+   */
+  useNavigatorLanguageOptions?: ConfigurableWindow
 }
 
 /**
@@ -68,7 +77,7 @@ export function useAutoI18n<T extends Record<string, unknown>>() {
  * app.mount('#app')
  * ```
  */
-export function createAutoI18n<T extends Record<string, unknown>>(i18n: I18n<T>, options?: AutoI18nOptions) {
+export function createAutoI18n<T extends Record<string, unknown>>(i18n: I18n<T>, options?: AutoI18nOptions<T>) {
   const autoI18n = setupAutoI18n(i18n, options)
   return {
     install(app: App) {
