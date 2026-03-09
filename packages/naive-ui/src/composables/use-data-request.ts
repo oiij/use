@@ -1,10 +1,11 @@
+import type { MaybeRefOrGetter } from 'vue'
 /**
  * 用于处理数据请求的组合式 API
  * 基于 vue-hooks-plus 的 useRequest，提供分页管理、响应式参数等功能
  */
 import type { UseRequestOptions, UseRequestPlugin } from 'vue-hooks-plus/es/useRequest/types'
 import { createEventHook } from '@vueuse/core'
-import { computed, ref } from 'vue'
+import { computed, ref, toValue } from 'vue'
 import useRequest from 'vue-hooks-plus/es/useRequest'
 
 /**
@@ -36,7 +37,7 @@ export type DataRequestFields = Record<string, string | undefined> & {
  */
 export type UseDataRequestOptions<P extends DataObject = DataObject, D extends DataObject = DataObject> = {
   /** 默认请求参数 */
-  defaultParams?: Partial<P>
+  defaultParams?: MaybeRefOrGetter<Partial<P>>
   /** 是否手动触发请求 */
   manual?: boolean
   /** 字段配置 */
@@ -81,8 +82,8 @@ export function useDataRequest<P extends DataObject = DataObject, D extends Data
   const _fields = { page: 'page', pageSize: 'pageSize', list: 'list', count: 'count', ...fields }
 
   const pagination = ref<UseDataRequestPagination>({
-    page: defaultParams?.[_fields.page] ?? 1,
-    pageSize: defaultParams?.[_fields.pageSize] ?? 10,
+    page: 1,
+    pageSize: 10,
     itemCount: 0,
   })
 
@@ -94,9 +95,9 @@ export function useDataRequest<P extends DataObject = DataObject, D extends Data
   const { loading, data, error, params, run, runAsync, refresh, refreshAsync, cancel, mutate } = useRequest<D, P[]>(api, {
     defaultParams: [
       {
-        [_fields.page]: pagination.value.page,
-        [_fields.pageSize]: pagination.value.pageSize,
-        ...defaultParams as P,
+        [_fields.page]: 1,
+        [_fields.pageSize]: 10,
+        ...toValue(defaultParams) as P,
       },
     ],
     manual,

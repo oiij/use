@@ -56,7 +56,7 @@ export type PresetFormProps<V extends DataObject = DataObject> = {
   /** 表单选项 */
   options?: PresetFormOptions<V>
   /** 表单值 */
-  value?: V
+  values?: V
   /** 验证规则 */
   rules?: UseNaiveFormRules<V>
   /** 清空规则 */

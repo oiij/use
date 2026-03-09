@@ -1,6 +1,8 @@
+<!-- eslint-disable no-console -->
 <script setup lang='ts'>
 import { NRemoteRequest } from '@oiij/naive-ui/components'
 import { NButton } from 'naive-ui'
+import { ref } from 'vue'
 
 type Params = {
   id?: number
@@ -40,19 +42,22 @@ function api(params?: Params) {
     }, 1000)
   })
 }
+function onSuccess(data: Res, params: Params[]) {
+  console.log(data, params)
+}
 </script>
 
 <template>
   <!-- @vue-generic {Params,Res,Row} -->
-  <NRemoteRequest :api="api">
+  <NRemoteRequest :api="api" @success="onSuccess">
     <template #default="{ params, loading, list, runParams }">
-      <pre v-for="(item, index) in list" :key="index">{{ item.id }}</pre>
-      <NButton :loading="loading" @click="() => runParams({ page: (params[0].page ?? 1) + 1 }) ">
+      <pre v-for="(item, index) in list" :key="index">{{ JSON.stringify(item) }}</pre>
+      <NButton :loading="loading" @click="() => runParams({ page: (params[0].page ?? 1) - 1 })">
+        上一页
+      </NButton>
+      <NButton :loading="loading" @click="() => runParams({ page: (params[0].page ?? 1) + 1 })">
         下一页
       </NButton>
-      {{ loading }}
-      {{ list }}
-      {{ params }}
     </template>
   </NRemoteRequest>
 </template>

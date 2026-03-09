@@ -8,13 +8,13 @@ import { useNaiveForm } from '../../composables/use-naive-form'
 import { NPresetInput } from '../preset-input/index'
 import { mergeRule } from './_utils'
 
-const { options, value, rules, clearRules, formProps, gridProps } = defineProps<PresetFormProps<V>>()
+const { options, values, rules, clearRules, formProps, gridProps } = defineProps<PresetFormProps<V>>()
 const emit = defineEmits<{
   (e: 'validated', val: V): void
 }>()
 
-const { formValue, formRules, formInst, formProps: _formProps, setValue, validate, resetValidation, resetForm, reset, clear, onValidated } = useNaiveForm(useTemplateRef<FormInst>('form-ref'), {
-  value,
+const { formValues, formRules, formInst, formProps: _formProps, setValue, validate, resetValidation, resetForm, reset, clear, onValidated } = useNaiveForm(useTemplateRef<FormInst>('form-ref'), {
+  values,
   rules,
   clearRules,
 })
@@ -60,7 +60,7 @@ function presetFormProps(options: PresetFormOptionItem<V>[]) {
 }
 const expose: PresetFormExpose<V> = {
   formInst,
-  formValue,
+  formValues,
   formRules,
   formProps: _formProps,
   setValue,
@@ -76,7 +76,7 @@ const templateBind = computed(() => {
   return {
     ...expose,
     formInst: formInst.value,
-    formValue: formValue.value,
+    formValues: formValues.value,
     formRules: formRules.value,
     formProps: _formProps,
   }
@@ -86,7 +86,7 @@ defineExpose(expose)
 </script>
 
 <template>
-  <NForm ref="form-ref" :model="formValue" :rules="formRules as FormRules" v-bind="formProps">
+  <NForm ref="form-ref" :model="formValues" :rules="formRules as FormRules" v-bind="formProps">
     <slot name="header" v-bind="templateBind" />
     <slot v-bind="templateBind">
       <template v-if="_options && _options.length > 0">
@@ -105,7 +105,7 @@ defineExpose(expose)
                 v-bind="itemProps"
               >
                 <component :is="render({ ...expose, overflow })" v-if="render" />
-                <NPresetInput v-else :options="inputOption" :value="key ? formValue[key] : undefined" @update:value="(val?:V[keyof V]) => onPresetInputUpdate(val, key)" />
+                <NPresetInput v-else :options="inputOption" :value="key ? formValues[key] : undefined" @update:value="(val?:V[keyof V]) => onPresetInputUpdate(val, key)" />
               </NFormItem>
             </template>
           </NGi>
@@ -133,7 +133,7 @@ defineExpose(expose)
                   v-bind="itemProps"
                 >
                   <component :is="render({ ...expose, overflow })" v-if="render" />
-                  <NPresetInput v-else :options="inputOption" :value="key ? formValue[key] : undefined" @update:value="(val?:V[keyof V]) => onPresetInputUpdate(val, key)" />
+                  <NPresetInput v-else :options="inputOption" :value="key ? formValues[key] : undefined" @update:value="(val?:V[keyof V]) => onPresetInputUpdate(val, key)" />
                 </NFormItem>
               </template>
             </NGi>

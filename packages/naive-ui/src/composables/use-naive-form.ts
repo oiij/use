@@ -61,7 +61,7 @@ export type UseNaiveFormRules<T extends DataObject> = Partial<Record<keyof T, Fo
  */
 export type UseNaiveFormOptions<T extends DataObject> = {
   /** 表单初始值，支持响应式引用或普通值 */
-  value?: MaybeRefOrGetter<T>
+  values?: MaybeRefOrGetter<T>
   /** 表单验证规则，支持响应式引用或普通值 */
   rules?: MaybeRefOrGetter<UseNaiveFormRules<T>>
   /** 表单清空规则 */
@@ -78,19 +78,19 @@ export type UseNaiveFormOptions<T extends DataObject> = {
  * ```ts
  * const formRef = ref<FormInst>()
  * const { formValue, formRules, formProps, validate, reset, clear } = useNaiveForm(formRef, {
- *   value: { name: '', age: 0 },
+ *   values: { name: '', age: 0 },
  *   rules: { name: { required: true, message: '请输入姓名' } }
  * })
  * ```
  */
 export function useNaiveForm<T extends DataObject = DataObject>(formInstRef: TemplateRef<FormInst>, options?: UseNaiveFormOptions<T>) {
-  const { value, rules, clearRules } = options ?? {}
+  const { values, rules, clearRules } = options ?? {}
 
-  const cacheValue = cloneDeep(toValue(value) ?? {})
+  const cacheValue = cloneDeep(toValue(values) ?? {})
 
-  const formValueRef = ref(toValue(value) ?? {}) as Ref<T>
+  const formValuesRef = ref(toValue(values) ?? {}) as Ref<T>
   watchEffect(() => {
-    formValueRef.value = toValue(value) ?? {} as T
+    formValuesRef.value = toValue(values) ?? {} as T
   })
 
   const formRulesRef = ref(toValue(rules)) as Ref<UseNaiveFormRules<T>>
@@ -99,7 +99,7 @@ export function useNaiveForm<T extends DataObject = DataObject>(formInstRef: Tem
   })
 
   const formProps = {
-    model: reactive(formValueRef.value),
+    model: reactive(formValuesRef.value),
     rules: reactive(formRulesRef.value),
   }
 
@@ -114,7 +114,7 @@ export function useNaiveForm<T extends DataObject = DataObject>(formInstRef: Tem
    * ```
    */
   function setValue(value: Partial<T>) {
-    Object.assign(formValueRef.value, value)
+    Object.assign(formValuesRef.value, value)
   }
 
   /**
@@ -135,7 +135,7 @@ export function useNaiveForm<T extends DataObject = DataObject>(formInstRef: Tem
     }
     return new Promise<{ warnings?: ValidateError[][] }>((resolve, reject) => {
       formInstRef.value?.validate().then((res) => {
-        onValidatedEvent.trigger(toRaw(toValue(formValueRef)))
+        onValidatedEvent.trigger(toRaw(toValue(formValuesRef)))
         return resolve(res)
       }).catch(reject)
     })
@@ -160,7 +160,7 @@ export function useNaiveForm<T extends DataObject = DataObject>(formInstRef: Tem
    * ```
    */
   function clear() {
-    clearObjectValues(formValueRef.value, clearRules)
+    clearObjectValues(formValuesRef.value, clearRules)
   }
 
   /**
@@ -172,7 +172,7 @@ export function useNaiveForm<T extends DataObject = DataObject>(formInstRef: Tem
    */
   function resetForm() {
     clear()
-    Object.assign(formValueRef.value, cloneDeep(cacheValue))
+    Object.assign(formValuesRef.value, cloneDeep(cacheValue))
   }
 
   /**
@@ -189,7 +189,7 @@ export function useNaiveForm<T extends DataObject = DataObject>(formInstRef: Tem
 
   return {
     formInst: formInstRef,
-    formValue: formValueRef,
+    formValues: formValuesRef,
     formRules: formRulesRef,
     formProps,
     setValue,
