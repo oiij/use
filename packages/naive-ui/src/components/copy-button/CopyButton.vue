@@ -1,14 +1,15 @@
 <script setup lang='ts'>
 import type { CopyButtonProps } from './index'
 import { useClipboard } from '@vueuse/core'
-import { NButton, NTooltip } from 'naive-ui'
 import { watch } from 'vue'
 import MageCopyFill from '../icons/MageCopyFill.vue'
+import { NTooltipButton } from '../tooltip-button'
 
 const { value, config, tooltipProps, buttonProps } = defineProps<CopyButtonProps>()
 const emit = defineEmits<{
   (e: 'copied', v: typeof value): void
 }>()
+
 const { copied, copy } = useClipboard({
   source: value,
   ...config,
@@ -25,24 +26,22 @@ function handleClick(ev: MouseEvent) {
 </script>
 
 <template>
-  <NTooltip v-bind="tooltipProps">
-    <template #trigger>
-      <div :style="{ cursor: 'pointer' }" @click="handleClick">
-        <slot>
-          <NButton quaternary size="tiny" v-bind="buttonProps">
-            <template #icon>
-              <slot name="icon">
-                <MageCopyFill />
-              </slot>
-            </template>
-          </NButton>
-        </slot>
-      </div>
+  <NTooltipButton
+    :tooltip="copied ? '复制成功' : '复制'"
+    :tooltip-props="tooltipProps"
+    :button-props="{
+      quaternary: true,
+      size: 'tiny',
+      ...buttonProps,
+    }"
+    @click="handleClick"
+  >
+    <template #icon>
+      <slot name="icon">
+        <MageCopyFill />
+      </slot>
     </template>
-    <slot name="tooltip">
-      {{ copied ? '复制成功' : '复制' }}
-    </slot>
-  </NTooltip>
+  </NTooltipButton>
 </template>
 
 <style scoped lang='less'>

@@ -3,7 +3,7 @@ import type { FormInst, FormRules } from 'naive-ui'
 import type { DataObject } from '../../composables/use-data-request'
 import type { PresetFormExpose, PresetFormOptionItem, PresetFormProps } from './index'
 import { NButton, NCollapseTransition, NDivider, NForm, NFormItem, NGi, NGrid } from 'naive-ui'
-import { computed, ref, useTemplateRef } from 'vue'
+import { computed, ref, toValue, useTemplateRef } from 'vue'
 import { useNaiveForm } from '../../composables/use-naive-form'
 import { NPresetInput } from '../preset-input/index'
 import { mergeRule } from './_utils'
@@ -24,15 +24,15 @@ onValidated((value) => {
 const filterCollapsed = ref(false)
 
 const visibleOptions = computed(() => {
-  return options?.filter(f => typeof f.hidden === 'function' ? !f.hidden() : !f.hidden) || []
+  return options?.filter(f => !toValue(f.hidden)) || []
 })
 
 const _options = computed(() => {
-  return visibleOptions.value.filter(f => typeof f.collapsed === 'function' ? !f.collapsed() : !f.collapsed)
+  return visibleOptions.value.filter(f => !toValue(f.collapsed))
 })
 
 const _collapsedOptions = computed(() => {
-  return visibleOptions.value.filter(f => typeof f.collapsed === 'function' ? f.collapsed() : f.collapsed)
+  return visibleOptions.value.filter(f => toValue(f.collapsed))
 })
 
 function onPresetInputUpdate(val: any, key?: keyof V) {
@@ -46,8 +46,8 @@ function presetFormProps(options: PresetFormOptionItem<V>[]) {
     const { offset, suffix, ...extraItemProps } = itemProps ?? {}
     return {
       key: typeof key === 'string' ? key : undefined,
-      label: typeof label === 'function' ? label() : label,
-      span: typeof span === 'function' ? span() : span ?? itemProps?.span,
+      label: toValue(label),
+      span: toValue(span) ?? itemProps?.span,
       required,
       rule,
       offset,

@@ -11,12 +11,14 @@ const emit = defineEmits<{
 <template>
   <NTooltip v-bind="tooltipProps">
     <template #trigger>
-      <NButton v-bind="buttonProps" @click="(ev) => emit('click', ev)">
-        <slot />
-        <template #icon>
-          <slot name="icon" />
-        </template>
-      </NButton>
+      <slot name="trigger">
+        <NButton v-bind="buttonProps" @click="(ev) => emit('click', ev)">
+          <slot />
+          <template #icon>
+            <slot name="icon" />
+          </template>
+        </NButton>
+      </slot>
     </template>
     <slot name="tooltip">
       {{ tooltip }}
