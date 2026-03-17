@@ -84,7 +84,10 @@ export function useAiEditor(templateRef: TemplateRef<HTMLElement>, options?: Use
     if (value !== undefined) {
       valueRef.value = value
     }
-    aiEditorInst.value?.setContent(value ?? '')
+    const currentContent = aiEditorInst.value?.getHtml()
+    if (valueRef.value && valueRef.value !== currentContent) {
+      aiEditorInst.value?.setContent(valueRef.value)
+    }
   }
 
   /**
