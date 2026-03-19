@@ -102,7 +102,7 @@ export const mod = (a: number, b: number): number => ((a % b) + b) % b
  * // 返回 [1, 2, 3]
  * digitize(123)
  */
-export const digitize = (n: number): number[] => [...`${n}`].map(v => Number.parseInt(v, 10))
+export const digitize = (n: number): number[] => Array.from(`${n}`, v => Number.parseInt(v, 10))
 
 /**
  * 将数字限制在指定范围内

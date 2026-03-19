@@ -1,3 +1,4 @@
+<!-- eslint-disable no-console -->
 <script setup lang='ts'>
 import type { EChartsOption } from '@oiij/e-charts'
 import { useECharts } from '@oiij/e-charts'
@@ -52,10 +53,15 @@ const opt = computed(() => {
   } as EChartsOption
 })
 
-useECharts(useTemplateRef('dom-ref'), {
+const { onRender, onUpdate } = useECharts(useTemplateRef('dom-ref'), {
   chartOption: opt,
   darkMode,
-  debug: true,
+})
+onRender((eChartInst) => {
+  console.log(eChartInst)
+})
+onUpdate((chartOption) => {
+  console.log(chartOption)
 })
 </script>
 

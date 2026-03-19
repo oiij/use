@@ -96,7 +96,7 @@ export const getQuarter = (d = new Date()): number => Math.ceil((d.getMonth() + 
  * // 返回当前时间的时间戳
  * ts()
  */
-export const ts = (): number => Math.floor(new Date().getTime() / 1000)
+export const ts = (): number => Math.floor(Date.now() / 1000)
 
 /**
  * 从日期中获取一年中的哪一天

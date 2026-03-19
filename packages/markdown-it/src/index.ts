@@ -55,11 +55,9 @@ export type UseMarkDownItOptions = {
  */
 export function useMarkdownIt(templateRef?: TemplateRef<HTMLElement>, options?: UseMarkDownItOptions) {
   const { value, manual = false, domPurify = true, markdownItOptions } = options ?? {}
-  const valueRef = watchRefOrGetter(value, () => {
-    if (!manual) {
-      render()
-    }
-  })
+
+  const valueRef = watchRefOrGetter(value, () => !manual && render())
+
   const htmlRef = ref('')
 
   const markdownItInst = markdownIt({ ...markdownItOptions })
@@ -80,7 +78,7 @@ export function useMarkdownIt(templateRef?: TemplateRef<HTMLElement>, options?: 
    * ```
    */
   function render(value?: string) {
-    if (value !== undefined && value !== valueRef.value) {
+    if (value !== undefined) {
       valueRef.value = value
     }
     const mdValue = markdownItInst.render(valueRef.value ?? '')

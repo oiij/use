@@ -2,8 +2,9 @@ import type { AiEditorOptions } from 'aieditor'
 import type { MaybeRefOrGetter, TemplateRef } from 'vue'
 import { createEventHook, watchOnce } from '@vueuse/core'
 import { AiEditor } from 'aieditor'
-import { onUnmounted, shallowRef } from 'vue'
+import { nextTick, onUnmounted, shallowRef } from 'vue'
 import { watchRefOrGetter } from '../../_utils/custom-watch'
+
 import 'aieditor/dist/style.css'
 
 export type {
@@ -49,7 +50,7 @@ export type UseAiEditorOptions = {
  * import { useAiEditor } from '@oiij/ai-editor'
  *
  * const editorRef = ref()
- * const { value, setContent, updateTheme } = useAiEditor(editorRef, {
+ * const { value, setContent, setDarkMode } = useAiEditor(editorRef, {
  *   value: '<p>Hello World</p>',
  *   darkMode: false,
  *   language: 'zh',
@@ -65,16 +66,16 @@ export function useAiEditor(templateRef: TemplateRef<HTMLElement>, options?: Use
   const { value, darkMode, language, readonly, aiEditorOptions } = options ?? {}
   const aiEditorInst = shallowRef<AiEditor | null>(null)
 
-  const valueRef = watchRefOrGetter(value, setContent)
+  const valueRef = watchRefOrGetter(value, () => setContent())
 
-  const darkModeRef = watchRefOrGetter(darkMode, updateTheme)
+  const darkModeRef = watchRefOrGetter(darkMode, () => setDarkMode())
 
-  const languageRef = watchRefOrGetter(language, updateLanguage)
+  const languageRef = watchRefOrGetter(language, () => setLanguage())
 
-  const readonlyRef = watchRefOrGetter(readonly, setReadonly)
+  const readonlyRef = watchRefOrGetter(readonly, () => setReadonly())
 
   const onRenderEvent = createEventHook<[AiEditor]>()
-
+  const onUpdateValueEvent = createEventHook<[string]>()
   /**
    * 设置编辑器内容
    *
@@ -95,7 +96,7 @@ export function useAiEditor(templateRef: TemplateRef<HTMLElement>, options?: Use
    *
    * @param darkMode - 是否开启暗黑模式
    */
-  function updateTheme(darkMode?: boolean) {
+  function setDarkMode(darkMode?: boolean) {
     if (darkMode !== undefined) {
       darkModeRef.value = darkMode
     }
@@ -112,11 +113,14 @@ export function useAiEditor(templateRef: TemplateRef<HTMLElement>, options?: Use
    *
    * @param language - 要设置的语言
    */
-  function updateLanguage(language?: 'zh' | 'en') {
+  function setLanguage(language?: 'zh' | 'en') {
     if (language !== undefined) {
       languageRef.value = language
     }
     aiEditorInst.value?.changeLang(languageRef.value ?? 'zh')
+    if (valueRef.value) {
+      aiEditorInst.value?.setContent(valueRef.value)
+    }
   }
 
   /**
@@ -131,17 +135,23 @@ export function useAiEditor(templateRef: TemplateRef<HTMLElement>, options?: Use
     aiEditorInst.value?.setEditable(!readonlyRef.value)
   }
 
-  function render() {
+  async function render() {
     if (templateRef.value && !aiEditorInst.value) {
+      const lang = languageRef.value ?? 'zh'
+      const theme = darkModeRef.value ? 'dark' : 'light'
+      await nextTick()
       aiEditorInst.value = new AiEditor({
         element: templateRef.value,
         content: valueRef.value,
-        lang: languageRef.value ?? 'zh',
-        theme: darkModeRef.value ? 'dark' : 'light',
+        lang,
+        theme,
         editable: !readonlyRef.value,
         ...aiEditorOptions,
         onChange(aiEditorInst) {
-          valueRef.value = aiEditorInst.getHtml()
+          if (valueRef.value !== aiEditorInst.getHtml()) {
+            valueRef.value = aiEditorInst.getHtml()
+            onUpdateValueEvent.trigger(valueRef.value)
+          }
           aiEditorOptions?.onChange?.(aiEditorInst)
         },
       })
@@ -169,10 +179,11 @@ export function useAiEditor(templateRef: TemplateRef<HTMLElement>, options?: Use
     readonly: readonlyRef,
     aiEditorInst,
     setContent,
-    updateTheme,
-    updateLanguage,
+    setDarkMode,
+    setLanguage,
     setReadonly,
     onRender: onRenderEvent.on,
+    onUpdateValue: onUpdateValueEvent.on,
   }
 }
 

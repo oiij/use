@@ -201,7 +201,7 @@ export type UseEmojiPickerOptions = {
  * import { useEmojiPicker } from '@oiij/emoji-picker'
  *
  * const pickerRef = ref()
- * const { emojiPickerInst, updateTheme } = useEmojiPicker(pickerRef, {
+ * const { emojiPickerInst, setDarkMode } = useEmojiPicker(pickerRef, {
  *   darkMode: false,
  *   language: 'zh',
  *   emojiPickerOptions: {
@@ -220,9 +220,9 @@ export type UseEmojiPickerOptions = {
 export function useEmojiPicker(templateRef: TemplateRef<HTMLElement>, options?: UseEmojiPickerOptions) {
   const { darkMode, language, emojiPickerOptions } = options ?? {}
 
-  const darkModeRef = watchRefOrGetter(darkMode, updateTheme)
+  const darkModeRef = watchRefOrGetter(darkMode, () => setDarkMode())
 
-  const languageRef = watchRefOrGetter(language, updateLanguage)
+  const languageRef = watchRefOrGetter(language, () => setLanguage())
 
   const _options: EmojiPickerOptions = {
     data,
@@ -248,8 +248,8 @@ export function useEmojiPicker(templateRef: TemplateRef<HTMLElement>, options?: 
    *
    * @param darkMode - 是否开启暗黑模式
    */
-  function updateTheme(darkMode?: boolean) {
-    if (darkMode !== undefined && darkMode !== darkModeRef.value) {
+  function setDarkMode(darkMode?: boolean) {
+    if (darkMode !== undefined) {
       darkModeRef.value = darkMode
     }
     const theme = darkModeRef.value ? 'dark' : 'light'
@@ -263,8 +263,8 @@ export function useEmojiPicker(templateRef: TemplateRef<HTMLElement>, options?: 
    *
    * @param language - 语言
    */
-  function updateLanguage(language?: 'zh' | 'en') {
-    if (language !== undefined && language !== languageRef.value) {
+  function setLanguage(language?: 'zh' | 'en') {
+    if (language !== undefined) {
       languageRef.value = language
     }
     _options.locale = languageRef.value ?? 'zh'
@@ -300,8 +300,8 @@ export function useEmojiPicker(templateRef: TemplateRef<HTMLElement>, options?: 
     darkMode: darkModeRef,
     language: languageRef,
     emojiPickerInst,
-    updateTheme,
-    updateLanguage,
+    setDarkMode,
+    setLanguage,
     onRender: onRenderEvent.on,
   }
 }

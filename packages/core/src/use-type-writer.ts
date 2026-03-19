@@ -93,7 +93,9 @@ type IEventType = {
  */
 export function useTypeWriter(value: MaybeRefOrGetter<string>, options?: TypeWriterOptions) {
   const { step = 1, interval = 50, enabled = true, manual } = options ?? {}
+
   const valueRef = watchRefOrGetter(value)
+
   const typeIndex = ref(0)
   const paused = ref(false)
   const ended = ref(false)

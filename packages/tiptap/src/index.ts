@@ -49,11 +49,12 @@ export type UseTipTapOptions = {
 export function useTipTap(templateRef: TemplateRef<HTMLElement>, options?: UseTipTapOptions) {
   const { value, tiptapOptions } = options ?? {}
 
-  const valueRef = watchRefOrGetter(value, setContent)
+  const valueRef = watchRefOrGetter(value, () => setContent())
 
   const editorInst = shallowRef<Editor | null>(null)
 
   const onRenderEvent = createEventHook<[Editor]>()
+  const onUpdateValueEvent = createEventHook<[string]>()
 
   function render() {
     if (templateRef.value && !editorInst.value) {
@@ -66,6 +67,7 @@ export function useTipTap(templateRef: TemplateRef<HTMLElement>, options?: UseTi
       onRenderEvent.trigger(editorInst.value)
       editorInst.value.on('update', (update) => {
         valueRef.value = update.editor.getHTML()
+        onUpdateValueEvent.trigger(valueRef.value)
       })
     }
   }
@@ -84,12 +86,13 @@ export function useTipTap(templateRef: TemplateRef<HTMLElement>, options?: UseTi
    * ```
    */
   function setContent(value?: string) {
-    if (value !== undefined && value !== valueRef.value) {
+    if (value !== undefined) {
       valueRef.value = value
     }
-    editorInst.value?.setOptions({
-      content: valueRef.value,
-    })
+    const currentContent = editorInst.value?.getHTML()
+    if (valueRef.value && valueRef.value !== currentContent) {
+      editorInst.value?.commands.setContent(valueRef.value)
+    }
   }
 
   watchOnce(templateRef, render)
@@ -109,6 +112,7 @@ export function useTipTap(templateRef: TemplateRef<HTMLElement>, options?: UseTi
     editorInst,
     setContent,
     onRender: onRenderEvent.on,
+    onUpdateValue: onUpdateValueEvent.on,
   }
 }
 

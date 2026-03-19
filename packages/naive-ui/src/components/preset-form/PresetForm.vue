@@ -13,7 +13,7 @@ const emit = defineEmits<{
   (e: 'validated', val: V): void
 }>()
 
-const { formValues, formRules, formInst, formProps: _formProps, setValue, validate, resetValidation, resetForm, reset, clear, onValidated } = useNaiveForm(useTemplateRef<FormInst>('form-ref'), {
+const { formValues, formRules, formInst, formProps: _formProps, setValue, validate, resetValidation, resetForm, reset, clear, onValidated, onUpdateValue } = useNaiveForm(useTemplateRef<FormInst>('form-ref'), {
   values,
   rules,
   clearRules,
@@ -70,6 +70,7 @@ const expose: PresetFormExpose<V> = {
   reset,
   clear,
   onValidated,
+  onUpdateValue,
 }
 
 const templateBind = computed(() => {

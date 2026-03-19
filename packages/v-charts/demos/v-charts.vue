@@ -1,3 +1,4 @@
+<!-- eslint-disable no-console -->
 <script setup lang='ts'>
 import type { ISpec } from '@oiij/v-charts'
 import { useVCharts } from '@oiij/v-charts'
@@ -70,10 +71,15 @@ const options = computed(() => {
     },
   } as ISpec
 })
-useVCharts(useTemplateRef('dom-ref'), {
+const { onRender, onUpdate } = useVCharts(useTemplateRef('dom-ref'), {
   chartOption: options,
   darkMode,
-  debug: true,
+})
+onRender((eChartInst) => {
+  console.log(eChartInst)
+})
+onUpdate((chartOption) => {
+  console.log(chartOption)
 })
 </script>
 

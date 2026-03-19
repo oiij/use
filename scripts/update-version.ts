@@ -16,7 +16,7 @@ function updateVersion() {
         if (pkgJson.version) {
           const oldVersion = pkgJson.version
           const version = pkgJson.version.split('.')
-          version[version.length - 1] = (Number.parseInt(version[version.length - 1]) + 1).toString()
+          version[version.length - 1] = (Number.parseInt(version.at(-1) ?? '0') + 1).toString()
           pkgJson.version = version.join('.')
           console.log(pkgJson.version)
           fs.writeFileSync(pkgJsonPath, JSON.stringify(pkgJson, null, 2))

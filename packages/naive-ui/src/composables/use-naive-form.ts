@@ -5,7 +5,7 @@ import type { DataObject } from './use-data-request'
 import { createEventHook } from '@vueuse/core'
 import { cloneDeep } from 'es-toolkit/object'
 import { isPlainObject } from 'es-toolkit/predicate'
-import { reactive, ref, toRaw, toValue, watchEffect } from 'vue'
+import { reactive, ref, toRaw, toValue, watch } from 'vue'
 
 /**
  * 表单清空规则配置
@@ -32,7 +32,7 @@ function clearObjectValues<T extends JSONValue>(obj: T, rules?: UseNaiveFormClea
 
   if (isPlainObject(obj)) {
     for (const key in obj) {
-      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      if (Object.hasOwn(obj, key)) {
         obj[key] = clearObjectValues(obj[key], rules)
       }
     }
@@ -88,22 +88,24 @@ export function useNaiveForm<T extends DataObject = DataObject>(formInstRef: Tem
 
   const cacheValue = cloneDeep(toValue(values) ?? {})
 
+  const onUpdateValueEvent = createEventHook<[T]>()
+  const onValidatedEvent = createEventHook<[T]>()
+
   const formValuesRef = ref(toValue(values) ?? {}) as Ref<T>
-  watchEffect(() => {
-    formValuesRef.value = toValue(values) ?? {} as T
-  })
+  watch(() => toValue(values), (newValues) => {
+    formValuesRef.value = newValues ?? {} as T
+    onUpdateValueEvent.trigger(toRaw(formValuesRef.value))
+  }, { deep: true })
 
   const formRulesRef = ref(toValue(rules)) as Ref<UseNaiveFormRules<T>>
-  watchEffect(() => {
-    formRulesRef.value = toValue(rules) ?? {} as UseNaiveFormRules<T>
-  })
+  watch(() => toValue(rules), (newRules) => {
+    formRulesRef.value = newRules ?? {} as UseNaiveFormRules<T>
+  }, { deep: true })
 
   const formProps = {
     model: reactive(formValuesRef.value),
     rules: reactive(formRulesRef.value),
   }
-
-  const onValidatedEvent = createEventHook<[T]>()
 
   /**
    * 设置表单值
@@ -135,7 +137,7 @@ export function useNaiveForm<T extends DataObject = DataObject>(formInstRef: Tem
     }
     return new Promise<{ warnings?: ValidateError[][] }>((resolve, reject) => {
       formInstRef.value?.validate().then((res) => {
-        onValidatedEvent.trigger(toRaw(toValue(formValuesRef)))
+        onValidatedEvent.trigger(toRaw(formValuesRef.value))
         return resolve(res)
       }).catch(reject)
     })
@@ -199,6 +201,7 @@ export function useNaiveForm<T extends DataObject = DataObject>(formInstRef: Tem
     reset,
     clear,
     onValidated: onValidatedEvent.on,
+    onUpdateValue: onUpdateValueEvent.on,
   }
 }
 

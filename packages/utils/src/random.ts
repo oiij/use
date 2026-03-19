@@ -70,7 +70,7 @@ export const randomSign = (): number => (Math.random() >= 0.5 ? 1 : -1)
  * // 示例：生成范围内随机整数数组
  * randomArrayInRange(1, 10, 3); // => [5, 8, 2]（结果随机）
  */
-export const randomArrayInRange = (min: number, max: number, n: number): number[] => Array.from({ length: n }, () => Math.floor(Math.random() * (max - min + 1)) + min)
+export const randomArrayInRange = (min: number, max: number, n: number): number[] => Array.from<number>({ length: n }).fill(Math.floor(Math.random() * (max - min + 1)) + min)
 /**
  * 随机删除一项
  * @param {T[]} arr - 原始数组

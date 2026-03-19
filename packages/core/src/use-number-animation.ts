@@ -96,11 +96,7 @@ export function useNumberAnimation(to: MaybeRefOrGetter<number>, options?: Numbe
 
   const currentValueRef = ref(from)
 
-  const targetValueRef = watchRefOrGetter(to, () => {
-    if (!manual) {
-      run()
-    }
-  })
+  const targetValueRef = watchRefOrGetter(to, () => !manual && run())
 
   const startTime = ref(0)
   const isFirst = ref(true)
@@ -143,7 +139,7 @@ export function useNumberAnimation(to: MaybeRefOrGetter<number>, options?: Numbe
    * ```
    */
   function run(value?: number) {
-    if (value) {
+    if (value !== undefined) {
       targetValueRef.value = value
     }
     startTime.value = performance.now()

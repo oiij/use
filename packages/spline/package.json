@@ -1,7 +1,7 @@
 {
   "name": "@oiij/spline",
   "type": "module",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Spline 3D model loading composable for Vue 3",
   "author": "oiij",
   "license": "MIT",
@@ -34,17 +34,17 @@
     "prepublishOnly": "pnpm build"
   },
   "peerDependencies": {
-    "@splinetool/runtime": "catalog:spline",
-    "@vueuse/core": "catalog:spline",
-    "vue": "catalog:spline"
+    "@splinetool/runtime": "catalog:pkg",
+    "@vueuse/core": "catalog:pkg",
+    "vue": "catalog:pkg"
   },
   "dependencies": {
 
   },
   "devDependencies": {
-    "@splinetool/runtime": "catalog:spline",
-    "@vueuse/core": "catalog:spline",
-    "vue": "catalog:spline"
+    "@splinetool/runtime": "catalog:pkg",
+    "@vueuse/core": "catalog:pkg",
+    "vue": "catalog:pkg"
   },
   "publishConfig": {
     "access": "public"

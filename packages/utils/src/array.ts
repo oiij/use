@@ -29,7 +29,7 @@ export const countOccurrences = <T, _>(arr: T[], val: T): number => arr.reduce((
  * // 示例：创建 1 到 5 的数字数组
  * range(1, 5); // => [1, 2, 3, 4, 5]
  */
-export const range = (min: number, max: number): number[] => [...Array.from({ length: max - min + 1 }).keys()].map(i => i + min)
+export const range = (min: number, max: number): number[] => Array.from(Array.from({ length: max - min + 1 }).keys(), i => i + min)
 /**
  * 清空数组
  * @param {T[]} arr - 要清空的数组
@@ -300,7 +300,7 @@ export const groupBy = <T extends Record<string, any>, K extends keyof T>(arr: T
  * // 示例：在数组元素之间穿插逗号
  * intersperse(['a', 'b', 'c'], ','); // => ['a', ',', 'b', ',', 'c']
  */
-export const intersperse = <T>(a: T[], s: T): T[] => [...Array.from({ length: 2 * a.length - 1 })].map((_, i) => (i % 2 ? s : a[i / 2]))
+export const intersperse = <T>(a: T[], s: T): T[] => Array.from(Array.from({ length: 2 * a.length - 1 }), (_, i) => (i % 2 ? s : a[i / 2]))
 /**
  * 根据条件对阵列进行分区
  * @param {T[]} arr - 原始数组
@@ -372,7 +372,7 @@ export const removeFalsy = <T, _>(arr: T[]): T[] => arr.filter(Boolean)
  * chunk([1, 2, 3, 4, 5], 2); // => [[1, 2], [3, 4], [5]]
  */
 // eslint-disable-next-line no-sequences
-export const chunk = <T>(arr: T[], size: number): T[][] => arr.reduce((acc, e, i) => (i % size ? acc[acc.length - 1].push(e) : acc.push([e]), acc), [] as T[][])
+export const chunk = <T>(arr: T[], size: number): T[][] => arr.reduce((acc, e, i) => (i % size ? acc.at(-1)?.push(e) : acc.push([e]), acc), [] as T[][])
 /**
  * 按给定键对项目数组进行排序
  * @param {T[]} arr - 对象数组

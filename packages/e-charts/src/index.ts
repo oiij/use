@@ -1,15 +1,15 @@
 import type { BarSeriesOption, LineSeriesOption, PieSeriesOption } from 'echarts/charts'
 import type { DatasetComponentOption, GridComponentOption, LegendComponentOption, TitleComponentOption, ToolboxComponentOption, TooltipComponentOption } from 'echarts/components'
 import type { ComposeOption, ECharts, EChartsInitOpts } from 'echarts/core'
-import type { MaybeRefOrGetter, Ref, TemplateRef } from 'vue'
+import type { MaybeRefOrGetter, TemplateRef } from 'vue'
 import { createEventHook, useDebounceFn } from '@vueuse/core'
 import { BarChart, LineChart, PieChart } from 'echarts/charts'
 import { DatasetComponent, GridComponent, LegendComponent, TitleComponent, ToolboxComponent, TooltipComponent, TransformComponent } from 'echarts/components'
 import { init, use } from 'echarts/core'
 import { LabelLayout, UniversalTransition } from 'echarts/features'
 import { CanvasRenderer } from 'echarts/renderers'
-import { onUnmounted, ref, shallowRef, toValue, watch, watchEffect } from 'vue'
-import { watchElementSize } from '../../_utils/custom-watch'
+import { nextTick, onUnmounted, shallowRef, toRaw } from 'vue'
+import { watchElementSize, watchRefOrGetter } from '../../_utils/custom-watch'
 
 /**
  * ECharts 图表配置类型
@@ -126,13 +126,9 @@ export function useECharts(templateRef: TemplateRef<HTMLElement>, options?: UseE
   const { chartOption, darkMode, initOptions } = options ?? {}
   const eChartInst = shallowRef<ECharts | null>(null)
 
-  const chartOptionRef = ref(toValue(chartOption)) as Ref<EChartsOption | undefined>
-  watchEffect(() => chartOptionRef.value = toValue(chartOption) as EChartsOption | undefined)
-  watch(chartOptionRef, setOption)
+  const chartOptionRef = watchRefOrGetter(chartOption, () => setOption())
 
-  const darkModeRef = ref(toValue(darkMode))
-  watchEffect(() => darkModeRef.value = toValue(darkMode))
-  watch(darkModeRef, updateTheme)
+  const darkModeRef = watchRefOrGetter(darkMode, () => setDarkMode())
 
   const onRenderEvent = createEventHook<[ECharts]>()
   const onUpdateEvent = createEventHook<[EChartsOption]>()
@@ -145,12 +141,14 @@ export function useECharts(templateRef: TemplateRef<HTMLElement>, options?: UseE
    * @param option - 图表配置
    */
   function setOption(option?: EChartsOption) {
-    if (option !== undefined && option !== chartOptionRef.value) {
+    if (option !== undefined) {
       chartOptionRef.value = option
     }
-    const chartOption = chartOptionRef.value ?? {} as EChartsOption
-    eChartInst.value?.setOption(chartOption)
-    onUpdateEvent.trigger(chartOption)
+    const chartOption = toRaw(chartOptionRef.value)
+    if (chartOption) {
+      eChartInst.value?.setOption(chartOption)
+      onUpdateEvent.trigger(chartOption)
+    }
   }
 
   /**
@@ -158,24 +156,24 @@ export function useECharts(templateRef: TemplateRef<HTMLElement>, options?: UseE
    *
    * @param darkMode - 是否开启暗黑模式
    */
-  function updateTheme(darkMode?: boolean) {
-    if (darkMode !== undefined && darkMode !== darkModeRef.value) {
+  function setDarkMode(darkMode?: boolean) {
+    if (darkMode !== undefined) {
       darkModeRef.value = darkMode
     }
-    const theme = darkModeRef.value ? 'dark' : 'default'
-    eChartInst.value?.setTheme(theme)
-    eChartInst.value?.setOption(chartOptionRef.value ?? {})
+    destroy()
+    render()
   }
 
   /**
    * 渲染图表
    */
-  function render() {
+  async function render() {
     if (templateRef.value && !eChartInst.value) {
       const theme = darkModeRef?.value ? 'dark' : 'default'
+      await nextTick()
       eChartInst.value = init(templateRef.value, theme, { ...initOptions })
-      setOption(chartOptionRef.value)
       onRenderEvent.trigger(eChartInst.value)
+      setOption()
     }
   }
 
@@ -215,6 +213,8 @@ export function useECharts(templateRef: TemplateRef<HTMLElement>, options?: UseE
     eChartInst,
     chartOption: chartOptionRef,
     darkMode: darkModeRef,
+    setOption,
+    setDarkMode,
     onRender: onRenderEvent.on,
     onUpdate: onUpdateEvent.on,
     onResize: onResizeEvent.on,

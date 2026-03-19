@@ -65,9 +65,11 @@ export type UseShikiOptions = {
 export function useShiki(templateRef?: TemplateRef<HTMLElement>, options?: UseShikiOptions) {
   const { value, darkMode, lang, manual, shikiOptions } = options ?? {}
 
-  const valueRef = watchRefOrGetter(value, format)
-  const darkModeRef = watchRefOrGetter(darkMode, updateTheme)
-  const langRef = watchRefOrGetter(lang, updateLang)
+  const valueRef = watchRefOrGetter(value, () => !manual && format())
+
+  const darkModeRef = watchRefOrGetter(darkMode, () => setDarkMode())
+
+  const languageRef = watchRefOrGetter(lang, () => setLanguage())
 
   const htmlRef = ref('')
 
@@ -76,8 +78,8 @@ export function useShiki(templateRef?: TemplateRef<HTMLElement>, options?: UseSh
    *
    * @param darkMode - 是否开启暗黑模式
    */
-  function updateTheme(darkMode?: boolean) {
-    if (darkMode !== undefined && darkMode !== darkModeRef.value) {
+  function setDarkMode(darkMode?: boolean) {
+    if (darkMode !== undefined) {
       darkModeRef.value = darkMode
     }
     format()
@@ -88,9 +90,9 @@ export function useShiki(templateRef?: TemplateRef<HTMLElement>, options?: UseSh
    *
    * @param lang - 代码语言
    */
-  function updateLang(lang?: BundledLanguage) {
-    if (lang !== undefined && lang !== langRef.value) {
-      langRef.value = lang
+  function setLanguage(lang?: BundledLanguage) {
+    if (lang !== undefined) {
+      languageRef.value = lang
     }
     format()
   }
@@ -110,10 +112,10 @@ export function useShiki(templateRef?: TemplateRef<HTMLElement>, options?: UseSh
    * ```
    */
   async function format(value?: string) {
-    if (value !== undefined && value !== valueRef.value) {
+    if (value !== undefined) {
       valueRef.value = value
     }
-    const lang = langRef.value ?? 'javascript'
+    const lang = languageRef.value ?? 'javascript'
     const theme = `vitesse-${darkModeRef.value ? 'dark' : 'light'}`
     const result = await codeToHtml(valueRef.value ?? '', { lang, theme, ...shikiOptions })
     htmlRef.value = result
@@ -138,8 +140,8 @@ export function useShiki(templateRef?: TemplateRef<HTMLElement>, options?: UseSh
     templateRef,
     value: valueRef,
     html: readonly(htmlRef),
-    updateTheme,
-    updateLang,
+    setDarkMode,
+    setLanguage,
     format,
   }
 }

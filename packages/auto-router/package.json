@@ -1,7 +1,7 @@
 {
   "name": "@oiij/auto-router",
   "type": "module",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Vue Router utilities and composables for Vue 3",
   "author": "oiij",
   "license": "MIT",
@@ -44,15 +44,15 @@
     "prepublishOnly": "pnpm build"
   },
   "peerDependencies": {
-    "vue": "catalog:auto-router",
-    "vue-router": "catalog:auto-router"
+    "vue": "catalog:pkg",
+    "vue-router": "catalog:pkg"
   },
   "dependencies": {
-    "es-toolkit": "catalog:naive-ui"
+    "es-toolkit": "catalog:pkg"
   },
   "devDependencies": {
-    "vue": "catalog:auto-router",
-    "vue-router": "catalog:auto-router"
+    "vue": "catalog:pkg",
+    "vue-router": "catalog:pkg"
   },
   "publishConfig": {
     "access": "public"

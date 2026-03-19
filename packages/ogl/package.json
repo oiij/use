@@ -1,7 +1,7 @@
 {
   "name": "@oiij/ogl",
   "type": "module",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A Vue Composable for OGL",
   "author": "oiij",
   "license": "MIT",
@@ -32,14 +32,14 @@
     "prepublishOnly": "pnpm build"
   },
   "peerDependencies": {
-    "@vueuse/core": "catalog:ogl",
-    "ogl": "catalog:ogl",
-    "vue": "catalog:ogl"
+    "@vueuse/core": "catalog:pkg",
+    "ogl": "catalog:pkg",
+    "vue": "catalog:pkg"
   },
   "devDependencies": {
-    "@vueuse/core": "catalog:ogl",
-    "ogl": "catalog:ogl",
-    "vue": "catalog:ogl"
+    "@vueuse/core": "catalog:pkg",
+    "ogl": "catalog:pkg",
+    "vue": "catalog:pkg"
   },
   "publishConfig": {
     "access": "public"

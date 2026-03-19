@@ -2,7 +2,6 @@
 <script setup lang='ts'>
 import { NRemoteRequest } from '@oiij/naive-ui/components'
 import { NButton } from 'naive-ui'
-import { ref } from 'vue'
 
 type Params = {
   id?: number

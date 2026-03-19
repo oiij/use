@@ -23,12 +23,14 @@ export function useScanCode() {
   const pending = ref(true)
 
   let tempStr = ''
-  let timer: NodeJS.Timeout
+  let timer: NodeJS.Timeout | null = null
 
   const onScanEvent = createEventHook<string>()
 
   function onKeyDown(ev: KeyboardEvent) {
-    clearTimeout(timer)
+    if (timer) {
+      clearTimeout(timer)
+    }
 
     timer = setTimeout(() => {
       pending.value = true

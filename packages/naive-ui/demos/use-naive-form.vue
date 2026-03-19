@@ -1,10 +1,11 @@
+<!-- eslint-disable no-console -->
 <script setup lang='ts'>
 import type { FormInst } from 'naive-ui'
 import { useNaiveForm } from '@oiij/naive-ui'
 import { NButton, NCard, NDynamicInput, NDynamicTags, NFlex, NForm, NFormItem, NInput, NInputNumber, NSwitch } from 'naive-ui'
 import { ref, useTemplateRef } from 'vue'
 
-const _formValue = ref({
+const _formValues = ref({
   foo: {
     bar: 'bar',
   },
@@ -18,8 +19,9 @@ const _formValue = ref({
     value: '一',
   }],
 })
-const { validate, formValue, formProps, resetValidation, resetForm, reset, clear } = useNaiveForm(useTemplateRef<FormInst>('form-ref'), {
-  value: _formValue,
+
+const { validate, formValues, formProps, resetValidation, onValidated, resetForm, reset, clear, onUpdateValue } = useNaiveForm(useTemplateRef<FormInst>('form-ref'), {
+  values: _formValues,
   rules: {
     foo: {
       bar: {
@@ -37,25 +39,31 @@ const { validate, formValue, formProps, resetValidation, resetForm, reset, clear
     boolean: null,
   },
 })
+onUpdateValue((values) => {
+  console.log(values)
+})
+onValidated((res) => {
+  console.log(res)
+})
 </script>
 
 <template>
   <NCard>
     <NForm v-bind="formProps" ref="form-ref">
       <NFormItem label="foo.bar" path="foo.bar">
-        <NInput v-model:value="formValue.foo.bar" placeholder="输入foo" />
+        <NInput v-model:value="formValues.foo.bar" placeholder="输入foo" />
       </NFormItem>
       <NFormItem label="bar" path="bar">
-        <NInputNumber v-model:value="_formValue.bar" placeholder="输入bar" />
+        <NInputNumber v-model:value="_formValues.bar" placeholder="输入bar" />
       </NFormItem>
       <NFormItem label="args" path="args">
-        <NDynamicTags v-model:value="formValue.args" />
+        <NDynamicTags v-model:value="formValues.args" />
       </NFormItem>
       <NFormItem label="boolean" path="boolean">
-        <NSwitch v-model:value="formValue.boolean" />
+        <NSwitch v-model:value="formValues.boolean" />
       </NFormItem>
       <NFormItem label="argObjs" path="argObjs">
-        <NDynamicInput v-model:value="formValue.argObjs" preset="pair" />
+        <NDynamicInput v-model:value="formValues.argObjs" preset="pair" />
       </NFormItem>
       <NFlex>
         <NButton @click="validate">
@@ -74,8 +82,8 @@ const { validate, formValue, formProps, resetValidation, resetForm, reset, clear
           清除表单
         </NButton>
       </NFlex>
-      <pre>{{ JSON.stringify(formValue, null, 2) }}   </pre>
-      <pre>{{ JSON.stringify(_formValue, null, 2) }}   </pre>
+      <pre>{{ JSON.stringify(formValues, null, 2) }}</pre>
+      <pre>{{ JSON.stringify(_formValues, null, 2) }}</pre>
     </NForm>
   </NCard>
 </template>
