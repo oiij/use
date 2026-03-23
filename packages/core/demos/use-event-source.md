@@ -7,15 +7,20 @@
 ## 安装
 
 ```bash
+# 使用 pnpm
+pnpm add @oiij/use
+
 # 使用 npm
-npm install @use/core
+npm install @oiij/use
 
 # 使用 yarn
-yarn add @use/core
-
-# 使用 pnpm
-pnpm add @use/core
+yarn add @oiij/use
 ```
+
+## 依赖
+
+- `vue`: ^3.0.0
+- `@vueuse/core`: ^10.0.0
 
 ## 基本使用
 
@@ -23,14 +28,44 @@ pnpm add @use/core
 
 ## API
 
-### 函数签名
+### `useEventSource(url?, options?)`
 
-```ts
-declare function useEventSource<T extends HandlerType = HandlerType, D extends MessageRaw = MessageRaw>(
-  url?: string | URL | Ref<string | URL>,
-  options?: UseEventSourceOptions<T>
-): UseEventSourceReturns
-```
+创建 SSE 连接。
+
+#### 参数
+
+| 参数      | 类型                              | 说明         |
+| --------- | --------------------------------- | ------------ |
+| `url`     | `MaybeRefOrGetter<string \| URL>` | SSE 连接地址 |
+| `options` | `UseEventSourceOptions`           | 配置选项     |
+
+#### UseEventSourceOptions
+
+| 选项              | 类型                   | 默认值   | 说明           |
+| ----------------- | ---------------------- | -------- | -------------- |
+| `manual`          | `boolean`              | `false`  | 是否手动连接   |
+| `autoRetry`       | `boolean \| AutoRetry` | -        | 自动重试配置   |
+| `parseMessage`    | `boolean \| function`  | `false`  | 消息解析配置   |
+| `handlerKey`      | `string`               | `'type'` | 消息处理器键名 |
+| `withCredentials` | `boolean`              | `false`  | 是否携带凭据   |
+
+#### 返回值
+
+| 属性                             | 类型                              | 说明             |
+| -------------------------------- | --------------------------------- | ---------------- |
+| `source`                         | `ShallowRef<EventSource \| null>` | EventSource 实例 |
+| `url`                            | `Ref<string \| URL \| undefined>` | 连接地址         |
+| `status`                         | `Ref<State>`                      | 连接状态         |
+| `data`                           | `Ref<any>`                        | 最新消息数据     |
+| `dataRecord`                     | `Ref<any[]>`                      | 消息记录         |
+| `error`                          | `Ref<Event \| null>`              | 错误信息         |
+| `connect(url?, options?)`        | `Function`                        | 连接 SSE         |
+| `close()`                        | `Function`                        | 关闭连接         |
+| `destroy()`                      | `Function`                        | 销毁连接         |
+| `registerHandler(type, handler)` | `Function`                        | 注册消息处理器   |
+| `onOpen(callback)`               | `Function`                        | 连接打开事件     |
+| `onMessage(callback)`            | `Function`                        | 消息接收事件     |
+| `onError(callback)`              | `Function`                        | 错误事件         |
 
 ## 类型定义
 
@@ -43,16 +78,10 @@ export type AutoRetry = boolean | {
   onFailed?: () => void
 }
 
-export type MessageRaw = any
-
-export type HandlerType = {
-  [key: string]: any
-}
-
 export type UseEventSourceOptions<T extends HandlerType = HandlerType> = EventSourceInit & {
   manual?: boolean
   autoRetry?: AutoRetry
-  parseMessage?: boolean | ((raw: MessageRaw) => Record<keyof T, unknown> | Promise<Record<keyof T, unknown>>)
+  parseMessage?: boolean | ((raw: any) => Record<keyof T, unknown> | Promise<Record<keyof T, unknown>>)
   handlerKey?: string
 }
 
@@ -60,20 +89,95 @@ export type UseEventSourceReturns = {
   source: ShallowRef<EventSource | null>
   url: Ref<string | URL | undefined>
   status: Ref<State>
-  data: Ref<MessageRaw | null>
-  dataRecord: Ref<MessageRaw[]>
-  messageEvent: Ref<MessageEvent<MessageRaw> | null>
-  messageEventRecord: Ref<MessageEvent<MessageRaw>[]>
+  data: Ref<any>
+  dataRecord: Ref<any[]>
   error: Ref<Event | null>
-  controller: ShallowRef<AbortController>
   connect: (url?: string | URL, options?: EventSourceInit) => void
   close: () => void
   destroy: () => void
-  registerHandler: <K extends keyof HandlerType>(type: K, handler: (data: HandlerType[K]) => void) => () => void
-  cancelHandler: <K extends keyof T>(type: K, handler: (data: HandlerType[K]) => void) => void
-  registerEvent: (type: string, handler: (ev: MessageEvent<MessageRaw>) => void) => void
-  onOpen: EventHookOn<[Event]>
-  onMessage: EventHookOn<[MessageEvent<MessageRaw>]>
-  onError: EventHookOn<[Event]>
+  registerHandler: <K>(type: K, handler: (data: any) => void) => () => void
+  onOpen: (callback: (event: Event) => void) => void
+  onMessage: (callback: (event: MessageEvent) => void) => void
+  onError: (callback: (event: Event) => void) => void
+}
+
+export declare function useEventSource<T, D>(url?: MaybeRefOrGetter<string | URL>, options?: UseEventSourceOptions<T>): UseEventSourceReturns
+```
+
+## 使用示例
+
+### 基础用法
+
+```vue
+<script setup>
+import { useEventSource } from '@oiij/use'
+
+const { status, data, onMessage } = useEventSource('/api/events')
+
+onMessage((event) => {
+  console.log('收到消息:', event.data)
+})
+</script>
+
+<template>
+  <p>状态: {{ status }}</p>
+  <p>数据: {{ data }}</p>
+</template>
+```
+
+### 自动重试
+
+```ts
+import { useEventSource } from '@oiij/use'
+
+const { status } = useEventSource('/api/events', {
+  autoRetry: {
+    retries: 3,
+    delay: 1000,
+    onFailed: () => {
+      console.log('连接失败')
+    }
+  }
+})
+```
+
+### 消息处理器
+
+```ts
+import { useEventSource } from '@oiij/use'
+
+type EventTypes = {
+  message: { content: string }
+  notification: { title: string, body: string }
+}
+
+const { registerHandler } = useEventSource<EventTypes>('/api/events', {
+  parseMessage: true
+})
+
+registerHandler('message', (data) => {
+  console.log('消息:', data.content)
+})
+
+registerHandler('notification', (data) => {
+  console.log('通知:', data.title, data.body)
+})
+```
+
+### 手动连接
+
+```ts
+import { useEventSource } from '@oiij/use'
+
+const { status, connect, close } = useEventSource('/api/events', {
+  manual: true
+})
+
+function handleConnect() {
+  connect()
+}
+
+function handleClose() {
+  close()
 }
 ```

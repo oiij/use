@@ -2,7 +2,7 @@ import type { BundledLanguage, BundledTheme, CodeToHastOptions } from 'shiki'
 import type { ComputedRef, MaybeRefOrGetter, TemplateRef } from 'vue'
 import { codeToHtml } from 'shiki'
 import { onMounted, onUnmounted, readonly, ref } from 'vue'
-import { watchRefOrGetter } from '../../_utils/custom-watch'
+import { watchRefOrGetter } from './_utils'
 
 export type {
   BundledLanguage,

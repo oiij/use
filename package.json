@@ -1,203 +1,106 @@
 {
-
   "name": "@oiij/use-monorepo",
-
   "type": "module",
-
   "version": "0.0.1",
-
-  "description": "A starter template for TypeScript projects",
-
+  "description": "A monorepo for Vue 3 composables, components and utilities",
   "author": "oiij",
-
   "license": "MIT",
-
   "homepage": "https://github.com/oiij/use",
-
   "repository": {
-
     "type": "git",
-
     "url": "git@github.com:oiij/use.git"
-
   },
-
   "bugs": "https://github.com/oiij/use/issues",
-
   "keywords": [
-
     "use",
-
     "vue-use",
-
     "vue3",
-
     "typescript",
-
     "vue hooks"
-
   ],
-
   "scripts": {
-
     "docs:dev": "vitepress dev",
-
     "docs:build": "vitepress build",
-
     "docs:preview": "vitepress preview",
-
     "pkg:dev": "pnpm -r --parallel run dev",
-
     "pkg:build": "pnpm -F @oiij/use -F @oiij/css-render  build && pnpm -F !@oiij/use -F !@oiij/css-render  build",
-
     "publish:all": "pnpm -r run publish",
-
     "lint": "eslint .",
-
     "lint:fix": "eslint . --fix",
-
     "prepublishOnly": "pnpm build",
-
     "release": "bumpp && npm publish",
-
     "awe": "pnpx are-we-esm",
-
     "nmi": "pnpx node-modules-inspector",
-
     "start": "esno src/index.ts",
-
     "test": "vitest",
-
     "update:deps": "taze -w && pnpm i",
-
     "type:check": "vue-tsc --noEmit",
-
     "cz": "czg",
-
     "commit": "git pull && git add -A && pnpm cz && git push",
-
     "link": "pnpm link --global",
-
     "preinstall": "npx only-allow pnpm",
-
     "postinstall": "npx simple-git-hooks"
-
   },
-
   "dependencies": {
-
     "@oiij/ai-editor": "workspace:*",
-
     "@oiij/auto-router": "workspace:*",
-
     "@oiij/chrome-tabs": "workspace:*",
-
     "@oiij/css-render": "workspace:*",
-
     "@oiij/directives": "workspace:*",
-
     "@oiij/e-charts": "workspace:*",
-
     "@oiij/emoji-picker": "workspace:*",
-
     "@oiij/js-pdf": "workspace:*",
-
     "@oiij/markdown-it": "workspace:*",
-
     "@oiij/naive-ui": "workspace:*",
-
     "@oiij/ogl": "workspace:*",
-
     "@oiij/shiki": "workspace:*",
-
     "@oiij/spline": "workspace:*",
-
     "@oiij/three-js": "workspace:*",
-
     "@oiij/tiptap": "workspace:*",
-
     "@oiij/use": "workspace:*",
-
     "@oiij/utils": "workspace:*",
-
     "@oiij/v-charts": "workspace:*",
-
     "@oiij/xlsx": "workspace:*",
-
     "colord": "catalog:dev",
-
     "naive-ui": "catalog:dev",
-
     "three": "catalog:dev",
-
     "vue": "catalog:dev"
-
   },
-
   "devDependencies": {
-
     "@antfu/eslint-config": "catalog:dev",
-
     "@oiij/tsconfig": "catalog:dev",
-
+    "@tsdown/css": "catalog:dev",
     "@types/node": "catalog:dev",
     "@types/three": "catalog:dev",
-
     "@vitest/ui": "catalog:dev",
-
     "bumpp": "catalog:dev",
-
     "commitlint": "catalog:dev",
-
     "cz-git": "catalog:dev",
-
     "czg": "catalog:dev",
-
     "eslint": "catalog:dev",
-
     "eslint-plugin-format": "catalog:dev",
-
     "esno": "catalog:dev",
-
     "jsonfile": "catalog:dev",
-
     "lint-staged": "catalog:dev",
-
     "postcss": "catalog:dev",
-
+    "rolldown-plugin-unocss": "catalog:dev",
     "simple-git-hooks": "catalog:dev",
-
     "taze": "catalog:dev",
-
     "tsdown": "catalog:dev",
-
     "typescript": "catalog:dev",
-
+    "unocss": "catalog:dev",
     "unplugin-vue": "catalog:dev",
-
     "vitepress": "catalog:dev",
-
     "vitepress-demo-plugin": "catalog:dev",
-
     "vitest": "catalog:dev",
-
     "vue-tsc": "catalog:dev"
-
   },
-
   "simple-git-hooks": {
-
     "pre-commit": "pnpm lint-staged && pnpm type:check"
-
   },
-
   "lint-staged": {
-
     "*.{js,jsx,ts,tsx}": [
-
       "pnpm lint:fix"
-
     ]
-
   }
 }

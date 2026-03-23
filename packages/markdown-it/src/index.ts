@@ -3,7 +3,7 @@ import type { MaybeRefOrGetter, TemplateRef } from 'vue'
 import DOMPurify from 'dompurify'
 import markdownIt from 'markdown-it'
 import { onMounted, onUnmounted, ref } from 'vue'
-import { watchRefOrGetter } from '../../_utils/custom-watch'
+import { watchRefOrGetter } from './_utils'
 
 /**
  * 使用 MarkdownIt 选项类型

@@ -7,21 +7,27 @@
 ## 安装
 
 ```bash
+# 使用 pnpm
+pnpm add @oiij/auto-i18n
+
 # 使用 npm
 npm install @oiij/auto-i18n
 
 # 使用 yarn
 yarn add @oiij/auto-i18n
-
-# 使用 pnpm
-pnpm add @oiij/auto-i18n
 ```
+
+## 依赖
+
+- `vue`: ^3.0.0
+- `@vueuse/core`: ^10.0.0
+- `vue-i18n`: ^9.0.0
 
 ## 基本使用
 
 ### 1. 安装插件
 
-在 Vue 应用中安装 `createAutoI18n` 插件：
+在 Vue 应用中安装 `createAutoI18n` 插件，必须在 Vue I18n 之后安装：
 
 ```ts
 import messages from '@intlify/unplugin-vue-i18n/messages'
@@ -49,41 +55,140 @@ app.mount('#app')
 
 ### 2. 在组件中使用
 
-在 Vue 组件中使用 `useAutoI18n` 获取国际化实例：
+<demo vue="./auto-i18n.vue" title="useAutoI18n" />
+
+## API
+
+### `createAutoI18n(i18n, options?)`
+
+创建自动国际化插件，必须在 Vue I18n 之后安装。
+
+#### 参数
+
+| 参数      | 类型                 | 说明           |
+| --------- | -------------------- | -------------- |
+| `i18n`    | `I18n<T>`            | Vue I18n 实例  |
+| `options` | `AutoI18nOptions<T>` | 自动国际化选项 |
+
+#### Options
+
+| 选项                          | 类型                 | 默认值                        | 说明                           |
+| ----------------------------- | -------------------- | ----------------------------- | ------------------------------ |
+| `storageKey`                  | `string`             | `'__LANGUAGE_MODE_PERSIST__'` | 存储语言的键名                 |
+| `useStorageOptions`           | `UseStorageOptions`  | `{}`                          | 配置 useLocalStorage 选项      |
+| `useNavigatorLanguageOptions` | `ConfigurableWindow` | `{}`                          | 配置 useNavigatorLanguage 选项 |
+
+### `useAutoI18n()`
+
+获取自动国际化实例。
+
+#### 返回值
+
+| 属性                | 类型                     | 说明                       |
+| ------------------- | ------------------------ | -------------------------- |
+| `language`          | `Ref<keyof T \| 'auto'>` | 语言设置，持久化存储       |
+| `navigatorLanguage` | `Ref<string>`            | 浏览器导航语言             |
+| `locale`            | `ComputedRef<keyof T>`   | 计算当前实际使用的语言环境 |
+| `setLocale(lang)`   | `Function`               | 设置语言环境               |
+| `setLanguage(lang)` | `Function`               | 设置语言（支持 'auto'）    |
+
+### `setupAutoI18n(i18n, options?)`
+
+设置自动国际化，提供国际化相关的工具方法和状态管理。
+
+## 类型定义
+
+```ts
+import type { ConfigurableWindow, UseStorageOptions } from '@vueuse/core'
+import type { I18n } from 'vue-i18n'
+
+export type AutoI18nOptions<T extends Record<string, unknown>> = {
+  /**
+   * 存储语言的键名
+   * @default '__LANGUAGE_MODE_PERSIST__'
+   */
+  storageKey?: string
+  /**
+   * 配置 useLocalStorage 选项
+   */
+  useStorageOptions?: UseStorageOptions<keyof T | 'auto'>
+  /**
+   * 配置 useNavigatorLanguage 选项
+   */
+  useNavigatorLanguageOptions?: ConfigurableWindow
+}
+
+export type AutoI18nInstance<T extends Record<string, unknown>> = {
+  /**
+   * 语言设置，持久化存储
+   */
+  language: Ref<keyof T | 'auto'>
+  /**
+   * 浏览器导航语言
+   */
+  navigatorLanguage: Ref<string | undefined>
+  /**
+   * 计算当前实际使用的语言环境
+   */
+  locale: ComputedRef<keyof T>
+  /**
+   * 设置语言环境
+   */
+  setLocale: (lang: keyof T) => void
+  /**
+   * 设置语言
+   */
+  setLanguage: (lang: keyof T | 'auto') => void
+}
+```
+
+## 使用示例
+
+### 基础用法
 
 ```vue
 <script setup>
 import { useAutoI18n } from '@oiij/auto-i18n'
 
-const { language, navigatorLanguage, _locale, setLocale, setLanguage } = useAutoI18n()
+const { language, navigatorLanguage, locale, setLanguage } = useAutoI18n()
 </script>
 
 <template>
   <div>
-    <div>
-      <h2>当前语言设置: {{ language.value }}</h2>
-      <h3>浏览器语言: {{ navigatorLanguage.value }}</h3>
-      <h3>实际使用的语言: {{ _locale.value }}</h3>
-    </div>
-
-    <div>
-      <button @click="setLanguage('auto')">
-        自动（浏览器语言）
-      </button>
-      <button @click="setLanguage('zh-CN')">
-        中文
-      </button>
-      <button @click="setLanguage('en-US')">
-        English
-      </button>
-    </div>
+    <p>当前语言: {{ language }}</p>
+    <p>浏览器语言: {{ navigatorLanguage }}</p>
+    <p>实际语言: {{ locale }}</p>
+    <button @click="setLanguage('zh-CN')">
+      中文
+    </button>
+    <button @click="setLanguage('en-US')">
+      English
+    </button>
+    <button @click="setLanguage('auto')">
+      自动
+    </button>
   </div>
 </template>
 ```
 
-## 类型推断示例
+### 自定义存储键名
 
-auto-I18n 支持泛型，可以根据传入的 i18n 实例推断出正确的 locale 类型：
+```ts
+import { createAutoI18n } from '@oiij/auto-i18n'
+import { createI18n } from 'vue-i18n'
+
+const i18n = createI18n({
+  locale: 'zh-CN',
+  legacy: false,
+  messages: {}
+})
+
+const autoI18n = createAutoI18n(i18n, {
+  storageKey: 'my-app-language'
+})
+```
+
+### 类型推断
 
 ```ts
 import { createAutoI18n } from '@oiij/auto-i18n'
@@ -114,115 +219,4 @@ const autoI18n = createAutoI18n(i18n)
 autoI18n.setLocale('zh-CN') // ✅ 正确
 autoI18n.setLocale('en-US') // ✅ 正确
 autoI18n.setLocale('fr-FR') // ❌ 类型错误
-```
-
-## 插件工具函数
-
-auto-I18n 还提供了一些实用的插件工具函数：
-
-### 检测浏览器语言
-
-```ts
-import { detectBrowserLanguage } from '@oiij/auto-i18n/plugin'
-
-const locale = detectBrowserLanguage()
-console.log(locale) // 例如: 'zh-CN' 或 'en-US'
-```
-
-### 格式化语言名称
-
-```ts
-import { formatLanguageName } from '@oiij/auto-i18n/plugin'
-
-console.log(formatLanguageName('zh-CN')) // '中文'
-console.log(formatLanguageName('en-US')) // 'English'
-```
-
-## API
-
-### 函数签名
-
-```ts
-/**
- * 获取自动国际化实例
- *
- * @returns 自动国际化实例，包含语言管理工具方法
- */
-declare function useAutoI18n<T extends I18n = I18n>(): AutoI18nInstance<T>
-
-/**
- * 创建自动国际化插件
- *
- * 必须在 Vue I18n 之后安装
- *
- * @param i18n Vue I18n 实例
- * @returns Vue 插件对象
- */
-declare function createAutoI18n<T extends I18n>(i18n: T): Plugin
-
-/**
- * 设置自动国际化
- *
- * 提供国际化相关的工具方法和状态管理
- *
- * @param i18n Vue I18n 实例
- * @returns 自动国际化实例，包含语言管理工具方法
- */
-declare function setupAutoI18n<T extends I18n>(i18n: T): AutoI18nInstance<T>
-```
-
-## 类型定义
-
-```ts
-/**
- * 从 I18n 实例中提取 locale 类型
- */
-type ExtractLocale<T extends I18n> = T['global']['locale']
-
-/**
- * 语言设置类型
- */
-type Language = 'auto' | string
-
-/**
- * 自动国际化实例类型
- *
- * 由 setupAutoI18n 函数返回的对象类型
- */
-type AutoI18nInstance<T extends I18n = I18n> = {
-  /**
-   * 语言设置，持久化存储
-   *
-   * 使用 useLocalStorage 持久化存储语言设置到本地存储
-   */
-  language: Ref<Language>
-
-  /**
-   * 浏览器导航语言
-   *
-   * 使用 useNavigatorLanguage 获取浏览器的语言设置
-   */
-  navigatorLanguage: Ref<string>
-
-  /**
-   * 计算当前实际使用的语言环境
-   *
-   * 如果语言设置为 'auto'，则使用浏览器导航语言；否则使用设置的语言
-   */
-  _locale: ComputedRef<string>
-
-  /**
-   * 设置语言环境
-   *
-   * @param lang - 要设置的语言环境
-   */
-  setLocale: (lang: ExtractLocale<T>) => void
-
-  /**
-   * 设置语言
-   *
-   * @param lang - 要设置的语言，可以是 'auto' 或具体的语言环境
-   */
-  setLanguage: (lang: Language) => void
-}
 ```

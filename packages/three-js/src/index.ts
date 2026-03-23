@@ -1,10 +1,10 @@
 import type { UseRafFnCallbackArguments } from '@vueuse/core'
 import type { Light, Object3D, WebGLRendererParameters } from 'three'
 import type { TemplateRef } from 'vue'
-import { createEventHook, useDebounceFn, useEventListener, useRafFn } from '@vueuse/core'
+import { createEventHook, useDebounceFn, useElementSize, useEventListener, useRafFn } from '@vueuse/core'
 import { Clock, PerspectiveCamera, Scene, VSMShadowMap, WebGLRenderer } from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
-import { watchElementSize } from '../../_utils/custom-watch'
+import { watch } from 'vue'
 import { useDisposable } from './utils/_utils'
 import { onIntersectObject as _onIntersectObject } from './utils/utils'
 
@@ -182,7 +182,7 @@ export function useThreeJs(templateRef: TemplateRef<HTMLElement>, options?: Thre
   const controls = new OrbitControls(camera, renderer.domElement)
   controls.enableDamping = true
 
-  const onCreatedEvent = createEventHook<[WebGLRenderer]>()
+  const onRenderedEvent = createEventHook<[WebGLRenderer]>()
   const onResizedEvent = createEventHook<[ResizeArguments]>()
   const onDisposedEvent = createEventHook<[]>()
   const onLoopEvent = createEventHook<[WebGLRenderer, LoopEvent, UseRafFnCallbackArguments]>()
@@ -215,11 +215,11 @@ export function useThreeJs(templateRef: TemplateRef<HTMLElement>, options?: Thre
   /**
    * 创建 Three.js 实例
    */
-  function create() {
+  function render() {
     if (!renderDmm) {
       templateRef.value?.appendChild(renderer.domElement)
       renderDmm = renderer.domElement
-      onCreatedEvent.trigger(renderer)
+      onRenderedEvent.trigger(renderer)
     }
   }
 
@@ -250,9 +250,12 @@ export function useThreeJs(templateRef: TemplateRef<HTMLElement>, options?: Thre
     elapsed = clock.getElapsedTime()
   })
 
-  watchElementSize(templateRef, ({ width, height }) => {
-    debounceResize(width, height)
-    create()
+  const { width, height } = useElementSize(templateRef)
+  watch([width, height], ([width, height]) => {
+    if (width > 0 && height > 0) {
+      debounceResize(width, height)
+      render()
+    }
   })
 
   const dispose = useDisposable(() => {
@@ -316,7 +319,7 @@ export function useThreeJs(templateRef: TemplateRef<HTMLElement>, options?: Thre
     isActive,
     dispose,
     onIntersectObject,
-    onRendered: onCreatedEvent.on,
+    onRendered: onRenderedEvent.on,
     onResize: onResizedEvent.on,
     onDestroy: onDisposedEvent.on,
     onBeforeLoop: onBeforeLoopEvent.on,

@@ -1,10 +1,9 @@
 import type { UseRafFnCallbackArguments } from '@vueuse/core'
 import type { CameraOptions, RendererOptions } from 'ogl'
 import type { TemplateRef } from 'vue'
-import { createEventHook, useDebounceFn, useRafFn } from '@vueuse/core'
+import { createEventHook, useDebounceFn, useElementSize, useRafFn } from '@vueuse/core'
 import { Camera, Renderer, Transform } from 'ogl'
-import { onUnmounted } from 'vue'
-import { watchElementSize } from '../../_utils/custom-watch'
+import { onUnmounted, watch } from 'vue'
 
 /**
  * OGL 选项类型
@@ -95,7 +94,7 @@ export function useOGL(templateRef: TemplateRef<HTMLElement>, options?: OGLOptio
   const scene = new Transform()
   let renderDmm: HTMLCanvasElement | null = null
 
-  const onCreatedEvent = createEventHook<[Renderer]>()
+  const onRenderedEvent = createEventHook<[Renderer]>()
   const onResizedEvent = createEventHook<[ResizeArguments]>()
   const onDisposedEvent = createEventHook<[]>()
   const onLoopEvent = createEventHook<[Renderer, UseRafFnCallbackArguments]>()
@@ -120,11 +119,11 @@ export function useOGL(templateRef: TemplateRef<HTMLElement>, options?: OGLOptio
   /**
    * 创建 OGL 实例
    */
-  function create() {
+  function render() {
     if (!renderDmm) {
       templateRef.value?.appendChild(gl.canvas)
       renderDmm = gl.canvas
-      onCreatedEvent.trigger(renderer)
+      onRenderedEvent.trigger(renderer)
     }
   }
 
@@ -138,9 +137,12 @@ export function useOGL(templateRef: TemplateRef<HTMLElement>, options?: OGLOptio
     }
   })
 
-  watchElementSize(templateRef, ({ width, height }) => {
-    debounceResize(width, height)
-    create()
+  const { width, height } = useElementSize(templateRef)
+  watch([width, height], ([width, height]) => {
+    if (width > 0 && height > 0) {
+      debounceResize(width, height)
+      render()
+    }
   })
 
   /**
@@ -174,7 +176,7 @@ export function useOGL(templateRef: TemplateRef<HTMLElement>, options?: OGLOptio
     gl,
     camera,
     scene,
-    onCreated: onCreatedEvent.on,
+    onRendered: onRenderedEvent.on,
     onResize: onResizedEvent.on,
     onDisposed: onDisposedEvent.on,
     onLoop: onLoopEvent.on,

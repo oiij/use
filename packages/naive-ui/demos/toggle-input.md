@@ -7,15 +7,20 @@
 ## 安装
 
 ```bash
+# 使用 pnpm
+pnpm add @oiij/naive-ui
+
 # 使用 npm
 npm install @oiij/naive-ui
 
 # 使用 yarn
 yarn add @oiij/naive-ui
-
-# 使用 pnpm
-pnpm add @oiij/naive-ui
 ```
+
+## 依赖
+
+- `vue`: ^3.0.0
+- `naive-ui`: ^2.0.0
 
 ## 基本使用
 
@@ -23,20 +28,73 @@ pnpm add @oiij/naive-ui
 
 ## API
 
-### Props
+### `<ToggleInput />`
 
-| Name          | Type                                                                           | Default | Description              |
-| ------------- | ------------------------------------------------------------------------------ | ------- | ------------------------ |
-| value         | String                                                                         | -       | 文本输入的值。           |
-| inputProps    | [InputProps](https://www.naiveui.com/zh-CN/light/components/input#Input-Props) | -       | 输入框配置               |
-| @update:value | (value:string) => void                                                         | -       | 输入框值 停止输入 时触发 |
+切换编辑组件。
+
+#### Props
+
+| 属性         | 类型         | 说明         |
+| ------------ | ------------ | ------------ |
+| `value`      | `string`     | 文本输入的值 |
+| `inputProps` | `InputProps` | 输入框配置   |
+
+#### Events
+
+| 事件           | 参数              | 说明                   |
+| -------------- | ----------------- | ---------------------- |
+| `update:value` | `(value: string)` | 输入框值停止输入时触发 |
 
 ## 类型定义
 
 ```ts
 export type ToggleInputProps = {
+  /**
+   * 文本输入的值
+   */
   'value': string
+  /**
+   * 输入框配置
+   */
   'inputProps'?: InputProps
+  /**
+   * 输入框值更新时触发
+   */
   'update:value'?: (value: string) => void
 }
+```
+
+## 使用示例
+
+### 基础用法
+
+```vue
+<script setup>
+import { ToggleInput } from '@oiij/naive-ui'
+import { ref } from 'vue'
+
+const value = ref('点击编辑我')
+</script>
+
+<template>
+  <ToggleInput v-model:value="value" />
+</template>
+```
+
+### 自定义输入框配置
+
+```vue
+<script setup>
+import { ToggleInput } from '@oiij/naive-ui'
+import { ref } from 'vue'
+
+const value = ref('双击编辑')
+</script>
+
+<template>
+  <ToggleInput
+    v-model:value="value"
+    :input-props="{ placeholder: '请输入内容', maxlength: 50 }"
+  />
+</template>
 ```

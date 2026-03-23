@@ -3,7 +3,7 @@ import type { MaybeRefOrGetter, TemplateRef } from 'vue'
 import { createEventHook, watchOnce } from '@vueuse/core'
 import { AiEditor } from 'aieditor'
 import { nextTick, onUnmounted, shallowRef } from 'vue'
-import { watchRefOrGetter } from '../../_utils/custom-watch'
+import { watchRefOrGetter } from './_utils'
 
 import 'aieditor/dist/style.css'
 
@@ -74,7 +74,7 @@ export function useAiEditor(templateRef: TemplateRef<HTMLElement>, options?: Use
 
   const readonlyRef = watchRefOrGetter(readonly, () => setReadonly())
 
-  const onRenderEvent = createEventHook<[AiEditor]>()
+  const onRenderedEvent = createEventHook<[AiEditor]>()
   const onUpdateValueEvent = createEventHook<[string]>()
   /**
    * 设置编辑器内容
@@ -86,7 +86,7 @@ export function useAiEditor(templateRef: TemplateRef<HTMLElement>, options?: Use
       valueRef.value = value
     }
     const currentContent = aiEditorInst.value?.getHtml()
-    if (valueRef.value && valueRef.value !== currentContent) {
+    if (valueRef.value !== undefined && valueRef.value !== currentContent) {
       aiEditorInst.value?.setContent(valueRef.value)
     }
   }
@@ -155,7 +155,7 @@ export function useAiEditor(templateRef: TemplateRef<HTMLElement>, options?: Use
           aiEditorOptions?.onChange?.(aiEditorInst)
         },
       })
-      onRenderEvent.trigger(aiEditorInst.value)
+      onRenderedEvent.trigger(aiEditorInst.value)
     }
   }
 
@@ -182,7 +182,7 @@ export function useAiEditor(templateRef: TemplateRef<HTMLElement>, options?: Use
     setDarkMode,
     setLanguage,
     setReadonly,
-    onRender: onRenderEvent.on,
+    onRendered: onRenderedEvent.on,
     onUpdateValue: onUpdateValueEvent.on,
   }
 }

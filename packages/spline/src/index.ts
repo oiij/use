@@ -62,7 +62,7 @@ export function useSpline(templateRef: TemplateRef<HTMLElement>, options?: UseSp
   const error = ref<Error | null>(null)
   let canvasEl: HTMLCanvasElement | null = null
 
-  const onCreatedEvent = createEventHook<[Application]>()
+  const onRenderedEvent = createEventHook<[Application]>()
   const onLoadedEvent = createEventHook<[Application]>()
   const onErrorEvent = createEventHook<[Error]>()
   const onDisposedEvent = createEventHook<[]>()
@@ -92,7 +92,7 @@ export function useSpline(templateRef: TemplateRef<HTMLElement>, options?: UseSp
       app.value = spline
       canvasEl = spline.canvas
 
-      onCreatedEvent.trigger(spline)
+      onRenderedEvent.trigger(spline)
       onLoadedEvent.trigger(spline)
     }
     catch (err) {
@@ -169,7 +169,7 @@ export function useSpline(templateRef: TemplateRef<HTMLElement>, options?: UseSp
     load,
     reload,
     dispose,
-    onCreated: onCreatedEvent.on,
+    onCreated: onRenderedEvent.on,
     onLoaded: onLoadedEvent.on,
     onError: onErrorEvent.on,
     onDisposed: onDisposedEvent.on,

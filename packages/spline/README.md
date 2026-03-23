@@ -1,68 +1,61 @@
-# Use Spline 🎨
+# @oiij/spline
 
 [![NPM version](https://img.shields.io/npm/v/@oiij/spline)](https://www.npmjs.com/package/@oiij/spline)
 [![MIT-license](https://img.shields.io/npm/l/@oiij/spline)](https://github.com/oiij/use/blob/main/packages/spline/LICENSE)
 
-## 项目简介 📦
+## 简介
 
-Use Spline 是基于 Spline Runtime 的 Vue 3 封装，提供便捷的 Spline 3D 模型加载功能，帮助开发者在应用中轻松集成 3D 交互体验。
+Use Spline 是基于 Spline Runtime 的 Vue 3 组合式函数封装，提供便捷的 Spline 3D 模型加载功能，帮助开发者在应用中轻松集成 3D 交互体验。
 
-## 功能特点 ✨
+## 特点
 
-### 3D 模型加载 🎮
+### 🎮 3D 模型加载
 
-- 🎨 提供简洁的 Spline 场景加载接口
-- ⚡ 支持响应式场景 URL，自动重新加载
-- 🎭 完整的事件系统，监听加载生命周期
+- 🔗 提供简洁的 Spline 场景加载接口
+- 🔄 支持响应式场景 URL，自动重新加载
+- 📡 完整的事件系统，监听加载生命周期
 
-### 模块化设计 🧩
+### 🔄 响应式设计
 
-- 📁 采用模块化架构，组件独立封装
-- 📦 支持按需导入，减小打包体积
-- � 清晰的文件结构，易于维护和扩展
+- 📐 自动响应容器尺寸变化
+- 🔀 支持动态切换场景
+- 🧹 自动清理资源
 
-### 类型安全 🔒
+### 🔒 类型安全
 
 - 📝 完整的 TypeScript 类型定义
 - 💡 提供准确的类型推断和代码提示
-- 🎯 支持 Vue 3 的 Composition API 类型系统
+- ⚡ 支持 Vue 3 的 Composition API 类型系统
 
-### 轻量高效 ⚡
-
-- � 核心代码精简，无额外依赖
-- 🏃 优化的性能表现，最小化运行时开销
-- � 支持 Tree Shaking，进一步减小打包体积
-
-## 安装 📥
-
-### 使用 pnpm 🐱
+## 安装
 
 ```bash
+# 使用 pnpm
 pnpm add @oiij/spline @splinetool/runtime
-```
 
-### 使用 npm 📦
-
-```bash
+# 使用 npm
 npm install @oiij/spline @splinetool/runtime
-```
 
-### 使用 yarn 🧶
-
-```bash
+# 使用 yarn
 yarn add @oiij/spline @splinetool/runtime
 ```
 
-## 快速开始 🌟
+## 依赖
+
+- `vue`: ^3.0.0
+- `@vueuse/core`: ^10.0.0
+- `@splinetool/runtime`: ^1.0.0
+
+## 示例
 
 ### 基础使用
 
 ```vue
 <script setup>
 import { useSpline } from '@oiij/spline'
-import { ref } from 'vue'
+import { useTemplateRef } from 'vue'
 
-const canvasRef = ref()
+const canvasRef = useTemplateRef('canvas')
 const sceneUrl = 'https://prod.spline.design/6Wq1Q7YGyM-iab9i/scene.splinecode'
 
 const { app, isLoading, error } = useSpline(canvasRef, {
@@ -71,7 +64,7 @@ const { app, isLoading, error } = useSpline(canvasRef, {
 </script>
 
 <template>
-  <div ref="canvasRef" style="width: 100%; height: 400px;" />
+  <div ref="canvas" style="width: 100%; height: 400px;" />
   <div v-if="isLoading">
     Loading...
   </div>
@@ -81,25 +74,186 @@ const { app, isLoading, error } = useSpline(canvasRef, {
 </template>
 ```
 
-## 在线文档 📚
+### 动态切换场景
 
-[在线文档](https://oiij-use.vercel.app/spline/spline) 📖
+```vue
+<script setup>
+import { useSpline } from '@oiij/spline'
+import { computed, ref, useTemplateRef } from 'vue'
 
-## 贡献指南 🤝
+const scenes = {
+  cube: 'https://prod.spline.design/6Wq1Q7YGyM-iab9i/scene.splinecode',
+  sphere: 'https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode',
+}
 
-欢迎贡献代码、报告问题或提出新功能建议！
+const currentScene = ref('cube')
+const sceneUrl = computed(() => scenes[currentScene.value])
 
-1. Fork 本仓库 🍴
-2. 创建您的特性分支 (`git checkout -b feature/amazing-feature`) 🌿
-3. 提交您的更改 (`git commit -m 'Add some amazing feature'`) 💾
-4. 推送到分支 (`git push origin feature/amazing-feature`) 🚀
-5. 打开一个 Pull Request 📥
+const { isLoading, reload } = useSpline(useTemplateRef('canvas'), {
+  scene: sceneUrl
+})
+</script>
 
-## 许可证 📄
+<template>
+  <button @click="currentScene = 'cube'">
+    Cube
+  </button>
+  <button @click="currentScene = 'sphere'">
+    Sphere
+  </button>
+  <div ref="canvas" style="width: 100%; height: 400px;" />
+</template>
+```
 
-本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情 📑
+### 事件监听
 
-## 联系方式 📞
+```vue
+<script setup>
+import { useSpline } from '@oiij/spline'
+import { useTemplateRef } from 'vue'
 
-- GitHub: [https://github.com/oiij/use](https://github.com/oiij/use) 🌟
-- 问题反馈: [GitHub Issues](https://github.com/oiij/use/issues) 🐛
+const sceneUrl = 'https://prod.spline.design/6Wq1Q7YGyM-iab9i/scene.splinecode'
+
+const { onCreated, onLoaded, onError, onDisposed } = useSpline(useTemplateRef('canvas'), {
+  scene: sceneUrl
+})
+
+onCreated((spline) => {
+  console.log('Spline 实例已创建', spline)
+})
+
+onLoaded((spline) => {
+  console.log('场景加载完成', spline)
+})
+
+onError((err) => {
+  console.error('加载失败', err)
+})
+
+onDisposed(() => {
+  console.log('资源已清理')
+})
+</script>
+
+<template>
+  <div ref="canvas" style="width: 100%; height: 400px;" />
+</template>
+```
+
+### 手动控制
+
+```vue
+<script setup>
+import { useSpline } from '@oiij/spline'
+import { useTemplateRef } from 'vue'
+
+const sceneUrl = 'https://prod.spline.design/6Wq1Q7YGyM-iab9i/scene.splinecode'
+
+const { load, reload, dispose, app } = useSpline(useTemplateRef('canvas'), {
+  scene: sceneUrl,
+  manual: true
+})
+
+function handleLoad() {
+  load(sceneUrl)
+}
+</script>
+
+<template>
+  <button @click="handleLoad">
+    加载场景
+  </button>
+  <button @click="reload">
+    重新加载
+  </button>
+  <button @click="dispose">
+    销毁
+  </button>
+  <div ref="canvas" style="width: 100%; height: 400px;" />
+</template>
+```
+
+## API
+
+### `useSpline(templateRef, options?)`
+
+使用 Spline 加载 3D 场景。
+
+#### 参数
+
+| 参数          | 类型                       | 说明                  |
+| ------------- | -------------------------- | --------------------- |
+| `templateRef` | `TemplateRef<HTMLElement>` | Spline 容器的模板引用 |
+| `options`     | `UseSplineOptions`         | Spline 配置选项       |
+
+#### UseSplineOptions
+
+| 选项              | 类型                       | 默认值  | 说明             |
+| ----------------- | -------------------------- | ------- | ---------------- |
+| `scene`           | `MaybeRefOrGetter<string>` | -       | 场景 URL         |
+| `manual`          | `boolean`                  | `false` | 是否手动控制加载 |
+| `disableAutoLoad` | `boolean`                  | `false` | 是否禁用自动加载 |
+
+#### 返回值
+
+| 属性                   | 类型                       | 说明            |
+| ---------------------- | -------------------------- | --------------- |
+| `templateRef`          | `TemplateRef<HTMLElement>` | 容器引用        |
+| `app`                  | `Ref<Application \| null>` | Spline 应用实例 |
+| `isLoading`            | `Ref<boolean>`             | 加载状态        |
+| `error`                | `Ref<Error \| null>`       | 错误信息        |
+| `width`                | `Ref<number>`              | 容器宽度        |
+| `height`               | `Ref<number>`              | 容器高度        |
+| `load(sceneUrl)`       | `Function`                 | 加载场景        |
+| `reload()`             | `Function`                 | 重新加载        |
+| `dispose()`            | `Function`                 | 销毁实例        |
+| `onCreated(callback)`  | `Function`                 | 创建完成事件    |
+| `onLoaded(callback)`   | `Function`                 | 加载完成事件    |
+| `onError(callback)`    | `Function`                 | 错误事件        |
+| `onDisposed(callback)` | `Function`                 | 销毁事件        |
+
+## 类型定义
+
+```ts
+import type { Application } from '@splinetool/runtime'
+import type { MaybeRefOrGetter, TemplateRef } from 'vue'
+
+export type UseSplineOptions = {
+  /**
+   * 场景 URL
+   */
+  scene?: MaybeRefOrGetter<string>
+  /**
+   * 是否手动控制加载
+   * @default false
+   */
+  manual?: boolean
+  /**
+   * 是否禁用自动加载
+   * @default false
+   */
+  disableAutoLoad?: boolean
+}
+
+export type UseSplineReturns = {
+  templateRef: TemplateRef<HTMLElement>
+  app: Ref<Application | null>
+  isLoading: Ref<boolean>
+  error: Ref<Error | null>
+  width: Ref<number>
+  height: Ref<number>
+  load: (sceneUrl: string) => Promise<void>
+  reload: () => void
+  dispose: () => void
+  onCreated: (callback: (app: Application) => void) => void
+  onLoaded: (callback: (app: Application) => void) => void
+  onError: (callback: (error: Error) => void) => void
+  onDisposed: (callback: () => void) => void
+}
+
+export declare function useSpline(templateRef: TemplateRef<HTMLElement>, options?: UseSplineOptions): UseSplineReturns
+```
+
+## 在线文档
+
+[在线文档](https://oiij-use.vercel.app/spline/spline)

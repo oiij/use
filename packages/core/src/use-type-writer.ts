@@ -1,7 +1,7 @@
 import type { MaybeRefOrGetter } from 'vue'
 import { createEventHook } from '@vueuse/core'
 import { computed, nextTick, ref, watch } from 'vue'
-import { watchRefOrGetter } from '../../_utils/custom-watch'
+import { watchRefOrGetter } from './_utils'
 
 /**
  * 打字机效果配置选项

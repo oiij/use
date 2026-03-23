@@ -1,55 +1,54 @@
-# Use auto-I18n 🚀
+# @oiij/auto-i18n
 
 [![NPM version](https://img.shields.io/npm/v/@oiij/auto-i18n)](https://www.npmjs.com/package/@oiij/auto-i18n)
 [![MIT-license](https://img.shields.io/npm/l/@oiij/auto-i18n)](https://github.com/oiij/use/blob/main/packages/auto-i18n/LICENSE)
 
-## 项目简介 📦
+## 简介
 
 Use auto-I18n 是一个 Vue I18n 工具库，为 Vue 3 应用提供自动国际化管理、语言持久化存储等实用功能，帮助开发者更高效地管理应用国际化。
 
-## 功能特点 ✨
+## 特点
 
-### 自动国际化管理 🌍
+### 🌍 自动国际化管理
 
-- 🔄 自动检测浏览器语言
-- 📊 支持语言持久化存储
-- 🎯 提供响应式的语言环境计算属性
+- 🔍 自动检测浏览器语言
+- 💾 支持语言持久化存储
+- 🔄 提供响应式的语言环境计算属性
 
-### 语言管理工具 �️
+### 🛠️ 语言管理工具
 
-- 🚀 提供 `setLocale` 方法设置具体语言环境
-- 🎨 提供 `setLanguage` 方法设置语言（支持 'auto' 模式）
-- � 完整的 TypeScript 类型支持
+- 🎯 提供 `setLocale` 方法设置具体语言环境
+- 🔄 提供 `setLanguage` 方法设置语言（支持 'auto' 模式）
+- 📝 完整的 TypeScript 类型支持
 
-### 类型安全 🔒
+### 🔒 类型安全
 
 - 📝 完整的 TypeScript 类型定义
 - 💡 提供准确的类型推断和代码提示
 - 🎯 支持泛型，可根据传入的 i18n 实例推断 locale 类型
 
-## 安装 📥
-
-### 使用 pnpm 🐱
+## 安装
 
 ```bash
+# 使用 pnpm
 pnpm add @oiij/auto-i18n
-```
 
-### 使用 npm 📦
-
-```bash
+# 使用 npm
 npm install @oiij/auto-i18n
-```
 
-### 使用 yarn 🧶
-
-```bash
+# 使用 yarn
 yarn add @oiij/auto-i18n
 ```
 
-## 快速开始 🌟
+## 依赖
 
-### 1. 安装插件
+- `vue`: ^3.0.0
+- `@vueuse/core`: ^10.0.0
+- `vue-i18n`: ^9.0.0
+
+## 示例
+
+### 安装插件
 
 在 Vue 应用中安装 `createAutoI18n` 插件，必须在 Vue I18n 之后安装：
 
@@ -77,23 +76,21 @@ app.use(createAutoI18n(i18n))
 app.mount('#app')
 ```
 
-### 2. 在组件中使用
-
-在 Vue 组件中使用 `useAutoI18n` 获取国际化实例：
+### 在组件中使用
 
 ```vue
 <script setup>
 import { useAutoI18n } from '@oiij/auto-i18n'
 
-const { language, navigatorLanguage, _locale, setLocale, setLanguage } = useAutoI18n()
+const { language, navigatorLanguage, locale, setLocale, setLanguage } = useAutoI18n()
 </script>
 
 <template>
   <div>
     <div>
-      <h2>当前语言设置: {{ language.value }}</h2>
-      <h3>浏览器语言: {{ navigatorLanguage.value }}</h3>
-      <h3>实际使用的语言: {{ _locale.value }}</h3>
+      <h2>当前语言设置: {{ language }}</h2>
+      <h3>浏览器语言: {{ navigatorLanguage }}</h3>
+      <h3>实际使用的语言: {{ locale }}</h3>
     </div>
 
     <div>
@@ -111,81 +108,66 @@ const { language, navigatorLanguage, _locale, setLocale, setLanguage } = useAuto
 </template>
 ```
 
-## 类型推断示例 🔒
+## API
 
-auto-I18n 支持泛型，可以根据传入的 i18n 实例推断出正确的 locale 类型：
+### `createAutoI18n(i18n, options?)`
 
-```ts
-import { createAutoI18n } from '@oiij/auto-i18n'
-import { createI18n } from 'vue-i18n'
+创建自动国际化插件，必须在 Vue I18n 之后安装。
 
-// 定义具体的 messages 类型
-const messages = {
-  'zh-CN': {
-    hello: '你好'
-  },
-  'en-US': {
-    hello: 'Hello'
-  }
-} as const
+#### 参数
 
-// 创建 i18n 实例
-const i18n = createI18n({
-  locale: 'zh-CN',
-  legacy: false,
-  fallbackLocale: 'zh-CN',
-  messages
-})
+| 参数      | 类型                 | 说明           |
+| --------- | -------------------- | -------------- |
+| `i18n`    | `I18n<T>`            | Vue I18n 实例  |
+| `options` | `AutoI18nOptions<T>` | 自动国际化选项 |
 
-// 创建 auto-i18n 实例
-const autoI18n = createAutoI18n(i18n)
+#### Options
 
-// TypeScript 会自动推断出 locale 的类型为 'zh-CN' | 'en-US'
-autoI18n.setLocale('zh-CN') // ✅ 正确
-autoI18n.setLocale('en-US') // ✅ 正确
-autoI18n.setLocale('fr-FR') // ❌ 类型错误
-```
+| 选项                          | 类型                 | 默认值                        | 说明                           |
+| ----------------------------- | -------------------- | ----------------------------- | ------------------------------ |
+| `storageKey`                  | `string`             | `'__LANGUAGE_MODE_PERSIST__'` | 存储语言的键名                 |
+| `useStorageOptions`           | `UseStorageOptions`  | `{}`                          | 配置 useLocalStorage 选项      |
+| `useNavigatorLanguageOptions` | `ConfigurableWindow` | `{}`                          | 配置 useNavigatorLanguage 选项 |
 
-## 插件工具函数 🛠️
+### `useAutoI18n()`
 
-auto-I18n 还提供了一些实用的插件工具函数：
+获取自动国际化实例。
 
-### 检测浏览器语言
+#### 返回值
 
-```ts
-import { detectBrowserLanguage } from '@oiij/auto-i18n/plugin'
+| 属性                | 类型                     | 说明                       |
+| ------------------- | ------------------------ | -------------------------- |
+| `language`          | `Ref<keyof T \| 'auto'>` | 语言设置，持久化存储       |
+| `navigatorLanguage` | `Ref<string>`            | 浏览器导航语言             |
+| `locale`            | `ComputedRef<keyof T>`   | 计算当前实际使用的语言环境 |
+| `setLocale(lang)`   | `Function`               | 设置语言环境               |
+| `setLanguage(lang)` | `Function`               | 设置语言（支持 'auto'）    |
 
-const locale = detectBrowserLanguage()
-console.log(locale) // 例如: 'zh-CN' 或 'en-US'
-```
+### `setupAutoI18n(i18n, options?)`
 
-### 格式化语言名称
+设置自动国际化，提供国际化相关的工具方法和状态管理。
+
+## 类型定义
 
 ```ts
-import { formatLanguageName } from '@oiij/auto-i18n/plugin'
+import type { ConfigurableWindow, UseStorageOptions } from '@vueuse/core'
+import type { I18n } from 'vue-i18n'
 
-console.log(formatLanguageName('zh-CN')) // '中文'
-console.log(formatLanguageName('en-US')) // 'English'
+export type AutoI18nOptions<T extends Record<string, unknown>> = {
+  storageKey?: string
+  useStorageOptions?: UseStorageOptions<keyof T | 'auto'>
+  useNavigatorLanguageOptions?: ConfigurableWindow
+}
+
+export type AutoI18nInstance<T extends Record<string, unknown>> = {
+  language: Ref<keyof T | 'auto'>
+  navigatorLanguage: Ref<string | undefined>
+  locale: ComputedRef<keyof T>
+  setLocale: (lang: keyof T) => void
+  setLanguage: (lang: keyof T | 'auto') => void
+}
 ```
 
-## 在线文档 📚
+## 在线文档
 
-[在线文档](https://oiij-use.vercel.app/auto-i18n/auto-i18n) 📖
-
-## 贡献指南 🤝
-
-欢迎贡献代码、报告问题或提出新功能建议！
-
-1. Fork 本仓库 🍴
-2. 创建您的特性分支 (`git checkout -b feature/amazing-feature`) 🌿
-3. 提交您的更改 (`git commit -m 'Add some amazing feature'`) 💾
-4. 推送到分支 (`git push origin feature/amazing-feature`) 🚀
-5. 打开一个 Pull Request 📥
-
-## 许可证 📄
-
-本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情 📑
-
-## 联系方式 📞
-
-- GitHub: [https://github.com/oiij/use](https://github.com/oiij/use) 🌟
+[在线文档](https://oiij-use.vercel.app/auto-i18n/auto-i18n)

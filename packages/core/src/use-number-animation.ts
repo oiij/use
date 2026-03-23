@@ -1,7 +1,7 @@
 import type { MaybeRefOrGetter } from 'vue'
 import { createEventHook, useRafFn } from '@vueuse/core'
 import { computed, readonly, ref } from 'vue'
-import { watchRefOrGetter } from '../../_utils/custom-watch'
+import { watchRefOrGetter } from './_utils'
 
 /**
  * 缓动函数类型

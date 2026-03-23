@@ -1,9 +1,9 @@
 import type { IInitOption, ISpec } from '@visactor/vchart'
 import type { MaybeRefOrGetter, Ref, TemplateRef } from 'vue'
 import { registerAllMarks, registerAnimate, registerAreaChart, registerBarChart, registerBrush, registerCartesianBandAxis, registerCartesianCrossHair, registerCartesianLinearAxis, registerCartesianLogAxis, registerCartesianTimeAxis, registerContinuousLegend, registerCustomMark, registerDataZoom, registerDiscreteLegend, registerDomTooltipHandler, registerLineChart, registerMarkArea, registerMarkLine, registerMarkPoint, registerPieChart, registerPolarBandAxis, registerPolarCrossHair, registerPolarLinearAxis, registerScrollBar, registerTitle, registerTooltip, VChart } from '@visactor/vchart'
-import { createEventHook, useDebounceFn } from '@vueuse/core'
-import { nextTick, onUnmounted, shallowRef, toRaw } from 'vue'
-import { watchElementSize, watchRefOrGetter } from '../../_utils/custom-watch'
+import { createEventHook, useDebounceFn, useElementSize } from '@vueuse/core'
+import { nextTick, onUnmounted, shallowRef, toRaw, watch } from 'vue'
+import { watchRefOrGetter } from './_utils'
 
 /**
  * 基础注册组件
@@ -117,7 +117,7 @@ export type UseVChartsOptions = {
  * import { useVCharts } from '@oiij/v-charts'
  *
  * const chartRef = ref()
- * const { chartOption, onRender } = useVCharts(chartRef, {
+ * const { chartOption, onRendered } = useVCharts(chartRef, {
  *   chartOption: {
  *     title: {
  *       text: '示例图表'
@@ -131,7 +131,7 @@ export type UseVChartsOptions = {
  *   }
  * })
  *
- * onRender((instance) => {
+ * onRendered((instance) => {
  *   console.log('图表渲染完成', instance)
  * })
  * </script>
@@ -149,7 +149,7 @@ export function useVCharts(templateRef: TemplateRef<HTMLElement>, options?: UseV
 
   const darkModeRef = watchRefOrGetter(darkMode, () => setDarkMode())
 
-  const onRenderEvent = createEventHook<[VChart]>()
+  const onRenderedEvent = createEventHook<[VChart]>()
   const onUpdateEvent = createEventHook<[ISpec]>()
   const onResizeEvent = createEventHook<[{ width: number, height: number }]>()
   const onDisposeEvent = createEventHook()
@@ -195,7 +195,7 @@ export function useVCharts(templateRef: TemplateRef<HTMLElement>, options?: UseV
         theme,
         ...initOptions,
       })
-      onRenderEvent.trigger(vChartInst.value)
+      onRenderedEvent.trigger(vChartInst.value)
       setOption()
     }
   }
@@ -213,9 +213,12 @@ export function useVCharts(templateRef: TemplateRef<HTMLElement>, options?: UseV
 
   const debounceResize = useDebounceFn(resize, 100)
 
-  watchElementSize(templateRef, ({ width, height }) => {
-    debounceResize(width, height)
-    render()
+  const { width, height } = useElementSize(templateRef)
+  watch([width, height], ([width, height]) => {
+    if (width > 0 && height > 0) {
+      debounceResize(width, height)
+      render()
+    }
   })
 
   /**
@@ -238,7 +241,7 @@ export function useVCharts(templateRef: TemplateRef<HTMLElement>, options?: UseV
     darkMode: darkModeRef,
     setOption,
     setDarkMode,
-    onRender: onRenderEvent.on,
+    onRendered: onRenderedEvent.on,
     onUpdate: onUpdateEvent.on,
     onResize: onResizeEvent.on,
     onDispose: onDisposeEvent.on,

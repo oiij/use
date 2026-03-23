@@ -7,15 +7,20 @@
 ## 安装
 
 ```bash
+# 使用 pnpm
+pnpm add @oiij/naive-ui
+
 # 使用 npm
 npm install @oiij/naive-ui
 
 # 使用 yarn
 yarn add @oiij/naive-ui
-
-# 使用 pnpm
-pnpm add @oiij/naive-ui
 ```
+
+## 依赖
+
+- `vue`: ^3.0.0
+- `naive-ui`: ^2.0.0
 
 ## 基本使用
 
@@ -23,89 +28,165 @@ pnpm add @oiij/naive-ui
 
 ## API
 
-### Props
+### `<PresetPicker />`
 
-| Name             | Type                 | Default | Description            |
-| ---------------- | -------------------- | ------- | ---------------------- |
-| value            | PresetPickerValue    | -       | 选择器的值             |
-| fallbackLabel    | string               | -       | 选择器的值为空时的提示 |
-| multiple         | boolean              | -       | 是否多选               |
-| disabled         | boolean              | -       | 是否禁用               |
-| clearable        | boolean              | -       | 是否可清空             |
-| placeholder      | string               | -       | 输入框占位符           |
-| type             | ButtonProps['type']  | -       | 按钮类型               |
-| columns          | DataTableColumns     | -       | 数据列                 |
-| selectionOptions | TableSelectionColumn | -       | 选择列配置             |
-| fields           | '{rowKey?:string}'   | -       | 数据列配置             |
-| buttonProps      | ButtonProps          | -       | 按钮配置               |
-| clearButtonProps | ButtonProps          | -       | 清空按钮配置           |
-| badgeProps       | BadgeProps           | -       | 徽章配置               |
-| modalProps       | ModalProps           | -       | 弹窗配置               |
+配置选择器组件。
 
-### Emits
+#### Props
 
-| Name          | Type                             | Description        |
-| ------------- | -------------------------------- | ------------------ |
-| update:value  | (val: PresetPickerValue) => void | 值更新时           |
-| afterEnter    | () => void                       | 弹窗进入动画结束时 |
-| afterLeave    | () => void                       | 弹窗离开动画结束时 |
-| esc           | () => void                       | 按下 esc 键时      |
-| maskClick     | () => void                       | 点击遮罩层时       |
-| update:show   | (val: boolean) => void           | 弹窗显示状态更新时 |
-| close         | () => void                       | 弹窗关闭时         |
-| negativeClick | () => void                       | 取消按钮点击时     |
-| positiveClick | () => void                       | 确定按钮点击时     |
+| 属性               | 类型                   | 说明                   |
+| ------------------ | ---------------------- | ---------------------- |
+| `value`            | `PresetPickerValue`    | 选择器的值             |
+| `fallbackLabel`    | `string`               | 选择器的值为空时的提示 |
+| `multiple`         | `boolean`              | 是否多选               |
+| `disabled`         | `boolean`              | 是否禁用               |
+| `clearable`        | `boolean`              | 是否可清空             |
+| `placeholder`      | `string`               | 输入框占位符           |
+| `type`             | `ButtonProps['type']`  | 按钮类型               |
+| `columns`          | `DataTableColumns`     | 数据列                 |
+| `selectionOptions` | `TableSelectionColumn` | 选择列配置             |
+| `fields`           | `{ rowKey?: string }`  | 数据列配置             |
+| `buttonProps`      | `ButtonProps`          | 按钮配置               |
+| `clearButtonProps` | `ButtonProps`          | 清空按钮配置           |
+| `badgeProps`       | `BadgeProps`           | 徽章配置               |
+| `modalProps`       | `ModalProps`           | 弹窗配置               |
+
+#### Events
+
+| 事件            | 参数                       | 说明               |
+| --------------- | -------------------------- | ------------------ |
+| `update:value`  | `(val: PresetPickerValue)` | 值更新时           |
+| `afterEnter`    | -                          | 弹窗进入动画结束时 |
+| `afterLeave`    | -                          | 弹窗离开动画结束时 |
+| `esc`           | -                          | 按下 esc 键时      |
+| `maskClick`     | -                          | 点击遮罩层时       |
+| `update:show`   | `(val: boolean)`           | 弹窗显示状态更新时 |
+| `close`         | -                          | 弹窗关闭时         |
+| `negativeClick` | -                          | 取消按钮点击时     |
+| `positiveClick` | -                          | 确定按钮点击时     |
 
 ## 类型定义
 
 ```ts
 export type PresetPickerValue = string | number | (string | number)[] | null
 
-export type PresetPickerExpose<R extends DataObject = DataObject> = {
-  showModalFlag: Ref<boolean, boolean>
-  checkedRowKeys: Ref<(string | number)[], (string | number)[]>
-  checkedRows: Ref<R[], R[]>
-  columns: DataTableColumns<any>
-  showModal: () => void
-  updateCheckedRowKeysEffect: (keys: (string | number)[], rows: (R | undefined)[], meta: {
-    row: R | undefined
-    action: 'check' | 'uncheck' | 'checkAll' | 'uncheckAll'
-  }, currentData: R[]) => void
-  clickRowEffect: (row: R) => void
-  clearValue: () => void
-  setCheckedRowKeys: (keys: (string | number)[]) => void
-  setCheckedRows: (rows: R[]) => void
-}
-
-export type PresetPickerProps<V extends PresetPickerValue, R extends DataObject = DataObject> = {
+export type PresetPickerProps<V, R> = {
+  /**
+   * 选择器的值
+   */
   value?: V
+  /**
+   * 选择器的值为空时的提示
+   */
   fallbackLabel?: string | ((val: string | number) => string)
+  /**
+   * 是否多选
+   */
   multiple?: boolean
+  /**
+   * 是否禁用
+   */
   disabled?: boolean
+  /**
+   * 是否可清空
+   */
   clearable?: boolean
+  /**
+   * 输入框占位符
+   */
   placeholder?: string
+  /**
+   * 按钮类型
+   */
   type?: ButtonProps['type']
+  /**
+   * 数据列
+   */
   columns?: DataTableColumns<R>
+  /**
+   * 选择列配置
+   */
   selectionOptions?: TableSelectionColumn
-  fields?: {
-    label?: string
-    value?: string
-  }
+  /**
+   * 数据列配置
+   */
+  fields?: { label?: string, value?: string }
+  /**
+   * 按钮配置
+   */
   buttonProps?: ButtonProps & ClassStyle
+  /**
+   * 清空按钮配置
+   */
   clearButtonProps?: ButtonProps & ClassStyle
+  /**
+   * 徽章配置
+   */
   badgeProps?: BadgeProps & ClassStyle
+  /**
+   * 弹窗配置
+   */
   modalProps?: ModalProps & ClassStyle
 }
+```
 
-export type PresetPickerEmits<V extends PresetPickerValue, R extends DataObject = DataObject> = {
-  (e: 'update:value', val: V | null, raw: R | R[] | null): void
-  (e: 'afterEnter'): void
-  (e: 'afterLeave'): void
-  (e: 'esc'): void
-  (e: 'maskClick'): void
-  (e: 'update:show', value: boolean): void
-  (e: 'close'): void
-  (e: 'negativeClick'): void
-  (e: 'positiveClick'): void
-}
+## 使用示例
+
+### 基础用法
+
+```vue
+<script setup>
+import { PresetPicker } from '@oiij/naive-ui'
+import { ref } from 'vue'
+
+const value = ref(null)
+const data = [
+  { id: 1, name: '张三', age: 18 },
+  { id: 2, name: '李四', age: 20 }
+]
+
+const columns = [
+  { title: '姓名', key: 'name' },
+  { title: '年龄', key: 'age' }
+]
+</script>
+
+<template>
+  <PresetPicker
+    v-model:value="value"
+    :data="data"
+    :columns="columns"
+    :fields="{ label: 'name', value: 'id' }"
+  />
+</template>
+```
+
+### 多选
+
+```vue
+<script setup>
+import { PresetPicker } from '@oiij/naive-ui'
+import { ref } from 'vue'
+
+const value = ref([])
+const data = [
+  { id: 1, name: '张三' },
+  { id: 2, name: '李四' },
+  { id: 3, name: '王五' }
+]
+
+const columns = [
+  { title: '姓名', key: 'name' }
+]
+</script>
+
+<template>
+  <PresetPicker
+    v-model:value="value"
+    :data="data"
+    :columns="columns"
+    :multiple="true"
+    :fields="{ label: 'name', value: 'id' }"
+  />
+</template>
 ```

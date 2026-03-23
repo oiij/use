@@ -3,7 +3,7 @@ import data from '@emoji-mart/data'
 import { createEventHook, watchOnce } from '@vueuse/core'
 import { Picker } from 'emoji-mart'
 import { onUnmounted, shallowRef } from 'vue'
-import { watchRefOrGetter } from '../../_utils/custom-watch'
+import { watchRefOrGetter } from './_utils'
 
 /**
  * 表情结果类型
@@ -241,7 +241,7 @@ export function useEmojiPicker(templateRef: TemplateRef<HTMLElement>, options?: 
   }
   const emojiPickerInst = shallowRef<Picker | null>(null)
 
-  const onRenderEvent = createEventHook<[Picker]>()
+  const onRenderedEvent = createEventHook<[Picker]>()
 
   /**
    * 更新主题
@@ -278,7 +278,7 @@ export function useEmojiPicker(templateRef: TemplateRef<HTMLElement>, options?: 
         parent: templateRef.value,
         ..._options,
       })
-      onRenderEvent.trigger(emojiPickerInst.value)
+      onRenderedEvent.trigger(emojiPickerInst.value)
     }
   }
 
@@ -302,7 +302,7 @@ export function useEmojiPicker(templateRef: TemplateRef<HTMLElement>, options?: 
     emojiPickerInst,
     setDarkMode,
     setLanguage,
-    onRender: onRenderEvent.on,
+    onRendered: onRenderedEvent.on,
   }
 }
 

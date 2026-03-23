@@ -53,11 +53,11 @@ const opt = computed(() => {
   } as EChartsOption
 })
 
-const { onRender, onUpdate } = useECharts(useTemplateRef('dom-ref'), {
+const { onRendered, onUpdate } = useECharts(useTemplateRef('dom-ref'), {
   chartOption: opt,
   darkMode,
 })
-onRender((eChartInst) => {
+onRendered((eChartInst) => {
   console.log(eChartInst)
 })
 onUpdate((chartOption) => {

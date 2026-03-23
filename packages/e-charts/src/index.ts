@@ -2,14 +2,14 @@ import type { BarSeriesOption, LineSeriesOption, PieSeriesOption } from 'echarts
 import type { DatasetComponentOption, GridComponentOption, LegendComponentOption, TitleComponentOption, ToolboxComponentOption, TooltipComponentOption } from 'echarts/components'
 import type { ComposeOption, ECharts, EChartsInitOpts } from 'echarts/core'
 import type { MaybeRefOrGetter, TemplateRef } from 'vue'
-import { createEventHook, useDebounceFn } from '@vueuse/core'
+import { createEventHook, useDebounceFn, useElementSize } from '@vueuse/core'
 import { BarChart, LineChart, PieChart } from 'echarts/charts'
 import { DatasetComponent, GridComponent, LegendComponent, TitleComponent, ToolboxComponent, TooltipComponent, TransformComponent } from 'echarts/components'
 import { init, use } from 'echarts/core'
 import { LabelLayout, UniversalTransition } from 'echarts/features'
 import { CanvasRenderer } from 'echarts/renderers'
-import { nextTick, onUnmounted, shallowRef, toRaw } from 'vue'
-import { watchElementSize, watchRefOrGetter } from '../../_utils/custom-watch'
+import { nextTick, onUnmounted, shallowRef, toRaw, watch } from 'vue'
+import { watchRefOrGetter } from './_utils'
 
 /**
  * ECharts 图表配置类型
@@ -98,7 +98,7 @@ export type UseEChartsOptions = {
  * import { useECharts } from '@oiij/e-charts'
  *
  * const chartRef = ref()
- * const { chartOption, onRender } = useECharts(chartRef, {
+ * const { chartOption, onRendered } = useECharts(chartRef, {
  *   chartOption: {
  *     title: {
  *       text: '示例图表'
@@ -112,7 +112,7 @@ export type UseEChartsOptions = {
  *   }
  * })
  *
- * onRender((instance) => {
+ * onRendered((instance) => {
  *   console.log('图表渲染完成', instance)
  * })
  * </script>
@@ -130,7 +130,7 @@ export function useECharts(templateRef: TemplateRef<HTMLElement>, options?: UseE
 
   const darkModeRef = watchRefOrGetter(darkMode, () => setDarkMode())
 
-  const onRenderEvent = createEventHook<[ECharts]>()
+  const onRenderedEvent = createEventHook<[ECharts]>()
   const onUpdateEvent = createEventHook<[EChartsOption]>()
   const onResizeEvent = createEventHook<[{ width: number, height: number }]>()
   const onDisposeEvent = createEventHook()
@@ -172,7 +172,7 @@ export function useECharts(templateRef: TemplateRef<HTMLElement>, options?: UseE
       const theme = darkModeRef?.value ? 'dark' : 'default'
       await nextTick()
       eChartInst.value = init(templateRef.value, theme, { ...initOptions })
-      onRenderEvent.trigger(eChartInst.value)
+      onRenderedEvent.trigger(eChartInst.value)
       setOption()
     }
   }
@@ -190,9 +190,12 @@ export function useECharts(templateRef: TemplateRef<HTMLElement>, options?: UseE
 
   const debounceResize = useDebounceFn(resize, 100)
 
-  watchElementSize(templateRef, ({ width, height }) => {
-    debounceResize(width, height)
-    render()
+  const { width, height } = useElementSize(templateRef)
+  watch([width, height], ([width, height]) => {
+    if (width > 0 && height > 0) {
+      debounceResize(width, height)
+      render()
+    }
   })
 
   /**
@@ -215,7 +218,7 @@ export function useECharts(templateRef: TemplateRef<HTMLElement>, options?: UseE
     darkMode: darkModeRef,
     setOption,
     setDarkMode,
-    onRender: onRenderEvent.on,
+    onRendered: onRenderedEvent.on,
     onUpdate: onUpdateEvent.on,
     onResize: onResizeEvent.on,
     onDispose: onDisposeEvent.on,

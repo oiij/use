@@ -1,7 +1,7 @@
 {
   "name": "@oiij/tiptap",
   "type": "module",
-  "version": "0.0.14",
+  "version": "0.0.16",
   "description": "A Vue Composable for Tiptap",
   "author": "oiij",
   "license": "MIT",
@@ -16,9 +16,18 @@
     "tiptap"
   ],
   "sideEffects": false,
-  "main": "./dist/index.mjs",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.mts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./style": {
+      "import": "./dist/style.css"
+    }
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "files": [
     "LICENSE",
     "README.md",
@@ -27,12 +36,13 @@
   ],
   "scripts": {
     "dev": "tsdown --watch",
-    "build": "tsc --noEmit && tsdown",
+    "build": "vue-tsc --noEmit && tsdown",
     "bumpp": "bumpp --no-push",
     "prepublishOnly": "pnpm build"
   },
   "peerDependencies": {
     "@tiptap/core": "catalog:pkg",
+    "@tiptap/extension-image": "catalog:pkg",
     "@tiptap/pm": "catalog:pkg",
     "@tiptap/starter-kit": "catalog:pkg",
     "@vueuse/core": "catalog:pkg",
@@ -40,6 +50,7 @@
   },
   "devDependencies": {
     "@tiptap/core": "catalog:pkg",
+    "@tiptap/extension-image": "catalog:pkg",
     "@tiptap/pm": "catalog:pkg",
     "@tiptap/starter-kit": "catalog:pkg",
     "@vueuse/core": "catalog:pkg",

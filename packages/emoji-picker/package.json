@@ -1,7 +1,7 @@
 {
   "name": "@oiij/emoji-picker",
   "type": "module",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "description": "A Vue Composable for emoji-picker",
   "author": "oiij",
   "license": "MIT",

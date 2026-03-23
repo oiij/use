@@ -1,7 +1,7 @@
 {
   "name": "@oiij/ogl",
   "type": "module",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "A Vue Composable for OGL",
   "author": "oiij",
   "license": "MIT",

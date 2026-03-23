@@ -1,7 +1,7 @@
 {
   "name": "@oiij/spline",
   "type": "module",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Spline 3D model loading composable for Vue 3",
   "author": "oiij",
   "license": "MIT",

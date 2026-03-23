@@ -71,11 +71,11 @@ const options = computed(() => {
     },
   } as ISpec
 })
-const { onRender, onUpdate } = useVCharts(useTemplateRef('dom-ref'), {
+const { onRendered, onUpdate } = useVCharts(useTemplateRef('dom-ref'), {
   chartOption: options,
   darkMode,
 })
-onRender((eChartInst) => {
+onRendered((eChartInst) => {
   console.log(eChartInst)
 })
 onUpdate((chartOption) => {
