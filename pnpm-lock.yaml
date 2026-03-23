@@ -5,10 +5,6 @@ settings:
   excludeLinksFromLockfile: false
 
 catalogs:
-  default:
-    '@tsdown/css':
-      specifier: ^0.21.4
-      version: 0.21.4
   dev:
     '@antfu/eslint-config':
       specifier: ^7.7.3
@@ -16,6 +12,9 @@ catalogs:
     '@oiij/tsconfig':
       specifier: ^0.0.1
       version: 0.0.1
+    '@tsdown/css':
+      specifier: ^0.21.4
+      version: 0.21.4
     '@types/node':
       specifier: ^25.5.0
       version: 25.5.0
@@ -298,9 +297,6 @@ importers:
       '@oiij/xlsx':
         specifier: workspace:*
         version: link:packages/xlsx
-      '@tsdown/css':
-        specifier: 'catalog:'
-        version: 0.21.4(jiti@2.6.1)(postcss@8.5.8)(tsdown@0.21.4)(tsx@4.21.0)(yaml@2.8.2)
       colord:
         specifier: catalog:dev
         version: 2.9.3
@@ -320,6 +316,9 @@ importers:
       '@oiij/tsconfig':
         specifier: catalog:dev
         version: 0.0.1
+      '@tsdown/css':
+        specifier: catalog:dev
+        version: 0.21.4(jiti@2.6.1)(postcss@8.5.8)(tsdown@0.21.4)(tsx@4.21.0)(yaml@2.8.2)
       '@types/node':
         specifier: catalog:dev
         version: 25.5.0
@@ -672,9 +671,6 @@ importers:
       '@vueuse/core':
         specifier: catalog:pkg
         version: 14.2.1(vue@3.5.30(typescript@5.9.3))
-      naive-ui:
-        specifier: catalog:pkg
-        version: 2.44.1(vue@3.5.30(typescript@5.9.3))
       vue:
         specifier: catalog:pkg
         version: 3.5.30(typescript@5.9.3)
