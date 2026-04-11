@@ -138,9 +138,15 @@ A Vue Composable for VCharts
 
 ### [@oiij/xlsx](https://www.npmjs.com/package/@oiij/xlsx)
 
-A Vue Composable for xlsx
+A Vue Utils for xlsx
 
 访问 [XLSX 示例](/xlsx/xlsx) 查看完整示例列表
+
+### [@oiij/hucre](https://www.npmjs.com/package/@oiij/hucre)
+
+A Vue Utils for Excel/CSV/ODS
+
+访问 [Hucre 示例](/hucre/hucre) 查看完整示例列表
 
 ### [@oiij/utils](https://www.npmjs.com/package/@oiij/utils)
 

@@ -49,6 +49,7 @@
     "@oiij/directives": "workspace:*",
     "@oiij/e-charts": "workspace:*",
     "@oiij/emoji-picker": "workspace:*",
+    "@oiij/hucre": "workspace:*",
     "@oiij/js-pdf": "workspace:*",
     "@oiij/markdown-it": "workspace:*",
     "@oiij/naive-ui": "workspace:*",

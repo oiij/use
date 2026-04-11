@@ -34,6 +34,7 @@ pnpm add @oiij/shiki
 pnpm add @oiij/tiptap
 pnpm add @oiij/v-charts
 pnpm add @oiij/xlsx
+pnpm add @oiij/hucre
 pnpm add @oiij/utils
 ```
 
@@ -307,6 +308,20 @@ pnpm add @oiij/xlsx
 - `xlsx`
 - `@vueuse/core`
 - `file-saver`
+
+### @oiij/hucre
+
+Excel/CSV/ODS 文件处理的 Vue 3 工具。
+
+```bash
+pnpm add @oiij/hucre
+```
+
+**依赖：**
+
+- `xlsx`
+- `file-saver`
+- `hucre`
 
 ### @oiij/emoji-picker
 

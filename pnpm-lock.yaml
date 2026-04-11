@@ -181,6 +181,9 @@ catalogs:
     file-saver:
       specifier: ^2.0.5
       version: 2.0.5
+    hucre:
+      specifier: ^0.2.0
+      version: 0.2.0
     jspdf:
       specifier: ^4.2.1
       version: 4.2.1
@@ -261,6 +264,9 @@ importers:
       '@oiij/emoji-picker':
         specifier: workspace:*
         version: link:packages/emoji-picker
+      '@oiij/hucre':
+        specifier: workspace:*
+        version: link:packages/hucre
       '@oiij/js-pdf':
         specifier: workspace:*
         version: link:packages/js-pdf
@@ -503,6 +509,18 @@ importers:
       vue:
         specifier: catalog:pkg
         version: 3.5.30(typescript@5.9.3)
+
+  packages/hucre:
+    devDependencies:
+      '@types/file-saver':
+        specifier: catalog:pkg
+        version: 2.0.7
+      file-saver:
+        specifier: catalog:pkg
+        version: 2.0.5
+      hucre:
+        specifier: catalog:pkg
+        version: 0.2.0
 
   packages/js-pdf:
     devDependencies:
@@ -4126,6 +4144,10 @@ packages:
   html2canvas@1.4.1:
     resolution: {integrity: sha512-fPU6BHNpsyIhr8yyMpTLLxAbkaK8ArIBcmZIRiBLiDhjeqvXolaEmDGmELFuX9I4xDcaKKcJl+TKZLqruBbmWA==}
     engines: {node: '>=8.0.0'}
+
+  hucre@0.2.0:
+    resolution: {integrity: sha512-MCeDaEBCzXMr90nlhX8iKMJQpyvnfaICOpCnk8tvCTMn5akrXQxgg6RyVY6qqLdMHl/KXdmV93g4g9wkf3Tfkg==}
+    hasBin: true
 
   i18next@23.16.8:
     resolution: {integrity: sha512-06r/TitrM88Mg5FdUXAKL96dJMzgqLE5dv3ryBAra4KCwD9mJ4ndOTS95ZuymIGoE+2hzfdaMak2X11/es7ZWg==}
@@ -9125,6 +9147,8 @@ snapshots:
       css-line-break: 2.1.0
       text-segmentation: 1.0.3
     optional: true
+
+  hucre@0.2.0: {}
 
   i18next@23.16.8:
     dependencies:
