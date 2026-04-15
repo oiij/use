@@ -78,7 +78,7 @@ export default defineConfig({
           ...conversionPath('packages/css-render/demos', '/css-render'),
           ...conversionPath('packages/e-charts/demos', '/e-charts'),
           ...conversionPath('packages/emoji-picker/demos', '/emoji-picker'),
-          ...conversionPath('packages/spreadsheet/demos', '/spreadsheet'),
+          ...conversionPath('packages/hucre/demos', '/hucre'),
           ...conversionPath('packages/js-pdf/demos', '/js-pdf'),
           ...conversionPath('packages/markdown-it/demos', '/markdown-it'),
           ...conversionPath('packages/ogl/demos', '/ogl'),
