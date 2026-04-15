@@ -41,9 +41,15 @@ yarn add @oiij/hucre
 
 #### 返回值
 
-| 类型            | 说明             |
-| --------------- | ---------------- |
-| `CellValue[][]` | 转换后的表格数据 |
+| 类型     | 说明                                |
+| -------- | ----------------------------------- |
+| `object` | 包含 header, cells, rows 属性的对象 |
+
+返回对象属性：
+
+- `header`: 列标题数组
+- `cells`: 数据单元格二维数组（不包含标题行）
+- `rows`: 完整的表格数据（包含标题行）
 
 ### `createSheet(name, columns?, data?, options?)`
 
@@ -51,12 +57,12 @@ yarn add @oiij/hucre
 
 #### 参数
 
-| 参数      | 类型             | 说明       |
-| --------- | ---------------- | ---------- |
-| `name`    | `string`         | 工作表名称 |
-| `columns` | `ColumnDef<T>[]` | 列配置数组 |
-| `data`    | `T[]`            | 数据数组   |
-| `options` | `WriteSheet`     | 其他选项   |
+| 参数      | 类型              | 说明       |
+| --------- | ----------------- | ---------- |
+| `name`    | `string`          | 工作表名称 |
+| `columns` | `SheetColumns<T>` | 列配置数组 |
+| `data`    | `T[]`             | 数据数组   |
+| `options` | `WriteSheet`      | 其他选项   |
 
 #### 返回值
 
@@ -81,23 +87,6 @@ yarn add @oiij/hucre
 | ------------ | --------------------- |
 | `Uint8Array` | XLSX 格式的二进制数据 |
 
-### `createOds(sheets, options?)`
-
-创建 ODS 工作簿。
-
-#### 参数
-
-| 参数      | 类型           | 说明           |
-| --------- | -------------- | -------------- |
-| `sheets`  | `WriteSheet[]` | 工作表配置数组 |
-| `options` | `WriteOptions` | 写入选项       |
-
-#### 返回值
-
-| 类型         | 说明                 |
-| ------------ | -------------------- |
-| `Uint8Array` | ODS 格式的二进制数据 |
-
 ### `createCsv(columns, data, options?)`
 
 创建 CSV 文件。
@@ -116,17 +105,17 @@ yarn add @oiij/hucre
 | ------------ | -------------------- |
 | `Uint8Array` | CSV 格式的二进制数据 |
 
-### `saveWorkbook(workbook, fileName, type)`
+### `exportWorkbook(workbook, fileName, type)`
 
 保存工作簿到文件。
 
 #### 参数
 
-| 参数       | 类型                       | 说明     |
-| ---------- | -------------------------- | -------- | ---------------- |
-| `workbook` | `Uint8Array                | string`  | 工作簿二进制数据 |
-| `fileName` | `string`                   | 文件名   |
-| `type`     | `'xlsx' \| 'ods' \| 'csv'` | 文件类型 |
+| 参数       | 类型                   | 说明             |
+| ---------- | ---------------------- | ---------------- |
+| `workbook` | `Uint8Array \| string` | 工作簿二进制数据 |
+| `fileName` | `string`               | 文件名           |
+| `type`     | `'xlsx' \| 'csv'`      | 文件类型         |
 
 ## 类型定义
 
@@ -138,7 +127,7 @@ export type SheetColumns<T extends Record<string, any>> = {
   /**
    * 数据键
    */
-  key?: keyof T
+  key: keyof T
   /**
    * 列标题
    */
@@ -159,7 +148,7 @@ export type SheetColumns<T extends Record<string, any>> = {
 ### 基础用法
 
 ```ts
-import { createSheet, createXlsx, saveWorkbook } from '@oiij/hucre'
+import { createSheet, createXlsx, exportWorkbook } from '@oiij/hucre'
 
 const data = [
   { name: '张三', age: 18 },
@@ -172,7 +161,7 @@ const sheet = createSheet('员工信息', [
 ], data)
 
 const workbook = createXlsx([sheet])
-saveWorkbook(workbook, '员工信息', 'xlsx')
+exportWorkbook(workbook, '员工信息', 'xlsx')
 ```
 
 ### 使用列配置
@@ -192,7 +181,9 @@ const columns = [
 ]
 
 const result = transformData(columns, data)
-// 结果: [['姓名', '年龄', '性别'], ['张三', 18, '男'], ['李四', 20, '女']]
+// result.header: ['姓名', '年龄', '性别']
+// result.cells: [['张三', 18, '男'], ['李四', 20, '女']]
+// result.rows: [['姓名', '年龄', '性别'], ['张三', 18, '男'], ['李四', 20, '女']]
 ```
 
 ### 数据转换
@@ -216,13 +207,13 @@ const columns = [
 ]
 
 const result = transformData(columns, data)
-// 结果: [['姓名', '年龄', '性别'], ['张三', 18, '男性'], ['李四', 20, '女性']]
+// result.rows: [['姓名', '年龄', '性别'], ['张三', 18, '男性'], ['李四', 20, '女性']]
 ```
 
 ### 使用 value 自定义值
 
 ```ts
-import { createCsv, saveWorkbook, transformData } from '@oiij/hucre'
+import { createCsv, exportWorkbook, transformData } from '@oiij/hucre'
 
 const data = [
   { name: '张三', sex: '男' },
@@ -247,7 +238,7 @@ const nestedColumns = [
 ### 导出不同格式
 
 ```ts
-import { createCsv, createOds, createSheet, createXlsx, saveWorkbook } from '@oiij/hucre'
+import { createCsv, createSheet, createXlsx, exportWorkbook } from '@oiij/hucre'
 
 const data = [
   { name: '张三', age: 18 },
@@ -261,24 +252,20 @@ const sheet = createSheet('数据', [
 
 // 导出 XLSX
 const xlsx = createXlsx([sheet])
-saveWorkbook(xlsx, '数据', 'xlsx')
-
-// 导出 ODS
-const ods = createOds([sheet])
-saveWorkbook(ods, '数据', 'ods')
+exportWorkbook(xlsx, '数据', 'xlsx')
 
 // 导出 CSV
 const csv = createCsv([
   { key: 'name', header: '姓名' },
   { key: 'age', header: '年龄' }
 ], data)
-saveWorkbook(csv, '数据', 'csv')
+exportWorkbook(csv, '数据', 'csv')
 ```
 
 ### 高级用法
 
 ```ts
-import { createSheet, createXlsx, saveWorkbook } from '@oiij/hucre'
+import { createSheet, createXlsx, exportWorkbook } from '@oiij/hucre'
 
 const data = Array.from({ length: 100 }).map((_, i) => ({
   name: `员工-${i}`,
@@ -303,5 +290,5 @@ const sheet = createSheet('员工信息', [
 ], data)
 
 const workbook = createXlsx([sheet])
-saveWorkbook(workbook, '员工信息', 'xlsx')
+exportWorkbook(workbook, '员工信息', 'xlsx')
 ```

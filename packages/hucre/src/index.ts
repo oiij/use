@@ -1,21 +1,115 @@
-import type { CellValue, ColumnDef, CsvWriteOptions, WriteOptions, WriteSheet } from 'hucre'
+import type { CellValue, CsvWriteOptions, WriteOptions, WriteSheet } from 'hucre'
 import { saveAs } from 'file-saver'
-import { writeCsv, writeOds, writeXlsx } from 'hucre'
-
-const TYPE_MAP = {
-  xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-  ods: 'application/vnd.oasis.opendocument.spreadsheet',
-  csv: 'text/csv',
-} as const
+import { writeCsv } from 'hucre/csv'
+import { writeXlsx } from 'hucre/xlsx'
+import { getNestedValue, TYPE_MAP } from './_utils'
 
 /**
- * 表格列配置
+ * 创建工作表配置
+ *
+ * @param name - 工作表名称
+ * @param columns - 列配置数组，类型为 SheetColumns<T>
+ * @param data - 数据数组
+ * @param options - 其他选项（可选）
+ * @returns 工作表配置对象
+ *
+ * @example
+ * ```ts
+ * import { createSheet } from '@oiij/hucre'
+ *
+ * const columns = [
+ *   { key: 'name', header: '姓名' },
+ *   { key: 'age', header: '年龄' }
+ * ]
+ *
+ * const data = [
+ *   { name: '张三', age: 18 },
+ *   { name: '李四', age: 20 }
+ * ]
+ *
+ * const sheet = createSheet('员工信息', columns, data)
+ * ```
  */
-export type SheetColumns<T = Record<string, any>> = {
+export function createSheet<T extends Record<string, any>>(name: string, columns: SheetColumns<T>, data: T[], options?: WriteSheet) {
+  const rows = transformData(columns, data).rows
+  return {
+    name,
+    rows,
+    ...options,
+  } as WriteSheet
+}
+
+/**
+ * 创建 XLSX 工作簿
+ *
+ * @param sheets - 工作表配置数组
+ * @param options - 写入选项（可选）
+ * @returns XLSX 格式的二进制数据
+ *
+ * @example
+ * ```ts
+ * import { createSheet, createXlsx, exportWorkbook } from '@oiij/hucre'
+ *
+ * const columns = [
+ *   { key: 'name', header: '姓名' },
+ *   { key: 'age', header: '年龄' }
+ * ]
+ *
+ * const data = [
+ *   { name: '张三', age: 18 },
+ *   { name: '李四', age: 20 }
+ * ]
+ *
+ * const sheet = createSheet('员工信息', columns, data)
+ * const workbook = createXlsx([sheet])
+ * exportWorkbook(workbook, '员工信息', 'xlsx')
+ * ```
+ */
+export function createXlsx(sheets: WriteSheet[], options?: WriteOptions) {
+  return writeXlsx({ sheets, ...options })
+}
+
+/**
+ * 创建 CSV 文件
+ *
+ * @param columns - 列配置数组，类型为 SheetColumns<T>
+ * @param data - 数据数组
+ * @param options - CSV 写入选项（可选）
+ * @returns CSV 格式的二进制数据
+ *
+ * @example
+ * ```ts
+ * import { createCsv, exportWorkbook } from '@oiij/hucre'
+ *
+ * const columns = [
+ *   { key: 'name', header: '姓名' },
+ *   { key: 'age', header: '年龄' }
+ * ]
+ *
+ * const data = [
+ *   { name: '张三', age: 18 },
+ *   { name: '李四', age: 20 }
+ * ]
+ *
+ * const csv = createCsv(columns, data, { sheet: 'Sheet1' })
+ * exportWorkbook(csv, '数据', 'csv')
+ * ```
+ */
+export function createCsv<T extends Record<string, any>>(columns: SheetColumns<T>, data: T[], options?: CsvWriteOptions) {
+  return writeCsv(transformData(columns, data).rows, options)
+}
+
+/**
+ * 表格列配置类型定义
+ *
+ * 用于定义表格的列结构，包括数据键、列标题、自定义值获取和数据转换函数。
+ * 每个列配置对象定义表格中的一列。
+ */
+export type SheetColumns<T extends Record<string, any>> = {
   /**
    * 数据键
    */
-  key?: keyof T
+  key: keyof T
   /**
    * 列标题
    */
@@ -31,33 +125,14 @@ export type SheetColumns<T = Record<string, any>> = {
 }[]
 
 /**
- * 获取嵌套属性的值
- *
- * @param obj - 目标对象
- * @param key - 属性路径，支持点号分隔
- * @returns 属性值，不存在则返回 null
- *
- * @example
- * ```ts
- * const obj = { user: { profile: { name: '张三' } } }
- * getNestedValue(obj, 'user.profile.name') // '张三'
- * getNestedValue(obj, 'user.profile.age') // null
- * ```
- */
-function getNestedValue<T extends Record<string, any>>(obj: T, key: string): any {
-  if (!key)
-    return null
-  return key.split('.').reduce((acc, curr) => {
-    return acc && typeof acc === 'object' ? acc[curr] : null
-  }, obj)
-}
-
-/**
  * 转换数据为表格格式
  *
- * @param columns - 列配置数组
+ * @param columns - 列配置数组，类型为 SheetColumns<T>
  * @param data - 数据数组
- * @returns 转换后的表格数据（二维数组）
+ * @returns 包含表格数据的对象，包含以下属性：
+ *   - header: 列标题数组
+ *   - cells: 数据单元格二维数组（不包含标题行）
+ *   - rows: 完整的表格数据（包含标题行）
  *
  * @example
  * ```ts
@@ -79,16 +154,19 @@ function getNestedValue<T extends Record<string, any>>(obj: T, key: string): any
  * ]
  *
  * const result = transformData(columns, data)
- * // 结果: [['姓名', '年龄', '性别'], ['张三', 18, '男性'], ['李四', 20, '女性']]
+ * // result.header: ['姓名', '年龄', '性别']
+ * // result.cells: [['张三', 18, '男性'], ['李四', 20, '女性']]
+ * // result.rows: [['姓名', '年龄', '性别'], ['张三', 18, '男性'], ['李四', 20, '女性']]
  * ```
  */
 export function transformData<T extends Record<string, any>>(columns: SheetColumns<T>, data: T[]) {
   const result: any[][] = []
-  result.push(columns.map(m => m.header))
+  const header = columns.map(m => m.header)
+
   data.forEach((d, i) => {
     const item: any[] = []
     columns.forEach((column) => {
-      let value = column.key ? d[column.key] : null as CellValue
+      let value = d[column.key] as CellValue
 
       if (typeof column.value === 'function') {
         value = column.value(d, i)
@@ -104,105 +182,42 @@ export function transformData<T extends Record<string, any>>(columns: SheetColum
     })
     result.push(item)
   })
-  return result as CellValue[][]
-}
-
-/**
- * 创建工作表配置
- *
- * @param name - 工作表名称
- * @param columns - 列配置
- * @param data - 数据
- * @param options - 其他选项
- * @returns 工作表配置
- *
- * @example
- * ```ts
- * import { createSheet } from '@oiij/hucre'
- *
- * const sheet = createSheet('员工信息', columns, data)
- * ```
- */
-export function createSheet<T = Record<string, unknown>>(name: string, columns?: ColumnDef<T>[], data?: T[], options?: WriteSheet) {
   return {
-    name,
-    columns,
-    data,
-    ...options,
-  } as WriteSheet
+    header,
+    cells: result as CellValue[][],
+    rows: [header, ...result] as CellValue[][],
+  }
 }
 
 /**
- * 创建 XLSX 工作簿
- *
- * @param sheets - 工作表配置数组
- * @param options - ���入选项
- * @returns XLSX 格式的二进制数据
- *
- * @example
- * ```ts
- * import { createXlsx } from '@oiij/hucre'
- *
- * const workbook = createXlsx([sheet1, sheet2])
- * ```
- */
-export function createXlsx(sheets: WriteSheet[], options?: WriteOptions) {
-  return writeXlsx({ sheets, ...options })
-}
-
-/**
- * 创建 ODS 工作簿
- *
- * @param sheets - 工作表配置数组
- * @param options - 写入选项
- * @returns ODS 格式的二进制数据
- *
- * @example
- * ```ts
- * import { createOds } from '@oiij/hucre'
- *
- * const workbook = createOds([sheet1, sheet2])
- * ```
- */
-export function createOds(sheets: WriteSheet[], options?: WriteOptions) {
-  return writeOds({ sheets, ...options })
-}
-
-/**
- * 创建 CSV 文件
- *
- * @param columns - 列配置
- * @param data - 数据数组
- * @param options - CSV 写入选项
- * @returns CSV 格式的二进制数据
- *
- * @example
- * ```ts
- * import { createCsv } from '@oiij/hucre'
- *
- * const workbook = createCsv(columns, data, { sheet: 'Sheet1' })
- * ```
- */
-export function createCsv<T extends Record<string, any>>(columns: SheetColumns<T>, data: T[], options?: CsvWriteOptions) {
-  return writeCsv(transformData(columns, data), options)
-}
-
-/**
- * 保存工作簿到文件
+ * 导出工作簿到文件
  *
  * @param workbook - 工作簿二进制数据或字符串
- * @param fileName - 文件名
- * @param type - 文件类型
+ * @param fileName - 文件名（不含扩展名）
+ * @param type - 文件类型，支持 'xlsx' 或 'csv'
+ * @returns void
  *
  * @example
  * ```ts
- * import { saveWorkbook } from '@oiij/hucre'
+ * import { createSheet, createXlsx, exportWorkbook } from '@oiij/hucre'
  *
+ * const columns = [
+ *   { key: 'name', header: '姓名' },
+ *   { key: 'age', header: '年龄' }
+ * ]
+ *
+ * const data = [
+ *   { name: '张三', age: 18 },
+ *   { name: '李四', age: 20 }
+ * ]
+ *
+ * const sheet = createSheet('员工信息', columns, data)
  * const workbook = createXlsx([sheet])
- * saveWorkbook(workbook, '员工信息', 'xlsx')
+ * exportWorkbook(workbook, '员工信息', 'xlsx')
  * ```
  */
-export function saveWorkbook(workbook: Uint8Array | string, fileName: string, type: keyof typeof TYPE_MAP) {
+
+export function exportWorkbook(workbook: Uint8Array | string, fileName: string, type: keyof typeof TYPE_MAP) {
   const fileType = TYPE_MAP[type] ?? TYPE_MAP.xlsx
   const blob = new Blob([workbook as Uint8Array<ArrayBuffer>], { type: fileType })
   saveAs(blob, fileName)

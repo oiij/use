@@ -25,7 +25,7 @@
     "LICENSE",
     "README.md",
     "dist",
-    "package.json"
+    "package.mjson"
   ],
   "scripts": {
     "dev": "tsdown --watch",
@@ -37,12 +37,12 @@
     "file-saver": "catalog:pkg",
     "hucre": "catalog:pkg"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "devDependencies": {
     "@types/file-saver": "catalog:pkg",
     "file-saver": "catalog:pkg",
     "hucre": "catalog:pkg"
-  },
-  "publishConfig": {
-    "access": "public"
   }
 }

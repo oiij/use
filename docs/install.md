@@ -297,7 +297,7 @@ pnpm add @oiij/js-pdf
 
 ### @oiij/xlsx
 
-Excel 文件处理的 Vue 3 工具。
+Excel 文件处理的工具。
 
 ```bash
 pnpm add @oiij/xlsx
@@ -306,12 +306,11 @@ pnpm add @oiij/xlsx
 **依赖：**
 
 - `xlsx`
-- `@vueuse/core`
 - `file-saver`
 
 ### @oiij/hucre
 
-Excel/CSV/ODS 文件处理的 Vue 3 工具。
+Excel/CSV 文件处理的工具。
 
 ```bash
 pnpm add @oiij/hucre
@@ -319,7 +318,6 @@ pnpm add @oiij/hucre
 
 **依赖：**
 
-- `xlsx`
 - `file-saver`
 - `hucre`
 
