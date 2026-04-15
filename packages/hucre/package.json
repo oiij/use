@@ -1,7 +1,7 @@
 {
   "name": "@oiij/hucre",
   "type": "module",
-  "version": "0.0.16",
+  "version": "0.0.1",
   "description": "A Utils for hucre",
   "author": "oiij",
   "license": "MIT",
