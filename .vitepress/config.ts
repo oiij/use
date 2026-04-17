@@ -1,4 +1,5 @@
 import { resolve } from 'node:path'
+import Unocss from 'unocss/vite'
 import { defineConfig } from 'vitepress'
 import { vitepressDemoPlugin } from 'vitepress-demo-plugin'
 import { conversionPath } from './util'
@@ -81,6 +82,7 @@ export default defineConfig({
           ...conversionPath('packages/hucre/demos', '/hucre'),
           ...conversionPath('packages/js-pdf/demos', '/js-pdf'),
           ...conversionPath('packages/markdown-it/demos', '/markdown-it'),
+          ...conversionPath('packages/math-curve-loaders/demos', '/math-curve-loaders'),
           ...conversionPath('packages/ogl/demos', '/ogl'),
           ...conversionPath('packages/shiki/demos', '/shiki'),
           ...conversionPath('packages/spline/demos', '/spline'),
@@ -103,6 +105,9 @@ export default defineConfig({
     },
   },
   vite: {
+    plugins: [
+      Unocss(),
+    ],
     resolve: {
       alias: {
         '~': resolve(__dirname, '../../packages'),

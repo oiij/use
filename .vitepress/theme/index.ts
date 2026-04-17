@@ -5,6 +5,7 @@ import { h } from 'vue'
 import Layout from './Layout.vue'
 import './style.css'
 import './rainbow.css'
+import 'uno.css'
 
 export default {
   extends: DefaultTheme,

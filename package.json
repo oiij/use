@@ -52,6 +52,7 @@
     "@oiij/hucre": "workspace:*",
     "@oiij/js-pdf": "workspace:*",
     "@oiij/markdown-it": "workspace:*",
+    "@oiij/math-curve-loaders": "workspace:*",
     "@oiij/naive-ui": "workspace:*",
     "@oiij/ogl": "workspace:*",
     "@oiij/shiki": "workspace:*",
@@ -70,6 +71,7 @@
   "devDependencies": {
     "@antfu/eslint-config": "catalog:dev",
     "@oiij/tsconfig": "catalog:dev",
+    "@oiij/unocss-preset": "catalog:dev",
     "@tsdown/css": "catalog:dev",
     "@types/node": "catalog:dev",
     "@types/three": "catalog:dev",

@@ -1,3 +1,4 @@
+import { oiijPreset } from '@oiij/unocss-preset'
 import { defineConfig, presetAttributify, presetIcons, presetTypography, presetWebFonts, presetWind3, transformerAttributifyJsx, transformerCompileClass, transformerDirectives, transformerVariantGroup } from 'unocss'
 
 export default defineConfig({
@@ -25,6 +26,7 @@ export default defineConfig({
         mono: 'DM Mono',
       },
     }),
+    oiijPreset(),
   ],
   transformers: [
     transformerDirectives(),

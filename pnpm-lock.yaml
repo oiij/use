@@ -12,6 +12,9 @@ catalogs:
     '@oiij/tsconfig':
       specifier: ^0.0.1
       version: 0.0.1
+    '@oiij/unocss-preset':
+      specifier: ^0.0.1
+      version: 0.0.1
     '@tsdown/css':
       specifier: ^0.21.4
       version: 0.21.4
@@ -273,6 +276,9 @@ importers:
       '@oiij/markdown-it':
         specifier: workspace:*
         version: link:packages/markdown-it
+      '@oiij/math-curve-loaders':
+        specifier: workspace:*
+        version: link:packages/math-curve-loaders
       '@oiij/naive-ui':
         specifier: workspace:*
         version: link:packages/naive-ui
@@ -320,6 +326,9 @@ importers:
         specifier: catalog:dev
         version: 7.7.3(@typescript-eslint/typescript-estree@8.57.1(typescript@5.9.3))(@typescript-eslint/utils@8.57.1(eslint@10.0.3(jiti@2.6.1))(typescript@5.9.3))(@vue/compiler-sfc@3.5.30)(eslint-plugin-format@2.0.1(eslint@10.0.3(jiti@2.6.1)))(eslint@10.0.3(jiti@2.6.1))(typescript@5.9.3)(vitest@4.1.0)
       '@oiij/tsconfig':
+        specifier: catalog:dev
+        version: 0.0.1
+      '@oiij/unocss-preset':
         specifier: catalog:dev
         version: 0.0.1
       '@tsdown/css':
@@ -557,6 +566,15 @@ importers:
       markdown-it:
         specifier: catalog:pkg
         version: 14.1.1
+      vue:
+        specifier: catalog:pkg
+        version: 3.5.30(typescript@5.9.3)
+
+  packages/math-curve-loaders:
+    devDependencies:
+      '@vueuse/core':
+        specifier: catalog:pkg
+        version: 14.2.1(vue@3.5.30(typescript@5.9.3))
       vue:
         specifier: catalog:pkg
         version: 3.5.30(typescript@5.9.3)
@@ -1588,6 +1606,9 @@ packages:
 
   '@oiij/tsconfig@0.0.1':
     resolution: {integrity: sha512-Y4tDOc9KiSuOl6grHJgx77d6KajKnMP/2tdNN8p59b40ApqP6ufZWSx3GM+15A3sIZcN8xwuFmgQYhN8M+/GRg==}
+
+  '@oiij/unocss-preset@0.0.1':
+    resolution: {integrity: sha512-SDfFHX/2+Pgau/qq+lCF7f9pzzeQ/yeyrXjvbmviRPKGFxWvWGigcC7XaN7nUFjnQ3C1dVQjoRhHRcWpjFM4XQ==}
 
   '@ota-meshi/ast-token-store@0.3.0':
     resolution: {integrity: sha512-XRO0zi2NIUKq2lUk3T1ecFSld1fMWRKE6naRFGkgkdeosx7IslyUKNv5Dcb5PJTja9tHJoFu0v/7yEpAkrkrTg==}
@@ -2935,6 +2956,9 @@ packages:
   '@unocss/config@66.6.7':
     resolution: {integrity: sha512-1uleyRLyJc6PNNc2L3hEaKL89zXwvQAtP36oFySgL47RAxZHPZ4vfqFpbwR0eEN4iSqTS24ZFr7CTRWCaEGjzQ==}
     engines: {node: '>=14'}
+
+  '@unocss/core@65.5.0':
+    resolution: {integrity: sha512-XYWdS09M2XOjZNDotGhI2TIW/6duLNiyssopwjCbv4AlPklF0bZI86SKI55syYDBt6GRadoQbuvUkhSiTV/hzQ==}
 
   '@unocss/core@66.6.7':
     resolution: {integrity: sha512-Q8456iWFtdwrUNYKVOQY8ygRggjZOVtLc6Jc8KIkxig7OiNlUWOgXJTfCh4I8g6jBYzC5eHaHFDLgJOmOrxBsg==}
@@ -6589,6 +6613,10 @@ snapshots:
 
   '@oiij/tsconfig@0.0.1': {}
 
+  '@oiij/unocss-preset@0.0.1':
+    dependencies:
+      '@unocss/core': 65.5.0
+
   '@ota-meshi/ast-token-store@0.3.0': {}
 
   '@oxc-parser/binding-android-arm-eabi@0.115.0':
@@ -7697,6 +7725,8 @@ snapshots:
       colorette: 2.0.20
       consola: 3.4.2
       unconfig: 7.5.0
+
+  '@unocss/core@65.5.0': {}
 
   '@unocss/core@66.6.7': {}
 
