@@ -52,13 +52,13 @@ function useAiEditor(
 
 ### Options 配置
 
-| 选项              | 类型                               | 默认值      | 说明                  |
-| ----------------- | ---------------------------------- | ----------- | --------------------- |
-| `value`           | `MaybeRefOrGetter<string>`         | `undefined` | 编辑器内容            |
-| `darkMode`        | `MaybeRefOrGetter<boolean>`        | `false`     | 是否开启暗黑模式      |
-| `language`        | `MaybeRefOrGetter<'zh' \| 'en'>`   | `'zh'`      | 编辑器语言            |
-| `readonly`        | `MaybeRefOrGetter<boolean>`        | `false`     | 是否只读              |
-| `aiEditorOptions` | `Omit<AiEditorOptions, 'element'>` | `{}`        | AiEditor 原生配置选项 |
+| 选项              | 类型                                   | 默认值      | 说明                  |
+| ----------------- | -------------------------------------- | ----------- | --------------------- |
+| `value`           | `MaybeRefOrGetter<string>`             | `undefined` | 编辑器内容            |
+| `darkMode`        | `MaybeRefOrGetter<boolean>`            | `false`     | 是否开启暗黑模式      |
+| `language`        | `MaybeRefOrGetter<'zh-CN' \| 'en-US'>` | `'zh-CN'`   | 编辑器语言            |
+| `readonly`        | `MaybeRefOrGetter<boolean>`            | `false`     | 是否只读              |
+| `aiEditorOptions` | `Omit<AiEditorOptions, 'element'>`     | `{}`        | AiEditor 原生配置选项 |
 
 ### 返回值
 
@@ -67,7 +67,7 @@ function useAiEditor(
 | `templateRef`             | `TemplateRef<HTMLElement>`     | 编辑器容器引用     |
 | `value`                   | `Ref<string>`                  | 编辑器内容         |
 | `darkMode`                | `Ref<boolean>`                 | 暗黑模式状态       |
-| `language`                | `Ref<'zh' \| 'en'>`            | 当前语言           |
+| `language`                | `Ref<'zh-CN' \| 'en-US'>`      | 当前语言           |
 | `readonly`                | `Ref<boolean>`                 | 只读状态           |
 | `aiEditorInst`            | `ShallowRef<AiEditor \| null>` | AiEditor 实例      |
 | `setContent(value?)`      | `Function`                     | 设置编辑器内容     |
@@ -95,7 +95,7 @@ export type UseAiEditorOptions = {
   /**
    * 编辑器语言
    */
-  language?: MaybeRefOrGetter<'zh' | 'en'>
+  language?: MaybeRefOrGetter<'zh-CN' | 'en-US'>
   /**
    * 是否只读
    */
@@ -136,7 +136,7 @@ import { useAiEditor } from '@oiij/ai-editor'
 import { ref, useTemplateRef } from 'vue'
 
 const darkMode = ref(false)
-const language = ref<'zh' | 'en'>('zh')
+const language = ref<'zh-CN' | 'en-US'>('zh-CN')
 const valueRef = ref('<p>初始内容</p>')
 
 const { value, setDarkMode, setLanguage } = useAiEditor(
@@ -154,7 +154,7 @@ const { value, setDarkMode, setLanguage } = useAiEditor(
     <button @click="setDarkMode(!darkMode)">
       切换主题
     </button>
-    <button @click="setLanguage(language === 'zh' ? 'en' : 'zh')">
+    <button @click="setLanguage(language === 'zh-CN' ? 'en-US' : 'zh-CN')">
       切换语言
     </button>
     <div ref="editor" />

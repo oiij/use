@@ -89,7 +89,7 @@ export const removeRandomItem = <T>(arr: T[]): T => arr.splice((Math.random() * 
  * // 示例：获取数组中的随机项
  * getRandomItem([1, 2, 3, 4, 5]); // => 3（结果随机）
  */
-export const getRandomItem = <T, _>(arr: T[]): T => arr[(Math.random() * arr.length) | 0]
+export const getRandomItem = <T, _>(arr: T[]): T => arr[(Math.random() * arr.length) | 0] as T
 /**
  * 获取对象随机属性
  * @param {object} obj - 原始对象

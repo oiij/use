@@ -177,7 +177,10 @@ export function useWebSocket<T extends HandlerType = HandlerType, D extends Mess
 
   function setStatus() {
     if (socket.value) {
-      status.value = ReadyState[socket.value.readyState]
+      const state = ReadyState[socket.value.readyState]
+      if (state) {
+        status.value = state
+      }
     }
   }
 

@@ -69,7 +69,7 @@
     "LICENSE",
     "README.md",
     "dist",
-    "package.mjson"
+    "package.json"
   ],
   "scripts": {
     "dev": "tsdown --watch",

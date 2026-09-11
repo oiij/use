@@ -88,6 +88,7 @@ export default defineConfig({
           ...conversionPath('packages/spline/demos', '/spline'),
           ...conversionPath('packages/three-js/demos', '/three-js'),
           ...conversionPath('packages/tiptap/demos', '/tiptap'),
+          ...conversionPath('packages/viselect/demos', '/viselect'),
           ...conversionPath('packages/v-charts/demos', '/v-charts'),
           ...conversionPath('packages/xlsx/demos', '/xlsx'),
         ],

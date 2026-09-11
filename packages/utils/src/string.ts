@@ -24,7 +24,7 @@ export const capitalize = (str: string): string => str.charAt(0).toUpperCase() +
  * // 示例：首字母小写
  * unCapitalize('Hello'); // => 'hello'
  */
-export const unCapitalize = ([first, ...rest]: string): string => `${first.toLowerCase()}${rest.join('')}`
+export const unCapitalize = ([first, ...rest]: string): string => `${first?.toLowerCase()}${rest.join('')}`
 /**
  * 是否是重复字符串
  * @param {string} str - 要检查的字符串
@@ -108,7 +108,7 @@ export const toUnixPath = (path: string): string => path.replace(/[\\/]+/g, '/')
  * // 示例：uint8转base64
  * uint8ToBase64(new Uint8Array([72, 101, 108, 108, 111])); // => 'SGVsbG8='
  */
-export const uint8ToBase64 = (arr: Uint8Array): string => btoa(Array.from({ length: arr.length }).fill('').map((_, i) => String.fromCharCode(arr[i])).join(''))
+export const uint8ToBase64 = (arr: Uint8Array): string => btoa(Array.from({ length: arr.length }).fill('').map((_, i) => String.fromCharCode(arr[i]!)).join(''))
 /**
  * 下划线转小驼峰
  * @param {string} str - 下划线格式的字符串
@@ -126,7 +126,7 @@ export const snakeToCamel = (str: string): string => str.toLowerCase().replace(/
  * // 示例：短横线转小驼峰
  * kebabToCamel('hello-world'); // => 'helloWorld'
  */
-export const kebabToCamel = (str: string): string => str.replace(/-./g, m => m.toUpperCase()[1])
+export const kebabToCamel = (str: string): string => str.replace(/-./g, m => m.toUpperCase()[1]!)
 /**
  * 小驼峰转短划线
  * @param {string} str - 小驼峰格式的字符串
@@ -202,7 +202,7 @@ export const escapeString = (str: string): string => str.replace(/&/g, '&amp;').
  * // 示例：获取基本网址
  * baseUrl('https://example.com/path?query=1'); // => 'https://example.com/path'
  */
-export const baseUrl = (url: string): string => url.split('?')[0]
+export const baseUrl = (url: string): string => url.split('?')[0]!
 /**
  * 生成字符串哈希
  * @param {string} str - 原始字符串
@@ -502,5 +502,4 @@ export const containsUpperCase = (str: string): boolean => str !== str.toLowerCa
  * checkWhitespace('hello world'); // => true
  * checkWhitespace('helloworld'); // => false
  */
-// eslint-disable-next-line unused-imports/no-unused-vars
-export const containsWhitespace = (str: any) => (str: string) => /\s/.test(str)
+export const containsWhitespace = (str: string): boolean => /\s/.test(str)

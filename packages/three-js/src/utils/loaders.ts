@@ -201,6 +201,7 @@ export async function textureLoader(path: string | string[] | Partial<Record<Pat
       texture: await Promise.all(paths).then(entries => Object.fromEntries(entries)),
     }
   }
+  return null
 }
 
 /**

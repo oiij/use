@@ -8,4 +8,7 @@ export default defineConfig({
   ],
   dts: { vue: true },
   unbundle: true,
+  css: {
+    fileName: 'tiptap.css',
+  },
 })

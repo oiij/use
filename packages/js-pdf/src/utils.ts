@@ -86,7 +86,7 @@ async function pdf2Canvases(pdf: PDFDocumentProxy) {
 export async function openPdf(url?: string | URL | File) {
   try {
     if (url && (typeof url === 'string' || url instanceof URL)) {
-      const pdf = await getDocument(url).promise
+      const pdf = await getDocument({ url }).promise
       const { pages, id, canvases } = await pdf2Canvases(pdf)
       return {
         pdf,
@@ -97,7 +97,7 @@ export async function openPdf(url?: string | URL | File) {
     }
     if (url instanceof File) {
       const buffer = await file2Buffer(url)
-      const pdf = await getDocument(buffer).promise
+      const pdf = await getDocument({ data: buffer }).promise
       const { pages, id, canvases } = await pdf2Canvases(pdf)
       return {
         pdf,
@@ -106,6 +106,7 @@ export async function openPdf(url?: string | URL | File) {
         canvases,
       }
     }
+    return Promise.reject(new Error('url is not a string or file'))
   }
   catch (error) {
     console.error(error)
@@ -190,7 +191,7 @@ export function canvas2Zip(canvases: HTMLCanvasElement[], fileName: string) {
     const zip = new JsZip()
     Promise.all(canvases.map(canvas => canvas2Blob(canvas))).then((blobs) => {
       blobs.forEach((blob, i) => {
-        zip.file(`${canvases[i].id}.jpg`, blob)
+        zip.file(`${canvases[i]?.id}.jpg`, blob)
       })
       zip.generateAsync({ type: 'blob' }).then((blob) => {
         saveAs(blob, `${fileName}.zip`)
@@ -216,7 +217,7 @@ export function canvas2Zip(canvases: HTMLCanvasElement[], fileName: string) {
  * ```
  */
 export async function readPdfFile(buffer: ArrayBuffer) {
-  const pdf = await getDocument(buffer).promise
+  const pdf = await getDocument({ data: buffer }).promise
   const { pages, id, canvases } = await pdf2Canvases(pdf)
   return {
     pdf,

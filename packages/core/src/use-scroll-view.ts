@@ -174,7 +174,10 @@ export function useScrollView(templateRef: MaybeRefOrGetter<HTMLElement | undefi
     const nextIndex = currentIndex + 1
 
     if (nextIndex < elements.length) {
-      await scrollToElement(elements[nextIndex])
+      const nextEl = elements[nextIndex]
+      if (nextEl) {
+        await scrollToElement(nextEl)
+      }
     }
   }
 
@@ -197,7 +200,10 @@ export function useScrollView(templateRef: MaybeRefOrGetter<HTMLElement | undefi
     const prevIndex = currentIndex - 1
 
     if (prevIndex >= 0) {
-      await scrollToElement(elements[prevIndex])
+      const prevEl = elements[prevIndex]
+      if (prevEl) {
+        await scrollToElement(prevEl)
+      }
     }
   }
 

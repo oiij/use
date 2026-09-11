@@ -5,7 +5,7 @@ import { NFlex, NInput, NSwitch } from 'naive-ui'
 import { ref, useTemplateRef } from 'vue'
 
 const darkMode = ref(false)
-const language = ref<'zh' | 'en'>('zh')
+const language = ref<'zh-CN' | 'en-US'>('zh-CN')
 const valueRef = ref('AA')
 const { value, onUpdateValue } = useAiEditor(useTemplateRef('dom-ref'), {
   value: valueRef,
@@ -24,7 +24,7 @@ onUpdateValue((v) => {
       <span>Dark Mode</span>
       <NSwitch v-model:value="darkMode" />
       <span>Language</span>
-      <NSwitch v-model:value="language" checked-value="zh" unchecked-value="en" />
+      <NSwitch v-model:value="language" checked-value="zh-CN" unchecked-value="en-US" />
     </NFlex>
     <NInput v-model:value="valueRef" />
     <div ref="dom-ref" />

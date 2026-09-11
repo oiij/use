@@ -1,7 +1,7 @@
 {
   "name": "@oiij/js-pdf",
   "type": "module",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "A simple PDF library for JavaScript",
   "author": "oiij",
   "license": "MIT",
@@ -32,20 +32,20 @@
     "prepublishOnly": "pnpm build"
   },
   "peerDependencies": {
-    "@types/file-saver": "catalog:pkg",
-    "file-saver": "catalog:pkg",
-    "jspdf": "catalog:pkg",
-    "jszip": "catalog:pkg",
-    "nanoid": "catalog:pkg",
-    "pdfjs-dist": "catalog:pkg"
+    "@types/file-saver": "^2.0.7",
+    "file-saver": "^2.0.5",
+    "jspdf": "^4.2.1",
+    "jszip": "^3.10.1",
+    "nanoid": "^6.0.1",
+    "pdfjs-dist": "^6.3.289"
   },
   "devDependencies": {
-    "@types/file-saver": "catalog:pkg",
-    "file-saver": "catalog:pkg",
-    "jspdf": "catalog:pkg",
-    "jszip": "catalog:pkg",
-    "nanoid": "catalog:pkg",
-    "pdfjs-dist": "catalog:pkg"
+    "@types/file-saver": "^2.0.7",
+    "file-saver": "^2.0.5",
+    "jspdf": "^4.2.1",
+    "jszip": "^3.10.1",
+    "nanoid": "^6.0.1",
+    "pdfjs-dist": "^6.3.289"
   },
   "publishConfig": {
     "access": "public"

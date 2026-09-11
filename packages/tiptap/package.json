@@ -1,7 +1,7 @@
 {
   "name": "@oiij/tiptap",
   "type": "module",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "description": "A Vue Composable for Tiptap",
   "author": "oiij",
   "license": "MIT",
@@ -41,20 +41,20 @@
     "prepublishOnly": "pnpm build"
   },
   "peerDependencies": {
-    "@tiptap/core": "catalog:pkg",
-    "@tiptap/extension-image": "catalog:pkg",
-    "@tiptap/pm": "catalog:pkg",
-    "@tiptap/starter-kit": "catalog:pkg",
-    "@vueuse/core": "catalog:pkg",
-    "vue": "catalog:pkg"
+    "@tiptap/core": "^3.31.3",
+    "@tiptap/extension-image": "^3.31.3",
+    "@tiptap/pm": "^3.31.3",
+    "@tiptap/starter-kit": "^3.31.3",
+    "@vueuse/core": "^14.4.0",
+    "vue": "^3.5.42"
   },
   "devDependencies": {
-    "@tiptap/core": "catalog:pkg",
-    "@tiptap/extension-image": "catalog:pkg",
-    "@tiptap/pm": "catalog:pkg",
-    "@tiptap/starter-kit": "catalog:pkg",
-    "@vueuse/core": "catalog:pkg",
-    "vue": "catalog:pkg"
+    "@tiptap/core": "^3.31.3",
+    "@tiptap/extension-image": "^3.31.3",
+    "@tiptap/pm": "^3.31.3",
+    "@tiptap/starter-kit": "^3.31.3",
+    "@vueuse/core": "^14.4.0",
+    "vue": "^3.5.42"
   },
   "publishConfig": {
     "access": "public"

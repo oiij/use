@@ -139,6 +139,7 @@ const expose: PresetPickerExpose<R> = {
   setCheckedRows: (rows: R[]) => {
     checkedRows.value = rows
   },
+  runPositiveClick: onPositiveClick,
 }
 const templateBind = computed(() => {
   return {

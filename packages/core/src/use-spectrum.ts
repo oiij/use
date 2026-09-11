@@ -311,8 +311,11 @@ export function useSpectrum(canvasRef: TemplateRef<HTMLCanvasElement>, frequency
     }
     const smoothingFactor = Math.max(0, Math.min(1, animationSpeed))
     for (let i = 0; i < frequencyData.length; i++) {
-      const currentValue = frequencyData[i]
-      smoothedData[i] = smoothedData[i] + smoothingFactor * (currentValue - smoothedData[i])
+      const cv = frequencyData[i]
+      const sd = smoothedData[i]
+      if (cv && sd) {
+        smoothedData[i] = sd + smoothingFactor * (cv - sd)
+      }
     }
   }
 
@@ -432,13 +435,14 @@ export function useSpectrum(canvasRef: TemplateRef<HTMLCanvasElement>, frequency
     for (let i = 1; i < points.length - 1; i++) {
       const curr = points[i]
       const next = points[i + 1]
+      if (curr && next) {
+        const cp1x = curr.x + (next.x - curr.x) * smoothness
+        const cp1y = curr.y
+        const cp2x = next.x - (next.x - curr.x) * smoothness
+        const cp2y = next.y
 
-      const cp1x = curr.x + (next.x - curr.x) * smoothness
-      const cp1y = curr.y
-      const cp2x = next.x - (next.x - curr.x) * smoothness
-      const cp2y = next.y
-
-      ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, next.x, next.y)
+        ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, next.x, next.y)
+      }
     }
     ctx.lineTo(canvasWidth, canvasHeight)
 
@@ -542,32 +546,34 @@ export function useSpectrum(canvasRef: TemplateRef<HTMLCanvasElement>, frequency
 
     ctx.beginPath()
 
-    if (points.length > 0) {
-      ctx.moveTo(points[0].x, points[0].y)
+    const point = points[0]
+    if (points.length > 0 && point) {
+      ctx.moveTo(point.x, point.y)
     }
 
     for (let i = 1; i < points.length - 1; i++) {
       const curr = points[i]
       const next = points[i + 1]
+      if (curr && next) {
+        const currAngle = startAngle + i * angleStep
+        const nextAngle = startAngle + (i + 1) * angleStep
 
-      const currAngle = startAngle + i * angleStep
-      const nextAngle = startAngle + (i + 1) * angleStep
+        const currRadius = Math.sqrt((curr.x - centerX) ** 2 + (curr.y - centerY) ** 2)
+        const nextRadius = Math.sqrt((next.x - centerX) ** 2 + (next.y - centerY) ** 2)
 
-      const currRadius = Math.sqrt((curr.x - centerX) ** 2 + (curr.y - centerY) ** 2)
-      const nextRadius = Math.sqrt((next.x - centerX) ** 2 + (next.y - centerY) ** 2)
+        const cp1Angle = currAngle + (nextAngle - currAngle) * smoothness
+        const cp1Radius = currRadius + (nextRadius - currRadius) * smoothness
+        const cp1 = polarToCartesian(centerX, centerY, cp1Radius, cp1Angle)
 
-      const cp1Angle = currAngle + (nextAngle - currAngle) * smoothness
-      const cp1Radius = currRadius + (nextRadius - currRadius) * smoothness
-      const cp1 = polarToCartesian(centerX, centerY, cp1Radius, cp1Angle)
+        const cp2Angle = nextAngle - (nextAngle - currAngle) * smoothness
+        const cp2Radius = nextRadius - (nextRadius - currRadius) * smoothness
+        const cp2 = polarToCartesian(centerX, centerY, cp2Radius, cp2Angle)
 
-      const cp2Angle = nextAngle - (nextAngle - currAngle) * smoothness
-      const cp2Radius = nextRadius - (nextRadius - currRadius) * smoothness
-      const cp2 = polarToCartesian(centerX, centerY, cp2Radius, cp2Angle)
-
-      ctx.bezierCurveTo(cp1.x, cp1.y, cp2.x, cp2.y, next.x, next.y)
+        ctx.bezierCurveTo(cp1.x, cp1.y, cp2.x, cp2.y, next.x, next.y)
+      }
     }
 
-    if (fill && points.length > 0) {
+    if (fill && points.length > 0 && point) {
       const lastAngle = startAngle + (pointCount - 1) * angleStep
 
       ctx.lineTo(centerX + radius * Math.cos(lastAngle), centerY + radius * Math.sin(lastAngle))
@@ -585,27 +591,28 @@ export function useSpectrum(canvasRef: TemplateRef<HTMLCanvasElement>, frequency
       ctx.fill()
 
       ctx.beginPath()
-      ctx.moveTo(points[0].x, points[0].y)
+      ctx.moveTo(point.x, point.y)
 
       for (let i = 1; i < points.length - 1; i++) {
         const curr = points[i]
         const next = points[i + 1]
+        if (curr && next) {
+          const currAngle = startAngle + i * angleStep
+          const nextAngle = startAngle + (i + 1) * angleStep
 
-        const currAngle = startAngle + i * angleStep
-        const nextAngle = startAngle + (i + 1) * angleStep
+          const currRadius = Math.sqrt((curr.x - centerX) ** 2 + (curr.y - centerY) ** 2)
+          const nextRadius = Math.sqrt((next.x - centerX) ** 2 + (next.y - centerY) ** 2)
 
-        const currRadius = Math.sqrt((curr.x - centerX) ** 2 + (curr.y - centerY) ** 2)
-        const nextRadius = Math.sqrt((next.x - centerX) ** 2 + (next.y - centerY) ** 2)
+          const cp1Angle = currAngle + (nextAngle - currAngle) * smoothness
+          const cp1Radius = currRadius + (nextRadius - currRadius) * smoothness
+          const cp1 = polarToCartesian(centerX, centerY, cp1Radius, cp1Angle)
 
-        const cp1Angle = currAngle + (nextAngle - currAngle) * smoothness
-        const cp1Radius = currRadius + (nextRadius - currRadius) * smoothness
-        const cp1 = polarToCartesian(centerX, centerY, cp1Radius, cp1Angle)
+          const cp2Angle = nextAngle - (nextAngle - currAngle) * smoothness
+          const cp2Radius = nextRadius - (nextRadius - currRadius) * smoothness
+          const cp2 = polarToCartesian(centerX, centerY, cp2Radius, cp2Angle)
 
-        const cp2Angle = nextAngle - (nextAngle - currAngle) * smoothness
-        const cp2Radius = nextRadius - (nextRadius - currRadius) * smoothness
-        const cp2 = polarToCartesian(centerX, centerY, cp2Radius, cp2Angle)
-
-        ctx.bezierCurveTo(cp1.x, cp1.y, cp2.x, cp2.y, next.x, next.y)
+          ctx.bezierCurveTo(cp1.x, cp1.y, cp2.x, cp2.y, next.x, next.y)
+        }
       }
     }
 

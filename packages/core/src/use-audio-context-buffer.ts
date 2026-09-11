@@ -503,7 +503,9 @@ export function useAudioContextBuffer(options?: AudioContextBufferOptions) {
    */
   function setEQFrequency(index: number, value: number) {
     if (index >= 0 && index < filters.length) {
-      filters[index].gain.value = value
+      if (filters[index]) {
+        filters[index].gain.value = value
+      }
     }
   }
 
@@ -521,7 +523,7 @@ export function useAudioContextBuffer(options?: AudioContextBufferOptions) {
    */
   function getEQFrequency(index: number) {
     if (index >= 0 && index < filters.length) {
-      return filters[index].gain.value
+      return filters[index]?.gain.value ?? 0
     }
     return 0
   }

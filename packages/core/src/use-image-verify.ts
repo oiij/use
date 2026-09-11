@@ -122,8 +122,10 @@ function generateCharacterCode(config: CharacterConfig) {
 
   for (let i = 0; i < length; i += 1) {
     const char = characterPool[randomNum(0, characterPool.length)]
-    answer += char
-    display.push(char)
+    if (char) {
+      answer += char
+      display.push(char)
+    }
   }
 
   return { answer, display: display.join('') }
@@ -243,7 +245,10 @@ export function useImageVerify(templateRef: TemplateRef<HTMLCanvasElement>, opti
       answer = charAnswer
 
       for (let i = 0; i < display.length; i += 1) {
-        drawCharacter(ctx, display[i], i, display.length, width, height)
+        const di = display[i]
+        if (di) {
+          drawCharacter(ctx, di, i, display.length, width, height)
+        }
       }
     }
 
@@ -252,7 +257,10 @@ export function useImageVerify(templateRef: TemplateRef<HTMLCanvasElement>, opti
       answer = opAnswer
 
       for (let i = 0; i < display.length; i += 1) {
-        drawCharacter(ctx, display[i], i, display.length, width, height)
+        const di = display[i]
+        if (di) {
+          drawCharacter(ctx, di, i, display.length, width, height)
+        }
       }
     }
 

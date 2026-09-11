@@ -1,7 +1,7 @@
 {
   "name": "@oiij/auto-i18n",
   "type": "module",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Vue I18n utilities and composables for Vue 3",
   "author": "oiij",
   "license": "MIT",
@@ -34,17 +34,14 @@
     "prepublishOnly": "pnpm build"
   },
   "peerDependencies": {
-    "@vueuse/core": "catalog:pkg",
-    "vue": "catalog:pkg",
-    "vue-i18n": "catalog:pkg"
-  },
-  "dependencies": {
-
+    "@vueuse/core": "^14.4.0",
+    "vue": "^3.5.42",
+    "vue-i18n": "^11.4.10"
   },
   "devDependencies": {
-    "@vueuse/core": "catalog:pkg",
-    "vue": "catalog:pkg",
-    "vue-i18n": "catalog:pkg"
+    "@vueuse/core": "^14.4.0",
+    "vue": "^3.5.42",
+    "vue-i18n": "^11.4.10"
   },
   "publishConfig": {
     "access": "public"

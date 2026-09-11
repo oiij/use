@@ -1,7 +1,7 @@
 {
   "name": "@oiij/naive-ui",
   "type": "module",
-  "version": "0.0.82",
+  "version": "0.0.83",
   "description": "Some Composable Functions And Components for Vue 3",
   "author": "oiij",
   "license": "MIT",
@@ -44,31 +44,28 @@
   "peerDependencies": {
     "@oiij/css-render": "workspace:*",
     "@oiij/use": "workspace:*",
-    "@vueuse/core": "catalog:pkg",
-    "async-validator": "catalog:pkg",
-    "colord": "catalog:pkg",
-    "es-toolkit": "catalog:pkg",
-    "naive-ui": "catalog:pkg",
-    "prismjs": "catalog:pkg",
-    "vue": "catalog:pkg",
-    "vue-component-type-helpers": "catalog:pkg",
-    "vue-hooks-plus": "catalog:pkg",
-    "vue-router": "catalog:pkg"
+    "@vueuse/core": "^14.4.0",
+    "async-validator": "^4.2.5",
+    "colord": "^2.10.0",
+    "es-toolkit": "^1.52.0",
+    "naive-ui": "^2.45.3",
+    "vue": "^3.5.42",
+    "vue-component-type-helpers": "^3.3.11",
+    "vue-hooks-plus": "^2.4.3",
+    "vue-router": "^5.3.1"
   },
   "devDependencies": {
     "@oiij/css-render": "workspace:*",
     "@oiij/use": "workspace:*",
-    "@types/prismjs": "catalog:pkg",
-    "@vueuse/core": "catalog:pkg",
-    "async-validator": "catalog:pkg",
-    "colord": "catalog:pkg",
-    "es-toolkit": "catalog:pkg",
-    "naive-ui": "catalog:pkg",
-    "prismjs": "catalog:pkg",
-    "vue": "catalog:pkg",
-    "vue-component-type-helpers": "catalog:pkg",
-    "vue-hooks-plus": "catalog:pkg",
-    "vue-router": "catalog:pkg"
+    "@vueuse/core": "^14.4.0",
+    "async-validator": "^4.2.5",
+    "colord": "^2.10.0",
+    "es-toolkit": "^1.52.0",
+    "naive-ui": "^2.45.3",
+    "vue": "^3.5.42",
+    "vue-component-type-helpers": "^3.3.11",
+    "vue-hooks-plus": "^2.4.3",
+    "vue-router": "^5.3.1"
   },
   "publishConfig": {
     "access": "public"

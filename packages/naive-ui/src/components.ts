@@ -1,2 +1,2 @@
 export * from './components/index'
-export { ComponentAttrs, ComponentEmit, ComponentExposed, ComponentProps, ComponentSlots } from 'vue-component-type-helpers'
+export type { ComponentAttrs, ComponentEmit, ComponentExposed, ComponentProps, ComponentSlots } from 'vue-component-type-helpers'

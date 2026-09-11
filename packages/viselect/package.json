@@ -1,8 +1,8 @@
 {
-  "name": "@oiij/css-render",
+  "name": "@oiij/viselect",
   "type": "module",
-  "version": "0.0.14",
-  "description": "A Vue Composable for CssRender",
+  "version": "0.0.5",
+  "description": "A Vue Composable for Viselect",
   "author": "oiij",
   "license": "MIT",
   "homepage": "https://github.com/oiij/use",
@@ -13,7 +13,7 @@
   "bugs": "https://github.com/oiij/use/issues",
   "keywords": [
     "@oiij/use",
-    "shiki"
+    "viselect"
   ],
   "sideEffects": false,
   "main": "./dist/index.mjs",
@@ -32,15 +32,13 @@
     "prepublishOnly": "pnpm build"
   },
   "peerDependencies": {
-    "@css-render/plugin-bem": "^0.15.14",
-    "@css-render/vue3-ssr": "^0.15.14",
-    "css-render": "^0.15.14",
+    "@viselect/vanilla": "^3.10.1",
+    "@vueuse/core": "^14.4.0",
     "vue": "^3.5.42"
   },
   "devDependencies": {
-    "@css-render/plugin-bem": "^0.15.14",
-    "@css-render/vue3-ssr": "^0.15.14",
-    "css-render": "^0.15.14",
+    "@viselect/vanilla": "^3.10.1",
+    "@vueuse/core": "^14.4.0",
     "vue": "^3.5.42"
   },
   "publishConfig": {

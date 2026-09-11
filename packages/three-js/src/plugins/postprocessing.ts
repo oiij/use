@@ -87,7 +87,7 @@ type EffectComposerOptions = {
 export function usePostprocessing(renderer: WebGLRenderer, scene: Scene, camera: Camera, options?: EffectComposerOptions) {
   const { passes, overrideMaterial, ...opt } = options ?? {}
   const composer = new EffectComposer(renderer, {
-    frameBufferType: HalfFloatType,
+    frameBufferType: HalfFloatType as any,
     ...opt,
   })
   const renderPass = new RenderPass(scene, camera, overrideMaterial) // 渲染通道

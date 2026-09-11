@@ -1,7 +1,7 @@
 {
   "name": "@oiij/hucre",
   "type": "module",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A Utils for hucre",
   "author": "oiij",
   "license": "MIT",
@@ -25,7 +25,7 @@
     "LICENSE",
     "README.md",
     "dist",
-    "package.mjson"
+    "package.json"
   ],
   "scripts": {
     "dev": "tsdown --watch",
@@ -34,15 +34,15 @@
     "prepublishOnly": "pnpm build"
   },
   "peerDependencies": {
-    "file-saver": "catalog:pkg",
-    "hucre": "catalog:pkg"
+    "file-saver": "^2.0.5",
+    "hucre": "^1.1.0"
+  },
+  "devDependencies": {
+    "@types/file-saver": "^2.0.7",
+    "file-saver": "^2.0.5",
+    "hucre": "^1.1.0"
   },
   "publishConfig": {
     "access": "public"
-  },
-  "devDependencies": {
-    "@types/file-saver": "catalog:pkg",
-    "file-saver": "catalog:pkg",
-    "hucre": "catalog:pkg"
   }
 }

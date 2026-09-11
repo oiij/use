@@ -151,7 +151,10 @@ export function useEventSource<T extends HandlerType = HandlerType, D extends Me
 
   function setStatus() {
     if (source.value) {
-      status.value = ReadyState[source.value.readyState]
+      const state = ReadyState[source.value.readyState]
+      if (state) {
+        status.value = state
+      }
     }
   }
 

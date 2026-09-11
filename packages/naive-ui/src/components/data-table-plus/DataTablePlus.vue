@@ -1,7 +1,7 @@
 <script setup lang='ts' generic="P extends DataObject, D extends DataObject, R extends DataObject">
 import type { DataTableBaseColumn, DataTableColumns, DataTableFilterState, DataTableInst, DataTableSortState, PaginationProps } from 'naive-ui'
 
-import type { InternalRowData, RowKey } from 'naive-ui/es/data-table/src/interface'
+import type { CreateRowProps, InternalRowData, RowKey } from 'naive-ui/es/data-table/src/interface'
 import type { DataObject } from '../../composables/index'
 import type { DataTablePlusEmits, DataTablePlusExpose, DataTablePlusFields, DataTablePlusProps } from './index'
 import { NDataTable, NFlex, NPagination } from 'naive-ui'
@@ -170,12 +170,15 @@ const eventHandlers = {
   },
 }
 
-function rowProps(row: R, index: number) {
+const rowProps: CreateRowProps<R> = (row: R, index: number) => {
   const rawRow = toRaw(row)
   const rawList = getRawList()
   return {
     onClick: (event: MouseEvent) => {
       emit('clickRow', rawRow, index, event, rawList)
+    },
+    onDblclick: (event: MouseEvent) => {
+      emit('dblclickRow', rawRow, index, event, rawList)
     },
     onContextmenu: (event: MouseEvent) => {
       emit('contextMenuRow', rawRow, index, event, rawList)

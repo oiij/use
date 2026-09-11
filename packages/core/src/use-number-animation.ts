@@ -44,7 +44,7 @@ type NumberAnimationOptions = {
   easing?: EasingFunction
 }
 
-const easingFns: Record<string, (t: number) => number> = {
+const easingFns: Record<'linear' | 'easeIn' | 'easeOut' | 'easeInOut', (t: number) => number> = {
   linear: t => t,
   easeIn: t => t * t,
   easeOut: t => 1 - (1 - t) ** 2,
@@ -92,7 +92,7 @@ export function useNumberAnimation(to: MaybeRefOrGetter<number>, options?: Numbe
 
   const easingFn = typeof easing === 'function'
     ? easing
-    : easingFns[easing] || easingFns.linear
+    : easingFns[easing] ?? easingFns.linear
 
   const currentValueRef = ref(from)
 

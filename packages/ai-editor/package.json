@@ -1,7 +1,7 @@
 {
   "name": "@oiij/ai-editor",
   "type": "module",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "description": "A Vue Composable for AI Editor",
   "author": "oiij",
   "license": "MIT",
@@ -32,14 +32,14 @@
     "prepublishOnly": "pnpm build"
   },
   "peerDependencies": {
-    "@vueuse/core": "catalog:pkg",
-    "aieditor": "catalog:pkg",
-    "vue": "catalog:pkg"
+    "@vueuse/core": "^14.4.0",
+    "aieditor": "^2.0.0",
+    "vue": "^3.5.42"
   },
   "devDependencies": {
-    "@vueuse/core": "catalog:pkg",
-    "aieditor": "catalog:pkg",
-    "vue": "catalog:pkg"
+    "@vueuse/core": "^14.4.0",
+    "aieditor": "^2.0.0",
+    "vue": "^3.5.42"
   },
   "publishConfig": {
     "access": "public"

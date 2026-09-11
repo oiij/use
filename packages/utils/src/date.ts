@@ -137,7 +137,7 @@ export const format = (date: Date, locale: string): string => new Intl.DateTimeF
  * // 返回 "January"
  * getMonthName(new Date('2024-01-01'))
  */
-export const getMonthName = (date: Date): string => ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', ' November', 'December'][date.getMonth()]
+export const getMonthName = (date: Date): string | undefined => ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', ' November', 'December'][date.getMonth()]
 
 /**
  * 获取日期所在月份的最后一个日期
@@ -167,7 +167,7 @@ export const daysInMonth = (month: number, year: number): number => new Date(yea
  * // 返回当前系统的时区
  * getTimezone()
  */
-export const getTimezone = (): string => Intl.DateTimeFormat().resolvedOptions().timeZone
+export const getTimezone = (): string => new Intl.DateTimeFormat().resolvedOptions().timeZone
 
 /**
  * 明天的日期
@@ -207,7 +207,7 @@ export const yesterday: Date = new Date(new Date().valueOf() - 1000 * 60 * 60 * 
  * // 返回 "Monday"
  * getWeekday(new Date('2024-01-01'))
  */
-export const getWeekday = (date: Date): string => ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][date.getDay()]
+export const getWeekday = (date: Date): string | undefined => ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][date.getDay()]
 
 /**
  * 日期排序

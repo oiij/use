@@ -49,7 +49,7 @@ export const empty = <T, _>(arr: T[]) => (arr.length = 0)
  * // 示例：创建累积总和数组
  * accumulate([1, 2, 3, 4]); // => [1, 3, 6, 10]
  */
-export const accumulate = (arr: number[]): number[] => arr.reduce((a, b, i) => (i === 0 ? [b] : [...a, b + a[i - 1]]), [0])
+export const accumulate = (arr: number[]): number[] => arr.reduce((a, b, i) => (i === 0 ? [b] : [...a, b + (a[i - 1] ?? 0)]), [0])
 /**
  * 将字符串数组转换为数字
  * @param {string[]} arr - 字符串数组
@@ -79,7 +79,7 @@ export const cartesian = (...sets: number[][]) => sets.reduce((acc, set) => acc.
  * countBy(users, 'role'); // => { 'admin': 2, 'user': 1 }
  */
 // eslint-disable-next-line no-sequences
-export const countBy = <T extends Record<string, string>, K extends keyof T>(arr: T[], prop: K): Record<string, number> => arr.reduce((prev, curr) => ((prev[curr[prop]] = ++prev[curr[prop]] || 1), prev), {} as Record<string, number>)
+export const countBy = <T extends Record<string, string>, K extends keyof T>(arr: T[], prop: K): Record<string, number> => arr.reduce((prev, curr) => ((prev[curr[prop]] = ++prev[curr[prop]]! || 1), prev), {} as Record<string, number>)
 /**
  * 查找数组中最后一个匹配项的索引
  * @param {T[]} arr - 要搜索的数组
@@ -99,7 +99,7 @@ export const lastIndex = <T, _>(arr: T[], predicate: (a: T) => boolean): number 
  * // 示例：查找数组中最小项的索引
  * indexOfMin([5, 2, 8, 1, 3]); // => 3
  */
-export const indexOfMin = (arr: number[]): number => arr.reduce((prev, curr, i, a) => (curr < a[prev] ? i : prev), 0)
+export const indexOfMin = (arr: number[]): number => arr.reduce((prev, curr, i, a) => (curr < a[prev]! ? i : prev), 0)
 /**
  * 查找数组中最长字符串的长度
  * @param {string[]} words - 字符串数组
@@ -128,7 +128,7 @@ export const minBy = <T extends Record<string, any>, K extends keyof T>(arr: T[]
  * // 示例：查找数组中最大项的索引
  * indexOfMax([5, 2, 8, 1, 3]); // => 2
  */
-export const indexOfMax = (arr: number[]): number => arr.reduce((prev, curr, i, a) => (curr > a[prev] ? i : prev), 0)
+export const indexOfMax = (arr: number[]): number => arr.reduce((prev, curr, i, a) => (curr > a[prev]! ? i : prev), 0)
 /**
  * 通过给定键查找数组的最大项
  * @param {T[]} arr - 对象数组
@@ -251,7 +251,7 @@ export const getSubsets = <T>(arr: T[]): T[][] => arr.reduce((prev, curr) => pre
  * // 示例：获取数组的排名
  * ranking([5, 2, 8, 1]); // => [2, 3, 1, 4]
  */
-export const ranking = (arr: number[]): number[] => arr.map((x, y, z) => z.filter(w => w > x).length + 1)
+export const ranking = (arr: number[]): number[] => arr.map((x, _y, z) => z.filter(w => w > x).length + 1)
 /**
  * 获取数组的唯一值
  * @param {T[]} arr - 原始数组
@@ -300,7 +300,7 @@ export const groupBy = <T extends Record<string, any>, K extends keyof T>(arr: T
  * // 示例：在数组元素之间穿插逗号
  * intersperse(['a', 'b', 'c'], ','); // => ['a', ',', 'b', ',', 'c']
  */
-export const intersperse = <T>(a: T[], s: T): T[] => Array.from(Array.from({ length: 2 * a.length - 1 }), (_, i) => (i % 2 ? s : a[i / 2]))
+export const intersperse = <T>(a: T[], s: T): T[] => Array.from(Array.from({ length: 2 * a.length - 1 }), (_, i) => (i % 2 ? s : a[i / 2]!))
 /**
  * 根据条件对阵列进行分区
  * @param {T[]} arr - 原始数组
@@ -311,7 +311,7 @@ export const intersperse = <T>(a: T[], s: T): T[] => Array.from(Array.from({ len
  * partition([1, 2, 3, 4, 5], n => n % 2 === 0); // => [[2, 4], [1, 3, 5]]
  */
 // eslint-disable-next-line no-sequences
-export const partition = <T, _>(arr: T[], criteria: (a: T) => boolean): T[][] => arr.reduce((acc, i) => (acc[criteria(i) ? 0 : 1].push(i), acc), [[], []] as T[][])
+export const partition = <T, _>(arr: T[], criteria: (a: T) => boolean): T[][] => arr.reduce((acc, i) => (acc[criteria(i) ? 0 : 1]!.push(i), acc), [[], []] as T[][])
 /**
  * 合并两个数组
  * @param {T[]} a - 第一个数组
@@ -392,4 +392,4 @@ export const sortBy = <T extends Record<string, any>, K extends keyof T>(arr: T[
  * // 示例：转置矩阵
  * transpose([[1, 2], [3, 4], [5, 6]]); // => [[1, 3, 5], [2, 4, 6]]
  */
-export const transpose = <T>(matrix: T[][]): T[][] => matrix.reduce((prev, next) => next.map((item, i) => (prev[i] || []).concat(next[i])), [] as T[][])
+export const transpose = <T>(matrix: T[][]): T[][] => matrix.reduce((prev, next) => next.map((_item, i) => (prev[i] || []).concat(next[i]!)), [] as T[][])

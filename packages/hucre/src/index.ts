@@ -1,4 +1,4 @@
-import type { CellValue, CsvWriteOptions, WriteOptions, WriteSheet } from 'hucre'
+import type { CellValue, CsvWriteOptions, MergeRange, WriteOptions, WriteSheet } from 'hucre'
 import { saveAs } from 'file-saver'
 import { writeCsv } from 'hucre/csv'
 import { writeXlsx } from 'hucre/xlsx'
@@ -30,11 +30,12 @@ import { getNestedValue, TYPE_MAP } from './_utils'
  * const sheet = createSheet('员工信息', columns, data)
  * ```
  */
-export function createSheet<T extends Record<string, any>>(name: string, columns: SheetColumns<T>, data: T[], options?: WriteSheet) {
-  const rows = transformData(columns, data).rows
+export function createSheetSample<T extends Record<string, any>>(name: string, columns: SheetColumns<T>, data: T[], options?: Partial<WriteSheet>) {
+  const { rows, merges } = transformData(columns, data)
   return {
     name,
     rows,
+    merges,
     ...options,
   } as WriteSheet
 }
@@ -95,7 +96,7 @@ export function createXlsx(sheets: WriteSheet[], options?: WriteOptions) {
  * exportWorkbook(csv, '数据', 'csv')
  * ```
  */
-export function createCsv<T extends Record<string, any>>(columns: SheetColumns<T>, data: T[], options?: CsvWriteOptions) {
+export function createCsv<T extends Record<string, any>>(columns: SheetColumns<T>, data: T[], options?: Partial<CsvWriteOptions>) {
   return writeCsv(transformData(columns, data).rows, options)
 }
 
@@ -122,6 +123,14 @@ export type SheetColumns<T extends Record<string, any>> = {
    * 数据转换函数
    */
   transform?: (value: CellValue | null, item: T, index: number) => CellValue
+  /**
+   * 行合并单元格
+   */
+  rowSpan?: number | ((item: T, index: number) => number)
+  /**
+   * 列合并单元格
+   */
+  colSpan?: number | ((item: T, index: number) => number)
 }[]
 
 /**
@@ -161,11 +170,12 @@ export type SheetColumns<T extends Record<string, any>> = {
  */
 export function transformData<T extends Record<string, any>>(columns: SheetColumns<T>, data: T[]) {
   const result: any[][] = []
-  const header = columns.map(m => m.header)
-
+  const headers = columns.map(m => m.header)
+  const merges: MergeRange[] = []
+  let rowSpanFlag = -1
   data.forEach((d, i) => {
     const item: any[] = []
-    columns.forEach((column) => {
+    columns.forEach((column, ci) => {
       let value = d[column.key] as CellValue
 
       if (typeof column.value === 'function') {
@@ -177,15 +187,38 @@ export function transformData<T extends Record<string, any>>(columns: SheetColum
       if (typeof column.transform === 'function') {
         value = column.transform(value, d, i)
       }
-
+      const colSpan = typeof column.colSpan === 'function' ? column.colSpan(d, i) : column.colSpan
+      const rowSpan = typeof column.rowSpan === 'function' ? column.rowSpan(d, i) : column.rowSpan
+      if (colSpan && colSpan > 1) {
+        const mange = {
+          startRow: i + 1,
+          endRow: i + 1,
+          startCol: ci,
+          endCol: ci + colSpan - 1,
+        } as MergeRange
+        merges.push(mange)
+      }
+      if (rowSpan && rowSpan > 1) {
+        if (rowSpanFlag < i) {
+          const mange = {
+            startRow: i + 1,
+            endRow: i + rowSpan,
+            startCol: ci,
+            endCol: ci,
+          } as MergeRange
+          merges.push(mange)
+          rowSpanFlag = rowSpan + i - 1
+        }
+      }
       return item.push(value)
     })
     result.push(item)
   })
   return {
-    header,
-    cells: result as CellValue[][],
-    rows: [header, ...result] as CellValue[][],
+    headers,
+    cellValues: result as CellValue[][],
+    rows: [headers, ...result] as CellValue[][],
+    merges,
   }
 }
 

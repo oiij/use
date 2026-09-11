@@ -82,6 +82,7 @@ function packageComponent() {
       ...slots,
     })
   }
+  return null
 }
 </script>
 

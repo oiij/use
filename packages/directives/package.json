@@ -1,7 +1,7 @@
 {
   "name": "@oiij/directives",
   "type": "module",
-  "version": "0.0.19",
+  "version": "0.0.20",
   "description": "",
   "author": "oiij",
   "license": "MIT",
@@ -32,12 +32,10 @@
     "prepublishOnly": "pnpm build"
   },
   "peerDependencies": {
-    "@oiij/utils": "workspace:*",
-    "vue": "catalog:pkg"
+    "vue": "^3.5.42"
   },
   "devDependencies": {
-    "@oiij/utils": "workspace:*",
-    "vue": "catalog:pkg"
+    "vue": "^3.5.42"
   },
   "publishConfig": {
     "access": "public"

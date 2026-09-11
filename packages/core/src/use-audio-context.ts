@@ -458,7 +458,9 @@ export function useAudioContext(options?: AudioContextOptions) {
    * setEQFrequency(5, -5)  // 降低 1000Hz
    */
   function setEQFrequency(index: number, value: number) {
-    filters[index].gain.value = value
+    if (filters[index]) {
+      filters[index].gain.value = value
+    }
   }
 
   /**
@@ -471,7 +473,7 @@ export function useAudioContext(options?: AudioContextOptions) {
    * console.log('32Hz 增益:', gain)
    */
   function getEQFrequency(index: number) {
-    return filters[index].gain.value
+    return filters[index]?.gain.value ?? 0
   }
 
   /**

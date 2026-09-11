@@ -32,8 +32,9 @@ function clearObjectValues<T extends JSONValue>(obj: T, rules?: UseNaiveFormClea
 
   if (isPlainObject(obj)) {
     for (const key in obj) {
-      if (Object.hasOwn(obj, key)) {
-        obj[key] = clearObjectValues(obj[key], rules)
+      const val = obj[key]
+      if (val) {
+        obj[key] = clearObjectValues(val, rules)
       }
     }
     return obj

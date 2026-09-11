@@ -42,7 +42,8 @@ export const lazyLoad: Directive<TargetElement, BindingValue> = {
     }
     setValue(target, binding)
     target._lazy_load_observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
+      const entry = entries[0]
+      if (entry?.isIntersecting) {
         target.src = target._lazy_load_src
         target._lazy_load_observer.unobserve(target)
         target._lazy_load_observer.disconnect()

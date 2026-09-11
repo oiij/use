@@ -1,4 +1,4 @@
-import type { Options } from 'markdown-it'
+import type { MarkdownItOptions } from 'markdown-it'
 import type { MaybeRefOrGetter, TemplateRef } from 'vue'
 import DOMPurify from 'dompurify'
 import markdownIt from 'markdown-it'
@@ -26,7 +26,7 @@ export type UseMarkDownItOptions = {
   /**
    * MarkdownIt 选项
    */
-  markdownItOptions?: Options
+  markdownItOptions?: MarkdownItOptions
 }
 
 /**

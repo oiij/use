@@ -84,6 +84,8 @@ export type DataTablePlusProps<P extends DataObject = DataObject, D extends Data
 export type DataTablePlusEmits<P extends DataObject = DataObject, D extends DataObject = DataObject, R extends DataObject = DataObject> = RemoteRequestEmits<P, D> & {
   /** 点击行事件 */
   (e: 'clickRow', row: R, index: number, event: MouseEvent, currentData: R[]): void
+  /** 双击行事件 */
+  (e: 'dblclickRow', row: R, index: number, event: MouseEvent, currentData: R[]): void
   /** 右键点击行事件 */
   (e: 'contextMenuRow', row: R, index: number, event: MouseEvent, currentData: R[]): void
   /** 更新选中行键事件 */

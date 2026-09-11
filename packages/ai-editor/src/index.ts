@@ -25,7 +25,7 @@ export type UseAiEditorOptions = {
   /**
    * 编辑器语言
    */
-  language?: MaybeRefOrGetter<'zh' | 'en'>
+  language?: MaybeRefOrGetter<'zh-CN' | 'en-US'>
   /**
    * 是否只读
    */
@@ -53,7 +53,7 @@ export type UseAiEditorOptions = {
  * const { value, setContent, setDarkMode } = useAiEditor(editorRef, {
  *   value: '<p>Hello World</p>',
  *   darkMode: false,
- *   language: 'zh',
+ *   language: 'zh-CN',
  * })
  * </script>
  *
@@ -85,7 +85,7 @@ export function useAiEditor(templateRef: TemplateRef<HTMLElement>, options?: Use
     if (value !== undefined) {
       valueRef.value = value
     }
-    const currentContent = aiEditorInst.value?.getHtml()
+    const currentContent = aiEditorInst.value?.getHTML()
     if (valueRef.value !== undefined && valueRef.value !== currentContent) {
       aiEditorInst.value?.setContent(valueRef.value)
     }
@@ -102,9 +102,7 @@ export function useAiEditor(templateRef: TemplateRef<HTMLElement>, options?: Use
     }
     const theme = darkModeRef.value ? 'dark' : 'light'
     if (templateRef.value && aiEditorInst.value) {
-      aiEditorInst.value.options.theme = theme
-      templateRef.value.classList.remove('aie-theme-light', 'aie-theme-dark')
-      templateRef.value.classList.add(`aie-theme-${theme}`)
+      aiEditorInst.value.setTheme(theme)
     }
   }
 
@@ -113,11 +111,11 @@ export function useAiEditor(templateRef: TemplateRef<HTMLElement>, options?: Use
    *
    * @param language - 要设置的语言
    */
-  function setLanguage(language?: 'zh' | 'en') {
+  function setLanguage(language?: 'zh-CN' | 'en-US') {
     if (language !== undefined) {
       languageRef.value = language
     }
-    aiEditorInst.value?.changeLang(languageRef.value ?? 'zh')
+    aiEditorInst.value?.setLocale(languageRef.value ?? 'zh-CN')
     if (valueRef.value) {
       aiEditorInst.value?.setContent(valueRef.value)
     }
@@ -137,22 +135,22 @@ export function useAiEditor(templateRef: TemplateRef<HTMLElement>, options?: Use
 
   async function render() {
     if (templateRef.value && !aiEditorInst.value) {
-      const lang = languageRef.value ?? 'zh'
+      const locale = languageRef.value ?? 'zh-CN'
       const theme = darkModeRef.value ? 'dark' : 'light'
       await nextTick()
       aiEditorInst.value = new AiEditor({
         element: templateRef.value,
         content: valueRef.value,
-        lang,
+        locale,
         theme,
         editable: !readonlyRef.value,
         ...aiEditorOptions,
-        onChange(aiEditorInst) {
-          if (valueRef.value !== aiEditorInst.getHtml()) {
-            valueRef.value = aiEditorInst.getHtml()
+        onUpdate(editor, transaction) {
+          if (valueRef.value !== editor.getHTML()) {
+            valueRef.value = editor.getHTML()
             onUpdateValueEvent.trigger(valueRef.value)
           }
-          aiEditorOptions?.onChange?.(aiEditorInst)
+          aiEditorOptions?.onUpdate?.(editor, transaction)
         },
       })
       onRenderedEvent.trigger(aiEditorInst.value)

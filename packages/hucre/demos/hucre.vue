@@ -1,6 +1,7 @@
+<!-- eslint-disable no-console -->
 <script setup lang='ts'>
 import type { SheetColumns } from '@oiij/hucre'
-import { createCsv, createSheet, createXlsx, exportWorkbook } from '@oiij/hucre'
+import { createCsv, createSheetSample, createXlsx, exportWorkbook, transformData } from '@oiij/hucre'
 import { NButton, NCard, NFlex, NSelect } from 'naive-ui'
 import { ref } from 'vue'
 
@@ -20,6 +21,7 @@ const columns = [
   {
     header: '姓名',
     key: 'name',
+    rowSpan: (item, index) => index === 0 ? 2 : 5,
   },
   {
     header: '性别',
@@ -36,22 +38,10 @@ const columns = [
   },
 ] as SheetColumns<typeof data[0]>
 
-const sheet = createSheet('员工信息', [
-  {
-    header: '姓名',
-    key: 'name',
-  },
-  {
-    header: '性别',
-    key: 'sex',
-    value: item => `[${item.sex}]`,
-  },
-  {
-    header: '创建时间',
-    key: 'createTime',
-    value: item => item.createTime.toLocaleDateString(),
-  },
-], data)
+const sheet = createSheetSample('员工信息', columns, data)
+
+const _data = transformData(columns, data)
+console.log(_data)
 
 const exportType = ref<'xlsx' | 'csv'>('xlsx')
 

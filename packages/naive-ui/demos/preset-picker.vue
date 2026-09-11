@@ -150,7 +150,7 @@ function onSuccess(res: Res, params: Params[]) {
         @update:value="onUpdateValue"
         @success="onSuccess"
       >
-        <template #default="{ columns: _columns, checkedRowKeys, clickRowEffect, updateCheckedRowKeysEffect }">
+        <template #default="{ columns: _columns, checkedRowKeys, clickRowEffect, runPositiveClick, updateCheckedRowKeysEffect }">
           <!-- @vue-generic {Params,Res,Row} -->
           <NDataTablePlus
             pagination
@@ -163,6 +163,7 @@ function onSuccess(res: Res, params: Params[]) {
               checkedRowKeys,
             }"
             @click-row="clickRowEffect"
+            @dblclick-row="runPositiveClick"
             @success="onLoaded"
             @update:checked-row-keys="updateCheckedRowKeysEffect"
           />

@@ -1,7 +1,7 @@
 {
   "name": "@oiij/math-curve-loaders",
   "type": "module",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A Vue Component for math-curve-loaders",
   "author": "oiij",
   "license": "MIT",
@@ -32,12 +32,12 @@
     "prepublishOnly": "pnpm build"
   },
   "peerDependencies": {
-    "@vueuse/core": "catalog:pkg",
-    "vue": "catalog:pkg"
+    "@vueuse/core": "^14.4.0",
+    "vue": "^3.5.42"
   },
   "devDependencies": {
-    "@vueuse/core": "catalog:pkg",
-    "vue": "catalog:pkg"
+    "@vueuse/core": "^14.4.0",
+    "vue": "^3.5.42"
   },
   "publishConfig": {
     "access": "public"

@@ -9,6 +9,7 @@ export default antfu({
     'ts/consistent-type-definitions': ['error', 'type'],
     'e18e/ban-dependencies': ['off'],
     'e18e/prefer-static-regex': ['off'],
+    'pnpm/json-enforce-catalog': ['off'],
   },
   ignores: [
     '.agents',

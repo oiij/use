@@ -102,7 +102,7 @@ export function useTypeWriter(value: MaybeRefOrGetter<string>, options?: TypeWri
   const isTyping = ref(false)
   const typedValue = computed(() => enabled ? valueRef.value.slice(0, typeIndex.value) : valueRef.value)
   const progress = computed(() => Number(Math.min((typeIndex.value / valueRef.value.length) * 100, 100).toFixed(2)))
-  let timer: NodeJS.Timeout | null = null
+  let timer: any | null = null
 
   const onStatEvent = createEventHook<IEventType['start']>()
   const onStopEvent = createEventHook<IEventType['stop']>()

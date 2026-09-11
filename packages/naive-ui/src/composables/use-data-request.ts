@@ -109,15 +109,15 @@ export function useDataRequest<P extends DataObject = DataObject, D extends Data
     onSuccess: (data, params) => {
       requestOptions?.onSuccess?.(data, params)
       onSuccessEvent.trigger(data, params)
-
-      if (_fields.page in params?.[0]) {
-        const _page = Number(params?.[0][_fields.page])
+      const param = params?.[0]
+      if (param && _fields.page in param) {
+        const _page = Number(param[_fields.page])
         if (!Number.isNaN(_page)) {
           pagination.value.page = _page
         }
       }
-      if (_fields.pageSize in params?.[0]) {
-        const _pageSize = Number(params?.[0][_fields.pageSize])
+      if (param && _fields.pageSize in param) {
+        const _pageSize = Number(param[_fields.pageSize])
         if (!Number.isNaN(_pageSize)) {
           pagination.value.pageSize = _pageSize
         }
@@ -151,7 +151,9 @@ export function useDataRequest<P extends DataObject = DataObject, D extends Data
    * ```
    */
   function setParams(_params: Partial<P>) {
-    Object.assign(params.value?.[0], _params)
+    if (params.value?.[0]) {
+      Object.assign(params.value?.[0], _params)
+    }
   }
 
   /**
@@ -164,7 +166,7 @@ export function useDataRequest<P extends DataObject = DataObject, D extends Data
    * ```
    */
   function runParams(_params: Partial<P>) {
-    return run({ ...params.value?.[0], ..._params })
+    return run({ ...params.value?.[0] as P, ..._params })
   }
 
   /**
@@ -177,7 +179,7 @@ export function useDataRequest<P extends DataObject = DataObject, D extends Data
    * ```
    */
   function runParamsAsync(_params: Partial<P>) {
-    return runAsync({ ...params.value?.[0], ..._params })
+    return runAsync({ ...params.value?.[0] as P, ..._params })
   }
 
   return {

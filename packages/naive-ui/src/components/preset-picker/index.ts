@@ -38,6 +38,8 @@ export type PresetPickerExpose<R extends DataObject = DataObject> = {
   setCheckedRowKeys: (keys: (string | number)[]) => void
   /** 设置选中行数据 */
   setCheckedRows: (rows: R[]) => void
+  /** 运行确认点击事件 */
+  runPositiveClick: () => void
 }
 
 /**
