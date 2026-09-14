@@ -51,10 +51,10 @@ function onSuccess(data: Res, params: Params[]) {
   <NRemoteRequest :api="api" @success="onSuccess">
     <template #default="{ params, loading, list, runParams }">
       <pre v-for="(item, index) in list" :key="index">{{ JSON.stringify(item) }}</pre>
-      <NButton :loading="loading" @click="() => runParams({ page: (params[0].page ?? 1) - 1 })">
+      <NButton :loading="loading" @click="() => runParams({ page: (params[0]?.page ?? 1) - 1 })">
         上一页
       </NButton>
-      <NButton :loading="loading" @click="() => runParams({ page: (params[0].page ?? 1) + 1 })">
+      <NButton :loading="loading" @click="() => runParams({ page: (params[0]?.page ?? 1) + 1 })">
         下一页
       </NButton>
     </template>

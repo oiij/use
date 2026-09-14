@@ -1,7 +1,7 @@
 <script setup lang='ts'>
-import { TiptapEditor, TiptapMenu } from '@oiij/tiptap'
+import { TiptapEditor, TiptapMenu } from '@oiij/tiptap/components'
 import { ref } from 'vue'
-import '@oiij/tiptap/style'
+import '@oiij/tiptap/style.css'
 
 const content = ref('<p>欢迎使用 Tiptap 富文本编辑器！</p><p>点击工具栏按钮开始编辑。</p>')
 </script>

@@ -57,7 +57,7 @@ function switchScene(scene: keyof typeof scenes) {
       <h2>UseSpline 示例</h2>
       <div class="scene-selector">
         <button
-          v-for="(url, name) in scenes"
+          v-for="(_url, name) in scenes"
           :key="name"
           :class="{ active: currentScene === name }"
           :disabled="isLoading"

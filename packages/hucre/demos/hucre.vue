@@ -21,7 +21,7 @@ const columns = [
   {
     header: '姓名',
     key: 'name',
-    rowSpan: (item, index) => index === 0 ? 2 : 5,
+    rowSpan: (_item, index) => index === 0 ? 2 : 5,
   },
   {
     header: '性别',

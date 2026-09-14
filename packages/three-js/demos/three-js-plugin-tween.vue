@@ -43,7 +43,9 @@ function createObj() {
   onDoubleClick((ev) => {
     onIntersectObject([cube, ball, triangle], ev, (intersects) => {
       const targetObj = intersects[0]
-      lookAtObject(camera, controls, targetObj)
+      if (targetObj) {
+        lookAtObject(camera, controls, targetObj)
+      }
     })
   })
 }

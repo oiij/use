@@ -62,14 +62,14 @@ function createObj() {
   scene.add(cube, ball, triangle)
   onDoubleClick((event) => {
     onIntersectObject([cube, ball, triangle], event, (intersects) => {
-      selection.set([intersects[0]])
+      selection.set([intersects[0]!])
       bloomSelection.set([])
     })
   })
   onContextMenu((event) => {
     onIntersectObject([cube, ball, triangle], event, (intersects) => {
       selection.set([])
-      bloomSelection.set([intersects[0]])
+      bloomSelection.set([intersects[0]!])
     })
   })
 }

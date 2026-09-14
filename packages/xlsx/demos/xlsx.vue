@@ -2,7 +2,7 @@
 import { exportSheet, transform } from '@oiij/xlsx'
 import { NButton, NCard, NFlex } from 'naive-ui'
 
-const data = Array.from({ length: 5 }).map((m, i) => {
+const data = Array.from({ length: 5 }).map((_m, i) => {
   return {
     name: `oiij${i}`,
     age: `${i}`,

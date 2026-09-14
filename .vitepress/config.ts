@@ -107,7 +107,7 @@ export default defineConfig({
   },
   vite: {
     plugins: [
-      Unocss(),
+      Unocss() as any,
     ],
     resolve: {
       alias: {

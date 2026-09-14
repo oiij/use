@@ -5,7 +5,7 @@ import { AiEditor } from 'aieditor'
 import { nextTick, onUnmounted, shallowRef } from 'vue'
 import { watchRefOrGetter } from './_utils'
 
-import 'aieditor/dist/style.css'
+import 'aieditor/style.css'
 
 export type {
   AiEditorOptions,
