@@ -1,7 +1,7 @@
 {
   "name": "@oiij/e-charts",
   "type": "module",
-  "version": "0.0.19",
+  "version": "0.0.20",
   "description": "A Vue Composable for ECharts",
   "author": "oiij",
   "license": "MIT",

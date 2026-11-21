@@ -1,9 +1,10 @@
 import { useBem } from '@oiij/css-render'
 
-export const { cssr, plugin, namespace } = useBem()
-const { c, cB, cE, cM, cNotM } = { ...cssr, ...plugin }
-export const tabsCssName = `${namespace}-chrome-tabs`
-export const tabsItemCssName = `${namespace}-chrome-tabs-item`
+export const { c, cB, cE, cM, cNotM, nB } = useBem()
+
+export const tabsCssName = nB('chrome-tabs')
+export const tabsItemCssName = nB('chrome-tabs-item')
+
 const transition = 'all .2s cubic-bezier(.4, 0, .2, 1)'
 export function tabsCssr() {
   return c([

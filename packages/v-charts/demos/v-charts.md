@@ -50,18 +50,14 @@ yarn add @oiij/v-charts
 
 #### 返回值
 
-| 属性                     | 类型                         | 说明             |
-| ------------------------ | ---------------------------- | ---------------- |
-| `templateRef`            | `TemplateRef<HTMLElement>`   | 图表容器引用     |
-| `vChartInst`             | `ShallowRef<VChart \| null>` | VChart 实例      |
-| `chartOption`            | `Ref<ISpec>`                 | 图表配置         |
-| `darkMode`               | `Ref<boolean>`               | 暗黑模式状态     |
-| `setOption(option?)`     | `Function`                   | 设置图表配置     |
-| `setDarkMode(darkMode?)` | `Function`                   | 设置暗黑模式     |
-| `onRendered(callback)`   | `Function`                   | 图表渲染完成事件 |
-| `onUpdate(callback)`     | `Function`                   | 配置更新事件     |
-| `onResize(callback)`     | `Function`                   | 容器尺寸变化事件 |
-| `onDispose(callback)`    | `Function`                   | 图表销毁事件     |
+| 属性                   | 类型                         | 说明             |
+| ---------------------- | ---------------------------- | ---------------- |
+| `templateRef`          | `TemplateRef<HTMLElement>`   | 图表容器引用     |
+| `instanceRef`          | `ShallowRef<VChart \| null>` | VChart 实例      |
+| `onRendered(callback)` | `Function`                   | 图表渲染完成事件 |
+| `onUpdate(callback)`   | `Function`                   | 配置更新事件     |
+| `onResize(callback)`   | `Function`                   | 容器尺寸变化事件 |
+| `onDispose(callback)`  | `Function`                   | 图表销毁事件     |
 
 ### `register(comps)`
 
@@ -102,23 +98,7 @@ export type UseVChartsReturns = {
   /**
    * VChart 实例
    */
-  vChartInst: ShallowRef<VChart | null>
-  /**
-   * 图表配置
-   */
-  chartOption: Ref<ISpec | undefined>
-  /**
-   * 暗黑模式状态
-   */
-  darkMode: Ref<boolean | undefined>
-  /**
-   * 设置图表配置
-   */
-  setOption: (option?: ISpec) => void
-  /**
-   * 设置暗黑模式
-   */
-  setDarkMode: (darkMode?: boolean) => void
+  instanceRef: ShallowRef<VChart | null>
   /**
    * 图表渲染完成事件
    */

@@ -60,7 +60,7 @@ yarn add @oiij/v-charts
 import { useVCharts } from '@oiij/v-charts'
 import { useTemplateRef } from 'vue'
 
-const { chartOption } = useVCharts(useTemplateRef('chart'), {
+useVCharts(useTemplateRef('chart'), {
   chartOption: {
     type: 'bar',
     data: [
@@ -119,7 +119,7 @@ import { ref, useTemplateRef } from 'vue'
 
 const darkMode = ref(false)
 
-const { setDarkMode } = useVCharts(useTemplateRef('chart'), {
+useVCharts(useTemplateRef('chart'), {
   chartOption: { /* ... */ },
   darkMode
 })
@@ -166,18 +166,14 @@ register([registerRadarChart, registerGaugeChart])
 
 #### 返回值
 
-| 属性                     | 类型                         | 说明             |
-| ------------------------ | ---------------------------- | ---------------- |
-| `templateRef`            | `TemplateRef<HTMLElement>`   | 图表容器引用     |
-| `vChartInst`             | `ShallowRef<VChart \| null>` | VChart 实例      |
-| `chartOption`            | `Ref<ISpec>`                 | 图表配置         |
-| `darkMode`               | `Ref<boolean>`               | 暗黑模式状态     |
-| `setOption(option?)`     | `Function`                   | 设置图表配置     |
-| `setDarkMode(darkMode?)` | `Function`                   | 设置暗黑模式     |
-| `onRendered(callback)`   | `Function`                   | 图表渲染完成事件 |
-| `onUpdate(callback)`     | `Function`                   | 配置更新事件     |
-| `onResize(callback)`     | `Function`                   | 容器尺寸变化事件 |
-| `onDispose(callback)`    | `Function`                   | 图表销毁事件     |
+| 属性                   | 类型                         | 说明             |
+| ---------------------- | ---------------------------- | ---------------- |
+| `templateRef`          | `TemplateRef<HTMLElement>`   | 图表容器引用     |
+| `instanceRef`          | `ShallowRef<VChart \| null>` | VChart 实例      |
+| `onRendered(callback)` | `Function`                   | 图表渲染完成事件 |
+| `onUpdate(callback)`   | `Function`                   | 配置更新事件     |
+| `onResize(callback)`   | `Function`                   | 容器尺寸变化事件 |
+| `onDispose(callback)`  | `Function`                   | 图表销毁事件     |
 
 ### `register(comps)`
 
@@ -210,11 +206,7 @@ export type UseVChartsOptions = {
 
 export type UseVChartsReturns = {
   templateRef: TemplateRef<HTMLElement>
-  vChartInst: ShallowRef<VChart | null>
-  chartOption: Ref<ISpec | undefined>
-  darkMode: Ref<boolean | undefined>
-  setOption: (option?: ISpec) => void
-  setDarkMode: (darkMode?: boolean) => void
+  instanceRef: ShallowRef<VChart | null>
   onRendered: (callback: (instance: VChart) => void) => void
   onUpdate: (callback: (option: ISpec) => void) => void
   onResize: (callback: (size: { width: number, height: number }) => void) => void

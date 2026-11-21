@@ -1,8 +1,6 @@
 import type { CNode } from '@oiij/css-render'
-import { cssr, namespace, plugin } from '../_utils/cssr-bem'
+import { c, cB, nB } from '../_utils/cssr-bem'
 
-const { c } = cssr
-const { cB } = plugin
 type FadeInTransitionOptions = {
   name?: string
   enterDuration?: string
@@ -10,8 +8,7 @@ type FadeInTransitionOptions = {
   enterCubicBezier?: string
   leaveCubicBezier?: string
 }
-export { namespace }
-export const cName = `${namespace}-transition`
+export const cName = nB('transition')
 export function fadeTransition({
   name = 'fade',
   enterDuration = '.3s',

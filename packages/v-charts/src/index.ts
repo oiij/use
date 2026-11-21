@@ -1,9 +1,8 @@
 import type { IInitOption, ISpec } from '@visactor/vchart'
-import type { MaybeRefOrGetter, Ref, TemplateRef } from 'vue'
+import type { MaybeRefOrGetter, TemplateRef } from 'vue'
 import { registerAllMarks, registerAnimate, registerAreaChart, registerBarChart, registerBrush, registerCartesianBandAxis, registerCartesianCrossHair, registerCartesianLinearAxis, registerCartesianLogAxis, registerCartesianTimeAxis, registerContinuousLegend, registerCustomMark, registerDataZoom, registerDiscreteLegend, registerDomTooltipHandler, registerLineChart, registerMarkArea, registerMarkLine, registerMarkPoint, registerPieChart, registerPolarBandAxis, registerPolarCrossHair, registerPolarLinearAxis, registerScrollBar, registerTitle, registerTooltip, VChart } from '@visactor/vchart'
 import { createEventHook, useDebounceFn, useElementSize } from '@vueuse/core'
-import { nextTick, onUnmounted, shallowRef, toRaw, watch } from 'vue'
-import { watchRefOrGetter } from './_utils'
+import { nextTick, onUnmounted, shallowRef, toRaw, toValue, watch } from 'vue'
 
 /**
  * 基础注册组件
@@ -117,7 +116,7 @@ export type UseVChartsOptions = {
  * import { useVCharts } from '@oiij/v-charts'
  *
  * const chartRef = ref()
- * const { chartOption, onRendered } = useVCharts(chartRef, {
+ * const { onRendered } = useVCharts(chartRef, {
  *   chartOption: {
  *     title: {
  *       text: '示例图表'
@@ -143,11 +142,11 @@ export type UseVChartsOptions = {
  */
 export function useVCharts(templateRef: TemplateRef<HTMLElement>, options?: UseVChartsOptions) {
   const { chartOption, darkMode, initOptions } = options ?? {}
-  const vChartInst = shallowRef<VChart | null>(null)
+  const instanceRef = shallowRef<VChart | null>(null)
 
-  const chartOptionRef = watchRefOrGetter(chartOption, () => setOption()) as Ref<ISpec | undefined>
+  watch(() => toValue(chartOption), () => setOption())
 
-  const darkModeRef = watchRefOrGetter(darkMode, () => setDarkMode())
+  watch(() => toValue(darkMode), () => setDarkMode())
 
   const onRenderedEvent = createEventHook<[VChart]>()
   const onUpdateEvent = createEventHook<[ISpec]>()
@@ -156,29 +155,19 @@ export function useVCharts(templateRef: TemplateRef<HTMLElement>, options?: UseV
 
   /**
    * 设置图表配置
-   *
-   * @param option - 图表配置
    */
-  function setOption(option?: ISpec) {
-    if (option !== undefined) {
-      chartOptionRef.value = option
-    }
-    const chartOption = toRaw(chartOptionRef.value)
-    if (chartOption) {
-      vChartInst.value?.updateSpec(chartOption)
-      onUpdateEvent.trigger(chartOption)
+  function setOption() {
+    const option = toRaw(toValue(chartOption))
+    if (option) {
+      instanceRef.value?.updateSpec(option)
+      onUpdateEvent.trigger(option)
     }
   }
 
   /**
    * 更新图表主题
-   *
-   * @param darkMode - 是否开启暗黑模式
    */
-  function setDarkMode(darkMode?: boolean) {
-    if (darkMode !== undefined) {
-      darkModeRef.value = darkMode
-    }
+  function setDarkMode() {
     destroy()
     render()
   }
@@ -187,17 +176,21 @@ export function useVCharts(templateRef: TemplateRef<HTMLElement>, options?: UseV
    * 渲染图表
    */
   async function render() {
-    if (templateRef.value && !vChartInst.value) {
-      const theme = darkModeRef?.value ? 'dark' : 'light'
-      await nextTick()
-      vChartInst.value = new VChart({} as ISpec, {
-        dom: templateRef.value,
-        theme,
-        ...initOptions,
-      })
-      onRenderedEvent.trigger(vChartInst.value)
-      setOption()
+    if (!templateRef.value || instanceRef.value) {
+      return
     }
+    await nextTick()
+    if (!templateRef.value || instanceRef.value) {
+      return
+    }
+    const theme = toValue(darkMode) ? 'dark' : 'light'
+    instanceRef.value = new VChart({} as ISpec, {
+      dom: templateRef.value,
+      theme,
+      ...initOptions,
+    })
+    onRenderedEvent.trigger(instanceRef.value)
+    setOption()
   }
 
   /**
@@ -207,7 +200,7 @@ export function useVCharts(templateRef: TemplateRef<HTMLElement>, options?: UseV
    * @param height - 高度
    */
   function resize(width: number, height: number) {
-    vChartInst.value?.resizeSync(width, height)
+    instanceRef.value?.resizeSync(width, height)
     onResizeEvent.trigger({ width, height })
   }
 
@@ -225,8 +218,8 @@ export function useVCharts(templateRef: TemplateRef<HTMLElement>, options?: UseV
    * 销毁图表
    */
   function destroy() {
-    vChartInst.value?.release()
-    vChartInst.value = null
+    instanceRef.value?.release()
+    instanceRef.value = null
     onDisposeEvent.trigger()
   }
 
@@ -236,11 +229,7 @@ export function useVCharts(templateRef: TemplateRef<HTMLElement>, options?: UseV
 
   return {
     templateRef,
-    vChartInst,
-    chartOption: chartOptionRef,
-    darkMode: darkModeRef,
-    setOption,
-    setDarkMode,
+    instanceRef,
     onRendered: onRenderedEvent.on,
     onUpdate: onUpdateEvent.on,
     onResize: onResizeEvent.on,

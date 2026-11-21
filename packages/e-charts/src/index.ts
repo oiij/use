@@ -8,8 +8,7 @@ import { DatasetComponent, GridComponent, LegendComponent, TitleComponent, Toolb
 import { init, use } from 'echarts/core'
 import { LabelLayout, UniversalTransition } from 'echarts/features'
 import { CanvasRenderer } from 'echarts/renderers'
-import { nextTick, onUnmounted, shallowRef, toRaw, watch } from 'vue'
-import { watchRefOrGetter } from './_utils'
+import { nextTick, onUnmounted, shallowRef, toRaw, toValue, watch } from 'vue'
 
 /**
  * ECharts 图表配置类型
@@ -98,7 +97,7 @@ export type UseEChartsOptions = {
  * import { useECharts } from '@oiij/e-charts'
  *
  * const chartRef = ref()
- * const { chartOption, onRendered } = useECharts(chartRef, {
+ * const { onRendered } = useECharts(chartRef, {
  *   chartOption: {
  *     title: {
  *       text: '示例图表'
@@ -124,11 +123,11 @@ export type UseEChartsOptions = {
  */
 export function useECharts(templateRef: TemplateRef<HTMLElement>, options?: UseEChartsOptions) {
   const { chartOption, darkMode, initOptions } = options ?? {}
-  const eChartInst = shallowRef<ECharts | null>(null)
+  const instanceRef = shallowRef<ECharts | null>(null)
 
-  const chartOptionRef = watchRefOrGetter(chartOption, () => setOption())
+  watch(() => toValue(chartOption), () => setOption())
 
-  const darkModeRef = watchRefOrGetter(darkMode, () => setDarkMode())
+  watch(() => toValue(darkMode), () => setDarkMode())
 
   const onRenderedEvent = createEventHook<[ECharts]>()
   const onUpdateEvent = createEventHook<[EChartsOption]>()
@@ -137,29 +136,19 @@ export function useECharts(templateRef: TemplateRef<HTMLElement>, options?: UseE
 
   /**
    * 设置图表配置
-   *
-   * @param option - 图表配置
    */
-  function setOption(option?: EChartsOption) {
-    if (option !== undefined) {
-      chartOptionRef.value = option
-    }
-    const chartOption = toRaw(chartOptionRef.value)
-    if (chartOption) {
-      eChartInst.value?.setOption(chartOption)
-      onUpdateEvent.trigger(chartOption)
+  function setOption() {
+    const option = toRaw(toValue(chartOption))
+    if (option) {
+      instanceRef.value?.setOption(option)
+      onUpdateEvent.trigger(option)
     }
   }
 
   /**
    * 更新图表主题
-   *
-   * @param darkMode - 是否开启暗黑模式
    */
-  function setDarkMode(darkMode?: boolean) {
-    if (darkMode !== undefined) {
-      darkModeRef.value = darkMode
-    }
+  function setDarkMode() {
     destroy()
     render()
   }
@@ -168,13 +157,17 @@ export function useECharts(templateRef: TemplateRef<HTMLElement>, options?: UseE
    * 渲染图表
    */
   async function render() {
-    if (templateRef.value && !eChartInst.value) {
-      const theme = darkModeRef?.value ? 'dark' : 'default'
-      await nextTick()
-      eChartInst.value = init(templateRef.value, theme, { ...initOptions })
-      onRenderedEvent.trigger(eChartInst.value)
-      setOption()
+    if (!templateRef.value || instanceRef.value) {
+      return
     }
+    await nextTick()
+    if (!templateRef.value || instanceRef.value) {
+      return
+    }
+    const theme = toValue(darkMode) ? 'dark' : 'default'
+    instanceRef.value = init(templateRef.value, theme, { ...initOptions })
+    onRenderedEvent.trigger(instanceRef.value)
+    setOption()
   }
 
   /**
@@ -184,7 +177,7 @@ export function useECharts(templateRef: TemplateRef<HTMLElement>, options?: UseE
    * @param height - 高度
    */
   function resize(width: number, height: number) {
-    eChartInst.value?.resize()
+    instanceRef.value?.resize()
     onResizeEvent.trigger({ width, height })
   }
 
@@ -202,8 +195,8 @@ export function useECharts(templateRef: TemplateRef<HTMLElement>, options?: UseE
    * 销毁图表
    */
   function destroy() {
-    eChartInst.value?.dispose()
-    eChartInst.value = null
+    instanceRef.value?.dispose()
+    instanceRef.value = null
     onDisposeEvent.trigger()
   }
 
@@ -213,11 +206,7 @@ export function useECharts(templateRef: TemplateRef<HTMLElement>, options?: UseE
 
   return {
     templateRef,
-    eChartInst,
-    chartOption: chartOptionRef,
-    darkMode: darkModeRef,
-    setOption,
-    setDarkMode,
+    instanceRef,
     onRendered: onRenderedEvent.on,
     onUpdate: onUpdateEvent.on,
     onResize: onResizeEvent.on,

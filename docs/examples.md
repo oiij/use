@@ -10,9 +10,11 @@ Som Composable Functions for Vue 3
 
 - [use-audio-context](/core/use-audio-context) - 音频上下文工具
 - [use-auto-ratio](/core/use-auto-ratio) - 自动宽高比
+- [use-chat](/core/use-chat) - 多会话聊天
 - [use-context-menu](/core/use-context-menu) - 右键菜单
 - [use-event-source](/core/use-event-source) - Server-Sent Events
 - [use-image-verify](/core/use-image-verify) - 图片验证
+- [use-llm](/core/use-llm) - LLM 模型调用
 - [use-number-animation](/core/use-number-animation) - 数字动画
 - [use-scan-code](/core/use-scan-code) - 扫码工具
 - [use-scroll-view](/core/use-scroll-view) - 滚动视图

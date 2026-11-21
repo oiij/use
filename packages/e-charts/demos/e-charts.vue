@@ -57,8 +57,8 @@ const { onRendered, onUpdate } = useECharts(useTemplateRef('dom-ref'), {
   chartOption: opt,
   darkMode,
 })
-onRendered((eChartInst) => {
-  console.log(eChartInst)
+onRendered((instanceRef) => {
+  console.log(instanceRef)
 })
 onUpdate((chartOption) => {
   console.log(chartOption)

@@ -1,3 +1,3 @@
 import { useBem } from '@oiij/css-render'
 
-export const { cssr, plugin, namespace } = useBem()
+export const { c, cB, cE, cM, cNotM, nB, nE, nM } = useBem()

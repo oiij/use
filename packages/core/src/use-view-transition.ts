@@ -36,7 +36,8 @@ const styleText = `
 }
 ::view-transition-new(root),._::view-transition-old(root){
   z-index: 99999;
-}`
+}
+`
 
 /**
  * 使用视图过渡 API 的组合式函数
@@ -61,9 +62,9 @@ export function useViewTransition(options?: ViewTransitionOptions) {
   const isAppearanceTransition = typeof document !== 'undefined' && !!document.startViewTransition && !window.matchMedia('(prefers-reduced-motion: reduce)').matches
   const { duration = 300, easing = 'linear', effect = true, reverseSelector = '.dark' } = options ?? {}
 
-  if (typeof document !== 'undefined' && !document.querySelector('style[vts-id="view-transition-style"]')) {
+  if (typeof document !== 'undefined' && !document.querySelector('style[cssr-id="view-transition-style"]')) {
     const style = document.createElement('style')
-    style.setAttribute('vts-id', 'view-transition-style')
+    style.setAttribute('cssr-id', 'view-transition-style')
     style.appendChild(document.createTextNode(styleText.replaceAll('._', reverseSelector)))
     document.head.appendChild(style)
   }

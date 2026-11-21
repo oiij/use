@@ -76,6 +76,7 @@ export default defineConfig({
           ...conversionPath('packages/ai-editor/demos', '/ai-editor'),
           ...conversionPath('packages/auto-i18n/demos', '/auto-i18n'),
           ...conversionPath('packages/auto-router/demos', '/auto-router'),
+          ...conversionPath('packages/chat/demos', '/chat'),
           ...conversionPath('packages/css-render/demos', '/css-render'),
           ...conversionPath('packages/e-charts/demos', '/e-charts'),
           ...conversionPath('packages/emoji-picker/demos', '/emoji-picker'),

@@ -42,23 +42,25 @@ yarn add @oiij/css-render
 
 #### BemOptions
 
-| 选项             | 类型     | 默认值             | 说明       |
-| ---------------- | -------- | ------------------ | ---------- |
-| `namespace`      | `string` | `'n'`              | 命名空间   |
-| `blockPrefix`    | `string` | `'.${namespace}-'` | 块前缀     |
-| `elementPrefix`  | `string` | `'__'`             | 元素前缀   |
-| `modifierPrefix` | `string` | `'--'`             | 修饰符前缀 |
+| 选项             | 类型     | 默认值  | 说明       |
+| ---------------- | -------- | ------- | ---------- |
+| `blockPrefix`    | `string` | `'.n-'` | 块前缀     |
+| `elementPrefix`  | `string` | `'__'`  | 元素前缀   |
+| `modifierPrefix` | `string` | `'--'`  | 修饰符前缀 |
 
 #### 返回值
 
-| 属性             | 类型                 | 说明            |
-| ---------------- | -------------------- | --------------- |
-| `namespace`      | `string`             | 命名空间        |
-| `blockPrefix`    | `string`             | 块前缀          |
-| `elementPrefix`  | `string`             | 元素前缀        |
-| `modifierPrefix` | `string`             | 修饰符前缀      |
-| `cssr`           | `CssRenderInstance`  | CSS Render 实例 |
-| `plugin`         | `CssRenderBemPlugin` | BEM 插件        |
+| 属性       | 类型       | 说明            |
+| ---------- | ---------- | --------------- |
+| `c`        | `Function` | 创建样式节点    |
+| `config`   | `Object`   | CSS Render 配置 |
+| `cB`       | `Function` | 块选择器        |
+| `cE`       | `Function` | 元素选择器      |
+| `cM`       | `Function` | 修饰符选择器    |
+| `cNotM`    | `Function` | 非修饰符选择器  |
+| `nB(name)` | `Function` | 块名称生成      |
+| `nE(name)` | `Function` | 元素名称生成    |
+| `nM(name)` | `Function` | 修饰符名称生成  |
 
 ### `useStyle(mountId, style)`
 
@@ -82,13 +84,8 @@ export type CssRenderBemPlugin = ReturnType<typeof plugin> & {
 
 export type BemOptions = {
   /**
-   * 命名空间
-   * @default 'n'
-   */
-  namespace?: string
-  /**
    * 块前缀
-   * @default '.${namespace}-'
+   * @default '.n-'
    */
   blockPrefix?: string
   /**
@@ -103,31 +100,19 @@ export type BemOptions = {
   modifierPrefix?: string
 }
 
-export type UseBemReturn = {
+export type UseBemReturn = CssRenderInstance & CssRenderBemPlugin & {
   /**
-   * 命名空间
+   * 块名称生成函数
    */
-  namespace: string
+  nB: (name: string) => string
   /**
-   * 块前缀
+   * 元素名称生成函数
    */
-  blockPrefix: string
+  nE: (name: string) => string
   /**
-   * 元素前缀
+   * 修饰符名称生成函数
    */
-  elementPrefix: string
-  /**
-   * 修饰符前缀
-   */
-  modifierPrefix: string
-  /**
-   * CSS Render 实例
-   */
-  cssr: CssRenderInstance
-  /**
-   * BEM 插件
-   */
-  plugin: CssRenderBemPlugin
+  nM: (name: string) => string
 }
 
 export declare function useBem(options?: BemOptions): UseBemReturn
@@ -142,10 +127,9 @@ export declare function useStyle(mountId: string, style: CNode): void
 <script setup>
 import { useBem, useStyle } from '@oiij/css-render'
 
-const { cssr, plugin } = useBem({
-  namespace: 'my',
+const { c, cB, cE, cM } = useBem({
+  blockPrefix: '.my-',
 })
-const { c, cB, cE, cM } = { ...cssr, ...plugin }
 
 const style = c([
   cB('button', {
@@ -185,13 +169,11 @@ useStyle('my-button', style)
 <script setup>
 import { useBem, useStyle } from '@oiij/css-render'
 
-const { cssr, plugin } = useBem({
-  namespace: 'app',
+const { c, cB, cE, cM } = useBem({
   blockPrefix: '.app-',
   elementPrefix: '__',
   modifierPrefix: '--',
 })
-const { c, cB, cE, cM } = { ...cssr, ...plugin }
 
 const style = c([
   cB('card', {
@@ -242,13 +224,11 @@ useStyle('app-card', style)
 <script setup>
 import { useBem, useStyle } from '@oiij/css-render'
 
-const { cssr, plugin } = useBem({
-  namespace: 'o',
+const { c, cB, cE, cM } = useBem({
   blockPrefix: '.o-',
   elementPrefix: '-',
   modifierPrefix: '_',
 })
-const { c, cB, cE, cM } = { ...cssr, ...plugin }
 
 const style = c([
   cB('input', {
@@ -291,10 +271,9 @@ useStyle('o-input', style)
 import { useBem, useStyle } from '@oiij/css-render'
 import { ref, watch } from 'vue'
 
-const { cssr, plugin } = useBem({
-  namespace: 'dynamic',
+const { c, cB, cE, cM } = useBem({
+  blockPrefix: '.dynamic-',
 })
-const { c, cB, cM } = { ...cssr, ...plugin }
 
 const primaryColor = ref('#409eff')
 
@@ -344,7 +323,7 @@ BEM 代表 Block（块）、Element（元素）、Modifier（修饰符）。
 使用 `useBem` 会根据配置生成符合 BEM 规范的类名：
 
 ```ts
-const { cB, cE, cM } = useBem({ namespace: 'my' })
+const { cB, cE, cM } = useBem({ blockPrefix: '.my-' })
 
 cB('card', { /* 块样式 */ }) // 生成 .my-card
 cE('header', { /* 元素样式 */ }) // 生成 .my-card__header

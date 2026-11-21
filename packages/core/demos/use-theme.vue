@@ -5,10 +5,6 @@ import { NButton, NFlex } from 'naive-ui'
 
 const { isDark, toggleDark, setDark, setLight } = useTheme({
   storageKey: '__COLOR_MODE__',
-  viewTransitionOptions: {
-    duration: 800,
-    easing: 'ease-in-out',
-  },
 })
 </script>
 
@@ -19,10 +15,10 @@ const { isDark, toggleDark, setDark, setLight } = useTheme({
       <NButton @click="toggleDark">
         切换主题
       </NButton>
-      <NButton @click="(e) => setDark(e)">
+      <NButton @click="setDark">
         暗色模式
       </NButton>
-      <NButton @click="(e) => setLight(e)">
+      <NButton @click="setLight">
         亮色模式
       </NButton>
     </NFlex>

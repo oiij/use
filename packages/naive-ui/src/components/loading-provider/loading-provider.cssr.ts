@@ -1,9 +1,7 @@
 import { cM } from 'naive-ui'
-import { cssr, namespace, plugin } from '../_utils'
+import { c, cB, nB } from '../_utils'
 
-const { c, cB } = { ...cssr, ...plugin }
-
-export const cName = `${namespace}-loading-provider`
+export const cName = nB('loading-provider')
 export function loadingProviderCssr() {
   return c([
     cB('loading-provider', {
@@ -15,7 +13,7 @@ export function loadingProviderCssr() {
       justifyContent: 'center',
     }, [
       cM('mask', {
-        background: 'rgba(0,0,0,.3)',
+        background: 'rgba(0,0,0,.4)',
       }),
       cM('blur', {
         backdropFilter: 'blur(10px)',

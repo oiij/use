@@ -64,7 +64,7 @@ export type UseAiEditorOptions = {
  */
 export function useAiEditor(templateRef: TemplateRef<HTMLElement>, options?: UseAiEditorOptions) {
   const { value, darkMode, language, readonly, aiEditorOptions } = options ?? {}
-  const aiEditorInst = shallowRef<AiEditor | null>(null)
+  const instanceRef = shallowRef<AiEditor | null>(null)
 
   const valueRef = watchRefOrGetter(value, () => setContent())
 
@@ -85,9 +85,9 @@ export function useAiEditor(templateRef: TemplateRef<HTMLElement>, options?: Use
     if (value !== undefined) {
       valueRef.value = value
     }
-    const currentContent = aiEditorInst.value?.getHTML()
+    const currentContent = instanceRef.value?.getHTML()
     if (valueRef.value !== undefined && valueRef.value !== currentContent) {
-      aiEditorInst.value?.setContent(valueRef.value)
+      instanceRef.value?.setContent(valueRef.value)
     }
   }
 
@@ -101,8 +101,8 @@ export function useAiEditor(templateRef: TemplateRef<HTMLElement>, options?: Use
       darkModeRef.value = darkMode
     }
     const theme = darkModeRef.value ? 'dark' : 'light'
-    if (templateRef.value && aiEditorInst.value) {
-      aiEditorInst.value.setTheme(theme)
+    if (templateRef.value && instanceRef.value) {
+      instanceRef.value.setTheme(theme)
     }
   }
 
@@ -115,9 +115,9 @@ export function useAiEditor(templateRef: TemplateRef<HTMLElement>, options?: Use
     if (language !== undefined) {
       languageRef.value = language
     }
-    aiEditorInst.value?.setLocale(languageRef.value ?? 'zh-CN')
+    instanceRef.value?.setLocale(languageRef.value ?? 'zh-CN')
     if (valueRef.value) {
-      aiEditorInst.value?.setContent(valueRef.value)
+      instanceRef.value?.setContent(valueRef.value)
     }
   }
 
@@ -130,15 +130,15 @@ export function useAiEditor(templateRef: TemplateRef<HTMLElement>, options?: Use
     if (readonly !== undefined) {
       readonlyRef.value = readonly
     }
-    aiEditorInst.value?.setEditable(!readonlyRef.value)
+    instanceRef.value?.setEditable(!readonlyRef.value)
   }
 
   async function render() {
-    if (templateRef.value && !aiEditorInst.value) {
+    if (templateRef.value && !instanceRef.value) {
       const locale = languageRef.value ?? 'zh-CN'
       const theme = darkModeRef.value ? 'dark' : 'light'
       await nextTick()
-      aiEditorInst.value = new AiEditor({
+      instanceRef.value = new AiEditor({
         element: templateRef.value,
         content: valueRef.value,
         locale,
@@ -153,13 +153,13 @@ export function useAiEditor(templateRef: TemplateRef<HTMLElement>, options?: Use
           aiEditorOptions?.onUpdate?.(editor, transaction)
         },
       })
-      onRenderedEvent.trigger(aiEditorInst.value)
+      onRenderedEvent.trigger(instanceRef.value)
     }
   }
 
   function destroy() {
-    aiEditorInst.value?.destroy()
-    aiEditorInst.value = null
+    instanceRef.value?.destroy()
+    instanceRef.value = null
     if (templateRef.value) {
       templateRef.value.innerHTML = ''
     }
@@ -171,11 +171,11 @@ export function useAiEditor(templateRef: TemplateRef<HTMLElement>, options?: Use
   })
   return {
     templateRef,
+    instanceRef,
     value: valueRef,
     darkMode: darkModeRef,
     language: languageRef,
     readonly: readonlyRef,
-    aiEditorInst,
     setContent,
     setDarkMode,
     setLanguage,

@@ -4,18 +4,16 @@ import SelectionArea from '@viselect/vanilla'
 import { createEventHook } from '@vueuse/core'
 import { computed, onUnmounted, reactive, shallowRef, watchEffect } from 'vue'
 
-function appendStyle(id: string, styleText: string) {
-  if (typeof document !== 'undefined' && !document.querySelector(`style[oiij-style="${id}"]`)) {
-    const style = document.createElement('style')
-    style.setAttribute('oiij-style', id)
-    style.appendChild(document.createTextNode(styleText))
-    document.head.appendChild(style)
-  }
-}
-
 function getDataKey(el: Element): string | null {
   return el.getAttribute('data-key')
 }
+const styleText = `
+.selection-area {
+  background: rgba(46, 115, 252, 0.11);
+  border: 1px solid rgba(98, 155, 255, 0.85);
+  border-radius: 0.15em;
+}
+`
 /**
  * Vue 3 组合式函数，基于 `@viselect/vanilla` 封装，在指定容器内启用鼠标 / 触摸框选能力。
  *
@@ -28,8 +26,8 @@ function getDataKey(el: Element): string | null {
  * - 框选过程中根据 `SelectionEvent.store.changed` 的 added/removed 增删 `selected` 集合
  * - 元素需设置 `data-key` 属性才能被纳入 `selected`
  *
- * @param domRef - 作为框选边界容器的模板引用，类型为 `TemplateRef<HTMLDivElement>`
- * @param options - 透传给 `SelectionArea` 的配置（`boundaries` 由 `domRef` 自动注入），默认 `{}`
+ * @param templateRef - 作为框选边界容器的模板引用，类型为 `TemplateRef<HTMLDivElement>`
+ * @param options - 透传给 `SelectionArea` 的配置（`boundaries` 由 `templateRef` 自动注入），默认 `{}`
  * @returns 包含实例引用、响应式选中集合与事件订阅方法的对象：
  *   - `instanceRef`: `ShallowRef<SelectionArea | undefined>`，底层实例引用
  *   - `selected`: `ComputedRef<string[]>`，当前选中元素的 `data-key` 数组
@@ -91,7 +89,7 @@ function getDataKey(el: Element): string | null {
  * </template>
  * ```
  */
-export function useViselect(domRef: TemplateRef<HTMLDivElement>, options?: Omit<PartialSelectionOptions, 'boundaries'>) {
+export function useViselect(templateRef: TemplateRef<HTMLDivElement>, options?: Omit<PartialSelectionOptions, 'boundaries'>) {
   const instanceRef = shallowRef<SelectionArea>()
   const selected = reactive<Set<string>>(new Set())
   const onInitEvent = createEventHook<[SelectionArea]>()
@@ -101,18 +99,17 @@ export function useViselect(domRef: TemplateRef<HTMLDivElement>, options?: Omit<
   const onMoveEvent = createEventHook<[SelectionEvent]>()
   const onStopEvent = createEventHook<[SelectionEvent]>()
 
-  appendStyle('viselect-style', `
-    .selection-area {
-      background: rgba(46, 115, 252, 0.11);
-      border: 1px solid rgba(98, 155, 255, 0.85);
-      border-radius: 0.15em;
-    }
-    `)
+  if (typeof document !== 'undefined' && !document.querySelector('style[cssr-id="viselect-style"]')) {
+    const style = document.createElement('style')
+    style.setAttribute('cssr-id', 'viselect-style')
+    style.appendChild(document.createTextNode(styleText))
+    document.head.appendChild(style)
+  }
 
   function render() {
-    if (domRef.value && !instanceRef.value) {
+    if (templateRef.value && !instanceRef.value) {
       instanceRef.value = new SelectionArea({
-        boundaries: domRef.value,
+        boundaries: templateRef.value,
         selectionAreaClass: 'selection-area',
         ...options,
       })
@@ -153,7 +150,7 @@ export function useViselect(domRef: TemplateRef<HTMLDivElement>, options?: Omit<
     }
   }
   watchEffect(() => {
-    if (domRef.value) {
+    if (templateRef.value) {
       render()
     }
   })

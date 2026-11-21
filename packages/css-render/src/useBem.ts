@@ -16,10 +16,6 @@ export { CNode, CssRenderInstance }
  */
 export type BemOptions = {
   /**
-   * 命名空间
-   */
-  namespace?: string
-  /**
    * 块前缀
    */
   blockPrefix?: string
@@ -36,31 +32,19 @@ export type BemOptions = {
 /**
  * 使用 BEM 返回值类型
  */
-export type UseBemReturn = {
+export type UseBemReturn = CssRenderInstance & CssRenderBemPlugin & {
   /**
-   * 命名空间
+   * 块名称生成函数
    */
-  namespace: string
+  nB: (name: string) => string
   /**
-   * 块前缀
+   * 元素名称生成函数
    */
-  blockPrefix: string
+  nE: (name: string) => string
   /**
-   * 元素前缀
+   * 修饰符名称生成函数
    */
-  elementPrefix: string
-  /**
-   * 修饰符前缀
-   */
-  modifierPrefix: string
-  /**
-   * CSS Render 实例
-   */
-  cssr: CssRenderInstance
-  /**
-   * BEM 插件
-   */
-  plugin: CssRenderBemPlugin
+  nM: (name: string) => string
 }
 
 /**
@@ -73,8 +57,7 @@ export type UseBemReturn = {
  * ```ts
  * import { useBem } from '@oiij/css-render'
  *
- * const { cssr, plugin } = useBem({
- *   namespace: 'o',
+ * const { c, cB, cE, cM } = useBem({
  *   blockPrefix: '.o-',
  *   elementPrefix: '__',
  *   modifierPrefix: '--',
@@ -82,7 +65,7 @@ export type UseBemReturn = {
  * ```
  */
 export function useBem(options?: BemOptions): UseBemReturn {
-  const { namespace = 'n', blockPrefix = `.${namespace}-`, elementPrefix = '__', modifierPrefix = '--' } = options ?? {}
+  const { blockPrefix = '.n-', elementPrefix = '__', modifierPrefix = '--' } = options ?? {}
   const cssr = CssRender()
   const plugin = BemPlugin({
     blockPrefix,
@@ -92,11 +75,10 @@ export function useBem(options?: BemOptions): UseBemReturn {
   cssr.use(plugin)
 
   return {
-    namespace,
-    blockPrefix,
-    elementPrefix,
-    modifierPrefix,
-    cssr,
-    plugin,
+    ...cssr,
+    ...plugin,
+    nB: (name: string) => `${blockPrefix.replace('.', '')}${name}`,
+    nE: (name: string) => `${elementPrefix}${name}`,
+    nM: (name: string) => `${modifierPrefix}${name}`,
   }
 }

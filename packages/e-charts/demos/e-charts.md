@@ -50,18 +50,14 @@ yarn add @oiij/e-charts
 
 #### 返回值
 
-| 属性                     | 类型                          | 说明             |
-| ------------------------ | ----------------------------- | ---------------- |
-| `templateRef`            | `TemplateRef<HTMLElement>`    | 图表容器引用     |
-| `eChartInst`             | `ShallowRef<ECharts \| null>` | ECharts 实例     |
-| `chartOption`            | `Ref<EChartsOption>`          | 图表配置         |
-| `darkMode`               | `Ref<boolean>`                | 暗黑模式状态     |
-| `setOption(option?)`     | `Function`                    | 设置图表配置     |
-| `setDarkMode(darkMode?)` | `Function`                    | 设置暗黑模式     |
-| `onRendered(callback)`   | `Function`                    | 图表渲染完成事件 |
-| `onUpdate(callback)`     | `Function`                    | 配置更新事件     |
-| `onResize(callback)`     | `Function`                    | 容器尺寸变化事件 |
-| `onDispose(callback)`    | `Function`                    | 图表销毁事件     |
+| 属性                   | 类型                          | 说明             |
+| ---------------------- | ----------------------------- | ---------------- |
+| `templateRef`          | `TemplateRef<HTMLElement>`    | 图表容器引用     |
+| `instanceRef`          | `ShallowRef<ECharts \| null>` | ECharts 实例     |
+| `onRendered(callback)` | `Function`                    | 图表渲染完成事件 |
+| `onUpdate(callback)`   | `Function`                    | 配置更新事件     |
+| `onResize(callback)`   | `Function`                    | 容器尺寸变化事件 |
+| `onDispose(callback)`  | `Function`                    | 图表销毁事件     |
 
 ### `register(ext)`
 
@@ -114,23 +110,7 @@ export type UseEChartsReturns = {
   /**
    * ECharts 实例
    */
-  eChartInst: ShallowRef<ECharts | null>
-  /**
-   * 图表配置
-   */
-  chartOption: Ref<EChartsOption | undefined>
-  /**
-   * 暗黑模式状态
-   */
-  darkMode: Ref<boolean | undefined>
-  /**
-   * 设置图表配置
-   */
-  setOption: (option?: EChartsOption) => void
-  /**
-   * 设置暗黑模式
-   */
-  setDarkMode: (darkMode?: boolean) => void
+  instanceRef: ShallowRef<ECharts | null>
   /**
    * 图表渲染完成事件
    */
@@ -162,7 +142,7 @@ export declare function register(ext: Parameters<typeof use>[0]): void
 import { useECharts } from '@oiij/e-charts'
 import { useTemplateRef } from 'vue'
 
-const { chartOption } = useECharts(useTemplateRef('chart'), {
+useECharts(useTemplateRef('chart'), {
   chartOption: {
     title: { text: '销售数据' },
     xAxis: { type: 'category', data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'] },
@@ -184,7 +164,7 @@ const { chartOption } = useECharts(useTemplateRef('chart'), {
 import { useECharts } from '@oiij/e-charts'
 import { useTemplateRef } from 'vue'
 
-const { chartOption } = useECharts(useTemplateRef('chart'), {
+useECharts(useTemplateRef('chart'), {
   chartOption: {
     tooltip: { trigger: 'item' },
     legend: { top: '5%', left: 'center' },
@@ -286,7 +266,7 @@ register([RadarChart, ScatterChart])
 import { useECharts } from '@oiij/e-charts'
 import { useTemplateRef } from 'vue'
 
-const { chartOption } = useECharts(useTemplateRef('chart'), {
+useECharts(useTemplateRef('chart'), {
   chartOption: {
     radar: {
       indicator: [
