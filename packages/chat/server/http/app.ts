@@ -1,5 +1,5 @@
 import type { ChatServerOptions } from '../core/types'
-import { createError, defineEventHandler, defineWebSocketHandler, getQuery, getRouterParam, H3, readBody } from 'h3'
+import { defineEventHandler, defineWebSocketHandler, getQuery, getRouterParam, H3, HTTPError, readBody } from 'h3'
 import { ChatBus } from '../core/chat-bus'
 import { createChatAuthMiddleware } from './auth'
 import { createWsHooks } from './ws'
@@ -32,7 +32,7 @@ export function createChatServer(options: ChatServerOptions = {}): { app: H3, bu
   app.post('/channels', defineEventHandler(async (event) => {
     const body = await readBody<{ name?: string, participantIds?: string[], metadata?: Record<string, unknown> }>(event)
     if (!body?.name) {
-      throw createError({ statusCode: 400, message: 'channel name is required' })
+      throw new HTTPError({ statusCode: 400, message: 'channel name is required' })
     }
     return bus.createChannel({
       name: body.name,
@@ -44,7 +44,7 @@ export function createChatServer(options: ChatServerOptions = {}): { app: H3, bu
   app.get('/channels/:id/messages/search', defineEventHandler(async (event) => {
     const channelId = getRouterParam(event, 'id')
     if (!channelId) {
-      throw createError({ statusCode: 400, message: 'channel id is required' })
+      throw new HTTPError({ statusCode: 400, message: 'channel id is required' })
     }
     const query = getQuery<{ q?: string, limit?: string }>(event)
     return bus.searchMessages(channelId, query.q ?? '', query.limit ? Number(query.limit) : undefined)
@@ -53,7 +53,7 @@ export function createChatServer(options: ChatServerOptions = {}): { app: H3, bu
   app.get('/channels/:id/messages', defineEventHandler(async (event) => {
     const channelId = getRouterParam(event, 'id')
     if (!channelId) {
-      throw createError({ statusCode: 400, message: 'channel id is required' })
+      throw new HTTPError({ statusCode: 400, message: 'channel id is required' })
     }
     const query = getQuery<{ before?: string, limit?: string }>(event)
     return bus.listMessages(channelId, {
@@ -66,7 +66,7 @@ export function createChatServer(options: ChatServerOptions = {}): { app: H3, bu
     const channelId = getRouterParam(event, 'id')
     const messageId = getRouterParam(event, 'mid')
     if (!channelId || !messageId) {
-      throw createError({ statusCode: 400, message: 'channel id and message id are required' })
+      throw new HTTPError({ statusCode: 400, message: 'channel id and message id are required' })
     }
     await bus.deleteMessage(channelId, messageId)
     return { ok: true }

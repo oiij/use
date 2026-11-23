@@ -1,6 +1,6 @@
 import type { H3Event } from 'h3'
 import type { ChatAuthHook } from '../core/types'
-import { createError, defineEventHandler } from 'h3'
+import { defineEventHandler, HTTPError } from 'h3'
 import { resolveChatIdentity } from '../core/identity'
 
 /**
@@ -32,11 +32,11 @@ export function createChatAuthMiddleware(hook: ChatAuthHook) {
   return defineEventHandler(async (event) => {
     const identity = resolveChatIdentity(event.req)
     if (!identity) {
-      throw createError({ statusCode: 401, message: 'chat user is required' })
+      throw new HTTPError({ statusCode: 401, message: 'chat user is required' })
     }
     const allowed = await hook({ ...identity, request: event.req })
     if (allowed === false) {
-      throw createError({ statusCode: 401, message: 'chat user is not allowed' })
+      throw new HTTPError({ statusCode: 401, message: 'chat user is not allowed' })
     }
     ;(event.context as { userId?: string, token?: string }).userId = identity.userId
     ;(event.context as { userId?: string, token?: string }).token = identity.token

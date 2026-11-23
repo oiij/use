@@ -1,5 +1,5 @@
 import type { Peer } from 'crossws'
-import type { ChatAttachment, ChatChannel, ChatMessage, ChatUser, ClientWireMessage, ServerWireMessage } from '../../src/types'
+import type { ChatAttachment, ChatAvailability, ChatChannel, ChatMention, ChatMessage, ChatQuotedMessage, ChatUser, ClientWireMessage, ServerWireMessage } from '../../src/types'
 import type { ChatBroadcaster } from './broadcast/types'
 import type { ChatMessageContext, ChatServerOptions } from './types'
 import { createId } from './id'
@@ -9,6 +9,7 @@ import { MemoryStorage } from './storage/memory'
 const DEFAULT_HEARTBEAT = 30_000
 const DEFAULT_HISTORY_LIMIT = 50
 const DEFAULT_SEARCH_LIMIT = 20
+const MAX_MENTIONS = 50
 
 function send(peer: Peer, message: ServerWireMessage): void {
   peer.send(JSON.stringify(message))
@@ -49,6 +50,29 @@ function normalizeAttachments(input: ChatAttachment[] | undefined): ChatAttachme
   return attachments
 }
 
+function normalizeMentionIds(input: string[] | undefined): string[] | null | undefined {
+  if (input == null) {
+    return undefined
+  }
+  if (!Array.isArray(input)) {
+    return null
+  }
+  const ids: string[] = []
+  for (const item of input) {
+    if (typeof item !== 'string') {
+      return null
+    }
+    if (item.length === 0 || ids.includes(item)) {
+      continue
+    }
+    ids.push(item)
+  }
+  if (ids.length > MAX_MENTIONS) {
+    return null
+  }
+  return ids.length > 0 ? ids : undefined
+}
+
 /**
  * 聊天消息总线
  * 负责通道订阅、消息持久化、广播分发与业务钩子调用，是后端的核心调度器
@@ -62,6 +86,7 @@ export class ChatBus {
   private readonly heartbeat: number
   private readonly broadcaster?: ChatBroadcaster
   private readonly subscribers = new Map<string, Set<Peer>>()
+  private readonly presenceStates = new Map<string, { availability: ChatAvailability, statusText?: string }>()
 
   constructor(options: ChatServerOptions = {}) {
     this.options = options
@@ -175,6 +200,9 @@ export class ChatBus {
         return this.handleDelete(peer, wire)
       case 'recall':
         return this.handleRecall(peer, wire)
+      case 'set-presence':
+        this.handleSetPresence(peer, wire)
+        return
       case 'ping':
         send(peer, { type: 'pong' })
     }
@@ -186,14 +214,15 @@ export class ChatBus {
 
   private async resolveProfile(userId: string): Promise<ChatUser> {
     const profile = await this.options.getUserProfile?.(userId)
-    if (!profile) {
-      return { id: userId }
-    }
+    const presence = this.presenceStates.get(userId)
+    const statusText = presence ? presence.statusText : profile?.statusText
     return {
       id: userId,
-      ...(typeof profile.name === 'string' ? { name: profile.name } : {}),
-      ...(typeof profile.avatar === 'string' ? { avatar: profile.avatar } : {}),
-      ...(profile.metadata && typeof profile.metadata === 'object' ? { metadata: profile.metadata } : {}),
+      ...(typeof profile?.name === 'string' ? { name: profile.name } : {}),
+      ...(typeof profile?.avatar === 'string' ? { avatar: profile.avatar } : {}),
+      availability: presence?.availability ?? profile?.availability ?? 'online',
+      ...(typeof statusText === 'string' && statusText ? { statusText } : {}),
+      ...(profile?.metadata && typeof profile.metadata === 'object' ? { metadata: profile.metadata } : {}),
     }
   }
 
@@ -258,6 +287,7 @@ export class ChatBus {
    * @param peer 即将关闭的 crossws Peer
    */
   removePeer(peer: Peer): void {
+    const userId = this.getUserId(peer)
     for (const [channelId, peers] of this.subscribers) {
       peers.delete(peer)
       if (peers.size === 0) {
@@ -267,6 +297,12 @@ export class ChatBus {
       }
       this.broadcastPresence(channelId)
     }
+    const connected = [...this.subscribers.values()].some(peers =>
+      [...peers].some(item => this.getUserId(item) === userId),
+    )
+    if (!connected) {
+      this.presenceStates.delete(userId)
+    }
   }
 
   /**
@@ -275,6 +311,7 @@ export class ChatBus {
    */
   async close(): Promise<void> {
     this.subscribers.clear()
+    this.presenceStates.clear()
     await this.broadcaster?.close?.()
   }
 
@@ -312,6 +349,39 @@ export class ChatBus {
         }
       }
     }
+    const mentionIds = normalizeMentionIds(wire.mentions)
+    if (mentionIds === null) {
+      send(peer, { type: 'error', message: 'invalid mentions', refId: wire.id })
+      return
+    }
+    let quote: ChatQuotedMessage | undefined
+    if (wire.quoteId != null) {
+      if (typeof wire.quoteId !== 'string' || wire.quoteId.length === 0) {
+        send(peer, { type: 'error', message: 'invalid quoteId', refId: wire.id })
+        return
+      }
+      const quoted = await this.getMessage(wire.channelId, wire.quoteId)
+      if (!quoted) {
+        send(peer, { type: 'error', message: 'quoted message not found', refId: wire.id })
+        return
+      }
+      quote = {
+        id: quoted.id,
+        senderId: quoted.senderId,
+        ...(quoted.sender?.name ? { senderName: quoted.sender.name } : {}),
+        content: quoted.recalled ? '' : quoted.content,
+        type: quoted.type,
+        createdAt: quoted.createdAt,
+        ...(quoted.recalled ? { recalled: true } : {}),
+      }
+    }
+    let mentions: ChatMention[] | undefined
+    if (mentionIds) {
+      mentions = await Promise.all(mentionIds.map(async (id) => {
+        const profile = await this.resolveProfile(id)
+        return profile.name ? { id, name: profile.name } : { id }
+      }))
+    }
     const message: ChatMessage = {
       id: wire.id,
       channelId: wire.channelId,
@@ -323,6 +393,8 @@ export class ChatBus {
       createdAt: Date.now(),
       metadata: wire.metadata,
       attachments,
+      mentions,
+      quote,
     }
     const ctx: ChatMessageContext = {
       userId,
@@ -338,6 +410,32 @@ export class ChatBus {
 
   private handleTyping(peer: Peer, channelId: string): void {
     this.broadcast(channelId, { type: 'typing', channelId, userId: this.getUserId(peer) }, peer)
+  }
+
+  private handleSetPresence(peer: Peer, wire: Extract<ClientWireMessage, { type: 'set-presence' }>): void {
+    if (!['online', 'busy', 'away'].includes(wire.availability)) {
+      send(peer, { type: 'error', message: 'invalid availability' })
+      return
+    }
+    if (wire.statusText != null && typeof wire.statusText !== 'string') {
+      send(peer, { type: 'error', message: 'invalid statusText' })
+      return
+    }
+    const statusText = wire.statusText?.trim()
+    if (statusText && statusText.length > 100) {
+      send(peer, { type: 'error', message: 'statusText is too long' })
+      return
+    }
+    const userId = this.getUserId(peer)
+    this.presenceStates.set(userId, {
+      availability: wire.availability,
+      ...(statusText ? { statusText } : {}),
+    })
+    for (const [channelId, peers] of this.subscribers) {
+      if ([...peers].some(item => this.getUserId(item) === userId)) {
+        this.broadcastPresence(channelId)
+      }
+    }
   }
 
   private async handleRead(peer: Peer, wire: Extract<ClientWireMessage, { type: 'read' }>): Promise<void> {

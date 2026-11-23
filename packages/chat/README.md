@@ -7,13 +7,15 @@
 
 ## 特点
 
-- **前后端一体**：`useChatChannel` / `useChatRoom` 与 `createChatServer` 共用协议类型，接入即用
+- **前后端一体**：`useChat` 与 `createChatServer` 共用协议类型，接入即用
 - **连接可靠**：断线指数退避重连、心跳保活、离线发送队列（可持久化到 localStorage）
 - **消息能力完整**：乐观更新、发送状态、已读回执、编辑、删除、撤回、输入中提示
+- **@提及与引用**：发送时可 @ 多个用户并引用回复历史消息，服务端生成昵称与引用快照
 - **媒体消息**：图片、视频、音频与文件通过预签名直传对象存储，消息只携带附件引用
 - **用户资料**：服务端统一注入昵称与头像，在线用户列表与消息快照自动携带
+- **用户状态**：支持在线、忙碌、离开与自定义状态说明，切换后实时同步通道成员
 - **在线用户列表**：订阅、取消订阅与断线时自动同步通道内在线用户
-- **多通道复用**：`useChatRoom` 用一条 WebSocket 连接同时订阅多个通道，维护未读数
+- **多通道复用**：`useChat` 用一条 WebSocket 连接同时订阅多个通道，维护未读数
 - **存储可插拔**：内置内存、JSON 文件、SQLite 三种适配器，也可自定义实现
 - **支持多实例**：通过 `broadcaster` 接入 Redis Pub/Sub，实现跨进程广播
 - **消息检索**：通道内按关键字检索，存储层支持时下推查询
@@ -60,26 +62,28 @@ export { app }
 
 `app` 是标准 h3 应用，可交给 listhen、Nitro 或自定义 HTTP Server；`bus` 是消息总线，可调用 `bus.close()` 释放资源。
 
-### 2. 前端连接通道
+### 2. 前端连接
+
+单通道场景：
 
 ```ts
-import { useChatChannel } from '@oiij/chat'
+import { useChat } from '@oiij/chat'
 
-const { messages, connected, typingUsers, send, sendTyping, markRead } = useChatChannel({
+const { activeMessages, activeRoom, connected, send, sendTyping, markRead } = useChat({
   baseUrl: 'http://localhost:3000',
   userId: 'user-1',
-  channelId: 'room-1',
+  channels: ['room-1'],
 })
 
 send('你好，世界')
 ```
 
-### 3. 多通道会话列表
+多通道会话列表：
 
 ```ts
-import { useChatRoom } from '@oiij/chat'
+import { useChat } from '@oiij/chat'
 
-const { rooms, activeId, activeMessages, unreadTotal, switchTo, send } = useChatRoom({
+const { rooms, activeId, activeMessages, unreadTotal, switchTo, send } = useChat({
   baseUrl: 'http://localhost:3000',
   userId: 'user-1',
   channels: [
@@ -94,53 +98,48 @@ send('大家好')
 
 ## API 概览
 
-### `useChatChannel(options)`
+### `useChat(options)`
 
-单通道场景，负责连接、重连、心跳、离线队列与消息状态。
+统一的实时消息组合式函数：单条连接管理一个或多个通道，负责连接、重连、心跳、离线队列与消息状态。
 
-| 选项                | 类型       | 默认值  | 说明                         |
-| ------------------- | ---------- | ------- | ---------------------------- |
-| `baseUrl`           | `string`   | —       | 服务端地址（必填）           |
-| `userId`            | `string`   | —       | 当前用户标识（必填）         |
-| `channelId`         | `string`   | —       | 订阅的通道标识（必填）       |
-| `token`             | `string`   | —       | 握手令牌                     |
-| `autoConnect`       | `boolean`  | `true`  | 创建时是否自动连接           |
-| `heartbeatInterval` | `number`   | `25000` | 心跳间隔（毫秒）             |
-| `reconnect`         | `boolean`  | `true`  | 断开后是否自动重连           |
-| `offlineQueueKey`   | `string`   | —       | 离线队列 localStorage 键名   |
-| `typingTimeout`     | `number`   | `4000`  | 输入中状态超时（毫秒）       |
-| `presign`           | `function` | —       | 预签名直传回调，启用媒体上传 |
+| 选项                | 类型                          | 默认值  | 说明                         |
+| ------------------- | ----------------------------- | ------- | ---------------------------- |
+| `baseUrl`           | `string`                      | —       | 服务端地址（必填）           |
+| `userId`            | `string`                      | —       | 当前用户标识（必填）         |
+| `profile`           | `ChatUser`                    | —       | 当前用户资料，用于乐观消息   |
+| `channels`          | `(string \| ChatRoomInput)[]` | `[]`    | 初始订阅的通道列表           |
+| `token`             | `string`                      | —       | 握手令牌                     |
+| `autoConnect`       | `boolean`                     | `true`  | 创建时是否自动连接           |
+| `heartbeatInterval` | `number`                      | `25000` | 心跳间隔（毫秒）             |
+| `reconnect`         | `boolean`                     | `true`  | 断开后是否自动重连           |
+| `offlineQueueKey`   | `string`                      | —       | 离线队列 localStorage 键名   |
+| `typingTimeout`     | `number`                      | `4000`  | 输入中状态超时（毫秒）       |
+| `presign`           | `function`                    | —       | 预签名直传回调，启用媒体上传 |
 
-返回 `messages`、`typingUsers`、`members`、`connected`、`error`、`channelId` 等响应式状态（`members` 为 `ChatUser[]`，含昵称与头像），以及 `send`、`sendMedia`、`uploadFile`、`resend`、`editMessage`、`deleteMessage`、`recallMessage`、`sendTyping`、`markRead`、`search`、`join`、`leave`、`disconnect` 方法和 `onMessage`、`onStatusChange`、`onRead`、`onTyping`、`onMessageRecalled` 等事件钩子。
+返回 `rooms`、`activeId`、`activeRoom`、`activeMessages`、`unreadTotal`、`connected`、`error`、`availability`、`statusText` 等响应式状态，以及 `send`、`sendMedia`、`uploadFile`、`resend`、`switchTo`、`markRead`、`search`、`sendTyping`、`setAvailability`、`recallMessage`、`editMessage`、`deleteMessage`、`join`、`leave`、`disconnect` 方法与 `onMessage`、`onStatusChange`、`onTyping`、`onRead`、`onMessageDeleted`、`onMessageRecalled`、`onMention`、`onConnected`、`onError` 事件钩子。每个通道状态包含在线用户 `members`（`ChatUser[]`）。
 
-### `useChatRoom(options)`
+`send` 的 `ChatSendInput` 支持 `mentions`（被 @ 的用户标识数组）与 `quoteId`（被引用消息标识），服务端会解析为 `message.mentions` 与 `message.quote` 快照；`sendMedia` 的 `options` 同样支持这两个字段。
 
-多通道场景，复用单条连接订阅多个通道，额外提供 `rooms`、`activeId`、`activeMessages`、`unreadTotal`、`switchTo`，每个通道状态包含在线用户 `members`（`ChatUser[]`）。
+```ts
+send({ content: '@张三 看下这条', mentions: ['user-2'], quoteId: 'msg-1' })
+
+onMention(({ channelId, message }) => {
+  console.log(`${message.senderId} 在 ${channelId} @ 了我`)
+})
+```
 
 ### 消息检索
 
 ```ts
-import { useChatChannel } from '@oiij/chat'
+import { useChat } from '@oiij/chat'
 
-const { search } = useChatChannel({
-  baseUrl: 'http://localhost:3000',
-  userId: 'user-1',
-  channelId: 'room-1',
-})
-
-const hits = await search('发票', 20)
-```
-
-```ts
-import { useChatRoom } from '@oiij/chat'
-
-const { search } = useChatRoom({
+const { search } = useChat({
   baseUrl: 'http://localhost:3000',
   userId: 'user-1',
   channels: ['tech'],
 })
 
-// 多通道场景需指定通道标识
+// 第一个参数为通道标识，结果不会改动本地消息列表
 const hits = await search('tech', '部署', 20)
 ```
 
@@ -174,17 +173,39 @@ const { app } = createChatServer({
 
 前端 `members` 类型为 `ChatUser[]`，渲染时使用 `user.name ?? user.id` 与 `user.avatar`。
 
+### 用户可用状态
+
+连接是否在线仍由 `members` 判断，用户主动状态通过 `availability` 表示：
+
+```ts
+const { activeRoom, availability, statusText, setAvailability } = useChat({
+  baseUrl: 'http://localhost:3000',
+  userId: 'user-1',
+  profile: { id: 'user-1', availability: 'online' },
+  channels: ['room-1'],
+})
+
+setAvailability('busy', '会议中')
+setAvailability('away', '暂时离开')
+setAvailability('online')
+
+// 同通道成员会收到最新 presence，sender 保存发送时的状态快照
+console.log(activeRoom.value?.members.map(user => user.availability))
+```
+
+可选状态为 `online`、`busy`、`away`。离线设置会在重连后自动同步；默认状态保存在 `ChatBus` 内存中，需要跨重启恢复或多实例共享时应结合业务存储与 `getUserProfile`。
+
 ### 媒体消息（预签名直传）
 
 文件不经过聊天服务：业务后端签发对象存储的预签名 URL，客户端直传后把附件描述写入消息。
 
 ```ts
-import { useChatChannel } from '@oiij/chat'
+import { useChat } from '@oiij/chat'
 
-const { sendMedia, uploadFile, send } = useChatChannel({
+const { sendMedia, uploadFile, send } = useChat({
   baseUrl: 'http://localhost:3000',
   userId: 'user-1',
-  channelId: 'room-1',
+  channels: ['room-1'],
   presign: async (file) => {
     const response = await fetch('/api/presign', {
       method: 'POST',
@@ -300,7 +321,7 @@ process.on('SIGTERM', () => void bus.close())
 
 连接地址：`ws(s)://<host>/ws?userId=<id>&token=<token>`
 
-客户端消息：`subscribe`、`unsubscribe`、`send`、`typing`、`read`、`edit`、`delete`、`recall`、`ping`。
+客户端消息：`subscribe`、`unsubscribe`、`send`、`typing`、`read`、`edit`、`delete`、`recall`、`set-presence`、`ping`。
 
 服务端消息：`message`、`status`、`typing`、`history`、`message-updated`、`message-deleted`、`read`、`presence`、`error`、`pong`。
 
@@ -308,8 +329,7 @@ process.on('SIGTERM', () => void bus.close())
 
 ## 文档
 
-- [useChatChannel 文档](./demos/use-chat-channel.md)
-- [useChatRoom 文档](./demos/use-chat-room.md)
+- [useChat 文档](./demos/use-chat.md)
 
 ## 许可证
 

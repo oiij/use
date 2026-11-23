@@ -17,6 +17,14 @@ export type ChatMessageStatus = 'sending' | 'sent' | 'delivered' | 'read' | 'fai
 export type ChatMessageType = 'text' | 'system' | (string & {})
 
 /**
+ * 用户可用状态
+ * 表示用户主动设置的在线状态，连接是否在线仍通过通道在线成员列表判断
+ * @example
+ * const availability: ChatAvailability = 'busy'
+ */
+export type ChatAvailability = 'online' | 'busy' | 'away'
+
+/**
  * 聊天用户资料
  * 描述参与聊天的用户展示信息，`id` 为唯一身份，其余字段为可变的展示资料
  * @example
@@ -33,6 +41,10 @@ export type ChatUser = {
   name?: string
   /** 头像地址，默认为 undefined */
   avatar?: string
+  /** 用户主动设置的可用状态，默认为 'online' */
+  availability?: ChatAvailability
+  /** 状态补充说明（如「会议中」），默认为 undefined */
+  statusText?: string
   /** 扩展资料，默认为 undefined */
   metadata?: Record<string, unknown>
 }
@@ -69,6 +81,49 @@ export type ChatAttachment = {
   duration?: number
   /** 缩略图地址，默认为 undefined */
   thumbnailUrl?: string
+}
+
+/**
+ * 消息中被 @ 提及的用户
+ * 记录发送时被点名用户的标识与昵称快照
+ * @example
+ * const mention: ChatMention = { id: 'user-2', name: '李四' }
+ */
+export type ChatMention = {
+  /** 被提及用户标识，无默认值（必填） */
+  id: string
+  /** 被提及用户昵称快照，默认为 undefined（展示时可回退到 id） */
+  name?: string
+}
+
+/**
+ * 引用回复的消息快照
+ * 保存被引用消息在发送时刻的关键字段，避免原消息后续编辑或撤回影响引用展示
+ * @example
+ * const quote: ChatQuotedMessage = {
+ *   id: 'msg-1',
+ *   senderId: 'user-1',
+ *   senderName: '张三',
+ *   content: '原始内容',
+ *   type: 'text',
+ *   createdAt: Date.now(),
+ * }
+ */
+export type ChatQuotedMessage = {
+  /** 被引用消息标识，无默认值（必填） */
+  id: string
+  /** 被引用消息的发送者标识，无默认值（必填） */
+  senderId: string
+  /** 被引用消息的发送者昵称快照，默认为 undefined */
+  senderName?: string
+  /** 被引用消息的文本内容，被撤回时为空字符串，无默认值（必填） */
+  content: string
+  /** 被引用消息的类型，无默认值（必填） */
+  type: ChatMessageType
+  /** 被引用消息的创建时间戳（毫秒），无默认值（必填） */
+  createdAt: number
+  /** 被引用消息在发送时是否已撤回，默认为 undefined（视为未撤回） */
+  recalled?: boolean
 }
 
 /**
@@ -110,6 +165,10 @@ export type ChatMessage = {
   recalled?: boolean
   /** 消息附件列表（图片/视频/音频/文件），默认为 undefined */
   attachments?: ChatAttachment[]
+  /** 被 @ 提及的用户列表，默认为 undefined */
+  mentions?: ChatMention[]
+  /** 引用回复的消息快照，默认为 undefined */
+  quote?: ChatQuotedMessage
 }
 
 /**
@@ -155,6 +214,10 @@ export type ChatSendInput = string | {
   metadata?: Record<string, unknown>
   /** 消息附件列表，需先直传至对象存储，默认为 undefined */
   attachments?: ChatAttachment[]
+  /** 被 @ 提及的用户标识列表，服务端会解析为昵称快照，默认为 undefined */
+  mentions?: string[]
+  /** 引用回复的消息标识，服务端会生成引用快照，默认为 undefined */
+  quoteId?: string
 }
 
 /**
@@ -167,6 +230,7 @@ export type ChatSendInput = string | {
  * - edit: 编辑消息内容
  * - delete: 删除消息
  * - recall: 撤回消息（保留占位，清空内容）
+ * - set-presence: 设置当前用户的可用状态
  * - ping: 心跳
  */
 export type ClientWireMessage
@@ -183,12 +247,23 @@ export type ClientWireMessage
       metadata?: Record<string, unknown>
       /** 消息附件列表，默认为 undefined */
       attachments?: ChatAttachment[]
+      /** 被 @ 提及的用户标识列表，默认为 undefined */
+      mentions?: string[]
+      /** 引用回复的消息标识，默认为 undefined */
+      quoteId?: string
     }
     | { type: 'typing', channelId: string }
     | { type: 'read', channelId: string, messageId?: string }
     | { type: 'edit', channelId: string, id: string, content: string }
     | { type: 'delete', channelId: string, id: string }
     | { type: 'recall', channelId: string, id: string }
+    | {
+      type: 'set-presence'
+      /** 用户可用状态，无默认值（必填） */
+      availability: ChatAvailability
+      /** 状态补充说明，省略或为空字符串时清除，默认为 undefined */
+      statusText?: string
+    }
     | { type: 'ping' }
 
 /**

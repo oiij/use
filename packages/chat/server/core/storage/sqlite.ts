@@ -1,4 +1,4 @@
-import type { ChatAttachment, ChatChannel, ChatMessage, ChatUser } from '../../../src/types'
+import type { ChatAttachment, ChatChannel, ChatMention, ChatMessage, ChatQuotedMessage, ChatUser } from '../../../src/types'
 import type { StorageAdapter } from './adapter'
 import { mkdirSync } from 'node:fs'
 import { dirname, extname, join } from 'node:path'
@@ -26,6 +26,8 @@ type MessageRow = {
   read_by: string | null
   recalled: number
   attachments: string | null
+  mentions: string | null
+  quote: string | null
 }
 
 function parseJson<T>(value: unknown, fallback: T): T {
@@ -100,7 +102,9 @@ export class SqliteStorage implements StorageAdapter {
         metadata TEXT,
         read_by TEXT,
         recalled INTEGER NOT NULL DEFAULT 0,
-        attachments TEXT
+        attachments TEXT,
+        mentions TEXT,
+        quote TEXT
       );
       CREATE INDEX IF NOT EXISTS idx_messages_channel_created
         ON messages (channel_id, created_at DESC);
@@ -111,6 +115,12 @@ export class SqliteStorage implements StorageAdapter {
     }
     if (!columns.some(column => column.name === 'sender')) {
       this.db.exec('ALTER TABLE messages ADD COLUMN sender TEXT')
+    }
+    if (!columns.some(column => column.name === 'mentions')) {
+      this.db.exec('ALTER TABLE messages ADD COLUMN mentions TEXT')
+    }
+    if (!columns.some(column => column.name === 'quote')) {
+      this.db.exec('ALTER TABLE messages ADD COLUMN quote TEXT')
     }
   }
 
@@ -165,8 +175,8 @@ export class SqliteStorage implements StorageAdapter {
 
   saveMessage(message: ChatMessage): void {
     this.db.prepare(`
-      INSERT INTO messages (id, channel_id, sender_id, sender, content, type, status, created_at, metadata, read_by, recalled, attachments)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO messages (id, channel_id, sender_id, sender, content, type, status, created_at, metadata, read_by, recalled, attachments, mentions, quote)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ON CONFLICT(id) DO UPDATE SET
         sender = excluded.sender,
         content = excluded.content,
@@ -175,7 +185,9 @@ export class SqliteStorage implements StorageAdapter {
         metadata = excluded.metadata,
         read_by = excluded.read_by,
         recalled = excluded.recalled,
-        attachments = excluded.attachments
+        attachments = excluded.attachments,
+        mentions = excluded.mentions,
+        quote = excluded.quote
     `).run(
       message.id,
       message.channelId,
@@ -189,6 +201,8 @@ export class SqliteStorage implements StorageAdapter {
       JSON.stringify(message.readBy ?? []),
       message.recalled ? 1 : 0,
       stringifyJson(message.attachments),
+      stringifyJson(message.mentions),
+      stringifyJson(message.quote),
     )
   }
 
@@ -221,6 +235,8 @@ export class SqliteStorage implements StorageAdapter {
       readBy: parseJson<string[]>(row.read_by, []),
       recalled: Number(row.recalled) === 1,
       attachments: parseJson<ChatAttachment[] | undefined>(row.attachments, undefined),
+      mentions: parseJson<ChatMention[] | undefined>(row.mentions, undefined),
+      quote: parseJson<ChatQuotedMessage | undefined>(row.quote, undefined),
     }
   }
 }

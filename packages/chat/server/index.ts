@@ -1,10 +1,13 @@
 // 前后端共享的协议类型，服务端入口也予以导出，便于在服务端代码中引用
 export type {
   ChatAttachment,
+  ChatAvailability,
   ChatChannel,
+  ChatMention,
   ChatMessage,
   ChatMessageStatus,
   ChatMessageType,
+  ChatQuotedMessage,
   ChatSendInput,
   ChatUser,
   ClientWireMessage,
