@@ -1,8 +1,8 @@
-# UseJsPDF
+# JsPDF
 
 ## 功能描述
 
-**UseJsPDF** 是一个用于 PDF 操作的工具库，支持 PDF 文档的创建、编辑、渲染和导出，可用于生成和处理 PDF 文件。
+**JsPDF** 是一个用于 PDF 操作的工具库，支持 PDF 文档的创建、编辑、渲染和导出，可用于生成和处理 PDF 文件。
 
 ## 安装
 
@@ -27,7 +27,7 @@ yarn add @oiij/js-pdf
 
 ## 基本使用
 
-<demo vue="./js-pdf.vue" title="UseJsPDF" />
+<demo vue="./js-pdf.vue" title="JsPDF" />
 
 ## API
 

@@ -1,7 +1,7 @@
-import { defineNitroConfig } from 'nitropack/config'
+import { defineNitroConfig } from 'nitro/config'
 
 export default defineNitroConfig({
-  srcDir: 'server/nitro',
+  serverDir: 'server/nitro',
   experimental: {
     websocket: true,
   },

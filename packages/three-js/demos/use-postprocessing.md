@@ -25,7 +25,7 @@ yarn add @oiij/three-js postprocessing
 
 ## 基本使用
 
-<demo vue="./three-js-plugin-postprocessing.vue" title="UsePostprocessing" />
+<demo vue="./use-postprocessing.vue" title="UsePostprocessing" />
 
 ## API
 

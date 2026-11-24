@@ -1,8 +1,8 @@
-# UseDirectives
+# Directives
 
 ## 功能描述
 
-**UseDirectives** 是一个 Vue 指令集合，提供了一系列常用的自定义指令，可用于增强 Vue 应用的交互能力。
+**Directives** 是一个 Vue 指令集合，提供了一系列常用的自定义指令，可用于增强 Vue 应用的交互能力。
 
 ## 指令列表
 
@@ -59,7 +59,7 @@ defineOptions({
 </script>
 ```
 
-<demo vue="./directives.vue" title="UseDirectives" />
+<demo vue="./directives.vue" title="Directives" />
 
 ## API
 

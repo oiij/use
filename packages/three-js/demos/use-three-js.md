@@ -25,7 +25,7 @@ yarn add @oiij/three-js
 
 ## 基本使用
 
-<demo vue="./three-js.vue" title="UseThreeJs" />
+<demo vue="./use-three-js.vue" title="UseThreeJs" />
 
 ## API
 

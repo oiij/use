@@ -1,8 +1,8 @@
-# useAutoI18n
+# UseAutoI18n
 
 ## 功能描述
 
-**useAutoI18n** 是一个 Vue I18n 工具库，为 Vue 3 应用提供自动国际化管理、语言持久化存储等实用功能，帮助开发者更高效地管理应用国际化。
+**UseAutoI18n** 是一个 Vue I18n 工具库，为 Vue 3 应用提供自动国际化管理、语言持久化存储等实用功能，帮助开发者更高效地管理应用国际化。
 
 ## 安装
 
@@ -55,7 +55,7 @@ app.mount('#app')
 
 ### 2. 在组件中使用
 
-<demo vue="./auto-i18n.vue" title="useAutoI18n" />
+<demo vue="./use-auto-i18n.vue" title="UseAutoI18n" />
 
 ## API
 
@@ -78,7 +78,7 @@ app.mount('#app')
 | `useStorageOptions`           | `UseStorageOptions`  | `{}`                          | 配置 useLocalStorage 选项      |
 | `useNavigatorLanguageOptions` | `ConfigurableWindow` | `{}`                          | 配置 useNavigatorLanguage 选项 |
 
-### `useAutoI18n()`
+### `UseAutoI18n()`
 
 获取自动国际化实例。
 
@@ -148,9 +148,9 @@ export type AutoI18nInstance<T extends Record<string, unknown>> = {
 
 ```vue
 <script setup>
-import { useAutoI18n } from '@oiij/auto-i18n'
+import { UseAutoI18n } from '@oiij/auto-i18n'
 
-const { language, navigatorLanguage, locale, setLanguage } = useAutoI18n()
+const { language, navigatorLanguage, locale, setLanguage } = UseAutoI18n()
 </script>
 
 <template>

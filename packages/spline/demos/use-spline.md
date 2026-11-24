@@ -25,7 +25,7 @@ yarn add @oiij/spline @splinetool/runtime
 
 ## 基本使用
 
-<demo vue="./spline.vue" title="UseSpline" />
+<demo vue="./use-spline.vue" title="UseSpline" />
 
 ## API
 

@@ -25,7 +25,7 @@ yarn add @oiij/e-charts
 
 ## 基本使用
 
-<demo vue="./e-charts.vue" title="UseECharts" />
+<demo vue="./use-e-charts.vue" title="UseECharts" />
 
 ## API
 

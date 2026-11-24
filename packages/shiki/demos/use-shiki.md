@@ -25,7 +25,7 @@ yarn add @oiij/shiki
 
 ## 基本使用
 
-<demo vue="./shiki.vue" title="UseShiki" />
+<demo vue="./use-shiki.vue" title="UseShiki" />
 
 ## API
 

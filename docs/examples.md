@@ -43,7 +43,6 @@ Some Composable Functions And Components for Vue 3
 - [toggle-input](/naive-ui/toggle-input) - 切换输入框
 - [tooltip-button](/naive-ui/tooltip-button) - 工具提示按钮
 - [transition](/naive-ui/transition) - 过渡效果
-- [type-writer](/naive-ui/type-writer) - 打字机效果
 - [use-naive-menu](/naive-ui/use-naive-menu) - 自动菜单生成组合式函数
 - [use-naive-form](/naive-ui/use-naive-form) - Naive UI 表单组合式函数
 - [use-naive-theme](/naive-ui/use-naive-theme) - Naive UI 主题组合式函数
@@ -70,31 +69,43 @@ Vue 3 自定义指令集合
 
 A Vue Composable for AI Editor
 
-访问 [AI Editor 示例](/ai-editor/ai-editor) 查看完整示例列表
+访问 [AI Editor 示例](/ai-editor/use-ai-editor) 查看完整示例列表
+
+### [@oiij/auto-i18n](https://www.npmjs.com/package/@oiij/auto-i18n)
+
+Vue I18n utilities and composables for Vue 3
+
+访问 [Auto I18n 示例](/auto-i18n/use-auto-i18n) 查看完整示例列表
 
 ### [@oiij/auto-router](https://www.npmjs.com/package/@oiij/auto-router)
 
 Vue Router utilities and composables for Vue 3
 
-访问 [Auto Router 示例](/auto-router/auto-router) 查看完整示例列表
+访问 [Auto Router 示例](/auto-router/use-auto-router) 查看完整示例列表
+
+### [@oiij/chat](https://www.npmjs.com/package/@oiij/chat)
+
+A full-stack message system: Vue composable frontend + Node backend powered by h3 and crossws WebSocket
+
+- [use-chat](/chat/use-chat) - 多通道实时消息（@提及、引用回复、在线状态、媒体上传）
 
 ### [@oiij/css-render](https://www.npmjs.com/package/@oiij/css-render)
 
 A Vue Composable for CssRender
 
-访问 [CSS Render 示例](/css-render/css-render) 查看完整示例列表
+访问 [CSS Render 示例](/css-render/use-css-render) 查看完整示例列表
 
 ### [@oiij/e-charts](https://www.npmjs.com/package/@oiij/e-charts)
 
 A Vue Composable for ECharts
 
-访问 [ECharts 示例](/e-charts/e-charts) 查看完整示例列表
+访问 [ECharts 示例](/e-charts/use-e-charts) 查看完整示例列表
 
 ### [@oiij/emoji-picker](https://www.npmjs.com/package/@oiij/emoji-picker)
 
 A Vue Composable for emoji-picker
 
-访问 [Emoji Picker 示例](/emoji-picker/emoji-picker) 查看完整示例列表
+访问 [Emoji Picker 示例](/emoji-picker/use-emoji-picker) 查看完整示例列表
 
 ### [@oiij/js-pdf](https://www.npmjs.com/package/@oiij/js-pdf)
 
@@ -106,37 +117,55 @@ A simple PDF library for JavaScript
 
 A Vue Composable for markdown-it
 
-访问 [Markdown It 示例](/markdown-it/markdown-it) 查看完整示例列表
+访问 [Markdown It 示例](/markdown-it/use-markdown-it) 查看完整示例列表
+
+### [@oiij/math-curve-loaders](https://www.npmjs.com/package/@oiij/math-curve-loaders)
+
+A Vue Component for math-curve-loaders
+
+访问 [Math Curve Loaders 示例](/math-curve-loaders/math-curve-loaders) 查看完整示例列表
 
 ### [@oiij/ogl](https://www.npmjs.com/package/@oiij/ogl)
 
 A Vue Composable for OGL
 
-访问 [OGL 示例](/ogl/ogl) 查看完整示例列表
+访问 [OGL 示例](/ogl/use-ogl) 查看完整示例列表
 
 ### [@oiij/shiki](https://www.npmjs.com/package/@oiij/shiki)
 
 A Vue Composable for Shiki
 
-访问 [Shiki 示例](/shiki/shiki) 查看完整示例列表
+访问 [Shiki 示例](/shiki/use-shiki) 查看完整示例列表
+
+### [@oiij/spline](https://www.npmjs.com/package/@oiij/spline)
+
+Spline 3D model loading composable for Vue 3
+
+访问 [Spline 示例](/spline/use-spline) 查看完整示例列表
 
 ### [@oiij/three-js](https://www.npmjs.com/package/@oiij/three-js)
 
 A Vue Composable for Three.js
 
-访问 [Three.js 示例](/three-js/three-js) 查看完整示例列表
+访问 [Three.js 示例](/three-js/use-three-js) 查看完整示例列表
 
 ### [@oiij/tiptap](https://www.npmjs.com/package/@oiij/tiptap)
 
 A Vue Composable for Tiptap
 
-访问 [TipTap 示例](/tiptap/tiptap) 查看完整示例列表
+访问 [TipTap 示例](/tiptap/use-tiptap) 查看完整示例列表
+
+### [@oiij/viselect](https://www.npmjs.com/package/@oiij/viselect)
+
+A Vue Composable for Viselect
+
+访问 [Viselect 示例](/viselect/viselect) 查看完整示例列表
 
 ### [@oiij/v-charts](https://www.npmjs.com/package/@oiij/v-charts)
 
 A Vue Composable for VCharts
 
-访问 [VCharts 示例](/v-charts/v-charts) 查看完整示例列表
+访问 [VCharts 示例](/v-charts/use-v-charts) 查看完整示例列表
 
 ### [@oiij/xlsx](https://www.npmjs.com/package/@oiij/xlsx)
 

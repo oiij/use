@@ -26,7 +26,7 @@ yarn add @oiij/css-render
 
 ## 基本使用
 
-<demo vue="./css-render.vue" title="UseCssRender" />
+<demo vue="./use-css-render.vue" title="UseCssRender" />
 
 ## API
 

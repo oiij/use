@@ -25,7 +25,7 @@ yarn add @oiij/ai-editor
 
 ## 基本使用
 
-<demo vue="./ai-editor.vue" title="UseAiEditor" />
+<demo vue="./use-ai-editor.vue" title="UseAiEditor" />
 
 ## API
 

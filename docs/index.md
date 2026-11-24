@@ -99,6 +99,10 @@ const { x, y } = useMouse()
 - **@oiij/three-js** - Three.js 的 Vue 3 组合式封装
 - **@oiij/ogl** - OGL WebGL 库的 Vue 3 组合式封装
 
+### 实时通信
+
+- **@oiij/chat** - 全栈实时消息系统，Vue 组合式函数 + h3/crossws WebSocket 服务端，支持多通道、@提及、引用回复、在线状态与媒体上传
+
 ### 工具库
 
 - **@oiij/utils** - JavaScript/TypeScript 工具函数集合

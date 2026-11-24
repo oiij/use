@@ -29,7 +29,7 @@ yarn add @oiij/tiptap
 
 > 需要引入样式文件 `import '@oiij/tiptap/style'`
 
-<demo vue="./tiptap.vue" title="TiptapEditor" />
+<demo vue="./use-tiptap.vue" title="TiptapEditor" />
 
 ## 组件
 

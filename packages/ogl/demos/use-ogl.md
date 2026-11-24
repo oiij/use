@@ -25,7 +25,7 @@ yarn add @oiij/ogl
 
 ## 基本使用
 
-<demo vue="./ogl.vue" title="UseOGL" />
+<demo vue="./use-ogl.vue" title="UseOGL" />
 
 ## API
 

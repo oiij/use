@@ -26,7 +26,7 @@ yarn add @oiij/markdown-it
 
 ## 基本使用
 
-<demo vue="./markdown-it.vue" title="UseMarkdownIt" />
+<demo vue="./use-markdown-it.vue" title="UseMarkdownIt" />
 
 ## API
 

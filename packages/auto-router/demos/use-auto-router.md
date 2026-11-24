@@ -1,8 +1,8 @@
-# useAutoRouter
+# UseAutoRouter
 
 ## 功能描述
 
-**useAutoRouter** 是一个 Vue Router 工具库，为 Vue 3 应用提供自动路由管理、Keep-Alive 管理和加载状态管理等实用功能，帮助开发者更高效地管理应用路由。
+**UseAutoRouter** 是一个 Vue Router 工具库，为 Vue 3 应用提供自动路由管理、Keep-Alive 管理和加载状态管理等实用功能，帮助开发者更高效地管理应用路由。
 
 ## 安装
 
@@ -53,7 +53,7 @@ app.mount('#app')
 
 ### 2. 在组件中使用
 
-<demo vue="./auto-router.vue" title="useAutoRouter" />
+<demo vue="./use-auto-router.vue" title="UseAutoRouter" />
 
 ## 路由排序
 
@@ -93,7 +93,7 @@ src/pages/
 | `router` | `Router`                    | Vue Router 实例 |
 | `routes` | `readonly RouteRecordRaw[]` | 路由配置数组    |
 
-### `useAutoRouter()`
+### `UseAutoRouter()`
 
 获取自动路由实例。
 
@@ -155,9 +155,9 @@ export type AutoRouterInstance = {
 
 ```vue
 <script setup>
-import { useAutoRouter } from '@oiij/auto-router'
+import { UseAutoRouter } from '@oiij/auto-router'
 
-const { loading, routes, flattenRoutes } = useAutoRouter()
+const { loading, routes, flattenRoutes } = UseAutoRouter()
 </script>
 
 <template>
@@ -192,9 +192,9 @@ const { loading, routes, flattenRoutes } = useAutoRouter()
 
 ```vue
 <script setup>
-import { useAutoRouter } from '@oiij/auto-router'
+import { UseAutoRouter } from '@oiij/auto-router'
 
-const { flattenRoutes } = useAutoRouter()
+const { flattenRoutes } = UseAutoRouter()
 
 // 获取需要缓存的路由名称
 const keepAliveNames = flattenRoutes
@@ -215,10 +215,10 @@ const keepAliveNames = flattenRoutes
 
 ```vue
 <script setup>
-import { useAutoRouter } from '@oiij/auto-router'
+import { UseAutoRouter } from '@oiij/auto-router'
 import { watch } from 'vue'
 
-const { loading } = useAutoRouter()
+const { loading } = UseAutoRouter()
 
 watch(loading, (isLoading) => {
   if (isLoading) {

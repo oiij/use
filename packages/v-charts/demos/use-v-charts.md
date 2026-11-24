@@ -25,7 +25,7 @@ yarn add @oiij/v-charts
 
 ## 基本使用
 
-<demo vue="./v-charts.vue" title="UseVCharts" />
+<demo vue="./use-v-charts.vue" title="UseVCharts" />
 
 ## API
 

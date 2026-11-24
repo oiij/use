@@ -26,7 +26,7 @@ yarn add @oiij/emoji-picker
 
 ## 基本使用
 
-<demo vue="./emoji-picker.vue" title="UseEmojiPicker" />
+<demo vue="./use-emoji-picker.vue" title="UseEmojiPicker" />
 
 ## API
 

@@ -25,7 +25,7 @@ yarn add @oiij/three-js @tweenjs/tween.js
 
 ## 基本使用
 
-<demo vue="./three-js-plugin-tween.vue" title="UseTween" />
+<demo vue="./use-tween.vue" title="UseTween" />
 
 ## API
 

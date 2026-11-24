@@ -4,7 +4,7 @@ import type { ChatBus } from '../core/chat-bus'
 
 /**
  * 构建 WebSocket 生命周期钩子
- * 在 upgrade 阶段完成鉴权并写入 userId 到 peer.context，在 message 阶段解析并分发协议消息
+ * 在 upgrade 阶段完成鉴权并把 userId 注入 peer.context，在 message 阶段解析并分发协议消息
  * @example
  * import { createChatServer } from '@oiij/chat/server'
  * const app = createChatServer() // 内部已挂载 createWsHooks

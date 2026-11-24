@@ -10,7 +10,7 @@
  * ```
  */
 export function resolveChatIdentity(request: Request): { userId: string, token?: string } | null {
-  const url = new URL(request.url)
+  const url = new URL(request.url, 'http://localhost')
   const userId = request.headers.get('x-chat-user') ?? url.searchParams.get('userId') ?? ''
   if (!userId) {
     return null
