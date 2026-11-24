@@ -1,7 +1,7 @@
 {
   "name": "@oiij/web-rtc",
   "type": "module",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "WebRTC real-time communication for Vue 3: useWebRTC composable + h3/crossws signaling server",
   "author": "oiij",
   "license": "MIT",
