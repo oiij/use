@@ -1,11 +1,12 @@
-import { createEventHook } from '@vueuse/core'
-import { computed, onUnmounted, ref, shallowRef, watchEffect } from 'vue'
-
-function formatTime(seconds: number) {
-  const minutes = Math.floor(seconds / 60)
-  seconds = Math.floor(seconds % 60)
-  return `${minutes}:${seconds.toString().padStart(2, '0')}`
-}
+import { createEventHook, tryOnScopeDispose } from '@vueuse/core'
+import { computed, ref, shallowRef, watchEffect } from 'vue'
+import {
+  connectFiltersInSeries,
+  createEQFilters,
+  DEFAULT_FADE_DURATION,
+  EQ_FREQUENCIES,
+  formatTime,
+} from './_audio-shared'
 
 /**
  * 淡入淡出选项
@@ -85,9 +86,7 @@ export type AudioContextBufferOptions = {
 export function useAudioContextBuffer(options?: AudioContextBufferOptions) {
   const { analyser = false, volume: defaultVolume = 80, playbackRate: defaultPlaybackRate = 1, fadeOptions } = options ?? {}
 
-  const eqFrequencies = [32, 64, 125, 250, 500, 1000, 2000, 4000, 8000, 16000]
-
-  const defaultFadeOptions = typeof fadeOptions === 'boolean' ? { fade: true, duration: 1 } : fadeOptions ?? {}
+  const defaultFadeOptions = typeof fadeOptions === 'boolean' ? { fade: true, duration: DEFAULT_FADE_DURATION } : fadeOptions ?? {}
 
   const audioContext = new AudioContext()
   const audioBuffer = shallowRef<AudioBuffer>()
@@ -98,25 +97,8 @@ export function useAudioContextBuffer(options?: AudioContextBufferOptions) {
   const bufferLength = analyserNode.frequencyBinCount
   const unit8Array = new Uint8Array(bufferLength)
 
-  const filters = eqFrequencies.map((freq) => {
-    const filter = audioContext.createBiquadFilter()
-    filter.type = 'peaking'
-    filter.frequency.value = freq
-    filter.Q.value = 1
-    filter.gain.value = 0
-    return filter
-  })
-
-  function createFilterNode() {
-    let filterNode: AudioNode = gainNode
-    filters.forEach((filter) => {
-      filterNode.connect(filter)
-      filterNode = filter
-    })
-    return filterNode as BiquadFilterNode
-  }
-
-  const filterNode = createFilterNode()
+  const filters = createEQFilters(audioContext)
+  const filterNode = connectFiltersInSeries(filters, gainNode)
 
   gainNode.connect(filterNode)
   filterNode.connect(analyserNode)
@@ -372,12 +354,12 @@ export function useAudioContextBuffer(options?: AudioContextBufferOptions) {
    * ```
    */
   function pause(options?: AudioContextBufferFadeOptions) {
-    const { fade = true, duration = 1 } = options ?? defaultFadeOptions
+    const { fade = true, duration = DEFAULT_FADE_DURATION } = options ?? defaultFadeOptions
     if (fade) {
       const currentTime = audioContext.currentTime
       gainNode.gain.cancelScheduledValues(currentTime)
       gainNode.gain.setValueAtTime(gainNode.gain.value, currentTime)
-      gainNode.gain.linearRampToValueAtTime(0, currentTime + duration)
+      gainNode.gain.exponentialRampToValueAtTime(0.0001, currentTime + duration)
       setTimeout(() => {
         audioContext.suspend()
         pauseFlag.value = audioContext.currentTime - startFlag.value
@@ -411,12 +393,12 @@ export function useAudioContextBuffer(options?: AudioContextBufferOptions) {
       play()
       return
     }
-    const { fade = true, duration = 1 } = options ?? defaultFadeOptions
+    const { fade = true, duration = DEFAULT_FADE_DURATION } = options ?? defaultFadeOptions
     if (fade) {
       const currentTime = audioContext.currentTime
       gainNode.gain.cancelScheduledValues(currentTime)
-      gainNode.gain.setValueAtTime(0, currentTime)
-      gainNode.gain.linearRampToValueAtTime(volume.value / 100, currentTime + duration)
+      gainNode.gain.setValueAtTime(0.0001, currentTime)
+      gainNode.gain.exponentialRampToValueAtTime(volume.value / 100, currentTime + duration)
       setTimeout(() => {
         audioContext.resume()
         startFlag.value = audioContext.currentTime - pauseFlag.value
@@ -502,10 +484,8 @@ export function useAudioContextBuffer(options?: AudioContextBufferOptions) {
    * ```
    */
   function setEQFrequency(index: number, value: number) {
-    if (index >= 0 && index < filters.length) {
-      if (filters[index]) {
-        filters[index].gain.value = value
-      }
+    if (filters[index]) {
+      filters[index].gain.value = value
     }
   }
 
@@ -522,10 +502,7 @@ export function useAudioContextBuffer(options?: AudioContextBufferOptions) {
    * ```
    */
   function getEQFrequency(index: number) {
-    if (index >= 0 && index < filters.length) {
-      return filters[index]?.gain.value ?? 0
-    }
-    return 0
+    return filters[index]?.gain.value ?? 0
   }
 
   /**
@@ -540,7 +517,7 @@ export function useAudioContextBuffer(options?: AudioContextBufferOptions) {
    * ```
    */
   function getEQFrequencies() {
-    return eqFrequencies.map((freq, index) => ({
+    return EQ_FREQUENCIES.map((freq, index) => ({
       frequency: freq,
       gain: getEQFrequency(index),
     }))
@@ -567,12 +544,12 @@ export function useAudioContextBuffer(options?: AudioContextBufferOptions) {
     getByteTimeDomainData()
   }
 
-  onUnmounted(() => {
+  tryOnScopeDispose(() => {
     destroy()
   })
 
   return {
-    eqFrequencies,
+    eqFrequencies: EQ_FREQUENCIES,
     audioContext,
     audioBuffer,
     bufferSource,

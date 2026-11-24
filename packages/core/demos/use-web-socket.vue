@@ -8,7 +8,7 @@ type HandlerEvent<T extends string = 'connect' | 'message'> = Record<T, {
   type: T
   data: string
 }>
-const url = ref('https://ws-test.liijs.xyz/ws')
+const url = ref('ws://localhost:3000/ws')
 const inputValue = ref('')
 const { connect, close, sendRaw, dataRecord, status, registerHandler } = useWebSocket<HandlerEvent>(url, {
   manual: false,
@@ -29,7 +29,7 @@ registerHandler('message', (data) => {
         <NButton :type="status === 'OPEN' ? 'warning' : 'default'" @click="() => status === 'OPEN' ? close() : connect()">
           {{ status === 'OPEN' ? 'Close' : 'Connect' }}
         </NButton>
-        <NButton @click="() => url = 'wss://ws-test.liijs.xyz/wss'">
+        <NButton @click="() => url = 'ws://localhost:3000/wss'">
           ChangeUrl
         </NButton>
       </div>

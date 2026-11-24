@@ -56,16 +56,30 @@ yarn add @oiij/use
 | `source`                         | `ShallowRef<EventSource \| null>` | EventSource 实例 |
 | `url`                            | `Ref<string \| URL \| undefined>` | 连接地址         |
 | `status`                         | `Ref<State>`                      | 连接状态         |
-| `data`                           | `Ref<any>`                        | 最新消息数据     |
-| `dataRecord`                     | `Ref<any[]>`                      | 消息记录         |
+| `data`                           | `Ref<D \| null>`                  | 最新消息数据     |
+| `dataRecord`                     | `Ref<D[]>`                        | 消息数据记录     |
+| `messageEvent`                   | `Ref<MessageEvent<D> \| null>`    | 最新消息事件     |
+| `messageEventRecord`             | `Ref<MessageEvent<D>[]>`          | 消息事件记录     |
 | `error`                          | `Ref<Event \| null>`              | 错误信息         |
+| `controller`                     | `ShallowRef<AbortController>`     | 中断控制器       |
 | `connect(url?, options?)`        | `Function`                        | 连接 SSE         |
 | `close()`                        | `Function`                        | 关闭连接         |
 | `destroy()`                      | `Function`                        | 销毁连接         |
 | `registerHandler(type, handler)` | `Function`                        | 注册消息处理器   |
+| `cancelHandler(type, handler)`   | `Function`                        | 取消消息处理器   |
+| `registerEvent(type, handler)`   | `Function`                        | 注册自定义事件   |
 | `onOpen(callback)`               | `Function`                        | 连接打开事件     |
 | `onMessage(callback)`            | `Function`                        | 消息接收事件     |
 | `onError(callback)`              | `Function`                        | 错误事件         |
+| `onFailed(callback)`             | `Function`                        | 重试失败事件     |
+
+## 行为说明
+
+- **消息处理器**：`registerHandler` 的回调收到的是**整条解析后的消息对象**，即泛型 `T[K]` 应描述完整消息结构（包含 `type` 字段）。
+- **自动重试**：在 `error` 事件且非主动关闭时触发；达到最大次数后触发 `onFailed` 回调与 `onFailed` 事件。EventSource 无 `close` 事件，因此不暴露 `onClose`。
+- **主动关闭不重连**：调用 `close()` 或 `destroy()` 后标记为主动关闭，不会触发自动重试；再次 `connect()` 会重置该标记。
+- **资源清理**：`destroy()` 会关闭连接、中止事件监听并清除挂起的重试定时器，组件卸载时自动调用。
+- **自定义事件持久化**：`registerEvent` 注册的监听器会在重连后自动重新绑定到新连接。
 
 ## 类型定义
 
@@ -89,19 +103,25 @@ export type UseEventSourceReturns = {
   source: ShallowRef<EventSource | null>
   url: Ref<string | URL | undefined>
   status: Ref<State>
-  data: Ref<any>
-  dataRecord: Ref<any[]>
+  data: Ref<D | null>
+  dataRecord: Ref<D[]>
+  messageEvent: Ref<MessageEvent<D> | null>
+  messageEventRecord: Ref<MessageEvent<D>[]>
   error: Ref<Event | null>
+  controller: ShallowRef<AbortController>
   connect: (url?: string | URL, options?: EventSourceInit) => void
   close: () => void
   destroy: () => void
-  registerHandler: <K>(type: K, handler: (data: any) => void) => () => void
+  registerHandler: <K extends keyof T>(type: K, handler: (data: T[K]) => void) => () => void
+  cancelHandler: <K extends keyof T>(type: K, handler: (data: T[K]) => void) => void
+  registerEvent: (type: string, handler: (ev: Event) => void) => void
   onOpen: (callback: (event: Event) => void) => void
-  onMessage: (callback: (event: MessageEvent) => void) => void
+  onMessage: (callback: (event: MessageEvent<D>) => void) => void
   onError: (callback: (event: Event) => void) => void
+  onFailed: (callback: (event: Event) => void) => void
 }
 
-export declare function useEventSource<T, D>(url?: MaybeRefOrGetter<string | URL>, options?: UseEventSourceOptions<T>): UseEventSourceReturns
+export declare function useEventSource<T extends HandlerType, D extends MessageRaw>(url?: MaybeRefOrGetter<string | URL>, options?: UseEventSourceOptions<T>): UseEventSourceReturns
 ```
 
 ## 使用示例
@@ -147,8 +167,8 @@ const { status } = useEventSource('/api/events', {
 import { useEventSource } from '@oiij/use'
 
 type EventTypes = {
-  message: { content: string }
-  notification: { title: string, body: string }
+  message: { type: 'message', content: string }
+  notification: { type: 'notification', title: string, body: string }
 }
 
 const { registerHandler } = useEventSource<EventTypes>('/api/events', {

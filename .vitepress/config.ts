@@ -20,7 +20,6 @@ export default defineConfig({
   ],
   ignoreDeadLinks: true,
   rewrites: {
-    // 'packages/core/demos/use-audio-context.md': 'core/use-audio-context.md',
     'docs/index.md': 'index.md',
     'docs/install.md': 'install.md',
     'docs/examples.md': 'examples.md',
@@ -89,8 +88,9 @@ export default defineConfig({
           ...conversionPath('packages/spline/demos', '/spline'),
           ...conversionPath('packages/three-js/demos', '/three-js'),
           ...conversionPath('packages/tiptap/demos', '/tiptap'),
-          ...conversionPath('packages/viselect/demos', '/viselect'),
           ...conversionPath('packages/v-charts/demos', '/v-charts'),
+          ...conversionPath('packages/viselect/demos', '/viselect'),
+          ...conversionPath('packages/web-rtc/demos', '/web-rtc'),
           ...conversionPath('packages/xlsx/demos', '/xlsx'),
         ],
       },

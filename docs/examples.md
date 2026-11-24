@@ -21,7 +21,6 @@ Som Composable Functions for Vue 3
 - [use-theme](/core/use-theme) - 主题管理
 - [use-type-writer](/core/use-type-writer) - 打字机效果
 - [use-view-transition](/core/use-view-transition) - 视图过渡
-- [use-web-rtc](/core/use-web-rtc) - WebRTC 通信
 - [use-web-socket](/core/use-web-socket) - WebSocket 连接
 
 ## NaiveUI
@@ -195,6 +194,12 @@ A collection of utility functions for JavaScript and TypeScript
 - `object` - 对象工具函数
 - `random` - 随机数生成
 - `string` - 字符串工具函数
+
+### [@oiij/web-rtc](https://www.npmjs.com/package/@oiij/web-rtc)
+
+WebRTC real-time communication for Vue 3: useWebRTC composable + h3/crossws signaling server
+
+- [use-web-rtc](/web-rtc/use-web-rtc) - WebRTC 实时通信（数据通道、媒体流、多对端）
 
 ## 快速导航
 

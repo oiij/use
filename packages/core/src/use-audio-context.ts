@@ -1,11 +1,13 @@
-import type { UseRafFnCallbackArguments } from '@vueuse/core'
-import { createEventHook, useEventListener, useRafFn } from '@vueuse/core'
-import { computed, onUnmounted, readonly, ref } from 'vue'
-
-const DEFAULT_FADE_DURATION = 0.5
-const MIN_VOLUME_CACHE = 0.1
-
-const EQ_FREQUENCIES = [32, 64, 125, 250, 500, 1000, 2000, 4000, 8000, 16000] as const
+import { tryOnScopeDispose, useEventListener } from '@vueuse/core'
+import { readonly } from 'vue'
+import { createAudioElementPlayback } from './_audio-element-playback'
+import {
+  clampVolume,
+  connectFiltersInSeries,
+  createEQFilters,
+  DEFAULT_FADE_DURATION,
+  EQ_FREQUENCIES,
+} from './_audio-shared'
 
 /**
  * 音频上下文淡入淡出选项
@@ -41,16 +43,6 @@ export type AudioContextOptions = {
   fade?: AudioContextFadeOptions | boolean
   /** 时间更新格式化函数，默认为 (time) => time */
   timeUpdateFormat?: (time: number) => number
-}
-
-function formatTime(seconds: number) {
-  const minutes = Math.floor(seconds / 60)
-  const remainingSeconds = Math.floor(seconds % 60)
-  return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`
-}
-
-function nanAble(val: number) {
-  return Number.isNaN(val) ? 0 : val
 }
 
 /**
@@ -101,7 +93,7 @@ function nanAble(val: number) {
  * const frequencyData = getFrequencyData()
  */
 export function useAudioContext(options?: AudioContextOptions) {
-  const { volume: defaultVolume = 1, playbackRate: defaultPlaybackRate = 1, fade, timeUpdateFormat = (time: number) => time } = options ?? {}
+  const { volume: defaultVolume = 1, playbackRate: defaultPlaybackRate = 1, fade, timeUpdateFormat } = options ?? {}
 
   const defaultFadeOptions = typeof fade === 'boolean' && fade
     ? { fade: true, duration: DEFAULT_FADE_DURATION }
@@ -119,115 +111,66 @@ export function useAudioContext(options?: AudioContextOptions) {
   const analyserNode = audioContext.createAnalyser()
   analyserNode.fftSize = 2048
 
-  const filters = EQ_FREQUENCIES.map((freq) => {
-    const filter = audioContext.createBiquadFilter()
-    filter.type = 'peaking'
-    filter.frequency.value = freq
-    filter.Q.value = 1
-    filter.gain.value = 0
-    return filter
-  })
-
-  function createFilterNode() {
-    let filterNode: AudioNode = sourceNode
-    filters.forEach((filter) => {
-      filterNode.connect(filter)
-      filterNode = filter
-    })
-    return filterNode as BiquadFilterNode
-  }
-
-  const filterNode = createFilterNode()
+  const filters = createEQFilters(audioContext)
+  const filterNode = connectFiltersInSeries(filters, sourceNode)
 
   filterNode.connect(analyserNode)
   analyserNode.connect(gainNode)
   gainNode.connect(audioContext.destination)
 
-  const onVolumeUpdateEv = createEventHook<[HTMLAudioElement, number]>()
-  const onMutedEv = createEventHook<[HTMLAudioElement]>()
-  const onRateUpdateEv = createEventHook<[HTMLAudioElement]>()
-  const onPlayingEv = createEventHook<[HTMLAudioElement]>()
-  const onPausedEv = createEventHook<[HTMLAudioElement]>()
-  const onEndedEv = createEventHook<[HTMLAudioElement]>()
-  const onTimeUpdateEv = createEventHook<[HTMLAudioElement, number]>()
-  const onTimeUpdateRafEv = createEventHook<[HTMLAudioElement, { currentTime: number, progress: number }, UseRafFnCallbackArguments]>()
-  const onDurationUpdateEv = createEventHook<[HTMLAudioElement, number]>()
+  const playback = createAudioElementPlayback({
+    audioElement,
+    defaultVolume,
+    defaultPlaybackRate,
+    timeUpdateFormat,
+    applyVolume: (v) => {
+      gainNode.gain.cancelScheduledValues(audioContext.currentTime)
+      gainNode.gain.setValueAtTime(v, audioContext.currentTime)
+    },
+    initVolume: (v) => {
+      gainNode.gain.value = v
+    },
+  })
 
-  const volumeRef = ref(defaultVolume)
-  let volumeCache: number = defaultVolume
-  const muted = computed(() => volumeRef.value === 0)
-  gainNode.gain.value = volumeRef.value
-
-  /**
-   * 设置音量
-   * 设置音频播放音量，范围在 0-1 之间
-   * @param volume 音量值（0-1）
-   * @example
-   * setVolume(0.5) // 设置音量为 50%
-   */
-  function setVolume(volume: number) {
-    const clampedVolume = Math.max(0, Math.min(1, volume))
-    gainNode.gain.cancelScheduledValues(audioContext.currentTime)
-    gainNode.gain.setValueAtTime(clampedVolume, audioContext.currentTime)
-    volumeRef.value = clampedVolume
-    onVolumeUpdateEv.trigger(audioElement, clampedVolume)
-  }
-
-  /**
-   * 设置静音状态
-   * 静音时缓存当前音量，取消静音时恢复
-   * @param muted 是否静音，默认为 true
-   * @example
-   * setMuted(true)  // 静音
-   * setMuted(false) // 取消静音
-   */
-  function setMuted(muted = true) {
-    if (muted) {
-      volumeCache = Math.max(MIN_VOLUME_CACHE, volumeRef.value)
-      onMutedEv.trigger(audioElement)
-      setVolume(0)
-    }
-    else {
-      setVolume(volumeCache)
-    }
-  }
-
-  /**
-   * 切换静音状态
-   * 在静音和非静音之间切换
-   * @example
-   * toggleMute() // 切换静音状态
-   */
-  function toggleMute() {
-    setMuted(!muted.value)
-  }
-
-  const playbackRateRef = ref(defaultPlaybackRate)
-
-  /**
-   * 设置播放速率
-   * 设置音频播放速度，1.0 为正常速度
-   * @param playbackRate 播放速率
-   * @example
-   * setPlaybackRate(1.5) // 1.5 倍速播放
-   * setPlaybackRate(0.5) // 0.5 倍速播放
-   */
-  function setPlaybackRate(playbackRate: number) {
-    audioElement.playbackRate = playbackRate
-  }
-
-  const playingRef = ref(false)
-  const pausedRef = ref(false)
-  const endedRef = ref(false)
-  const urlRef = ref<string>()
-  const currentTimeRef = ref(0)
-  const currentTimeText = computed(() => formatTime(currentTimeRef.value))
-  const progressRef = ref(0)
-  const durationRef = ref(0)
-  const durationText = computed(() => formatTime(durationRef.value))
-  const cachedDurationRef = ref(0)
-  const cachedDurationText = computed(() => formatTime(cachedDurationRef.value))
-  const cachedProgressRef = ref(0)
+  const {
+    volumeRef,
+    muted,
+    playbackRateRef,
+    playingRef,
+    pausedRef,
+    endedRef,
+    urlRef,
+    currentTimeRef,
+    currentTimeText,
+    progressRef,
+    durationRef,
+    durationText,
+    cachedDurationRef,
+    cachedDurationText,
+    cachedProgressRef,
+    onVolumeUpdateEv,
+    onMutedEv,
+    onRateUpdateEv,
+    onPlayingEv,
+    onPausedEv,
+    onEndedEv,
+    onTimeUpdateEv,
+    onTimeUpdateRafEv,
+    onDurationUpdateEv,
+    setVolume,
+    setMuted,
+    toggleMute,
+    setPlaybackRate,
+    setCurrentTime,
+    setProgress,
+    onRateChange,
+    onPlaying,
+    onPause,
+    onEnded,
+    onTimeUpdate,
+    onDurationChange,
+    onCanplay,
+  } = playback
 
   /**
    * 播放音频
@@ -259,6 +202,39 @@ export function useAudioContext(options?: AudioContextOptions) {
   }
 
   /**
+   * 执行淡出效果并暂停音频
+   * 使用 exponentialRamp 实现更平滑的衰减
+   * @param duration 淡出持续时间（秒）
+   */
+  function fadeOutAndPause(duration: number) {
+    const currentTime = audioContext.currentTime
+    gainNode.gain.cancelScheduledValues(currentTime)
+    gainNode.gain.setValueAtTime(gainNode.gain.value, currentTime)
+    gainNode.gain.setValueAtTime(0.0001, currentTime + 0.001)
+    gainNode.gain.exponentialRampToValueAtTime(0.0001, currentTime + duration)
+    setTimeout(() => {
+      audioElement.pause()
+      gainNode.gain.cancelScheduledValues(audioContext.currentTime)
+      gainNode.gain.setValueAtTime(volumeRef.value, audioContext.currentTime)
+    }, duration * 1000)
+  }
+
+  /**
+   * 执行淡入效果并恢复播放
+   * 使用 exponentialRamp 实现更自然的渐强
+   * @param duration 淡入持续时间（秒）
+   */
+  function fadeInAndResume(duration: number) {
+    const currentTime = audioContext.currentTime
+    gainNode.gain.cancelScheduledValues(currentTime)
+    gainNode.gain.setValueAtTime(0.0001, currentTime)
+    gainNode.gain.exponentialRampToValueAtTime(clampVolume(volumeRef.value), currentTime + duration)
+    setTimeout(() => {
+      audioElement.play()
+    }, duration * 1000)
+  }
+
+  /**
    * 暂停音频
    * 暂停当前播放，支持淡入淡出效果
    * @param options 暂停选项，包含 fade 和 duration
@@ -272,14 +248,7 @@ export function useAudioContext(options?: AudioContextOptions) {
       return
     }
     if (fade) {
-      const currentTime = audioContext.currentTime
-      gainNode.gain.cancelScheduledValues(currentTime)
-      gainNode.gain.setValueAtTime(gainNode.gain.value, currentTime)
-      gainNode.gain.linearRampToValueAtTime(0, currentTime + duration)
-      setTimeout(() => {
-        audioElement.pause()
-        gainNode.gain.setValueAtTime(volumeRef.value, currentTime + 10)
-      }, duration * 1000)
+      fadeOutAndPause(duration)
       return
     }
     audioElement.pause()
@@ -299,13 +268,7 @@ export function useAudioContext(options?: AudioContextOptions) {
       return
     }
     if (fade) {
-      const currentTime = audioContext.currentTime
-      gainNode.gain.cancelScheduledValues(currentTime)
-      gainNode.gain.setValueAtTime(0, currentTime)
-      gainNode.gain.linearRampToValueAtTime(volumeRef.value, currentTime + duration)
-      setTimeout(() => {
-        audioElement.play()
-      }, duration * 1000)
+      fadeInAndResume(duration)
       return
     }
     audioElement.play()
@@ -321,94 +284,6 @@ export function useAudioContext(options?: AudioContextOptions) {
    */
   function toggle(options?: AudioContextFadeOptions) {
     audioElement.paused ? resume(options) : pause(options)
-  }
-
-  /**
-   * 设置当前播放时间
-   * 跳转到指定时间位置
-   * @param time 时间（秒）
-   * @example
-   * setCurrentTime(30) // 跳转到 30 秒处
-   */
-  function setCurrentTime(time: number) {
-    audioElement.currentTime = time
-    currentTimeAndProgressEffect()
-  }
-
-  /**
-   * 设置播放进度
-   * 根据百分比设置播放位置
-   * @param progress 进度（0-100）
-   * @example
-   * setProgress(50) // 跳转到 50% 位置
-   */
-  function setProgress(progress: number) {
-    const currentTime = Number(((progress / 100) * audioElement.duration).toFixed(2))
-    audioElement.currentTime = nanAble(currentTime)
-    currentTimeAndProgressEffect()
-  }
-
-  function currentTimeAndProgressEffect() {
-    const currentTime = timeUpdateFormat(audioElement.currentTime)
-    currentTimeRef.value = currentTime
-    const progress = Number(((currentTime / audioElement.duration) * 100).toFixed(2))
-    progressRef.value = nanAble(progress)
-  }
-
-  const { resume: rafResume, pause: rafPause } = useRafFn((arg) => {
-    onTimeUpdateRafEv.trigger(audioElement, {
-      currentTime: currentTimeRef.value,
-      progress: progressRef.value,
-    }, arg)
-  }, { immediate: false })
-
-  onTimeUpdateRafEv.on(() => {
-    currentTimeAndProgressEffect()
-  })
-
-  function onRateChange() {
-    playbackRateRef.value = audioElement.playbackRate
-    onRateUpdateEv.trigger(audioElement)
-  }
-
-  function onPlaying() {
-    playingRef.value = true
-    pausedRef.value = false
-    endedRef.value = false
-    rafResume()
-    onPlayingEv.trigger(audioElement)
-  }
-
-  function onPause() {
-    playingRef.value = false
-    pausedRef.value = true
-    endedRef.value = false
-    rafPause()
-    onPausedEv.trigger(audioElement)
-  }
-
-  function onEnded() {
-    playingRef.value = false
-    pausedRef.value = false
-    endedRef.value = true
-    rafPause()
-    onEndedEv.trigger(audioElement)
-  }
-
-  function onTimeUpdate() {
-    onTimeUpdateEv.trigger(audioElement, currentTimeRef.value)
-  }
-
-  function onDurationChange() {
-    const duration = audioElement.duration
-    durationRef.value = nanAble(duration)
-    onDurationUpdateEv.trigger(audioElement, durationRef.value)
-  }
-
-  function onCanplay() {
-    const duration = audioElement.buffered.end(Math.max(0, audioElement.buffered.length - 1))
-    cachedDurationRef.value = nanAble(duration)
-    cachedProgressRef.value = nanAble(Number((duration / audioElement.duration * 100).toFixed(2)))
   }
 
   useEventListener(audioElement, 'ratechange', onRateChange)
@@ -493,7 +368,7 @@ export function useAudioContext(options?: AudioContextOptions) {
     }))
   }
 
-  onUnmounted(() => {
+  tryOnScopeDispose(() => {
     destroy()
   })
 

@@ -1,7 +1,7 @@
 import type { ChatAttachment, ChatAvailability, ChatMention, ChatMessage, ChatMessageStatus, ChatMessageType, ChatQuotedMessage, ChatSendInput, ChatUser, ServerWireMessage } from './types'
 import type { ChatUploadPresign } from './upload'
-import { createEventHook } from '@vueuse/core'
-import { computed, getCurrentScope, onScopeDispose, ref } from 'vue'
+import { createEventHook, tryOnScopeDispose } from '@vueuse/core'
+import { computed, ref } from 'vue'
 import { createLocalQueuePersistence, WsClient } from './_internal/ws-client'
 import { uploadChatFile } from './upload'
 
@@ -783,15 +783,21 @@ export function useChat(options: UseChatOptions) {
     client.connect()
   }
 
-  if (getCurrentScope()) {
-    onScopeDispose(() => {
-      for (const timer of typingTimers.values()) {
-        clearTimeout(timer)
-      }
-      typingTimers.clear()
-      client.disconnect()
-    })
+  /**
+   * 清除所有定时器并断开连接
+   * 组件卸载或作用域销毁时会自动调用
+   * @example
+   * destroy()
+   */
+  function destroy() {
+    for (const timer of typingTimers.values()) {
+      clearTimeout(timer)
+    }
+    typingTimers.clear()
+    client.disconnect()
   }
+
+  tryOnScopeDispose(destroy)
 
   return {
     rooms,

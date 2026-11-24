@@ -1,0 +1,66 @@
+{
+  "name": "@oiij/web-rtc",
+  "type": "module",
+  "version": "0.0.1",
+  "description": "WebRTC real-time communication for Vue 3: useWebRTC composable + h3/crossws signaling server",
+  "author": "oiij",
+  "license": "MIT",
+  "homepage": "https://github.com/oiij/use",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:oiij/use.git"
+  },
+  "bugs": "https://github.com/oiij/use/issues",
+  "keywords": [
+    "webrtc",
+    "signaling",
+    "websocket",
+    "vue3",
+    "composable"
+  ],
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs"
+    },
+    "./server": {
+      "types": "./dist/server/index.d.mts",
+      "import": "./dist/server/index.mjs"
+    }
+  },
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "bin": {
+    "web-rtc-server": "./dist/server/cli.mjs"
+  },
+  "files": [
+    "LICENSE",
+    "dist",
+    "package.json"
+  ],
+  "scripts": {
+    "dev": "tsdown --watch",
+    "build": "tsc --noEmit && tsdown",
+    "dev:server": "node --watch dist/server/cli.mjs",
+    "bumpp": "bumpp --no-push",
+    "prepublishOnly": "pnpm build"
+  },
+  "peerDependencies": {
+    "@vueuse/core": "^14.4.0",
+    "vue": "^3.5.42"
+  },
+  "dependencies": {
+    "crossws": "^0.4.17",
+    "h3": "^2.0.8",
+    "listhen": "^1.10.1"
+  },
+  "devDependencies": {
+    "@vueuse/core": "^14.4.0",
+    "vue": "^3.5.42"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

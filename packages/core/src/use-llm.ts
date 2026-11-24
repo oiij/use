@@ -1,6 +1,6 @@
 import type { Ref, ShallowRef } from 'vue'
-import { createEventHook } from '@vueuse/core'
-import { getCurrentScope, onScopeDispose, ref, shallowRef } from 'vue'
+import { createEventHook, tryOnScopeDispose } from '@vueuse/core'
+import { ref, shallowRef } from 'vue'
 
 /**
  * 对话角色类型
@@ -458,9 +458,7 @@ export function useLLM(options?: UseLLMOptions) {
     completed.value = false
   }
 
-  if (getCurrentScope()) {
-    onScopeDispose(abort)
-  }
+  tryOnScopeDispose(abort)
 
   return {
     messages,

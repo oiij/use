@@ -8,7 +8,7 @@ type HandlerEvent<T extends string = 'connect' | 'message'> = Record<T, {
   type: T
   data: string
 }>
-const url = ref('https://ws-test.liijs.xyz/sse')
+const url = ref('http://localhost:3000/sse')
 const { connect, close, dataRecord, status, registerHandler } = useEventSource<HandlerEvent>(url, {
   manual: true,
   parseMessage: true,

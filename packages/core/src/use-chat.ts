@@ -1,7 +1,7 @@
 import type { Ref } from 'vue'
 import type { LLMRequestOptions, UseLLMOptions } from './use-llm'
-import { createEventHook } from '@vueuse/core'
-import { computed, getCurrentScope, onScopeDispose, reactive, ref, watch } from 'vue'
+import { createEventHook, tryOnScopeDispose } from '@vueuse/core'
+import { computed, reactive, ref, watch } from 'vue'
 import { streamLLM } from './use-llm'
 
 /**
@@ -940,18 +940,16 @@ export function useChat(options?: UseChatOptions) {
     trimSessions()
   }
 
-  if (getCurrentScope()) {
-    onScopeDispose(() => {
-      for (const id of Object.keys(runtimes)) {
-        abortSession(id)
-      }
-      if (saveTimer) {
-        clearTimeout(saveTimer)
-        saveTimer = null
-        write()
-      }
-    })
-  }
+  tryOnScopeDispose(() => {
+    for (const id of Object.keys(runtimes)) {
+      abortSession(id)
+    }
+    if (saveTimer) {
+      clearTimeout(saveTimer)
+      saveTimer = null
+      write()
+    }
+  })
 
   return {
     sessions,

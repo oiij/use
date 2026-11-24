@@ -53,7 +53,6 @@ yarn add @oiij/use
 | `useTheme`              | 主题管理（暗黑模式切换） |
 | `useTypeWriter`         | 打字机效果               |
 | `useWebSocket`          | WebSocket 连接管理       |
-| `useWebRTC`             | WebRTC 实时通信          |
 | `useEventSource`        | SSE 服务器发送事件       |
 | `useAudio`              | 音频播放控制             |
 | `useAudioContext`       | Web Audio API 封装       |
