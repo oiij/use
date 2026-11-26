@@ -12,11 +12,19 @@ const prompt = ref('用一句话介绍一下 Vue3 的响应式原理')
 async function mockFetch(_input: RequestInfo | URL, init?: RequestInit) {
   const body = JSON.parse(String(init?.body ?? '{}')) as { messages?: { role: string, content: string }[] }
   const last = [...(body.messages ?? [])].reverse().find(item => item.role === 'user')?.content ?? ''
+  const reasoning = `（模拟思考）用户说的是：${last}，先梳理要点再作答。`
   const text = `（模拟流式输出）你刚才说：${last}`
   const signal = init?.signal
   const stream = new ReadableStream<Uint8Array>({
     async start(controller) {
       try {
+        for (const char of [...reasoning]) {
+          if (signal?.aborted) {
+            throw new DOMException('Aborted', 'AbortError')
+          }
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ choices: [{ delta: { reasoning_content: char } }] })}\n\n`))
+          await new Promise(resolve => setTimeout(resolve, 20))
+        }
         for (const char of [...text]) {
           if (signal?.aborted) {
             throw new DOMException('Aborted', 'AbortError')
@@ -153,6 +161,7 @@ function handleSend() {
           </NButton>
         </NFlex>
       </template>
+      <pre v-if="message.reasoning" style="margin: 0 0 8px; white-space: pre-wrap; color: #666;">{{ message.reasoning }}</pre>
       <pre style="margin: 0; white-space: pre-wrap;">{{ message.content || '…' }}</pre>
     </NCard>
     <NInput v-model:value="prompt" type="textarea" :rows="3" placeholder="输入对话内容" />

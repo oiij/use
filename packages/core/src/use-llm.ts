@@ -21,6 +21,21 @@ export type LLMMessage = {
   role: LLMRole
   /** 消息文本内容，无默认值（必填） */
   content: string
+  /** 思考/推理内容，仅用于展示不会随请求发送，默认为 undefined */
+  reasoning?: string
+}
+
+/**
+ * 流式分片内容
+ * 描述单个流式分片中解析出的正文增量与思考/推理增量，两者可同时存在
+ * @example
+ * const chunk: LLMChunk = { reasoning: '先分析问题……', content: '答案是 42' }
+ */
+export type LLMChunk = {
+  /** 正文增量，默认为 '' */
+  content?: string
+  /** 思考/推理增量，默认为 '' */
+  reasoning?: string
 }
 
 /**
@@ -64,37 +79,83 @@ export type UseLLMOptions = LLMRequestOptions & {
   messages?: LLMMessage[]
   /** 自定义 fetch 实现，默认为 globalThis.fetch */
   fetch?: typeof fetch
-  /** 自定义分片解析函数，返回字符串表示增量内容，返回空值表示跳过，默认为 OpenAI 兼容格式解析 */
-  parseChunk?: (data: unknown, raw: string) => string | undefined | null
+  /** 自定义分片解析函数，返回字符串视为正文增量，返回 LLMChunk 可同时给出正文与推理增量，返回空值表示跳过，默认为兼容 OpenAI、DeepSeek、Ollama 与 Anthropic 的格式解析 */
+  parseChunk?: ParseChunk
 }
 
-function extractDelta(data: unknown): string | undefined {
+function readString(value: unknown): string | undefined {
+  return typeof value === 'string' && value ? value : undefined
+}
+
+function extractChunk(data: unknown): LLMChunk {
   if (typeof data === 'string') {
-    return data
+    return { content: data }
   }
   if (!data || typeof data !== 'object') {
-    return undefined
+    return {}
   }
   const record = data as Record<string, any>
+  if (record.type === 'content_block_delta' && record.delta && typeof record.delta === 'object') {
+    const delta = record.delta as Record<string, any>
+    if (delta.type === 'thinking_delta') {
+      return { reasoning: readString(delta.thinking) }
+    }
+    if (delta.type === 'text_delta') {
+      return { content: readString(delta.text) }
+    }
+  }
+  if (typeof record.type === 'string' && record.type.startsWith('response.')) {
+    const delta = readString(record.delta)
+    if (record.type.startsWith('response.reasoning')) {
+      return { reasoning: delta }
+    }
+    if (record.type === 'response.output_text.delta') {
+      return { content: delta }
+    }
+  }
   const choice = Array.isArray(record.choices) ? record.choices[0] : undefined
-  const candidates = [
+  const message = record.message && typeof record.message === 'object' ? record.message : undefined
+  const content = [
     choice?.delta?.content,
     choice?.message?.content,
     choice?.text,
     record.content,
     record.response,
-  ]
-  for (const candidate of candidates) {
-    if (typeof candidate === 'string' && candidate) {
-      return candidate
-    }
-  }
-  return undefined
+    message?.content,
+  ].map(readString).find(Boolean)
+  const reasoning = [
+    choice?.delta?.reasoning_content,
+    choice?.delta?.reasoning,
+    choice?.delta?.thinking,
+    choice?.message?.reasoning_content,
+    choice?.message?.reasoning,
+    choice?.message?.thinking,
+    message?.reasoning_content,
+    message?.reasoning,
+    message?.thinking,
+    record.reasoning_content,
+    record.reasoning,
+    record.thinking,
+  ].map(readString).find(Boolean)
+  return { content, reasoning }
 }
 
-type ParseChunk = (data: unknown, raw: string) => string | undefined | null
+type ParseChunk = (data: unknown, raw: string) => string | LLMChunk | undefined | null
 
-function applyPayload(payload: string, parseChunk: ParseChunk | undefined, emit: (delta: string) => void) {
+function normalizeChunk(result: string | LLMChunk | undefined | null): LLMChunk {
+  if (typeof result === 'string') {
+    return { content: readString(result) }
+  }
+  if (!result || typeof result !== 'object') {
+    return {}
+  }
+  return {
+    content: readString(result.content),
+    reasoning: readString(result.reasoning),
+  }
+}
+
+function applyPayload(payload: string, parseChunk: ParseChunk | undefined, write: (chunk: LLMChunk) => void) {
   if (payload === '[DONE]') {
     return true
   }
@@ -105,14 +166,11 @@ function applyPayload(payload: string, parseChunk: ParseChunk | undefined, emit:
   catch {
     data = payload
   }
-  const delta = parseChunk ? parseChunk(data, payload) : extractDelta(data)
-  if (typeof delta === 'string' && delta) {
-    emit(delta)
-  }
+  write(normalizeChunk(parseChunk ? parseChunk(data, payload) : extractChunk(data)))
   return false
 }
 
-function consumeLine(line: string, parseChunk: ParseChunk | undefined, emit: (delta: string) => void) {
+function consumeLine(line: string, parseChunk: ParseChunk | undefined, write: (chunk: LLMChunk) => void) {
   const value = line.trim()
   if (!value || value.startsWith(':')) {
     return false
@@ -121,26 +179,26 @@ function consumeLine(line: string, parseChunk: ParseChunk | undefined, emit: (de
   if (!payload) {
     return false
   }
-  return applyPayload(payload, parseChunk, emit)
+  return applyPayload(payload, parseChunk, write)
 }
 
-function consumeText(text: string, parseChunk: ParseChunk | undefined, emit: (delta: string) => void) {
+function consumeText(text: string, parseChunk: ParseChunk | undefined, write: (chunk: LLMChunk) => void) {
   const value = text.trim()
   if (!value) {
     return
   }
   if (value.startsWith('data:')) {
     for (const line of value.split('\n')) {
-      if (consumeLine(line, parseChunk, emit)) {
+      if (consumeLine(line, parseChunk, write)) {
         return
       }
     }
     return
   }
-  applyPayload(value, parseChunk, emit)
+  applyPayload(value, parseChunk, write)
 }
 
-async function readStream(stream: ReadableStream<Uint8Array>, parseChunk: ParseChunk | undefined, emit: (delta: string) => void) {
+async function readStream(stream: ReadableStream<Uint8Array>, parseChunk: ParseChunk | undefined, write: (chunk: LLMChunk) => void) {
   const reader = stream.getReader()
   const decoder = new TextDecoder()
   let buffer = ''
@@ -151,14 +209,14 @@ async function readStream(stream: ReadableStream<Uint8Array>, parseChunk: ParseC
     const lines = buffer.split('\n')
     buffer = lines.pop() ?? ''
     for (const line of lines) {
-      if (consumeLine(line, parseChunk, emit)) {
+      if (consumeLine(line, parseChunk, write)) {
         ended = true
         break
       }
     }
     if (chunk.done) {
       if (!ended && buffer.trim()) {
-        consumeLine(buffer, parseChunk, emit)
+        consumeLine(buffer, parseChunk, write)
       }
       ended = true
     }
@@ -183,18 +241,20 @@ export type StreamLLMOptions = LLMRequestOptions & {
   messages: LLMMessage[]
   /** 请求中断信号，默认为 undefined */
   signal?: AbortSignal
-  /** 增量内容回调，无默认值（必填） */
+  /** 正文增量回调，无默认值（必填） */
   emit: (delta: string) => void
+  /** 思考/推理增量回调，未提供时推理内容会被忽略，默认为 undefined */
+  emitReasoning?: (delta: string) => void
   /** 自定义 fetch 实现，默认为 globalThis.fetch */
   fetch?: typeof fetch
-  /** 自定义分片解析函数，默认为 OpenAI 兼容格式解析 */
+  /** 自定义分片解析函数，默认为兼容 OpenAI、DeepSeek、Ollama 与 Anthropic 的格式解析 */
   parseChunk?: ParseChunk
 }
 
 /**
  * 发起一次流式 LLM 请求
  * 兼容 OpenAI Chat Completions 协议，负责地址拼接、请求头/请求体组装与 SSE 分片解析，
- * 并通过 emit 回调实时返回增量内容；请求失败时抛出 Error
+ * 并通过 emit 回调实时返回正文增量、通过可选的 emitReasoning 回调返回思考/推理增量；请求失败时抛出 Error
  *
  * @param options 流式请求配置
  *
@@ -207,7 +267,20 @@ export type StreamLLMOptions = LLMRequestOptions & {
  *   model: 'gpt-4o-mini',
  *   messages: [{ role: 'user', content: '你好' }],
  *   signal: controller.signal,
- *   emit: delta => console.log('增量:', delta),
+ *   emit: delta => console.log('正文:', delta),
+ * })
+ * ```
+ *
+ * @example
+ * ```ts
+ * // 同时接收推理过程与正文
+ * await streamLLM({
+ *   baseURL: 'https://api.deepseek.com/v1',
+ *   apiKey: 'sk-xxx',
+ *   model: 'deepseek-reasoner',
+ *   messages: [{ role: 'user', content: '9.11 和 9.8 哪个大？' }],
+ *   emit: delta => console.log('正文:', delta),
+ *   emitReasoning: delta => console.log('思考:', delta),
  * })
  * ```
  */
@@ -222,6 +295,7 @@ export async function streamLLM(options: StreamLLMOptions) {
     messages,
     signal,
     emit,
+    emitReasoning,
     fetch: fetcher = globalThis.fetch,
     parseChunk,
   } = options
@@ -250,18 +324,26 @@ export async function streamLLM(options: StreamLLMOptions) {
     throw new Error(`LLM request failed with status ${response.status}${detail ? `: ${detail}` : ''}`)
   }
   const contentType = response.headers.get('content-type') ?? ''
+  const write = (chunk: LLMChunk) => {
+    if (chunk.content) {
+      emit(chunk.content)
+    }
+    if (chunk.reasoning) {
+      emitReasoning?.(chunk.reasoning)
+    }
+  }
   if (response.body && !contentType.includes('application/json')) {
-    await readStream(response.body, parseChunk, emit)
+    await readStream(response.body, parseChunk, write)
   }
   else {
-    consumeText(await response.text(), parseChunk, emit)
+    consumeText(await response.text(), parseChunk, write)
   }
 }
 
 /**
  * 流式 LLM 请求器
  * 基于原生 fetch 封装的流式对话组合式函数，兼容 OpenAI Chat Completions 协议，
- * 支持 SSE 流式增量输出、中断请求、重置对话以及自定义分片解析
+ * 支持 SSE 流式增量输出、思考/推理过程输出、中断请求、重置对话以及自定义分片解析
  *
  * @param options 请求配置选项
  * @returns 对话状态、请求方法以及事件钩子
@@ -305,6 +387,32 @@ export async function streamLLM(options: StreamLLMOptions) {
  * send('写一首关于秋天的短诗')
  * abort()
  * ```
+ *
+ * @example
+ * ```ts
+ * // 接收思考过程（如 deepseek-reasoner、GLM-Z1 等推理模型）
+ * const { content, reasoning, send, onReasoning } = useLLM({
+ *   baseURL: 'https://api.deepseek.com/v1',
+ *   apiKey: 'sk-xxx',
+ *   model: 'deepseek-reasoner',
+ * })
+ *
+ * onReasoning((delta, full) => console.log('思考:', delta, '累计:', full))
+ *
+ * await send('9.11 和 9.8 哪个大？')
+ * console.log(reasoning.value, content.value)
+ * ```
+ *
+ * @example
+ * ```ts
+ * // 非流式响应或自定义协议：从分片中同时返回正文与推理
+ * const { content, reasoning, send } = useLLM({
+ *   parseChunk: (data) => {
+ *     const delta = (data as any)?.choices?.[0]?.delta ?? {}
+ *     return { content: delta.content, reasoning: delta.reasoning_content }
+ *   },
+ * })
+ * ```
  */
 export function useLLM(options?: UseLLMOptions) {
   const {
@@ -321,12 +429,14 @@ export function useLLM(options?: UseLLMOptions) {
 
   const messages: Ref<LLMMessage[]> = ref(initialMessages.map(message => ({ ...message })))
   const content: Ref<string> = ref('')
+  const reasoning: Ref<string> = ref('')
   const loading: Ref<boolean> = ref(false)
   const completed: Ref<boolean> = ref(false)
   const error: Ref<Error | null> = ref(null)
   const controller: ShallowRef<AbortController | null> = shallowRef(null)
 
-  const onChunkEvent = createEventHook<[delta: string, content: string]>()
+  const onChunkEvent = createEventHook<[delta: string, content: string, reasoning: string]>()
+  const onReasoningEvent = createEventHook<[delta: string, reasoning: string]>()
   const onDoneEvent = createEventHook<[content: string]>()
   const onErrorEvent = createEventHook<[error: Error]>()
 
@@ -334,7 +444,7 @@ export function useLLM(options?: UseLLMOptions) {
 
   /**
    * 发送对话请求
-   * 将输入追加到对话记录后发起流式请求，增量内容会实时写入 content
+   * 将输入追加到对话记录后发起流式请求，正文增量实时写入 content，思考/推理增量实时写入 reasoning
    *
    * @param input 用户输入的文本、单条消息或多条消息
    * @param overrides 本次请求的配置覆盖项
@@ -361,9 +471,11 @@ export function useLLM(options?: UseLLMOptions) {
       : Array.isArray(input) ? input : [input]
 
     messages.value.push(...inputs.map(message => ({ ...message })))
-    const assistantIndex = messages.value.push({ role: 'assistant', content: '' }) - 1
+    const assistantIndex = messages.value.push({ role: 'assistant', content: '', reasoning: '' }) - 1
     const assistant = messages.value[assistantIndex]
-    const payloadMessages = messages.value.slice(0, -1)
+    const payloadMessages = messages.value
+      .slice(0, -1)
+      .map(message => ({ role: message.role, content: message.content }))
     const emit = (delta: string) => {
       if (currentId !== requestId) {
         return
@@ -372,10 +484,21 @@ export function useLLM(options?: UseLLMOptions) {
       if (assistant) {
         assistant.content += delta
       }
-      onChunkEvent.trigger(delta, content.value)
+      onChunkEvent.trigger(delta, content.value, reasoning.value)
+    }
+    const emitReasoning = (delta: string) => {
+      if (currentId !== requestId) {
+        return
+      }
+      reasoning.value += delta
+      if (assistant) {
+        assistant.reasoning = (assistant.reasoning ?? '') + delta
+      }
+      onReasoningEvent.trigger(delta, reasoning.value)
     }
 
     content.value = ''
+    reasoning.value = ''
     error.value = null
     completed.value = false
     loading.value = true
@@ -396,6 +519,7 @@ export function useLLM(options?: UseLLMOptions) {
         parseChunk,
         signal: abortController.signal,
         emit,
+        emitReasoning,
       })
       if (currentId === requestId) {
         completed.value = true
@@ -411,7 +535,7 @@ export function useLLM(options?: UseLLMOptions) {
     }
     finally {
       const index = assistant ? messages.value.indexOf(assistant) : -1
-      if (assistant && index !== -1 && !assistant.content) {
+      if (assistant && index !== -1 && !assistant.content && !assistant.reasoning) {
         messages.value.splice(index, 1)
       }
       if (currentId === requestId) {
@@ -454,6 +578,7 @@ export function useLLM(options?: UseLLMOptions) {
     abort()
     messages.value = initialMessages.map(message => ({ ...message }))
     content.value = ''
+    reasoning.value = ''
     error.value = null
     completed.value = false
   }
@@ -463,6 +588,7 @@ export function useLLM(options?: UseLLMOptions) {
   return {
     messages,
     content,
+    reasoning,
     loading,
     completed,
     error,
@@ -471,6 +597,7 @@ export function useLLM(options?: UseLLMOptions) {
     abort,
     reset,
     onChunk: onChunkEvent.on,
+    onReasoning: onReasoningEvent.on,
     onDone: onDoneEvent.on,
     onError: onErrorEvent.on,
   }
@@ -478,7 +605,7 @@ export function useLLM(options?: UseLLMOptions) {
 
 /**
  * useLLM 函数的返回类型
- * 包含对话记录、流式输出内容、请求状态、控制方法与事件钩子
+ * 包含对话记录、流式输出内容、思考/推理内容、请求状态、控制方法与事件钩子
  * @example
  * const llm: UseLLMReturns = useLLM({ apiKey: 'sk-xxx' })
  */

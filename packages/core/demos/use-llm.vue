@@ -14,11 +14,19 @@ const prompt = ref('用一句话介绍一下 Vue3 的响应式原理')
 async function mockFetch(_input: RequestInfo | URL, init?: RequestInit) {
   const body = JSON.parse(String(init?.body ?? '{}')) as { messages?: { content: string }[] }
   const last = body.messages?.at(-1)?.content ?? ''
+  const reasoning = `（模拟思考）用户说的是：${last}，先理解再回答。`
   const text = `（模拟流式输出）你刚才说：${last}`
   const signal = init?.signal
   const stream = new ReadableStream<Uint8Array>({
     async start(controller) {
       try {
+        for (const char of [...reasoning]) {
+          if (signal?.aborted) {
+            throw new DOMException('Aborted', 'AbortError')
+          }
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ choices: [{ delta: { reasoning_content: char } }] })}\n\n`))
+          await new Promise(resolve => setTimeout(resolve, 20))
+        }
         for (const char of [...text]) {
           if (signal?.aborted) {
             throw new DOMException('Aborted', 'AbortError')
@@ -39,7 +47,7 @@ async function mockFetch(_input: RequestInfo | URL, init?: RequestInit) {
 
 const fetcher: typeof fetch = (input, init) => mock.value ? mockFetch(input, init) : fetch(input, init)
 
-const { content, loading, completed, error, messages, send, abort, reset } = useLLM({ fetch: fetcher })
+const { content, reasoning, loading, completed, error, messages, send, abort, reset } = useLLM({ fetch: fetcher })
 
 function handleSend() {
   if (!prompt.value.trim()) {
@@ -88,6 +96,14 @@ function handleReset() {
         重置
       </NButton>
     </NFlex>
+    <NCard v-if="reasoning">
+      <template #header>
+        <NTag size="small" type="info">
+          思考过程
+        </NTag>
+      </template>
+      <pre style="margin: 0; white-space: pre-wrap; color: #666;">{{ reasoning }}</pre>
+    </NCard>
     <NCard>
       <pre style="margin: 0; white-space: pre-wrap;">{{ content }}</pre>
       <p v-if="error" style="margin: 8px 0 0; color: #d03050;">

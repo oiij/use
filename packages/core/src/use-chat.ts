@@ -40,6 +40,8 @@ export type ChatMessage = {
   role: ChatRole
   /** 消息文本内容，无默认值（必填） */
   content: string
+  /** 思考/推理内容，仅用于展示不会随请求发送，默认为 undefined */
+  reasoning?: string
   /** 创建时间戳（毫秒），无默认值（必填） */
   createdAt: number
   /** 消息状态，默认为 'done' */
@@ -204,6 +206,7 @@ function normalizeSession(value: unknown): ChatSession | null {
       id: typeof message.id === 'string' ? message.id : createId(),
       role: message.role === 'system' || message.role === 'user' || message.role === 'assistant' ? message.role : 'user',
       content: message.content,
+      reasoning: typeof message.reasoning === 'string' ? message.reasoning : undefined,
       createdAt: typeof message.createdAt === 'number' ? message.createdAt : Date.now(),
       status: message.status === 'streaming' ? 'done' : message.status ?? 'done',
     }))
@@ -218,7 +221,7 @@ function normalizeSession(value: unknown): ChatSession | null {
 
 /**
  * 多会话聊天组合式函数
- * 在流式请求基础上提供多会话管理、消息状态维护、重新生成、失败重试、
+ * 在流式请求基础上提供多会话管理、消息状态维护、思考/推理过程记录、重新生成、失败重试、
  * 消息增删改以及可配置的本地持久化能力
  *
  * @param options 聊天配置选项
@@ -264,6 +267,21 @@ function normalizeSession(value: unknown): ChatSession | null {
  * await regenerate()
  * abort()
  * ```
+ *
+ * @example
+ * ```ts
+ * // 记录思考过程（如 deepseek-reasoner 等推理模型）
+ * const { reasoning, send, onReasoning } = useChat({
+ *   baseURL: 'https://api.deepseek.com/v1',
+ *   apiKey: 'sk-xxx',
+ *   model: 'deepseek-reasoner',
+ * })
+ *
+ * onReasoning((delta, full, session) => console.log(session.id, '思考:', delta))
+ *
+ * await send('9.11 和 9.8 哪个大？')
+ * console.log(reasoning.value)
+ * ```
  */
 export function useChat(options?: UseChatOptions) {
   const config = {
@@ -287,6 +305,7 @@ export function useChat(options?: UseChatOptions) {
   const runtimes = reactive<Record<string, ChatRuntime>>({})
 
   const onChunkEvent = createEventHook<[delta: string, content: string, session: ChatSession]>()
+  const onReasoningEvent = createEventHook<[delta: string, reasoning: string, session: ChatSession]>()
   const onDoneEvent = createEventHook<[message: ChatMessage, session: ChatSession]>()
   const onErrorEvent = createEventHook<[error: Error, session: ChatSession]>()
 
@@ -307,6 +326,7 @@ export function useChat(options?: UseChatOptions) {
     return undefined
   })
   const content = computed(() => lastAssistantMessage.value?.content ?? '')
+  const reasoning = computed(() => lastAssistantMessage.value?.reasoning ?? '')
   const loading = computed(() => runtimes[currentSessionId.value]?.loading ?? false)
   const completed = computed(() => runtimes[currentSessionId.value]?.completed ?? false)
   const error = computed(() => runtimes[currentSessionId.value]?.error ?? null)
@@ -475,14 +495,15 @@ export function useChat(options?: UseChatOptions) {
     }
     const current = overrides ?? runtime.lastOverrides ?? {}
 
-    const assistant: ChatMessage = {
+    session.messages.push({
       id: createId(),
       role: 'assistant',
       content: '',
+      reasoning: '',
       createdAt: Date.now(),
       status: 'streaming',
-    }
-    session.messages.push(assistant)
+    })
+    const assistant = session.messages[session.messages.length - 1]!
     const payloadMessages = session.messages
       .slice(0, -1)
       .filter(message => message.content.trim())
@@ -494,6 +515,14 @@ export function useChat(options?: UseChatOptions) {
       assistant.content += delta
       session.updatedAt = Date.now()
       onChunkEvent.trigger(delta, assistant.content, session)
+    }
+    const emitReasoning = (delta: string) => {
+      if (requestId !== runtime.requestId) {
+        return
+      }
+      assistant.reasoning = (assistant.reasoning ?? '') + delta
+      session.updatedAt = Date.now()
+      onReasoningEvent.trigger(delta, assistant.reasoning, session)
     }
 
     const controller = new AbortController()
@@ -515,6 +544,7 @@ export function useChat(options?: UseChatOptions) {
         parseChunk: config.parseChunk,
         signal: controller.signal,
         emit,
+        emitReasoning,
       })
       if (requestId === runtime.requestId) {
         runtime.completed = true
@@ -526,7 +556,7 @@ export function useChat(options?: UseChatOptions) {
     catch (err) {
       if (requestId === runtime.requestId) {
         if (controller.signal.aborted) {
-          assistant.status = assistant.content ? 'done' : 'error'
+          assistant.status = assistant.content || assistant.reasoning ? 'done' : 'error'
         }
         else {
           const reason = err instanceof Error ? err : new Error(String(err))
@@ -538,9 +568,9 @@ export function useChat(options?: UseChatOptions) {
     }
     finally {
       if (assistant.status === 'streaming') {
-        assistant.status = assistant.content ? 'done' : 'error'
+        assistant.status = assistant.content || assistant.reasoning ? 'done' : 'error'
       }
-      if (!assistant.content) {
+      if (!assistant.content && !assistant.reasoning) {
         const index = session.messages.indexOf(assistant)
         if (index !== -1) {
           session.messages.splice(index, 1)
@@ -959,6 +989,7 @@ export function useChat(options?: UseChatOptions) {
     lastMessage,
     lastAssistantMessage,
     content,
+    reasoning,
     loading,
     completed,
     error,
@@ -977,6 +1008,7 @@ export function useChat(options?: UseChatOptions) {
     clearSessions,
     setOptions,
     onChunk: onChunkEvent.on,
+    onReasoning: onReasoningEvent.on,
     onDone: onDoneEvent.on,
     onError: onErrorEvent.on,
   }
@@ -984,7 +1016,7 @@ export function useChat(options?: UseChatOptions) {
 
 /**
  * useChat 函数的返回类型
- * 包含会话列表、当前会话、消息状态、控制方法与事件钩子
+ * 包含会话列表、当前会话、消息状态、思考/推理内容、控制方法与事件钩子
  * @example
  * const chat: UseChatReturns = useChat({ apiKey: 'sk-xxx' })
  */

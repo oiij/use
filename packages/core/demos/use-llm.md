@@ -2,7 +2,7 @@
 
 ## 功能描述
 
-**UseLLM** 是一个基于原生 `fetch` 封装的流式 LLM 请求组合式函数，兼容 OpenAI Chat Completions 协议。它提供了对话记录管理、SSE 流式增量输出、请求中断、对话重置以及自定义分片解析能力，可用于快速接入 OpenAI、DeepSeek、Ollama 等兼容接口的模型服务。
+**UseLLM** 是一个基于原生 `fetch` 封装的流式 LLM 请求组合式函数，兼容 OpenAI Chat Completions 协议。它提供了对话记录管理、SSE 流式增量输出、思考/推理过程输出、请求中断、对话重置以及自定义分片解析能力，可用于快速接入 OpenAI、DeepSeek、Ollama 等兼容接口的模型服务。
 
 ## 安装
 
@@ -40,24 +40,25 @@ yarn add @oiij/use
 
 #### UseLLMOptions
 
-| 选项         | 类型                                                          | 默认值                        | 说明                                 |
-| ------------ | ------------------------------------------------------------- | ----------------------------- | ------------------------------------ |
-| `baseURL`    | `string`                                                      | `'https://api.openai.com/v1'` | 接口基础地址                         |
-| `endpoint`   | `string`                                                      | `'/chat/completions'`         | 接口路径，会与 `baseURL` 拼接        |
-| `apiKey`     | `string`                                                      | `''`                          | 接口密钥，为空时不携带鉴权头         |
-| `model`      | `string`                                                      | `'gpt-4o-mini'`               | 模型名称                             |
-| `headers`    | `Record<string, string>`                                      | `{}`                          | 附加请求头                           |
-| `body`       | `Record<string, unknown>`                                     | `{}`                          | 附加请求体字段                       |
-| `messages`   | `LLMMessage[]`                                                | `[]`                          | 初始对话消息                         |
-| `fetch`      | `typeof fetch`                                                | `globalThis.fetch`            | 自定义 fetch 实现                    |
-| `parseChunk` | `(data: unknown, raw: string) => string \| undefined \| null` | OpenAI 兼容格式解析           | 自定义分片解析函数，返回空值表示跳过 |
+| 选项         | 类型                                                                      | 默认值                                                | 说明                                                                                                   |
+| ------------ | ------------------------------------------------------------------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `baseURL`    | `string`                                                                  | `'https://api.openai.com/v1'`                         | 接口基础地址                                                                                           |
+| `endpoint`   | `string`                                                                  | `'/chat/completions'`                                 | 接口路径，会与 `baseURL` 拼接                                                                          |
+| `apiKey`     | `string`                                                                  | `''`                                                  | 接口密钥，为空时不携带鉴权头                                                                           |
+| `model`      | `string`                                                                  | `'gpt-4o-mini'`                                       | 模型名称                                                                                               |
+| `headers`    | `Record<string, string>`                                                  | `{}`                                                  | 附加请求头                                                                                             |
+| `body`       | `Record<string, unknown>`                                                 | `{}`                                                  | 附加请求体字段                                                                                         |
+| `messages`   | `LLMMessage[]`                                                            | `[]`                                                  | 初始对话消息                                                                                           |
+| `fetch`      | `typeof fetch`                                                            | `globalThis.fetch`                                    | 自定义 fetch 实现                                                                                      |
+| `parseChunk` | `(data: unknown, raw: string) => string \| LLMChunk \| undefined \| null` | 兼容 OpenAI、DeepSeek、Ollama 与 Anthropic 的格式解析 | 自定义分片解析函数，返回字符串视为正文增量，返回 `LLMChunk` 可同时给出正文与推理增量，返回空值表示跳过 |
 
 #### 返回值
 
 | 属性                      | 类型                                  | 说明                                             |
 | ------------------------- | ------------------------------------- | ------------------------------------------------ |
-| `messages`                | `Ref<LLMMessage[]>`                   | 对话记录（包含流式写入的回复）                   |
-| `content`                 | `Ref<string>`                         | 当前回复的累计文本                               |
+| `messages`                | `Ref<LLMMessage[]>`                   | 对话记录（包含流式写入的回复与推理）             |
+| `content`                 | `Ref<string>`                         | 当前回复的累计正文                               |
+| `reasoning`               | `Ref<string>`                         | 当前回复的累计思考/推理内容                      |
 | `loading`                 | `Ref<boolean>`                        | 是否正在请求                                     |
 | `completed`               | `Ref<boolean>`                        | 本次请求是否正常完成                             |
 | `error`                   | `Ref<Error \| null>`                  | 错误信息                                         |
@@ -65,8 +66,9 @@ yarn add @oiij/use
 | `send(input, overrides?)` | `Function`                            | 发送对话请求，`input` 支持字符串、单条或多条消息 |
 | `abort()`                 | `Function`                            | 中断当前请求，已输出内容会保留                   |
 | `reset()`                 | `Function`                            | 中断并重置对话与状态                             |
-| `onChunk(callback)`       | `Function`                            | 分片事件，参数为 `(增量, 累计内容)`              |
-| `onDone(callback)`        | `Function`                            | 完成事件，参数为累计内容                         |
+| `onChunk(callback)`       | `Function`                            | 分片事件，参数为 `(增量, 累计正文, 累计推理)`    |
+| `onReasoning(callback)`   | `Function`                            | 推理分片事件，参数为 `(增量, 累计推理)`          |
+| `onDone(callback)`        | `Function`                            | 完成事件，参数为累计正文                         |
 | `onError(callback)`       | `Function`                            | 错误事件，参数为 `Error`                         |
 
 ## 类型定义
@@ -77,6 +79,12 @@ export type LLMRole = 'system' | 'user' | 'assistant'
 export type LLMMessage = {
   role: LLMRole
   content: string
+  reasoning?: string
+}
+
+export type LLMChunk = {
+  content?: string
+  reasoning?: string
 }
 
 export type LLMRequestOptions = {
@@ -91,12 +99,13 @@ export type LLMRequestOptions = {
 export type UseLLMOptions = LLMRequestOptions & {
   messages?: LLMMessage[]
   fetch?: typeof fetch
-  parseChunk?: (data: unknown, raw: string) => string | undefined | null
+  parseChunk?: (data: unknown, raw: string) => string | LLMChunk | undefined | null
 }
 
 export type UseLLMReturns = {
   messages: Ref<LLMMessage[]>
   content: Ref<string>
+  reasoning: Ref<string>
   loading: Ref<boolean>
   completed: Ref<boolean>
   error: Ref<Error | null>
@@ -104,7 +113,8 @@ export type UseLLMReturns = {
   send: (input: string | LLMMessage | LLMMessage[], overrides?: Partial<LLMRequestOptions>) => Promise<void>
   abort: () => void
   reset: () => void
-  onChunk: (callback: (delta: string, content: string) => void) => () => void
+  onChunk: (callback: (delta: string, content: string, reasoning: string) => void) => () => void
+  onReasoning: (callback: (delta: string, reasoning: string) => void) => () => void
   onDone: (callback: (content: string) => void) => () => void
   onError: (callback: (error: Error) => void) => () => void
 }
@@ -180,6 +190,44 @@ const { content, send } = useLLM({
 
 await send('你好')
 ```
+
+### 接收思考/推理过程
+
+DeepSeek-R1、GLM-Z1 等推理模型会在 `delta.reasoning_content` 中返回思考过程，默认解析器已兼容这类字段，可直接通过 `reasoning` 读取：
+
+```ts
+import { useLLM } from '@oiij/use'
+
+const { content, reasoning, send, onReasoning } = useLLM({
+  baseURL: 'https://api.deepseek.com/v1',
+  apiKey: 'sk-xxx',
+  model: 'deepseek-reasoner',
+})
+
+onReasoning((delta, full) => console.log('思考:', delta, '累计:', full))
+
+await send('9.11 和 9.8 哪个大？')
+console.log(reasoning.value)
+console.log(content.value)
+```
+
+自定义协议下，可让 `parseChunk` 同时返回正文与推理：
+
+```ts
+const { content, reasoning, send } = useLLM({
+  parseChunk: (data) => {
+    const delta = (data as any)?.choices?.[0]?.delta ?? {}
+    return { content: delta.content, reasoning: delta.reasoning_content }
+  },
+})
+```
+
+已支持的内置解析字段：
+
+- OpenAI 兼容：`choices[0].delta.content` / `choices[0].delta.reasoning_content`、`choices[0].delta.reasoning`、`choices[0].delta.thinking`
+- Ollama 原生：`message.content` / `message.thinking`
+- Anthropic 流式：`content_block_delta` 中的 `text_delta` 与 `thinking_delta`
+- OpenAI Responses：`response.output_text.delta` 与 `response.reasoning*.delta`
 
 ### 中断与事件监听
 

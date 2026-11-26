@@ -2,7 +2,7 @@
 
 ## 功能描述
 
-**UseChat** 是一个多会话聊天组合式函数，基于流式请求提供完整的多轮对话能力。它在消息列表、流式输出与请求中断的基础上，增加了会话管理、消息状态维护、重新生成、失败重试、消息增删改，以及可配置的本地持久化。
+**UseChat** 是一个多会话聊天组合式函数，基于流式请求提供完整的多轮对话能力。它在消息列表、流式输出与请求中断的基础上，增加了会话管理、消息状态维护、思考/推理过程记录、重新生成、失败重试、消息增删改，以及可配置的本地持久化。
 
 ## 安装
 
@@ -40,54 +40,56 @@ yarn add @oiij/use
 
 #### UseChatOptions
 
-| 选项           | 类型                                                          | 默认值                        | 说明                                 |
-| -------------- | ------------------------------------------------------------- | ----------------------------- | ------------------------------------ |
-| `baseURL`      | `string`                                                      | `'https://api.openai.com/v1'` | 接口基础地址                         |
-| `endpoint`     | `string`                                                      | `'/chat/completions'`         | 接口路径，会与 `baseURL` 拼接        |
-| `apiKey`       | `string`                                                      | `''`                          | 接口密钥，为空时不携带鉴权头         |
-| `model`        | `string`                                                      | `'gpt-4o-mini'`               | 模型名称                             |
-| `headers`      | `Record<string, string>`                                      | `{}`                          | 附加请求头                           |
-| `body`         | `Record<string, unknown>`                                     | `{}`                          | 附加请求体字段                       |
-| `messages`     | `ChatInputMessage[]`                                          | `[]`                          | 初始会话消息                         |
-| `systemPrompt` | `string`                                                      | `''`                          | 系统提示词，作为每个新会话的首条消息 |
-| `fetch`        | `typeof fetch`                                                | `globalThis.fetch`            | 自定义 fetch 实现                    |
-| `parseChunk`   | `(data: unknown, raw: string) => string \| undefined \| null` | OpenAI 兼容格式解析           | 自定义分片解析函数，返回空值表示跳过 |
-| `storage`      | `ChatStorage`                                                 | `'localStorage'`              | 持久化存储，传 `false` 关闭          |
-| `storageKey`   | `string`                                                      | `'__USE_CHAT__'`              | 持久化键名                           |
-| `maxSessions`  | `number`                                                      | `20`                          | 最大会话数量，超出按更新时间淘汰     |
-| `titleLength`  | `number`                                                      | `20`                          | 自动生成会话标题的最大字符数         |
+| 选项           | 类型                                                                      | 默认值                                                | 说明                                                                                                   |
+| -------------- | ------------------------------------------------------------------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `baseURL`      | `string`                                                                  | `'https://api.openai.com/v1'`                         | 接口基础地址                                                                                           |
+| `endpoint`     | `string`                                                                  | `'/chat/completions'`                                 | 接口路径，会与 `baseURL` 拼接                                                                          |
+| `apiKey`       | `string`                                                                  | `''`                                                  | 接口密钥，为空时不携带鉴权头                                                                           |
+| `model`        | `string`                                                                  | `'gpt-4o-mini'`                                       | 模型名称                                                                                               |
+| `headers`      | `Record<string, string>`                                                  | `{}`                                                  | 附加请求头                                                                                             |
+| `body`         | `Record<string, unknown>`                                                 | `{}`                                                  | 附加请求体字段                                                                                         |
+| `messages`     | `ChatInputMessage[]`                                                      | `[]`                                                  | 初始会话消息                                                                                           |
+| `systemPrompt` | `string`                                                                  | `''`                                                  | 系统提示词，作为每个新会话的首条消息                                                                   |
+| `fetch`        | `typeof fetch`                                                            | `globalThis.fetch`                                    | 自定义 fetch 实现                                                                                      |
+| `parseChunk`   | `(data: unknown, raw: string) => string \| LLMChunk \| undefined \| null` | 兼容 OpenAI、DeepSeek、Ollama 与 Anthropic 的格式解析 | 自定义分片解析函数，返回字符串视为正文增量，返回 `LLMChunk` 可同时给出正文与推理增量，返回空值表示跳过 |
+| `storage`      | `ChatStorage`                                                             | `'localStorage'`                                      | 持久化存储，传 `false` 关闭                                                                            |
+| `storageKey`   | `string`                                                                  | `'__USE_CHAT__'`                                      | 持久化键名                                                                                             |
+| `maxSessions`  | `number`                                                                  | `20`                                                  | 最大会话数量，超出按更新时间淘汰                                                                       |
+| `titleLength`  | `number`                                                                  | `20`                                                  | 自动生成会话标题的最大字符数                                                                           |
 
 #### 返回值
 
-| 属性                                  | 类型                                    | 说明                                         |
-| ------------------------------------- | --------------------------------------- | -------------------------------------------- |
-| `sessions`                            | `Ref<ChatSession[]>`                    | 全部会话列表                                 |
-| `currentSessionId`                    | `Ref<string>`                           | 当前会话标识                                 |
-| `currentSession`                      | `ComputedRef<ChatSession \| undefined>` | 当前会话                                     |
-| `messages`                            | `ComputedRef<ChatMessage[]>`            | 当前会话的消息列表                           |
-| `lastMessage`                         | `ComputedRef<ChatMessage \| undefined>` | 当前会话最后一条消息                         |
-| `lastAssistantMessage`                | `ComputedRef<ChatMessage \| undefined>` | 当前会话最后一条助手消息                     |
-| `content`                             | `ComputedRef<string>`                   | 当前会话最后一条助手消息的内容               |
-| `loading`                             | `ComputedRef<boolean>`                  | 当前会话是否正在请求                         |
-| `completed`                           | `ComputedRef<boolean>`                  | 当前会话本次请求是否正常完成                 |
-| `error`                               | `ComputedRef<Error \| null>`            | 当前会话的错误信息                           |
-| `send(input, overrides?)`             | `Function`                              | 发送消息，`input` 支持字符串、单条或多条输入 |
-| `abort()`                             | `Function`                              | 中断当前会话的请求                           |
-| `reset()`                             | `Function`                              | 中断请求并重置当前会话，仅保留系统提示词     |
-| `regenerate()`                        | `Function`                              | 移除末尾回答并重新生成                       |
-| `retry()`                             | `Function`                              | 失败后使用上一次配置重新发起请求             |
-| `removeMessage(id)`                   | `Function`                              | 删除单条消息                                 |
-| `clearMessages()`                     | `Function`                              | 清空当前会话全部消息                         |
-| `updateMessage(id, content, resend?)` | `Function`                              | 更新消息内容，可选择重新发起请求             |
-| `createSession(title?, messages?)`    | `Function`                              | 新建并切换到新会话                           |
-| `switchSession(id)`                   | `Function`                              | 切换会话                                     |
-| `deleteSession(id)`                   | `Function`                              | 删除会话，删除当前会话时自动切换             |
-| `renameSession(id, title)`            | `Function`                              | 重命名会话                                   |
-| `clearSessions()`                     | `Function`                              | 清空全部会话并创建一个新会话                 |
-| `setOptions(options)`                 | `Function`                              | 运行时更新请求配置与系统提示词               |
-| `onChunk(callback)`                   | `Function`                              | 分片事件，参数为 `(增量, 累计内容, 会话)`    |
-| `onDone(callback)`                    | `Function`                              | 完成事件，参数为 `(助手消息, 会话)`          |
-| `onError(callback)`                   | `Function`                              | 错误事件，参数为 `(Error, 会话)`             |
+| 属性                                  | 类型                                    | 说明                                          |
+| ------------------------------------- | --------------------------------------- | --------------------------------------------- |
+| `sessions`                            | `Ref<ChatSession[]>`                    | 全部会话列表                                  |
+| `currentSessionId`                    | `Ref<string>`                           | 当前会话标识                                  |
+| `currentSession`                      | `ComputedRef<ChatSession \| undefined>` | 当前会话                                      |
+| `messages`                            | `ComputedRef<ChatMessage[]>`            | 当前会话的消息列表                            |
+| `lastMessage`                         | `ComputedRef<ChatMessage \| undefined>` | 当前会话最后一条消息                          |
+| `lastAssistantMessage`                | `ComputedRef<ChatMessage \| undefined>` | 当前会话最后一条助手消息                      |
+| `content`                             | `ComputedRef<string>`                   | 当前会话最后一条助手消息的内容                |
+| `reasoning`                           | `ComputedRef<string>`                   | 当前会话最后一条助手消息的思考/推理内容       |
+| `loading`                             | `ComputedRef<boolean>`                  | 当前会话是否正在请求                          |
+| `completed`                           | `ComputedRef<boolean>`                  | 当前会话本次请求是否正常完成                  |
+| `error`                               | `ComputedRef<Error \| null>`            | 当前会话的错误信息                            |
+| `send(input, overrides?)`             | `Function`                              | 发送消息，`input` 支持字符串、单条或多条输入  |
+| `abort()`                             | `Function`                              | 中断当前会话的请求                            |
+| `reset()`                             | `Function`                              | 中断请求并重置当前会话，仅保留系统提示词      |
+| `regenerate()`                        | `Function`                              | 移除末尾回答并重新生成                        |
+| `retry()`                             | `Function`                              | 失败后使用上一次配置重新发起请求              |
+| `removeMessage(id)`                   | `Function`                              | 删除单条消息                                  |
+| `clearMessages()`                     | `Function`                              | 清空当前会话全部消息                          |
+| `updateMessage(id, content, resend?)` | `Function`                              | 更新消息内容，可选择重新发起请求              |
+| `createSession(title?, messages?)`    | `Function`                              | 新建并切换到新会话                            |
+| `switchSession(id)`                   | `Function`                              | 切换会话                                      |
+| `deleteSession(id)`                   | `Function`                              | 删除会话，删除当前会话时自动切换              |
+| `renameSession(id, title)`            | `Function`                              | 重命名会话                                    |
+| `clearSessions()`                     | `Function`                              | 清空全部会话并创建一个新会话                  |
+| `setOptions(options)`                 | `Function`                              | 运行时更新请求配置与系统提示词                |
+| `onChunk(callback)`                   | `Function`                              | 分片事件，参数为 `(增量, 累计内容, 会话)`     |
+| `onReasoning(callback)`               | `Function`                              | 推理分片事件，参数为 `(增量, 累计推理, 会话)` |
+| `onDone(callback)`                    | `Function`                              | 完成事件，参数为 `(助手消息, 会话)`           |
+| `onError(callback)`                   | `Function`                              | 错误事件，参数为 `(Error, 会话)`              |
 
 ## 类型定义
 
@@ -100,6 +102,7 @@ export type ChatMessage = {
   id: string
   role: ChatRole
   content: string
+  reasoning?: string
   createdAt: number
   status?: ChatMessageStatus
 }
@@ -248,4 +251,41 @@ onError((err, session) => {
 })
 
 await send('写一首关于秋天的短诗')
+```
+
+### 记录思考/推理过程
+
+推理模型返回的思考内容会写入对应助手消息的 `reasoning` 字段，并持久化到本地：
+
+```ts
+import { useChat } from '@oiij/use'
+
+const { messages, reasoning, send, onReasoning } = useChat({
+  baseURL: 'https://api.deepseek.com/v1',
+  apiKey: 'sk-xxx',
+  model: 'deepseek-reasoner',
+})
+
+onReasoning((delta, full, session) => {
+  console.log(session.id, '思考增量:', delta)
+})
+
+await send('9.11 和 9.8 哪个大？')
+console.log(reasoning.value)
+
+// 渲染时按消息展示
+for (const message of messages.value) {
+  console.log(message.reasoning, message.content)
+}
+```
+
+自定义协议下，可让 `parseChunk` 同时返回正文与推理：
+
+```ts
+const { send } = useChat({
+  parseChunk: (data) => {
+    const delta = (data as any)?.choices?.[0]?.delta ?? {}
+    return { content: delta.content, reasoning: delta.reasoning_content }
+  },
+})
 ```
