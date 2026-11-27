@@ -2,7 +2,7 @@
 
 ## 功能描述
 
-**UseLLM** 是一个基于原生 `fetch` 封装的流式 LLM 请求组合式函数，兼容 OpenAI Chat Completions 协议。它提供了对话记录管理、SSE 流式增量输出、思考/推理过程输出、请求中断、对话重置以及自定义分片解析能力，可用于快速接入 OpenAI、DeepSeek、Ollama 等兼容接口的模型服务。
+**UseLLM** 是一个基于原生 `fetch` 封装的流式 LLM 请求组合式函数，兼容 OpenAI Chat Completions 协议。它提供了对话记录管理、SSE 流式增量输出、思考/推理过程输出、请求中断、对话重置、本地持久化以及自定义分片解析能力，可用于快速接入 OpenAI、DeepSeek、Ollama 等兼容接口的模型服务。
 
 ## 安装
 
@@ -49,6 +49,8 @@ yarn add @oiij/use
 | `headers`    | `Record<string, string>`                                                  | `{}`                                                  | 附加请求头                                                                                             |
 | `body`       | `Record<string, unknown>`                                                 | `{}`                                                  | 附加请求体字段                                                                                         |
 | `messages`   | `LLMMessage[]`                                                            | `[]`                                                  | 初始对话消息                                                                                           |
+| `storage`    | `'localStorage' \| 'sessionStorage' \| LLMStorageAdapter \| false`        | `'localStorage'`                                      | 持久化存储，设为 `false` 关闭持久化                                                                    |
+| `storageKey` | `string`                                                                  | `'__USE_LLM__'`                                       | 持久化键名                                                                                             |
 | `fetch`      | `typeof fetch`                                                            | `globalThis.fetch`                                    | 自定义 fetch 实现                                                                                      |
 | `parseChunk` | `(data: unknown, raw: string) => string \| LLMChunk \| undefined \| null` | 兼容 OpenAI、DeepSeek、Ollama 与 Anthropic 的格式解析 | 自定义分片解析函数，返回字符串视为正文增量，返回 `LLMChunk` 可同时给出正文与推理增量，返回空值表示跳过 |
 
@@ -96,8 +98,18 @@ export type LLMRequestOptions = {
   body?: Record<string, unknown>
 }
 
+export type LLMStorageAdapter = {
+  getItem: (key: string) => string | null | Promise<string | null>
+  setItem: (key: string, value: string) => void | Promise<void>
+  removeItem?: (key: string) => void | Promise<void>
+}
+
+export type LLMStorage = 'localStorage' | 'sessionStorage' | LLMStorageAdapter | false
+
 export type UseLLMOptions = LLMRequestOptions & {
   messages?: LLMMessage[]
+  storage?: LLMStorage
+  storageKey?: string
   fetch?: typeof fetch
   parseChunk?: (data: unknown, raw: string) => string | LLMChunk | undefined | null
 }
@@ -161,6 +173,24 @@ const { messages, content, send } = useLLM({
 await send('解释一下响应式原理')
 await send('再举一个例子')
 ```
+
+### 持久化对话
+
+对话记录默认保存到 `localStorage`，刷新页面后会自动恢复；也可以通过 `storage` 切换到 `sessionStorage`、传入自定义适配器或设为 `false` 关闭持久化：
+
+```ts
+import { useLLM } from '@oiij/use'
+
+const { messages, send } = useLLM({
+  apiKey: 'sk-xxx',
+  storage: 'sessionStorage',
+  storageKey: '__MY_LLM__',
+})
+
+await send('你好')
+```
+
+调用 `reset()` 后，持久化内容会同步覆盖为初始消息。
 
 ### 接入其他服务商
 

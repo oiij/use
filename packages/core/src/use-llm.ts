@@ -1,6 +1,6 @@
 import type { Ref, ShallowRef } from 'vue'
 import { createEventHook, tryOnScopeDispose } from '@vueuse/core'
-import { ref, shallowRef } from 'vue'
+import { ref, shallowRef, watch } from 'vue'
 
 /**
  * 对话角色类型
@@ -64,19 +64,52 @@ export type LLMRequestOptions = {
 }
 
 /**
+ * 持久化适配器
+ * 描述自定义存储介质需要实现的最小接口
+ * @example
+ * const adapter: LLMStorageAdapter = {
+ *   getItem: key => localStorage.getItem(key),
+ *   setItem: (key, value) => localStorage.setItem(key, value),
+ *   removeItem: key => localStorage.removeItem(key)
+ * }
+ */
+export type LLMStorageAdapter = {
+  /** 读取存储内容，无默认值（必填） */
+  getItem: (key: string) => string | null | Promise<string | null>
+  /** 写入存储内容，无默认值（必填） */
+  setItem: (key: string, value: string) => void | Promise<void>
+  /** 移除存储内容，默认为 undefined */
+  removeItem?: (key: string) => void | Promise<void>
+}
+
+/**
+ * 持久化存储类型
+ * - 'localStorage': 使用浏览器本地存储
+ * - 'sessionStorage': 使用浏览器会话存储
+ * - LLMStorageAdapter: 自定义存储适配器
+ * - false: 关闭持久化
+ */
+export type LLMStorage = 'localStorage' | 'sessionStorage' | LLMStorageAdapter | false
+
+/**
  * useLLM 配置选项
- * 在请求配置基础上增加初始消息、自定义 fetch 与分片解析能力
+ * 在请求配置基础上增加初始消息、持久化、自定义 fetch 与分片解析能力
  * @example
  * const options: UseLLMOptions = {
  *   apiKey: 'sk-xxx',
  *   model: 'gpt-4o-mini',
  *   messages: [{ role: 'system', content: '你是一个助手' }],
+ *   storageKey: '__USE_LLM__',
  *   parseChunk: data => (data as any)?.choices?.[0]?.delta?.content
  * }
  */
 export type UseLLMOptions = LLMRequestOptions & {
   /** 初始对话消息，默认为 [] */
   messages?: LLMMessage[]
+  /** 持久化存储，默认为 'localStorage' */
+  storage?: LLMStorage
+  /** 持久化键名，默认为 '__USE_LLM__' */
+  storageKey?: string
   /** 自定义 fetch 实现，默认为 globalThis.fetch */
   fetch?: typeof fetch
   /** 自定义分片解析函数，返回字符串视为正文增量，返回 LLMChunk 可同时给出正文与推理增量，返回空值表示跳过，默认为兼容 OpenAI、DeepSeek、Ollama 与 Anthropic 的格式解析 */
@@ -153,6 +186,50 @@ function normalizeChunk(result: string | LLMChunk | undefined | null): LLMChunk 
     content: readString(result.content),
     reasoning: readString(result.reasoning),
   }
+}
+
+function isPromise<T>(value: unknown): value is Promise<T> {
+  return !!value && typeof (value as Promise<T>).then === 'function'
+}
+
+function resolveStorage(storage: LLMStorage | undefined): LLMStorageAdapter | null {
+  if (storage === false) {
+    return null
+  }
+  if (storage && typeof storage === 'object') {
+    return storage
+  }
+  if (typeof window === 'undefined') {
+    return null
+  }
+  try {
+    return storage === 'sessionStorage' ? window.sessionStorage : window.localStorage
+  }
+  catch {
+    return null
+  }
+}
+
+function normalizeStoredMessages(value: unknown): LLMMessage[] | null {
+  if (!Array.isArray(value)) {
+    return null
+  }
+  const list: LLMMessage[] = []
+  for (const item of value) {
+    if (!item || typeof item !== 'object') {
+      continue
+    }
+    const record = item as LLMMessage
+    if (typeof record.content !== 'string') {
+      continue
+    }
+    list.push({
+      role: record.role === 'system' || record.role === 'user' || record.role === 'assistant' ? record.role : 'user',
+      content: record.content,
+      ...(typeof record.reasoning === 'string' ? { reasoning: record.reasoning } : {}),
+    })
+  }
+  return list
 }
 
 function applyPayload(payload: string, parseChunk: ParseChunk | undefined, write: (chunk: LLMChunk) => void) {
@@ -413,6 +490,19 @@ export async function streamLLM(options: StreamLLMOptions) {
  *   },
  * })
  * ```
+ *
+ * @example
+ * ```ts
+ * // 持久化对话记录，并在刷新后恢复
+ * const { messages, send } = useLLM({
+ *   apiKey: 'sk-xxx',
+ *   storage: 'localStorage',
+ *   storageKey: '__USE_LLM__',
+ * })
+ *
+ * await send('你好')
+ * console.log(messages.value)
+ * ```
  */
 export function useLLM(options?: UseLLMOptions) {
   const {
@@ -423,9 +513,11 @@ export function useLLM(options?: UseLLMOptions) {
     headers = {},
     body = {},
     messages: initialMessages = [],
+    storageKey = '__USE_LLM__',
     parseChunk,
   } = options ?? {}
   const fetcher = options?.fetch ?? globalThis.fetch
+  const storage = resolveStorage(options?.storage ?? 'localStorage')
 
   const messages: Ref<LLMMessage[]> = ref(initialMessages.map(message => ({ ...message })))
   const content: Ref<string> = ref('')
@@ -441,6 +533,93 @@ export function useLLM(options?: UseLLMOptions) {
   const onErrorEvent = createEventHook<[error: Error]>()
 
   let requestId = 0
+  let hydrated = false
+  let saveTimer: ReturnType<typeof setTimeout> | null = null
+
+  function restore(raw: string | null | undefined) {
+    if (!raw) {
+      return false
+    }
+    try {
+      const data = JSON.parse(raw) as { messages?: unknown }
+      const list = normalizeStoredMessages(data.messages)
+      if (!list || !list.length) {
+        return false
+      }
+      messages.value = list
+      for (let index = list.length - 1; index >= 0; index--) {
+        const message = list[index]!
+        if (message.role === 'assistant') {
+          content.value = message.content
+          reasoning.value = message.reasoning ?? ''
+          break
+        }
+      }
+      return true
+    }
+    catch {
+      return false
+    }
+  }
+
+  function snapshot() {
+    return JSON.stringify({
+      version: 1,
+      messages: messages.value.filter(message => message.role !== 'assistant' || message.content || message.reasoning),
+    })
+  }
+
+  function write() {
+    if (!storage || !hydrated) {
+      return
+    }
+    try {
+      const result = storage.setItem(storageKey, snapshot())
+      if (isPromise(result)) {
+        result.catch(() => {})
+      }
+    }
+    catch {}
+  }
+
+  function persist() {
+    if (!storage || !hydrated) {
+      return
+    }
+    if (saveTimer) {
+      clearTimeout(saveTimer)
+    }
+    saveTimer = setTimeout(() => {
+      saveTimer = null
+      write()
+    }, 300)
+  }
+
+  function hydrate() {
+    if (!storage) {
+      hydrated = true
+      return
+    }
+    try {
+      const raw = storage.getItem(storageKey)
+      if (isPromise<string | null>(raw)) {
+        raw
+          .then((value) => {
+            restore(value)
+            hydrated = true
+          })
+          .catch(() => {
+            hydrated = true
+          })
+        return
+      }
+      restore(raw)
+      hydrated = true
+    }
+    catch {
+      hydrated = true
+    }
+  }
 
   /**
    * 发送对话请求
@@ -564,7 +743,7 @@ export function useLLM(options?: UseLLMOptions) {
 
   /**
    * 重置对话
-   * 中断当前请求并清空对话记录、输出内容、错误与完成状态
+   * 中断当前请求并清空对话记录、输出内容、错误与完成状态，持久化内容会同步覆盖为初始消息
    *
    * @example
    * ```ts
@@ -583,7 +762,17 @@ export function useLLM(options?: UseLLMOptions) {
     completed.value = false
   }
 
-  tryOnScopeDispose(abort)
+  hydrate()
+  watch(messages, persist, { deep: true })
+
+  tryOnScopeDispose(() => {
+    abort()
+    if (saveTimer) {
+      clearTimeout(saveTimer)
+      saveTimer = null
+      write()
+    }
+  })
 
   return {
     messages,
