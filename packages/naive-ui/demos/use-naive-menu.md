@@ -192,7 +192,7 @@ type UseNaiveMenuOptions = {
   createMenuOption?: (route: RouteRecordRaw) => MenuOption
 }
 
-type UseNaiveMenuReturn = {
+type UseNaiveMenuReturns = {
   /**
    * 菜单选项数组（嵌套结构）
    */

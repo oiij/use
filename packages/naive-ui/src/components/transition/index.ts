@@ -1,5 +1,5 @@
 import type { TransitionProps as BaseTransitionProps } from 'vue'
-import type { ClassStyle } from '../data-table-plus'
+import type { ClassStyle } from '../_utils/types'
 
 export { default as NTransition } from './BaseTransition.vue'
 

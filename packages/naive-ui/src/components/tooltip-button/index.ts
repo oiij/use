@@ -1,5 +1,5 @@
 import type { ButtonProps, TooltipProps } from 'naive-ui'
-import type { ClassStyle } from '../data-table-plus'
+import type { ClassStyle } from '../_utils/types'
 
 export { default as NTooltipButton } from './TooltipButton.vue'
 

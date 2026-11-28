@@ -1,23 +1,15 @@
 import type { DataTableColumns, DataTableFilterState, DataTableInst, DataTableProps, DataTableSortState, PaginationProps } from 'naive-ui'
 import type { FilterState, RowKey, TableBaseColumn } from 'naive-ui/es/data-table/src/interface'
-import type { CSSProperties, Ref, ShallowRef } from 'vue'
+import type { Ref, ShallowRef } from 'vue'
 import type { ComponentExposed } from 'vue-component-type-helpers'
 import type { DataObject, DataRequestFields, UseDataRequestReturns } from '../../composables/use-data-request'
+import type { ClassStyle } from '../_utils/types'
 import type { RemoteRequestEmits, RemoteRequestProps } from '../remote-request/index'
 import type { SearchInputProps } from '../search-input/index'
 import type DataTablePlus from './DataTablePlus.vue'
 
+export type { ClassStyle } from '../_utils/types'
 export { default as NDataTablePlus } from './DataTablePlus.vue'
-
-/**
- * 类样式类型
- */
-export type ClassStyle = {
-  /** CSS 类名 */
-  class?: string
-  /** CSS 样式 */
-  style?: CSSProperties | string
-}
 
 /**
  * 数据表格增强组件暴露的方法
@@ -32,6 +24,8 @@ export type DataTablePlusExpose<P extends DataObject = DataObject, D extends Dat
   sorters: Ref<Record<string, DataTableSortState> | undefined>
   /** 数据表格实例 */
   dataTableInst: Readonly<ShallowRef<DataTableInst | null>>
+  /** 重置 DataTable：清空 filters / sorters、回到第一页、用初始参数重新请求 */
+  reset: () => void
 }
 
 /**

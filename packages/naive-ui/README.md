@@ -19,6 +19,7 @@ Use NaiveUI 是基于 Naive UI 的 Vue 3 组件库扩展，提供了一系列实
 
 - 📊 增强型数据表格
 - 📝 预设表单、输入框、选择器
+- 💬 对话气泡组件
 - 🌐 远程请求组件
 - ✨ 过渡动画组件
 
@@ -144,6 +145,17 @@ const { theme, darkMode, themeOverrides } = useNaiveTheme()
 
 ## 组件
 
+### Bubble
+
+对话气泡。
+
+```vue
+<template>
+  <Bubble placement="start" name="Vue 助手" content="你好，有什么可以帮你？" />
+  <Bubble placement="end" name="我" content="介绍一下这个组件" />
+</template>
+```
+
 ### ConfigProviders
 
 全局配置提供者。
@@ -231,21 +243,21 @@ const options = [
 </template>
 ```
 
-### PresetInput
+### PresetField
 
-预设输入框。
+预设字段控件，配置驱动的输入组件。
 
 ```vue
 <script setup>
-import { PresetInput } from '@oiij/naive-ui'
+import { PresetField } from '@oiij/naive-ui'
 import { ref } from 'vue'
 
 const value = ref('')
-const options = { type: 'input', props: { placeholder: '请输入' } }
+const options = { props: { placeholder: '请输入' } }
 </script>
 
 <template>
-  <PresetInput v-model:value="value" :options="options" />
+  <PresetField v-model:value="value" type="input" :options="options" />
 </template>
 ```
 

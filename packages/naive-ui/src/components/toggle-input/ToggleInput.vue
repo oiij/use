@@ -1,6 +1,6 @@
 <script setup lang='ts'>
 import type { InputProps } from 'naive-ui'
-import type { ClassStyle } from '../data-table-plus'
+import type { ClassStyle } from '../_utils/types'
 import { NInput } from 'naive-ui'
 import { nextTick, ref, useTemplateRef, watchEffect } from 'vue'
 

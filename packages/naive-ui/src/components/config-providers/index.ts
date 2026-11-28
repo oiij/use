@@ -1,6 +1,6 @@
 import type { ConfigProviderProps, DialogProviderInst, DialogProviderProps, LoadingBarProviderInst, LoadingBarProviderProps, MessageProviderInst, MessageProviderProps, ModalProviderInst, ModalProviderProps, NotificationProviderInst, NotificationProviderProps } from 'naive-ui'
 import type { useLoading } from '../../composables'
-import type { ClassStyle } from '../data-table-plus'
+import type { ClassStyle } from '../_utils/types'
 import type { LoadingProviderProps } from '../loading-provider'
 
 export { default as NConfigProviders } from './ConfigProviders.vue'

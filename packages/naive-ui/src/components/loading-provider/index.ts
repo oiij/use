@@ -1,6 +1,6 @@
 import type { SpinProps } from 'naive-ui'
 import type { CSSProperties, InjectionKey, RendererElement } from 'vue'
-import type { ClassStyle } from '../data-table-plus'
+import type { ClassStyle } from '../_utils/types'
 
 export { default as NLoadingProvider } from './LoadingProvider.vue'
 

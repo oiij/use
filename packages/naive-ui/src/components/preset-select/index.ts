@@ -2,18 +2,11 @@ import type { PaginationProps, SelectGroupOption, SelectInst, SelectOption, Sele
 import type { ShallowRef } from 'vue'
 import type { ComponentExposed } from 'vue-component-type-helpers'
 import type { DataObject, DataRequestFields, UseDataRequestReturns } from '../../composables/use-data-request'
-import type { ClassStyle } from '../data-table-plus/index'
+import type { ClassStyle, PresetValue } from '../_utils/types'
 import type { RemoteRequestEmits, RemoteRequestProps } from '../remote-request/index'
 import type PresetSelect from './PresetSelect.vue'
 
 export { default as NPresetSelect } from './PresetSelect.vue'
-
-/**
- * 数组感知类型
- * @template V 值类型
- * @template T 目标类型
- */
-export type ArrayAwareType<V, T> = V extends null ? null : (V extends any[] ? T[] : T) | null
 
 /**
  * 选项格式化函数
@@ -24,7 +17,7 @@ export type OptionFormat<R extends DataObject = DataObject> = (row: R) => Select
 /**
  * 预设选择器值类型
  */
-export type PresetSelectValue = string | number | (string | number)[] | null
+export type PresetSelectValue = PresetValue
 
 /**
  * 预设选择器字段配置
@@ -34,8 +27,6 @@ export type PresetSelectFields = DataRequestFields & {
   label?: string
   /** 值字段名 */
   value?: string
-  /** 行键字段名 */
-  rowKey?: string
   /** 搜索字段名 */
   search?: string
   /** 子节点字段名 */
@@ -52,6 +43,12 @@ export type PresetSelectExpose<P extends DataObject = DataObject, D extends Data
   /** 选择器实例 */
   selectInst: Readonly<ShallowRef<SelectInst | null>>
 }
+
+/**
+ * 选择器透传属性
+ * 已排除组件内部受控的字段，避免透传属性覆盖组件核心行为
+ */
+export type PresetSelectPassThroughProps = Omit<SelectProps, 'value' | 'options' | 'multiple' | 'loading' | 'remote' | 'filterable' | 'labelField' | 'valueField' | 'childrenField' | 'fallbackOption' | 'show' | 'onSearch' | 'onUpdateShow' | 'onUpdateValue' | 'onUpdate:value'> & ClassStyle
 
 /**
  * 预设选择器属性
@@ -77,10 +74,10 @@ export type PresetSelectProps<V extends PresetSelectValue, P extends DataObject 
   optionFormat?: OptionFormat<R>
   /** 字段配置 */
   fields?: PresetSelectFields
-  /** 选择器属性 */
-  selectProps?: SelectProps & ClassStyle
-  /** 分页配置 */
-  pagination?: Omit<PaginationProps, 'page' | 'pageSize'> & ClassStyle | boolean
+  /** 选择器透传属性，受控字段不可覆盖 */
+  selectProps?: PresetSelectPassThroughProps
+  /** 分页配置，用户配置优先于内部默认值 */
+  pagination?: Omit<PaginationProps, 'page' | 'pageSize' | 'itemCount'> & ClassStyle | boolean
 }
 
 /**

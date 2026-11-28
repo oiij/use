@@ -90,18 +90,15 @@ const filterOptions: PresetFormOptions<Params> = [
           h(NButton, {
             onClick: () => {
               console.log(formValues.value)
-
-              dataTableRef.value?.runParams({
-                ...formValues.value,
-              })
+              dataTableRef.value?.runParams(formValues.value)
             },
           }, { default: () => '过滤' }),
           h(NButton, {
             onClick: () => {
               resetForm()
-              dataTableRef.value?.runParams({
-                ...formValues.value,
-              })
+              console.log(formValues.value)
+
+              dataTableRef.value?.runParams(formValues.value)
             },
           }, { default: () => '重置' }),
           h(NButton, {
@@ -207,7 +204,13 @@ function onUpdateCheckedRowKeys(key: any, rows: any, meta: any) {
       @update:checked-row-keys="onUpdateCheckedRowKeys"
     >
       <template #filter>
-        <NPresetForm ref="preset-form-ref" :options="filterOptions" :form-props="{ labelPlacement: 'top', showFeedback: true }" :grid-props="{ xGap: 10, collapsed }" />
+        <NPresetForm
+          ref="preset-form-ref"
+          :options="filterOptions"
+          :form-props="{ labelPlacement: 'top', showFeedback: true }"
+          :grid-props="{ xGap: 10, collapsed }"
+          :clear-rules="{ timeRange: null }"
+        />
       </template>
     </NDataTablePlus>
   </NFlex>

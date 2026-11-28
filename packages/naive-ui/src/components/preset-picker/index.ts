@@ -3,7 +3,7 @@ import type { TableSelectionColumn } from 'naive-ui/es/data-table/src/interface'
 import type { Ref } from 'vue'
 import type { ComponentExposed } from 'vue-component-type-helpers'
 import type { DataObject } from '../../composables/use-data-request'
-import type { ClassStyle } from '../data-table-plus/index'
+import type { ClassStyle, PresetValue } from '../_utils/types'
 import type PresetPicker from './PresetPicker.vue'
 
 export { default as NPresetPicker } from './PresetPicker.vue'
@@ -11,7 +11,7 @@ export { default as NPresetPicker } from './PresetPicker.vue'
 /**
  * 预设选择器值类型
  */
-export type PresetPickerValue = string | number | (string | number)[] | null
+export type PresetPickerValue = PresetValue
 
 /**
  * 预设选择器暴露的方法
@@ -86,7 +86,7 @@ export type PresetPickerProps<V extends PresetPickerValue, R extends DataObject 
  * @template R 列表项类型
  */
 export type PresetPickerEmits<V extends PresetPickerValue, R extends DataObject = DataObject> = {
-  /** 更新值事件 */
+  /** 更新值事件，多选时 raw 仅包含已加载到的行，数量可能少于 keys */
   (e: 'update:value', val: V | null, raw: R | R[] | null): void
   /** 点击取消按钮事件 */
   (e: 'negativeClick'): void

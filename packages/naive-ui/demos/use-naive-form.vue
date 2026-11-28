@@ -20,7 +20,7 @@ const _formValues = ref({
   }],
 })
 
-const { validate, formValues, formProps, resetValidation, onValidated, resetForm, reset, clear, onUpdateValue } = useNaiveForm(useTemplateRef<FormInst>('form-ref'), {
+const { validate, validateField, updateCache, dirty, formValues, formProps, resetValidation, onValidated, resetForm, reset, clear, onUpdateValue } = useNaiveForm(useTemplateRef<FormInst>('form-ref'), {
   values: _formValues,
   rules: {
     foo: {
@@ -69,8 +69,14 @@ onValidated((res) => {
         <NButton @click="validate">
           验证表单
         </NButton>
+        <NButton @click="validateField('foo.bar')">
+          验证 foo.bar
+        </NButton>
         <NButton @click="resetValidation">
           重置验证
+        </NButton>
+        <NButton @click="updateCache">
+          保存快照
         </NButton>
         <NButton @click="resetForm">
           重置表单
@@ -82,6 +88,7 @@ onValidated((res) => {
           清除表单
         </NButton>
       </NFlex>
+      <div>dirty: {{ dirty }}</div>
       <pre>{{ JSON.stringify(formValues, null, 2) }}</pre>
       <pre>{{ JSON.stringify(_formValues, null, 2) }}</pre>
     </NForm>

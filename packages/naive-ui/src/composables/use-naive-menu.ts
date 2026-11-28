@@ -39,6 +39,7 @@ export type UseNaiveMenuOptions = {
   iconField?: string
   /**
    * 图标渲染函数，用于自定义图标渲染
+   * @default undefined
    */
   renderIcon?: (icon: string) => VNodeChild
   /**
@@ -53,136 +54,161 @@ export type UseNaiveMenuOptions = {
   parentFilePath?: string
   /**
    * 父路由元信息生成函数
+   * @default undefined
    */
   parent?: (route: RouteRecordRaw) => Record<string, unknown>
   /**
    * 自定义菜单选项创建函数
+   * @default undefined
    */
   createMenuOption?: (route: RouteRecordRaw) => MenuOption
 }
 
-function getConfigValue<T>(
-  route: RouteRecordRaw,
-  config: ((route: RouteRecordRaw) => T) | string | undefined,
-  returnType?: 'meta' | 'route',
-  defaultValue?: T,
-): T | undefined {
-  if (!config) {
-    return defaultValue
-  }
-
-  if (typeof config === 'function') {
-    return config(route)
-  }
-
-  if (returnType === 'meta') {
-    return route.meta?.[config] as T ?? defaultValue
-  }
-  return route?.[config as keyof RouteRecordRaw] as T ?? defaultValue
+type ResolvedOptions = {
+  hidden: ((route: RouteRecordRaw) => boolean | string) | string
+  root: ((route: RouteRecordRaw) => boolean | string) | string
+  labelField: string
+  keyField: string
+  iconField: string
+  renderIcon?: (icon: string) => VNodeChild
+  createMenuOption?: (route: RouteRecordRaw) => MenuOption
+  parentField: string
+  parentFilePath: string
+  parent?: (route: RouteRecordRaw) => Record<string, unknown>
 }
 
-function createConfigMenuOption(route: RouteRecordRaw, options?: UseNaiveMenuOptions): MenuOption {
-  const { labelField, keyField, iconField, renderIcon } = options ?? {}
+function resolveOptions(options?: UseNaiveMenuOptions): ResolvedOptions {
+  return {
+    hidden: options?.hidden ?? 'hidden',
+    root: options?.root ?? 'root',
+    labelField: options?.labelField ?? 'title',
+    keyField: options?.keyField ?? 'name',
+    iconField: options?.iconField ?? 'icon',
+    renderIcon: options?.renderIcon,
+    createMenuOption: options?.createMenuOption,
+    parentField: options?.parentField ?? 'parent',
+    parentFilePath: options?.parentFilePath ?? '',
+    parent: options?.parent,
+  }
+}
 
-  const labelValue = getConfigValue<string>(route, labelField, 'meta')
-  const keyValue = getConfigValue<string>(route, keyField, 'route')
-  const iconValue = getConfigValue<string>(route, iconField, 'meta')
+function readMeta<T = unknown>(route: RouteRecordRaw, field: string, fallback?: T): T | undefined {
+  return (route.meta?.[field] as T | undefined) ?? fallback
+}
+
+function readRoute<T = unknown>(route: RouteRecordRaw, field: string, fallback?: T): T | undefined {
+  return ((route as unknown as Record<string, unknown>)[field] as T | undefined) ?? fallback
+}
+
+function resolveFlag(route: RouteRecordRaw, config: ((route: RouteRecordRaw) => boolean | string) | string | undefined): boolean {
+  if (!config)
+    return false
+  const result = typeof config === 'function' ? config(route) : readMeta(route, config)
+  return typeof result === 'boolean' ? result : !!result
+}
+
+function normalizeKey(value: unknown): string | undefined {
+  if (typeof value === 'string')
+    return value
+  if (value == null || typeof value === 'symbol')
+    return undefined
+  return String(value)
+}
+
+function getRouteFallback(route: RouteRecordRaw): string {
+  return typeof route.name === 'string' ? route.name : route.path
+}
+
+function buildConfigMenuOption(route: RouteRecordRaw, options: ResolvedOptions): MenuOption {
+  const { labelField, keyField, iconField, renderIcon } = options
+  const labelValue = readMeta<string>(route, labelField)
+  const keyValue = normalizeKey(readRoute(route, keyField))
+  const iconValue = readMeta<string>(route, iconField)
 
   return {
-    label: labelValue ?? route.meta?.title ?? route.name ?? route.path,
-    key: keyValue ?? route.name?.toString() ?? route.path?.toString(),
-    icon: iconValue ? () => renderIcon?.(iconValue) : undefined,
+    label: labelValue ?? getRouteFallback(route),
+    key: keyValue ?? getRouteFallback(route),
+    icon: iconValue && renderIcon ? () => renderIcon(iconValue) : undefined,
     meta: route.meta,
   }
 }
 
-function shouldHide(route: RouteRecordRaw, hidden?: ((route: RouteRecordRaw) => boolean | string) | string): boolean {
-  if (!hidden) {
-    return false
-  }
-
-  const result = getConfigValue(route, hidden, 'meta')
-  return typeof result === 'boolean' ? result : !!result
+function buildMenuOption(route: RouteRecordRaw, options: ResolvedOptions): MenuOption {
+  return options.createMenuOption ? options.createMenuOption(route) : buildConfigMenuOption(route, options)
 }
 
-function isRoot(route: RouteRecordRaw, root?: ((route: RouteRecordRaw) => boolean | string) | string): boolean {
-  if (!root) {
-    return false
-  }
-
-  const result = getConfigValue(route, root, 'meta')
-  return typeof result === 'boolean' ? result : !!result
+function isNavigable(route: RouteRecordRaw): boolean {
+  return 'component' in route || 'components' in route || 'redirect' in route
 }
 
-function routes2menu(routes: RouteRecordRaw[], options?: Omit<UseNaiveMenuOptions, 'parentField' | 'parentFilePath' | 'parent'>): MenuOption[] {
-  const { hidden, root, createMenuOption } = options ?? {}
-  const menuOptions: MenuOption[] = []
-
-  for (const route of routes ?? []) {
-    if (shouldHide(route, hidden)) {
-      continue
-    }
-
-    const menu = typeof createMenuOption === 'function' ? createMenuOption(route) : createConfigMenuOption(route, options)
-
-    if (route.children?.length) {
-      const rootChildren = route.children.filter(child => isRoot(child, root))
-      const normalChildren = route.children.filter(child => !isRoot(child, root))
-
-      if (normalChildren.length) {
-        menu.children = routes2menu(normalChildren, options)
-      }
-
-      if (rootChildren.length) {
-        const rootMenuOptions = rootChildren
-          .filter(child => !shouldHide(child, hidden))
-          .map(child => typeof createMenuOption === 'function' ? createMenuOption(child) : createConfigMenuOption(child, options))
-
-        menuOptions.push(...rootMenuOptions)
-      }
-    }
-
-    menuOptions.push(menu)
-  }
-
-  return menuOptions
+function resolveParentMeta(route: RouteRecordRaw, wrapper: RouteRecordRaw, options: ResolvedOptions) {
+  if (options.parent)
+    return options.parent(route)
+  if (!options.parentField)
+    return undefined
+  return wrapper.meta?.[options.parentField] as Record<string, unknown> | undefined
 }
 
-function deepUpRouteParentMeta(
-  routes: RouteRecordRaw[],
-  parentField: string,
-  parentFilePath: string,
-  parent?: (route: RouteRecordRaw) => Record<string, unknown>,
-): RouteRecordRaw[] {
-  return routes.map((route) => {
-    const emptyPathChild = route.children?.find(f => f.path === parentFilePath)
-    if (emptyPathChild) {
-      if (typeof parent === 'function') {
-        const parentMeta = parent(route)
-        route.meta = {
-          ...route.meta,
-          ...parentMeta,
-        }
-      }
-      else if (parentField) {
-        const parentMeta = emptyPathChild.meta?.[parentField] as Record<string, unknown>
-        route.meta = {
-          ...route.meta,
-          ...parentMeta,
-        }
-      }
+function withParentMeta(route: RouteRecordRaw, options: ResolvedOptions): RouteRecordRaw {
+  const wrapper = route.children?.find(child => child.path === options.parentFilePath)
+  const parentMeta = wrapper ? resolveParentMeta(route, wrapper, options) : undefined
+  const children = route.children?.map(child => withParentMeta(child, options))
+  const result = { ...route, children } as RouteRecordRaw
+
+  if (parentMeta)
+    result.meta = { ...route.meta, ...parentMeta }
+
+  return result
+}
+
+function routes2menu(routes: RouteRecordRaw[], options: ResolvedOptions): MenuOption[] {
+  return routes.flatMap((route) => {
+    if (resolveFlag(route, options.hidden))
+      return []
+
+    const menu = buildMenuOption(route, options)
+    const children = (route.children ?? []).filter(child => !resolveFlag(child, options.hidden))
+
+    if (!children.length)
+      return [menu]
+
+    const rootChildren: RouteRecordRaw[] = []
+    const normalChildren: RouteRecordRaw[] = []
+
+    for (const child of children) {
+      if (resolveFlag(child, options.root))
+        rootChildren.push(child)
+      else
+        normalChildren.push(child)
     }
-    if (route.children?.length) {
-      route.children = deepUpRouteParentMeta(route.children, parentField, parentFilePath, parent)
+
+    if (!rootChildren.length) {
+      menu.children = routes2menu(normalChildren, options)
+      return [menu]
     }
-    return route
+
+    const hoisted = routes2menu(rootChildren, options)
+    const keepParent = normalChildren.length > 0 || isNavigable(route)
+
+    if (!keepParent)
+      return hoisted
+
+    if (normalChildren.length)
+      menu.children = routes2menu(normalChildren, options)
+
+    return [menu, ...hoisted]
   })
 }
 
 /**
  * 定义带有可选 children 属性的树形节点类型
+ * @template T 节点自身类型
  */
-type TreeNode<T> = T & {
+export type TreeNode<T> = T & {
+  /**
+   * 子节点列表
+   * @default undefined
+   */
   children?: TreeNode<T>[]
 }
 
@@ -190,19 +216,27 @@ type TreeNode<T> = T & {
  * 将树形结构扁平化为一维数组
  * @param array 原始树形节点数组
  * @param childrenKey children 属性名，默认为 'children'
- * @returns 扁平化后的数组
+ * @returns 扁平化后的数组，节点上不包含 children 字段
+ * @example
+ * ```ts
+ * const flat = flattenTree([
+ *   { key: 'a', children: [{ key: 'b' }] }
+ * ])
+ * // [{ key: 'a' }, { key: 'b' }]
+ * ```
  */
-export function flattenDeep<T extends Record<string, any>>(array: TreeNode<T>[], childrenKey: keyof TreeNode<T> = 'children'): T[] {
+export function flattenTree<T extends Record<string, any>>(array: TreeNode<T>[], childrenKey: string = 'children'): T[] {
   return array.reduce<T[]>((result, item) => {
-    // 创建不包含 children 的当前项副本（可选）
-    const { [childrenKey]: _, ...currentItem } = item as any
+    const currentItem: Record<string, any> = {}
+    for (const key in item) {
+      if (key !== childrenKey)
+        currentItem[key] = item[key]
+    }
     result.push(currentItem as T)
 
-    // 递归处理 children
-    const children = item[childrenKey]
-    if (children && Array.isArray(children)) {
-      result.push(...flattenDeep(children, childrenKey))
-    }
+    const children = (item as Record<string, any>)[childrenKey]
+    if (Array.isArray(children))
+      result.push(...flattenTree<T>(children, childrenKey))
 
     return result
   }, [])
@@ -240,34 +274,15 @@ export function flattenDeep<T extends Record<string, any>>(array: TreeNode<T>[],
  * ```
  */
 export function useNaiveMenu(routes: MaybeRefOrGetter<RouteRecordRaw[]>, options?: UseNaiveMenuOptions) {
-  const {
-    hidden = 'hidden',
-    root = 'root',
-    labelField = 'title',
-    keyField = 'name',
-    iconField = 'icon',
-    renderIcon,
-    createMenuOption,
-    parentField = 'parent',
-    parentFilePath = '',
-    parent,
-  } = options ?? {}
+  const resolvedOptions = resolveOptions(options)
 
   const menuOptions = computed(() => {
-    const routeList = toValue(routes)
-    const processedRoutes = deepUpRouteParentMeta(routeList, parentField, parentFilePath, parent)
-    return routes2menu(processedRoutes, {
-      hidden,
-      root,
-      labelField,
-      keyField,
-      iconField,
-      renderIcon,
-      createMenuOption,
-    })
+    const routeList = toValue(routes) ?? []
+    const processedRoutes = routeList.map(route => withParentMeta(route, resolvedOptions))
+    return routes2menu(processedRoutes, resolvedOptions)
   })
 
-  const flattenedMenuOptions = computed(() => flattenDeep(menuOptions.value))
+  const flattenedMenuOptions = computed(() => flattenTree(menuOptions.value))
 
   return {
     menuOptions,
@@ -278,4 +293,4 @@ export function useNaiveMenu(routes: MaybeRefOrGetter<RouteRecordRaw[]>, options
 /**
  * useNaiveMenu 返回类型
  */
-export type UseNaiveMenuReturn = ReturnType<typeof useNaiveMenu>
+export type UseNaiveMenuReturns = ReturnType<typeof useNaiveMenu>

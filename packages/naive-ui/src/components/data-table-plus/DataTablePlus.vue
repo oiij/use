@@ -5,17 +5,25 @@ import type { CreateRowProps, InternalRowData, RowKey } from 'naive-ui/es/data-t
 import type { DataObject } from '../../composables/index'
 import type { DataTablePlusEmits, DataTablePlusExpose, DataTablePlusFields, DataTablePlusProps } from './index'
 import { NDataTable, NFlex, NPagination } from 'naive-ui'
-import { computed, reactive, ref, toRaw, useTemplateRef, watchEffect } from 'vue'
-import { useDataRequest } from '../../composables/use-data-request'
+import { computed, reactive, ref, toRaw, useTemplateRef, watch } from 'vue'
+import { useRemotePagination } from '../../composables/use-remote-pagination'
+import { useRemoteRequest } from '../../composables/use-remote-request'
+import { createExpose } from '../_utils/expose'
+import { mergeFields } from '../_utils/fields'
 import { NSearchInput } from '../search-input/index'
 
-const { api, defaultParams, title, manual, columns, fields, search, pagination: propsPagination, columnsFilterOptions, columnsSorterOptions, requestOptions, requestPlugins, dataTableProps } = defineProps<DataTablePlusProps<P, D, R>>()
+const { api, defaultParams, title, manual, columns: initialColumns, fields, search, pagination: propsPagination, columnsFilterOptions, columnsSorterOptions, requestOptions, requestPlugins, dataTableProps } = defineProps<DataTablePlusProps<P, D, R>>()
 const emit = defineEmits<DataTablePlusEmits<P, D, R>>()
 
-const columnsReactive = reactive<DataTableColumns<R>>(columns ?? [])
+const columnsReactive = reactive<DataTableColumns<R>>(initialColumns ?? [])
+
+watch(() => initialColumns ?? [], (newCols) => {
+  columnsReactive.splice(0, columnsReactive.length, ...newCols)
+}, { deep: true })
+
 const dataTableInst = useTemplateRef<DataTableInst>('data-table-ref')
 
-const _fields: Required<DataTablePlusFields> = {
+const _fields = mergeFields<Required<DataTablePlusFields>>({
   page: 'page',
   pageSize: 'pageSize',
   filter: 'filter',
@@ -25,23 +33,21 @@ const _fields: Required<DataTablePlusFields> = {
   rowKey: 'id',
   search: 'search',
   children: 'children',
-  ...fields,
-}
-const searchProps = {
+}, fields)
+
+const searchProps = computed(() => ({
   ...(search && typeof search === 'boolean' ? {} : search),
-}
-const paginationProps = reactive<PaginationProps>({
+}))
+
+const paginationConfig = computed<PaginationProps>(() => ({
   showSizePicker: true,
   pageSizes: [10, 20, 30],
   pageSlot: 5,
   prefix: info => `共${info.itemCount}条数据`,
   ...(propsPagination && typeof propsPagination === 'boolean' ? {} : propsPagination),
-})
+}))
 
-const filtersRef = ref<DataTableFilterState>()
-const sortersRef = ref<Record<string, DataTableSortState>>()
-
-const { loading, data, error, params, list, pagination: paginationRef, run, runAsync, refresh, refreshAsync, cancel, mutate, setParams, runParams, runParamsAsync, onBefore, onSuccess, onError, onFinally } = useDataRequest<P, D, R>(api, {
+const request = useRemoteRequest<P, D, R>(api, {
   defaultParams: {
     [_fields.search]: null,
     ...defaultParams,
@@ -50,31 +56,29 @@ const { loading, data, error, params, list, pagination: paginationRef, run, runA
   fields: _fields,
   requestOptions,
   requestPlugins,
-})
-onBefore((params) => {
-  emit('before', params)
-})
-onSuccess((data, params) => {
-  emit('success', data, params)
-  updateColumnFiltersAndSorters()
-})
-onError((err, params) => {
-  emit('error', err, params)
-})
-onFinally((params, data, err) => {
-  emit('finally', params, data, err)
-})
+}, emit)
+
+const { loading, data, error, params, list, pagination: paginationRef, paginationProps, run, runAsync, refresh, refreshAsync, cancel, mutate, getQuery, setParams, runParams, runParamsAsync, onBefore, onSuccess, onError, onFinally, onPaginationChange } = request
+
+const { handlers: paginationHandlers, bindings: paginationBindings } = useRemotePagination<P, D, R>(request, _fields, paginationConfig)
+
+const filtersRef = ref<DataTableFilterState>()
+const sortersRef = ref<Record<string, DataTableSortState>>()
+
 function getRawList() {
   return toRaw(list.value)
 }
-watchEffect(() => {
+
+watch(list, () => {
   emit('loadedRows', getRawList())
-})
+}, { immediate: true })
+
 const scrollX = computed(() => {
-  function nanAble(val?: number | string) {
-    return Number.isNaN(Number(val)) ? 0 : Number(val)
-  }
-  return columns?.reduce((sum, column) => sum + (nanAble(column.width ?? 100)), 0) ?? 0
+  return (initialColumns ?? []).reduce((sum, column) => {
+    const w = column.width ?? 100
+    const num = Number(w)
+    return sum + (Number.isNaN(num) ? 0 : num)
+  }, 0)
 })
 
 function isBaseColumnWithKey(column: any): column is DataTableBaseColumn {
@@ -124,26 +128,25 @@ function updateColumnFiltersAndSorters() {
   }
 }
 
+onSuccess(() => {
+  updateColumnFiltersAndSorters()
+})
+
+const resetPage = (next: Partial<P>) => ({ [_fields.page]: 1, ...next } as P)
+
 const eventHandlers = {
   handlePageUpdate: (page: number) => {
     emit('update:page', page)
-    if (!loading.value) {
-      runParams({ [_fields.page]: page } as P)
-    }
+    paginationHandlers.onUpdatePage(page)
   },
   handlePageSizeUpdate: (pageSize: number) => {
     emit('update:pageSize', pageSize)
-    if (!loading.value) {
-      runParams({ [_fields.pageSize]: pageSize } as P)
-    }
+    paginationHandlers.onUpdatePageSize(pageSize)
   },
   handleFiltersUpdate: (filters: DataTableFilterState, initiatorColumn: DataTableBaseColumn) => {
     emit('update:filters', filters, initiatorColumn)
     filtersRef.value = filters
-    runParams({
-      [_fields.page]: 1,
-      ...(columnsFilterOptions ? columnsFilterOptions(filters) : { [_fields.filter]: filters }),
-    } as P)
+    runParams(resetPage((columnsFilterOptions ? columnsFilterOptions(filters) : { [_fields.filter]: filters }) as Partial<P>))
   },
   handleSorterUpdate: (options: DataTableSortState | DataTableSortState[] | null) => {
     emit('update:sorter', options)
@@ -157,10 +160,7 @@ const eventHandlers = {
       sorter[options.columnKey] = options
     }
     sortersRef.value = sorter
-    runParams({
-      [_fields.page]: 1,
-      ...(columnsSorterOptions ? columnsSorterOptions(sorter) : { [_fields.sorter]: sorter }),
-    } as P)
+    runParams(resetPage((columnsSorterOptions ? columnsSorterOptions(sorter) : { [_fields.sorter]: sorter }) as Partial<P>))
   },
   handleCheckedRowKeysUpdate: (keys: RowKey[], rows: InternalRowData[], meta: {
     row: InternalRowData | undefined
@@ -187,14 +187,24 @@ const rowProps: CreateRowProps<R> = (row: R, index: number) => {
 }
 
 function handleSearch(val: any) {
-  if (loading.value)
-    return
-
-  runParams({
-    [_fields.page]: 1,
-    [_fields.search]: val,
-  } as P)
+  runParams(resetPage({ [_fields.search]: val } as Partial<P>))
 }
+
+/**
+ * 重置 DataTable 状态：清空 filters / sorters、回到第一页、用初始参数重新请求
+ * 等价于 DataTablePlus 组件级别的「重置一切」
+ * @example
+ * ```ts
+ * dataTableRef.value?.reset()
+ * ```
+ */
+function reset() {
+  filtersRef.value = undefined
+  sortersRef.value = undefined
+  updateColumnFiltersAndSorters()
+  run({ [_fields.search]: null, ...defaultParams, [_fields.page]: 1 } as P)
+}
+
 const expose: DataTablePlusExpose<P, D, R> = {
   loading,
   data,
@@ -202,12 +212,14 @@ const expose: DataTablePlusExpose<P, D, R> = {
   params,
   list,
   pagination: paginationRef,
+  paginationProps,
   run,
   runAsync,
   refresh,
   refreshAsync,
   cancel,
   mutate,
+  getQuery,
   setParams,
   runParams,
   runParamsAsync,
@@ -215,31 +227,21 @@ const expose: DataTablePlusExpose<P, D, R> = {
   onSuccess,
   onError,
   onFinally,
+  onPaginationChange,
   filters: filtersRef,
   sorters: sortersRef,
   dataTableInst,
+  reset,
 }
-const templateBind = computed(() => {
-  return {
-    ...expose,
-    loading: loading.value,
-    data: data.value,
-    error: error.value,
-    params: params.value,
-    list: list.value,
-    pagination: paginationRef.value,
-    filters: filtersRef.value,
-    sorters: sortersRef.value,
-    dataTableInst: dataTableInst.value,
-  }
-})
+
+const { slotProps } = createExpose(expose)
 
 defineExpose(expose)
 </script>
 
 <template>
   <NFlex :style="{ width: '100%', height: '100%' }" vertical>
-    <slot name="header" v-bind="templateBind">
+    <slot name="header" v-bind="slotProps">
       <NFlex>
         <slot name="title">
           <div :style="{ height: '100%', display: 'flex', alignItems: 'center' }">
@@ -248,51 +250,51 @@ defineExpose(expose)
         </slot>
         <NSearchInput
           v-if="search"
+          v-bind="searchProps"
           :style="{ marginLeft: 'auto', width: '280px' }"
           :value="params?.[0]?.[_fields.search]"
           :loading="loading"
-          v-bind="searchProps"
           @update:value="(val?:string | null) => handleSearch(val) "
         />
-        <slot name="header-extra" v-bind="templateBind" />
+        <slot name="header-extra" v-bind="slotProps" />
       </NFlex>
     </slot>
-    <slot name="filter" v-bind="templateBind" />
+    <slot name="filter" v-bind="slotProps" />
     <div :style="{ flex: 1, position: 'relative' }">
       <NDataTable
         ref="data-table-ref"
+        v-bind="dataTableProps"
         remote
         flex-height
         :single-line="false"
         :scroll-x="scrollX"
         :style="{ width: '100%', height: '100%' }"
-        :row-key="(row:R) => row?.[_fields.rowKey]"
+        :row-key="(row: R) => (row?.[_fields.rowKey] as RowKey) ?? 0"
         :children-key="_fields.children"
         :loading="loading"
         :columns="columnsReactive"
         :data="list"
         :row-props="rowProps"
-        v-bind="dataTableProps"
         @update:filters="eventHandlers.handleFiltersUpdate"
         @update:sorter="eventHandlers.handleSorterUpdate"
         @update:checked-row-keys="eventHandlers.handleCheckedRowKeysUpdate"
       >
         <template #empty>
-          <slot name="empty" v-bind="templateBind" />
+          <slot name="empty" v-bind="slotProps" />
         </template>
         <template #loading>
-          <slot name="loading" v-bind="templateBind" />
+          <slot name="loading" v-bind="slotProps" />
         </template>
       </NDataTable>
     </div>
-    <slot name="footer" v-bind="templateBind">
+    <slot name="footer" v-bind="slotProps">
       <NFlex>
-        <slot name="footer-extra" v-bind="templateBind" />
+        <slot name="footer-extra" v-bind="slotProps" />
         <NPagination
           v-if="propsPagination"
+          v-bind="paginationBindings"
           :style="{ marginLeft: 'auto' }"
           :disabled="loading"
-          v-bind="{ ...paginationProps, ...paginationRef }"
           @update:page="eventHandlers.handlePageUpdate"
           @update:page-size="eventHandlers.handlePageSizeUpdate"
         />
@@ -300,7 +302,3 @@ defineExpose(expose)
     </slot>
   </NFlex>
 </template>
-
-<style scoped>
-
-</style>

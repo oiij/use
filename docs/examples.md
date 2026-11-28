@@ -34,7 +34,7 @@ Some Composable Functions And Components for Vue 3
 - [data-table-plus](/naive-ui/data-table-plus) - 增强的数据表格
 - [loading-provider](/naive-ui/loading-provider) - 加载状态提供者
 - [preset-form](/naive-ui/preset-form) - 预设表单
-- [preset-input](/naive-ui/preset-input) - 预设输入框
+- [preset-field](/naive-ui/preset-field) - 预设字段框
 - [preset-picker](/naive-ui/preset-picker) - 预设选择器
 - [preset-select](/naive-ui/preset-select) - 预设下拉选择
 - [remote-request](/naive-ui/remote-request) - 远程请求处理
